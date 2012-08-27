@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 
-	<!-- nothing of interest for now -->
- 
- 
+
+	<!-- nothing of interest for now --> 

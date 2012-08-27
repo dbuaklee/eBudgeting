@@ -25,6 +25,7 @@
 	<script src="<c:url value='/resources/jslibs/handlebars-1.0.0.beta.6.js'/>"></script>
 	
 	<script src="<c:url value='/resources/js/app.js'/>"></script>
+
 	
 	<title>${title}</title>
 </head>
