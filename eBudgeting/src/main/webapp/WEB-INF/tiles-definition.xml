@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+	 "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+
+<tiles-definitions>
+
+	<!-- Common Main Layout -->
+    <definition name=".mainLayout" template="/WEB-INF/views/common/mainLayout.jsp">
+        <put-attribute name="title"  expression="${title}" />
+ 		<put-attribute name="header" value="/WEB-INF/views/common/header.jsp"/>       
+        <put-attribute name="navigation"   value="/WEB-INF/views/common/navigation.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/common/footer.jsp" />
+        <put-attribute name="body"   value="The Page Body" />
+    </definition>
+    
+    
+    <!-- special for login page -->
+    <definition name="/login.tiles" extends=".mainLayout">
+    	<put-attribute name="header" value="/WEB-INF/views/common/login-header.jsp"/>
+        <put-attribute name="navigation"   value="/WEB-INF/views/common/navigation.jsp" />
+        <put-attribute name="body" value="/WEB-INF/views/common/login.jsp"/>
+        <put-attribute name="footer" value="/WEB-INF/views/common/login-footer.jsp" />
+    </definition>
+    
+    <!-- Now the Page 'emself -->
+	<definition name="/**.tiles" extends=".mainLayout">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+</tiles-definitions>
+
