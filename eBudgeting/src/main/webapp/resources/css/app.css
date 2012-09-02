@@ -1,4 +1,35 @@
 /* if use nav bar */
 body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+	padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+div#container-body {
+	min-height: 200px;
+}
+
+.footer div.span12 {
+	padding-top: 10px;
+	float: left;
+  	width: 100%;
+	text-align: center;
+	font-size: 12px;
+}
+
+.footer div.span12 ul {
+	margin: 0 auto; 
+    text-align: left;
+	width: 70em;
+	
+}
+
+.footer div.span12 ul li {
+	display: inline;
+	position: relative
+	float: left;
+	list-style-type: none;
+	padding-right: 24px;
+}
+
+.table-menu {
+	margin-bottom: 10px;
 }
