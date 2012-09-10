@@ -52,7 +52,15 @@ $.fn.slideTo = function(data, right) {
 	}
 	
 	
-	transfer.animate(animateCss, 4000, function() {
+	transfer.animate(animateCss, 200, function() {
 		currentDom.html(data);
 	});
+};
+
+$.fn.slideLeft = function(data) {
+	this.slideTo(data);
+};
+
+$.fn.slideRight = function(data) {
+	this.slideTo(data,true);
 };

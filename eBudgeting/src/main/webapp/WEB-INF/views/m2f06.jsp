@@ -3,58 +3,48 @@
 
 <div class="row">
 	<div class="span12">
-	    <ul class="breadcrumb">
-		    <li><a href="../">Home</a> <span class="divider">/</span></li>
-		    <li class="active">m2f06: แผนงาน/งบประมาณ</li>
+
+	    <ul class="breadcrumb" id="headNav">
+		    <li><a href="../">Root</a> <span class="divider">/</span></li>
+		    <li><a href="../">ปี 2556</a> <span class="divider">/</span></li>
+		    <li class="active">แผนงาน</li>
 	    </ul>
 
-		<form class="form-inline pull-right">
-			 <label>เปลี่ยนปีงบประมาณ</label>
-			 <select class="span2">
-			 	<option value="2555">2555</option>
-			 	<option value="2556" selected="selected">2556</option>
-			 	<option value="2557">2557</option>
-			 </select> 
-		</form>
-
-		<h3>ปีงบประมาณ 2556</h3>
 		
-		<form>
-			<legend>แผนงาน/งบประมาณ</legend>
-			
-			<div class="control-group" id="planDepartmnetCtr">
-				<label class="control-label" for="planDepartmnetTbl">แผนงาน/งบประมาณ</label>
-				<div class="controls" style="margin-bottom: 15px;">
-					<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-					<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
-					<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
-<%-- 					<a href="#" class="btn btn-mini btn-success menuLink"><i class="icon icon-random icon-white"></i> เชื่อมโยงเป้าหมายบริการกระทรวงฯ</a>
---%>
-				</div>
-				<table class="table table-bordered" id="planDepartmnetTbl">
-					<thead>
-						<tr>
-							<td width="20"></td>
-							<td width="50">ลำดับที่</td>
-							<td>แผนงาน/งบประมาณ</td>
-						</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-			</div>
-			<hr/>
-			<button type="submit" class="btn">Save</button> <button type="submit" class="btn">Cancel</button>
-		</form>
+		<div class="control-group" id="mainCtr">
+		</div>
+
+
 	</div>
 </div>
 
 
+<script id="mainCtrTemplate" type="text/x-handler-template">
+<label class="control-label" for="mainTbl">{{name}}</label>
+<div class="controls" style="margin-bottom: 15px;">
+	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
+	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+</div>
+<table class="table table-bordered" id="mainTbl">
+	<thead>
+		<tr>
+			<td width="20"></td>
+			<td width="50">ลำดับที่</td>
+			<td>{{name}}</td>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+</script>
+
+
 <script id="tbodyTemplate" type="text/x-handlebars-template">
 {{#each this}}
-<tr><td><input type="radio" name="planDepartmnetRdo" id="Rdo_{{index}}" value="{{index}}"/></td>
+<tr><td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
 	<td> {{index}} </td>
-	<td> {{name}}</td>
+	<td> {{name}} <a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a></td>
 
 </tr>
 {{/each}}
@@ -67,26 +57,14 @@
 
 </script>
 
-<script id="optionTemplate" type="text/x-handlebars-template">
-<select id="linkSlt">
-	<option value="noselected" selected="selected">กรุณาเลือก...</option>
-	{{#each this}}
-	<option value="{{name}}">{{name}}</option>
-	{{/each}}
-</select>
-</script>
 
 <script type="text/javascript">
 <!--
-var planDepartmnetTblView;
+var mainTblView;
 
-//var serviceTargetMinistryCol = new Backbone.Collection([
-//                                                        {index: "1", name: "ขยายพื้นที่ชลประทานไม่น้อยกว่าปีละ 2 แสนไร่"},
-//                                                        {index: "2",name: "เกษตรกรในเขตพื้นที่จังหวัดชายแดนภาคใต้ได้รับการพัฒนาศักยภาพ"},
-//                                                        {index: "3",name: "มูลค่าผลิตภัณฑ์มวลรวมภาคการเกษตรเพิ่มขึ้น"}
-//                                                      ]);
-                                                      
-var planDepartmnetCol = new Backbone.Collection([
+var objectiveType = {name: 'แผนงาน'};
+
+var rowCol = new Backbone.Collection([
                   {index: "1", name: "บริหารจัดการน้ำอย่างบูรณาการ"},
                   {index: "2",name: "ส่งเสริมประสิทธิภาพการผลิตและสร้างมูลค่าภาคการเกษตร"},
                   {index: "3",name: "แก้ไขปัญหาและพัฒนาจังหวัดชายแดนภาคใต้"}
@@ -98,22 +76,30 @@ var e1;
 $(document).ready(function() {
 	 
 
-var planDepartmnetTblview = Backbone.View.extend({
+var MainTblView = Backbone.View.extend({
 	initialize: function(){
 	    this.collection.bind('reset', this.render, this);
 	},
 
-	el: "#planDepartmnetCtr",
+	el: "#mainCtr",
 	
 	newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
+	mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
+	tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 	
-	collection: planDepartmnetCol,
+	collection: rowCol,
 	
 	render: function() {
-		 var template = Handlebars.compile($("#tbodyTemplate").html());
-		 var html = template(this.collection.toJSON());
-		 
-		 this.$el.find('tbody').html(html);
+		
+		// first render the control
+		var html = this.mainCtrTemplate(level);
+		this.$el.html(html);
+		
+		// then the inside row
+		html = this.tbodyTemplate(this.collection.toJSON());
+		this.$el.find('tbody').html(html);
+		
+		
 	},
 	
 	events: {
@@ -122,7 +108,7 @@ var planDepartmnetTblview = Backbone.View.extend({
 		"click .menuEdit"	: "editRow",
 		"click .menuLink"	: "linkRow",
 		"click .lineSave" : "saveLine",
-		"change #linkSlt"	: "saveLink"
+		"click .nextChildrenLnk" : "slideInChildren"
 	},
 	
 	newRow: function(e) {
@@ -144,14 +130,15 @@ var planDepartmnetTblview = Backbone.View.extend({
 			model.set('name', inputVal);
 		}
 		
-		this.collection.trigger("reset");	
 		this.$el.find('a.btn').toggleClass('disabled');
+		
+		this.collection.trigger("reset");
 	
 	},
 	
 	deleteRow: function(e) {
 		if(! $(e.currentTarget).hasClass('disabled') ) {
-			var indexToDelete = $('input[name=planDepartmnetRdo]:checked').val() - 1;
+			var indexToDelete = $('input[name=rowRdo]:checked').val() - 1;
 			var modelToDelete = this.collection.at(indexToDelete);
 			this.collection.remove(modelToDelete);
 			
@@ -167,10 +154,10 @@ var planDepartmnetTblview = Backbone.View.extend({
 	editRow: function(e) {
 		if(! $(e.currentTarget).hasClass('disabled') ) {
 			this.$el.find('a.btn').toggleClass('disabled');
-			var index = $('input[name=planDepartmnetRdo]:checked').val()-1;
+			var index = $('input[name=rowRdo]:checked').val()-1;
 			var model = this.collection.at(index);
 			var html = this.newRowTemplate(model.toJSON());
-			$('input[name=planDepartmnetRdo]:checked').parents('tr').html(html);
+			$('input[name=rowRdo]:checked').parents('tr').html(html);
 		}
 	},
 	
@@ -179,7 +166,7 @@ var planDepartmnetTblview = Backbone.View.extend({
 			this.$el.find('a.btn').toggleClass('disabled');
 			// now get to the column
 			
-			var td = $('input[name=planDepartmnetRdo]:checked').parent().siblings(':last');
+			var td = $('input[name=rowRdo]:checked').parent().siblings(':last');
 			
 			var template = Handlebars.compile($('#optionTemplate').html());
 			var html = template(serviceTargetMinistryCol.toJSON());
@@ -188,17 +175,27 @@ var planDepartmnetTblview = Backbone.View.extend({
 		}
 	},
 	
-	saveLink: function(e) {
+	slideInChildren: function(e) {
 		e1 = e;
-		var input = $(e1.currentTarget).val();
-		$(e1.currentTarget).parent().html(input);
-		this.$el.find('a.btn').toggleClass('disabled');
+		
+		
+		html = "<div style='height: 100px;display: table-cell; vertical-align: middle; text-align: center;'>Loading <br/><img src='../resources/graphics/spinner_bar.gif'></img></div>";
+		
+		// slide In spinner
+		this.$el.slideLeft(html);
+		
+		// now load content and replace in div...
+		
+		
+		
+		
+		
 	}
 	
 });
 
-planDepartmnetTblView = new planDepartmnetTblview();
-planDepartmnetCol.trigger('reset');
+mainTblView = new MainTblView();
+rowCol.trigger('reset');
 
 });
 
