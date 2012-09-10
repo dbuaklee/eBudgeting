@@ -18,6 +18,7 @@ public interface ObjectiveService {
 	public Objective findOjectiveById(Long id);
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id);
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear);
+	public List<Integer> findRootFiscalYear();
 	
 	
 }

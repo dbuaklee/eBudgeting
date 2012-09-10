@@ -24,24 +24,42 @@ public class ObjectiveRestController {
 	
 	@Autowired
 	private ObjectiveService objectiveService;
+
+	@RequestMapping(value="/Objective/root", method=RequestMethod.GET)
+	public @ResponseBody List<Integer> getRootFiscalYear() {
+		return objectiveService.findRootFiscalYear();
+	}
 	
 	@RequestMapping(value="/Objective/root/{fiscalYear}", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getRootObjectiveByFiscalYear(
 			@PathVariable Integer fiscalYear) {
 		
 		return objectiveService.findRootObjectiveByFiscalyear(fiscalYear);
-		
 	};
+
 	
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.GET)
-	public @ResponseBody Objective getObjectById(@PathVariable Long id) {
+	public @ResponseBody Objective getObjectiveById(@PathVariable Long id) {
 		logger.debug("id: " + id);
 		return objectiveService.findOjectiveById(id); 
 	}
 	
+	@RequestMapping(value="/Objective/{id}/children", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getOChildrenObjectiveById(@PathVariable Long id) {
+		logger.debug("id: " + id);
+		List<Objective> list =objectiveService.findObjectiveChildrenByObjectiveId(id);
+		logger.debug("children size: " + list.size());
+		for(Objective obj : list) {
+			logger.debug("  -> id : " + obj.getId());
+		}
+		logger.debug("returning...");
+		return  list;
+	}
+	
 	@ExceptionHandler(value=Exception.class)
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {
-		logger.error(e.getMessage());
+		logger.error(e.toString());
+		e.printStackTrace();
 		return "failed";
 		
 	}

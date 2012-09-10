@@ -22,9 +22,11 @@
 	<script src="<c:url value='/resources/jslibs/underscore-1.3.3.min.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.1/js/bootstrap.min.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/backbone-0.9.2.min.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/backbone-relational-0.6.0.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/handlebars-1.0.0.beta.6.js'/>"></script>
 	
-	<script src="<c:url value='/resources/js/app.js'/>"></script>
+	<script src="<c:url value='/resources/js/appUtils.js'/>"></script>
+	<script src="<c:url value='/resources/js/eBudgeting-app.js'/>"></script>
 
 	
 	<title>${title}</title>

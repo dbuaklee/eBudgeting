@@ -3,7 +3,10 @@ package biz.thaicom.eBudgeting.services;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +18,7 @@ import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
 @Service
 @Transactional
 public class ObjectiveServiceMockup implements ObjectiveService {
+	private static final Logger logger = LoggerFactory.getLogger(ObjectiveServiceMockup.class);
 	
 	@Autowired
 	private ObjectiveRepository objectiveRepository;
@@ -68,7 +72,11 @@ public class ObjectiveServiceMockup implements ObjectiveService {
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id) {
 		Objective self = objectiveRepository.findOne(id);
 		if(self != null) {
+			logger.debug("--id: " + self.getId());
 			self.getChildren().size();
+			for(Objective objective: self.getChildren()) {
+				objective.doBasicLazyLoad();
+			}
 		}
 		return self.getChildren();
 	}
@@ -81,6 +89,11 @@ public class ObjectiveServiceMockup implements ObjectiveService {
 			objective.doBasicLazyLoad();
 		}
 		return list;
+	}
+
+	@Override
+	public List<Integer> findRootFiscalYear() {
+		return objectiveRepository.findRootFiscalYear();
 	}
 
 

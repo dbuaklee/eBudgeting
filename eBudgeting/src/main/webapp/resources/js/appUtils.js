@@ -1,4 +1,4 @@
-$.fn.slideTo = function(data, right) {
+$.fn.slideTo = function(data, callBack, right) {
 	var currentDom = this;
 	
 	var width = parseInt(this.css('width'));
@@ -54,13 +54,23 @@ $.fn.slideTo = function(data, right) {
 	
 	transfer.animate(animateCss, 200, function() {
 		currentDom.html(data);
+		callBack();
 	});
 };
 
-$.fn.slideLeft = function(data) {
-	this.slideTo(data);
+$.fn.slideLeft = function(data, callBack) {
+	this.slideTo(data, callBack);
 };
 
-$.fn.slideRight = function(data) {
-	this.slideTo(data,true);
+$.fn.slideRight = function(data, callBack) {
+	this.slideTo(data, callBack, true);
 };
+
+Handlebars.registerHelper('indexHuman', function(index) {
+	var output = index + 1;
+	if(isNaN(output)) {
+		return ""; 
+	} else {
+		return output + ".";
+	}
+});

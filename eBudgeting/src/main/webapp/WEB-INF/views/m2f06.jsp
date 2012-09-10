@@ -5,9 +5,8 @@
 	<div class="span12">
 
 	    <ul class="breadcrumb" id="headNav">
-		    <li><a href="../">Root</a> <span class="divider">/</span></li>
-		    <li><a href="../">ปี 2556</a> <span class="divider">/</span></li>
-		    <li class="active">แผนงาน</li>
+		    <li><a href="/eBudgeting/page/m2f06">Root</a> <span class="divider">/</span></li>
+		    <li class="active">ปี 2556</li>
 	    </ul>
 
 		
@@ -20,7 +19,7 @@
 
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<label class="control-label" for="mainTbl">{{name}}</label>
+<label class="control-label" for="mainTbl">{{type.name}} {{indexHuman index}} {{name}}</label>
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
 	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
@@ -31,7 +30,7 @@
 		<tr>
 			<td width="20"></td>
 			<td width="50">ลำดับที่</td>
-			<td>{{name}}</td>
+			<td>{{#each type.children}}{{name}} {{/each}}</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -42,8 +41,8 @@
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
 {{#each this}}
-<tr><td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
-	<td> {{index}} </td>
+<tr data-id="{{id}}"><td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
+	<td> {{indexHuman index}} </td>
 	<td> {{name}} <a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a></td>
 
 </tr>
@@ -52,7 +51,7 @@
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
-	<td> {{index}} </td>
+	<td> {{indexHuman index}} </td>
 	<td> <input type='text' placeholder='...' class='span7' value="{{name}}"></input> <button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button></td>
 
 </script>
@@ -62,15 +61,8 @@
 <!--
 var mainTblView;
 
-var objectiveType = {name: 'แผนงาน'};
-
-var rowCol = new Backbone.Collection([
-                  {index: "1", name: "บริหารจัดการน้ำอย่างบูรณาการ"},
-                  {index: "2",name: "ส่งเสริมประสิทธิภาพการผลิตและสร้างมูลค่าภาคการเกษตร"},
-                  {index: "3",name: "แก้ไขปัญหาและพัฒนาจังหวัดชายแดนภาคใต้"}
-                ]);
-
 var e1;
+var objectiveCollection;
 
 
 $(document).ready(function() {
@@ -82,17 +74,21 @@ var MainTblView = Backbone.View.extend({
 	},
 
 	el: "#mainCtr",
+	selectedObjective: null,
 	
 	newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
 	mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 	tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 	
-	collection: rowCol,
-	
 	render: function() {
-		
 		// first render the control
-		var html = this.mainCtrTemplate(level);
+		var html;
+		
+		if(this.selectedObjective != null) {
+			html = this.mainCtrTemplate(this.selectedObjective.toJSON());
+		} else {
+			html = this.mainCtrTemplate({name: 'ปี 2556', type:{name: 'งบประมาณ', children: [{name:'แผนงาน'}]} });
+		}
 		this.$el.html(html);
 		
 		// then the inside row
@@ -106,14 +102,13 @@ var MainTblView = Backbone.View.extend({
 		"click .menuNew" : "newRow",
 		"click .menuDelete" : "deleteRow",
 		"click .menuEdit"	: "editRow",
-		"click .menuLink"	: "linkRow",
 		"click .lineSave" : "saveLine",
 		"click .nextChildrenLnk" : "slideInChildren"
 	},
 	
 	newRow: function(e) {
 		if(! $(e.currentTarget).hasClass('disabled') ) {
-			$('#planDepartmnetTbl tbody').append('<tr>'+this.newRowTemplate({index:planDepartmnetCol.length+1})+'</tr>');
+			$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
 			this.$el.find('a.btn').toggleClass('disabled');
 		}
 	},
@@ -122,11 +117,12 @@ var MainTblView = Backbone.View.extend({
 		
 		 
 		inputVal = $(e.currentTarget).prev('input').val();
-		indexRow = $(e.currentTarget).attr('indexHolder');
-		if(this.collection.at(indexRow-1) == null) {
-			this.collection.add({index: this.collection.length+1, name: inputVal});
+		indexRow = parseInt($(e.currentTarget).attr('indexHolder'));
+		if(this.collection.at(indexRow) == null) {
+			
+			this.collection.add(new Objective({name: inputVal, index: indexRow}));
 		} else {
-			var model  = this.collection.at(indexRow-1);
+			var model  = this.collection.at(indexRow);
 			model.set('name', inputVal);
 		}
 		
@@ -138,13 +134,13 @@ var MainTblView = Backbone.View.extend({
 	
 	deleteRow: function(e) {
 		if(! $(e.currentTarget).hasClass('disabled') ) {
-			var indexToDelete = $('input[name=rowRdo]:checked').val() - 1;
+			var indexToDelete = $('input[name=rowRdo]:checked').val();
 			var modelToDelete = this.collection.at(indexToDelete);
 			this.collection.remove(modelToDelete);
 			
 			// now we have to run through and reindex
 			this.collection.each(function(model, index) {
-				model.set('index', index+1);
+				model.set('index', index);
 			});
 			
 			this.collection.trigger('reset');
@@ -154,48 +150,80 @@ var MainTblView = Backbone.View.extend({
 	editRow: function(e) {
 		if(! $(e.currentTarget).hasClass('disabled') ) {
 			this.$el.find('a.btn').toggleClass('disabled');
-			var index = $('input[name=rowRdo]:checked').val()-1;
+			var index = $('input[name=rowRdo]:checked').val();
 			var model = this.collection.at(index);
 			var html = this.newRowTemplate(model.toJSON());
 			$('input[name=rowRdo]:checked').parents('tr').html(html);
 		}
 	},
 	
-	linkRow: function(e) {
-		if(! $(e.currentTarget).hasClass('disabled') ) {
-			this.$el.find('a.btn').toggleClass('disabled');
-			// now get to the column
-			
-			var td = $('input[name=rowRdo]:checked').parent().siblings(':last');
-			
-			var template = Handlebars.compile($('#optionTemplate').html());
-			var html = template(serviceTargetMinistryCol.toJSON());
-			td.html(html);
-			
-		}
-	},
-	
 	slideInChildren: function(e) {
 		e1 = e;
 		
+		// get id;
+		var id = $(e.target).parents('tr').attr('data-id');
+		this.selectedObjective = this.collection.get(id); 
+			
+		var f1 = function() {
+			//once the animation is done
+			// now load content and replace in div...
+			this.collection.url='/eBudgeting/Objective/'+this.id+'/children';
+			this.collection.fetch();
+
+		};
 		
-		html = "<div style='height: 100px;display: table-cell; vertical-align: middle; text-align: center;'>Loading <br/><img src='../resources/graphics/spinner_bar.gif'></img></div>";
+		f1 = _.bind(f1, {collection: this.collection, id: id});
 		
+		// change the ul
+		
+		
+		lastLiHtml = $('#headNav').children().last().html();
+		prevLiHref = $('#headNav').find('a:last').attr('href');
+		
+		if(this.selectedObjective.get('parent') == null) {
+			lastHref = prevLiHref + "/2556";
+		} else {
+			lastHref = prevLiHref + "/" + this.selectedObjective.get('id');	
+		}
+		
+		$('#headNav').children().last().html("<li><a href=" + lastHref +">"+ lastLiHtml +"</a> <span class='divider'>/</span></li>");
+		
+		var humanIndex = this.selectedObjective.get('index')+1;
+		$('#headNav').append("<li class='active'>" + this.selectedObjective.get('type').get('name') + "ที่ " +
+				humanIndex + "</li>");
+		
+		html = "<div style='height: 100px;display: table-cell; vertical-align: middle; text-align: center;'>Loading <br/><img src='/eBudgeting/resources/graphics/spinner_bar.gif'></img></div>";
 		// slide In spinner
-		this.$el.slideLeft(html);
-		
-		// now load content and replace in div...
-		
-		
-		
-		
-		
+		this.$el.slideLeft(html,f1);
+						
 	}
 	
 });
 
-mainTblView = new MainTblView();
-rowCol.trigger('reset');
+
+//rowCol.trigger('reset');
+
+//experimental
+objectiveCollection = new ObjectiveCollection();
+
+
+
+// now we can create a view
+mainTblView = new MainTblView({
+	collection: objectiveCollection
+});
+
+lastObjectiveId="${lastObjectiveId}";
+if(!isNaN(parseInt(lastObjectiveId))) {
+	var objective = new Objective();
+	objective.url = "/eBudgeting/Objective/" + lastObjectiveId;
+	objective.fetch();
+	mainTblView.selectedObjective = objective;
+}
+
+objectiveCollection.url = "${url}";
+objectiveCollection.fetch();
+
 
 });
 
