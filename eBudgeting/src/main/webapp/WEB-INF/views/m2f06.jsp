@@ -5,8 +5,16 @@
 	<div class="span12">
 
 	    <ul class="breadcrumb" id="headNav">
-		    <li><a href="/eBudgeting/page/m2f06">Root</a> <span class="divider">/</span></li>
-		    <li class="active">ปี 2556</li>
+	    	<c:forEach items="${breadcrumb}" var="link" varStatus="status">
+	    		<c:choose>
+					<c:when test="${status.last}">
+						<li class="active">${link.value}</li>
+					</c:when>
+					<c:otherwise>
+						<li><a href="${link.url}">${link.value}</a> <span class="divider">/</span></li>
+					</c:otherwise>
+				</c:choose>
+	    	</c:forEach>
 	    </ul>
 
 		
@@ -17,6 +25,20 @@
 	</div>
 </div>
 
+<script id="rootMainCtrTemplate" type="text/x-handler-template">
+<table class="table table-bordered" id="mainTbl">
+	<thead>
+		<tr>
+			<td>เลือกปีงบประมาณ</td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>{{this}} <a href="./{{this}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+		</tr>
+	</tbody>
+</table>
+</script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <label class="control-label" for="mainTbl">{{type.name}} {{indexHuman index}} {{name}}</label>
@@ -43,7 +65,7 @@
 {{#each this}}
 <tr data-id="{{id}}"><td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
 	<td> {{indexHuman index}} </td>
-	<td> {{name}} <a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a></td>
+	<td> {{name}} <a href="./{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a></td>
 
 </tr>
 {{/each}}
@@ -63,10 +85,20 @@ var mainTblView;
 
 var e1;
 var objectiveCollection;
+var currentPath='${currentPath}';
+
+var ROOT='${ROOT}';
+
+
 
 
 $(document).ready(function() {
-	 
+	// bind to popstate
+	$(window).bind('popstate', function(e) {
+	  console.log(e.state);
+	});
+
+	
 
 var MainTblView = Backbone.View.extend({
 	initialize: function(){
@@ -95,15 +127,14 @@ var MainTblView = Backbone.View.extend({
 		html = this.tbodyTemplate(this.collection.toJSON());
 		this.$el.find('tbody').html(html);
 		
-		
+		return this;
 	},
 	
 	events: {
 		"click .menuNew" : "newRow",
 		"click .menuDelete" : "deleteRow",
 		"click .menuEdit"	: "editRow",
-		"click .lineSave" : "saveLine",
-		"click .nextChildrenLnk" : "slideInChildren"
+		"click .lineSave" : "saveLine"
 	},
 	
 	newRow: function(e) {
@@ -159,10 +190,8 @@ var MainTblView = Backbone.View.extend({
 	
 	slideInChildren: function(e) {
 		e1 = e;
-		
-		// get id;
 		var id = $(e.target).parents('tr').attr('data-id');
-		this.selectedObjective = this.collection.get(id); 
+		
 			
 		var f1 = function() {
 			//once the animation is done
@@ -181,10 +210,13 @@ var MainTblView = Backbone.View.extend({
 		prevLiHref = $('#headNav').find('a:last').attr('href');
 		
 		if(this.selectedObjective.get('parent') == null) {
-			lastHref = prevLiHref + "/2556";
+			lastHref = prevLiHref + "2556/";
 		} else {
-			lastHref = prevLiHref + "/" + this.selectedObjective.get('id');	
+			lastHref = prevLiHref + this.selectedObjective.get('id') + "/";	
 		}
+		
+		// get selected id;
+		this.selectedObjective = this.collection.get(id); 
 		
 		$('#headNav').children().last().html("<li><a href=" + lastHref +">"+ lastLiHtml +"</a> <span class='divider'>/</span></li>");
 		
@@ -192,10 +224,15 @@ var MainTblView = Backbone.View.extend({
 		$('#headNav').append("<li class='active'>" + this.selectedObjective.get('type').get('name') + "ที่ " +
 				humanIndex + "</li>");
 		
+		// now update currentPath with
+		//history.pushState($('#mainTbl').html(),null,window.document.URL+id+"/");
+		
 		html = "<div style='height: 100px;display: table-cell; vertical-align: middle; text-align: center;'>Loading <br/><img src='/eBudgeting/resources/graphics/spinner_bar.gif'></img></div>";
 		// slide In spinner
 		this.$el.slideLeft(html,f1);
 						
+		//return false to not navigate to new page
+		return false;
 	}
 	
 });
@@ -217,12 +254,25 @@ lastObjectiveId="${lastObjectiveId}";
 if(!isNaN(parseInt(lastObjectiveId))) {
 	var objective = new Objective();
 	objective.url = "/eBudgeting/Objective/" + lastObjectiveId;
-	objective.fetch();
-	mainTblView.selectedObjective = objective;
+	objective.fetch({success: function() {
+		mainTblView.selectedObjective = objective;
+		mainTblView.render();
+	}});
+		
 }
 
 objectiveCollection.url = "${url}";
-objectiveCollection.fetch();
+
+if(ROOT != 'true') {
+	objectiveCollection.fetch();
+	
+} else {
+	// now we'll load different one onto this mainTbl
+	$.get(objectiveCollection.url, function(data) {
+		var t = Handlebars.compile($("#rootMainCtrTemplate").html());
+		$('#mainCtr').html(t(data));
+	});
+}
 
 
 });

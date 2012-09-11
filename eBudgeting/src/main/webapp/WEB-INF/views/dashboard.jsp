@@ -38,16 +38,14 @@ var menuJson = [{
 	menus: [{name: "m1f01: โครงสร้างหมวดงบประมาณ", link:"jsp/m1f01", disabled: "disabled"},
 	        {name: "m1f02: หน่วยงานภายใน", link: "jsp/m1f02", disabled: "disabled"}]
 },{
-	name: "ข้อมูลคำขอตั้งเชิงงบประมาณ",
+	name: "ข้อมูลคำขอตั้ง",
 	menus: [{name: "m2f01: ยุทธศาสตร์จัดสรร (รัฐบาล)", link: "jsp/m2f01", disabled: "disabled"},
             {name: "m2f02: ประเด็นยุทธศาสตร์ (รัฐบาล)", link: "jsp/m2f02", disabled: "disabled"},
             {name: "m2f03: เป้าหมายเชิงยุทธศาสตร์ (รัฐบาล)", link: "jsp/m2f03", disabled: "disabled"},
             {name: "m2f04: เป้าหมายบริการกระทรวงฯ ", link: "jsp/m2f04"},
             {name: "m2f05: เป้าหมายบริการหน่วยงาน", link: "jsp/m2f05"},
-            {name: "m2f06: แผนงาน/งบประมาณ", link: "jsp/m2f06"},
-            {name: "m2f07: ผลผลิต/โครงการ", link: "jsp/m2f07"},
-            {name: "m2f08: กิจกรรมหลัก/รอง/สนับสนุน", link: "jsp/m2f08"},
-            {name: "m2f09: กิจกรรมหน่วยงาน", link: "jsp/m2f09", disabled: "disabled"}]
+            {name: "m2f06: โครงสร้างแผนงาน/กิจกรรม", link: "page/m2f06/"}
+            ]
 },{           
 	name: "ข้อมูลคำขอตั้งเชิงยุทธศาสตร์",
 	menus: [{name: "m3f01: ยุทธศาสตร์กระทรวงฯ", link: "jsp/m3f01", disabled: "disabled"},

@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting;
+package biz.thaicom.eBudgeting.controllers;
 
 import java.util.Locale;
 

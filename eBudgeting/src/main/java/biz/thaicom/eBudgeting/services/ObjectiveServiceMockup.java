@@ -73,8 +73,10 @@ public class ObjectiveServiceMockup implements ObjectiveService {
 		Objective self = objectiveRepository.findOne(id);
 		if(self != null) {
 			logger.debug("--id: " + self.getId());
+			logger.debug("children.getSize() = " + self.getChildren().size());
 			self.getChildren().size();
 			for(Objective objective: self.getChildren()) {
+				logger.debug(" child.id --> " + objective.getId());
 				objective.doBasicLazyLoad();
 			}
 		}

@@ -46,6 +46,6 @@
 		<beans:property name="order" value="1"/>
 	</beans:bean>
 	
-	<context:component-scan base-package="biz.thaicom.eBudgeting" />
+	<context:component-scan base-package="biz.thaicom.eBudgeting.controllers" />
 	
 </beans:beans>
