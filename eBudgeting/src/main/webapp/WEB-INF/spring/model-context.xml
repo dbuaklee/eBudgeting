@@ -44,6 +44,15 @@
         </property>
  	</bean>
  	
+ 	<bean id="bgtDAO" class="biz.thaicom.eBudgeting.dao.BgtJdbcDao">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sqlSampleResource" value="classpath:/config/sample.sql"/>
+	</bean>
+	 
+	<bean id="sqlSampleResource" class="org.springframework.core.io.ClassPathResource">
+		<constructor-arg name="path" value="/config/sample.sql"/>
+	</bean>
+
  	
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="myEmf" />
@@ -54,6 +63,8 @@
 	<bean id="databaseSchemaExport" class="biz.thaicom.eBudgeting.repositories.DatabaseSchemaExport"/>
 	
 	<jpa:repositories base-package="biz.thaicom.eBudgeting.repositories"/>
+	
+	
 	
 	
 	

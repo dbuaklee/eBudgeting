@@ -33,9 +33,18 @@
 </head>
 
 <body>
-	<div id="container-header" class="container">
-		<tiles:insertAttribute name="header"/>		
-	</div>
+	<c:choose>
+		<c:when test="${adminPage == true}">
+			<div id="container-header" class="container">
+				<tiles:insertAttribute name="header-admin"/>		
+			</div>
+		</c:when>
+		<c:otherwise>
+			<div id="container-header" class="container">
+				<tiles:insertAttribute name="header"/>		
+			</div>	
+		</c:otherwise>
+	</c:choose>
 
 
 	<div id="container-body" class="container">

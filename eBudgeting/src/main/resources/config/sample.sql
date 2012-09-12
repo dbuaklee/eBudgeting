@@ -1,9 +1,9 @@
-drop table OBJECTIVE_OBJECTIVE;
-commit;
-
-
-select * from OBJECTIVETYPE;
-
+--drop table OBJECTIVE_OBJECTIVE;
+--commit;
+--
+--
+--select * from OBJECTIVETYPE;
+--
 insert into OBJECTIVETYPE (ID, FISCALYEAR, NAME, OBJECTIVETYPE_PARENT_ID) VALUES (101, 2556, 'แผนงาน', null);
 insert into OBJECTIVETYPE (ID, FISCALYEAR, NAME, OBJECTIVETYPE_PARENT_ID) VALUES (102, 2556, 'ผลผลิต/โครงการ', 101);
 insert into OBJECTIVETYPE (ID, FISCALYEAR, NAME, OBJECTIVETYPE_PARENT_ID) VALUES (103, 2556, 'กิจกรรมหลัก', 102);
@@ -13,7 +13,7 @@ insert into OBJECTIVETYPE (ID, FISCALYEAR, NAME, OBJECTIVETYPE_PARENT_ID) VALUES
 insert into OBJECTIVETYPE (ID, FISCALYEAR, NAME, OBJECTIVETYPE_PARENT_ID) VALUES (107, 2556, 'กิจกรรมอื่นๆ', 106);
 
 
-select * from objective;
+--select * from objective;
 insert into OBJECTIVE (ID,NAME,FISCALYEAR,"INDEX",OBJECTIVE_PARENT_ID,OBJECTIVETYPE_ID) values (101,'การส่งเสริมการบริหารจัดการน้ำอย่างบูรณาการ',2556,0,null,101);
 insert into OBJECTIVE (ID,NAME,FISCALYEAR,"INDEX",OBJECTIVE_PARENT_ID,OBJECTIVETYPE_ID) values (102,'แก้ไขปัญหาและพัฒนาจังหวัดชายแดนภาคใต้',2556,1,null,101);
 insert into OBJECTIVE (ID,NAME,FISCALYEAR,"INDEX",OBJECTIVE_PARENT_ID,OBJECTIVETYPE_ID) values (103,'ส่งเสริมประสิทธิภาพการผลิตและสร้างมูลค่าภาคเกษตร',2556,2,null,101);
