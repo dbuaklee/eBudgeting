@@ -3,9 +3,17 @@
 
 <div class="row">
 	<div class="span12">
+		<div id="mainTbl">
+		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
 
+
+$(document).ready(function() {
+	// something here
+	
+	
+});
 </script>

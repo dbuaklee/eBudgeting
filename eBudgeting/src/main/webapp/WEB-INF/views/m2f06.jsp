@@ -74,7 +74,10 @@
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
 	<td> {{indexHuman index}} </td>
-	<td> <input type='text' placeholder='...' class='span7' value="{{name}}"></input> <button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button></td>
+	<td> <input type='text' placeholder='...' class='span7' value="{{name}}"></input> 
+			<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
+			<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
+	</td>
 
 </script>
 
@@ -107,6 +110,7 @@ var MainTblView = Backbone.View.extend({
 
 	el: "#mainCtr",
 	selectedObjective: null,
+	currentLineVal: null,
 	
 	newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
 	mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
@@ -134,7 +138,8 @@ var MainTblView = Backbone.View.extend({
 		"click .menuNew" : "newRow",
 		"click .menuDelete" : "deleteRow",
 		"click .menuEdit"	: "editRow",
-		"click .lineSave" : "saveLine"
+		"click .lineSave" : "saveLine",
+		"click .cancelLineSave" : "cancelSaveLine"
 	},
 	
 	newRow: function(e) {
@@ -142,6 +147,15 @@ var MainTblView = Backbone.View.extend({
 			$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
 			this.$el.find('a.btn').toggleClass('disabled');
 		}
+	},
+	
+	cancelSaveLine: function(e) {
+		//now put back the value
+		// well do nothing just reset the collection
+		
+		this.$el.find('a.btn').toggleClass('disabled');
+		this.collection.trigger("reset");
+		
 	},
 	
 	saveLine: function(e) {
@@ -164,7 +178,7 @@ var MainTblView = Backbone.View.extend({
 	},
 	
 	deleteRow: function(e) {
-		if(! $(e.currentTarget).hasClass('disabled') ) {
+		if( (! $(e.currentTarget).hasClass('disabled')) && $('input[name=rowRdo]:checked').length == 1 ) {
 			var indexToDelete = $('input[name=rowRdo]:checked').val();
 			var modelToDelete = this.collection.at(indexToDelete);
 			this.collection.remove(modelToDelete);
@@ -175,16 +189,23 @@ var MainTblView = Backbone.View.extend({
 			});
 			
 			this.collection.trigger('reset');
-		}			
+		} else {
+			alert('กรุณาเลือกรายการที่ต้องการลบ');
+		}
 	},
 	
 	editRow: function(e) {
-		if(! $(e.currentTarget).hasClass('disabled') ) {
+		if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
 			this.$el.find('a.btn').toggleClass('disabled');
 			var index = $('input[name=rowRdo]:checked').val();
 			var model = this.collection.at(index);
+			// now save current line Value 
+			this.currentLineVal = this.collection.at(index).get('name');
+			
 			var html = this.newRowTemplate(model.toJSON());
 			$('input[name=rowRdo]:checked').parents('tr').html(html);
+		} else {
+			alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
 		}
 	},
 	

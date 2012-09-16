@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.bgt;
+package biz.thaicom.eBudgeting.model.pln;
 
 import java.io.Serializable;
 import java.util.List;

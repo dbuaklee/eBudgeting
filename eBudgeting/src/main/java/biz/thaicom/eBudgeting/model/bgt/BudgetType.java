@@ -1,6 +1,7 @@
 package biz.thaicom.eBudgeting.model.bgt;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -12,79 +13,107 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-
 @Entity
-@Table(name="OBJECTIVETYPE")
-@SequenceGenerator(name="OBJECTIVETYPE_SEQ", sequenceName="OBJECTIVETYPE_SEQ", allocationSize=1)
+@Table(name="BUDGETTYPE")
+@SequenceGenerator(name="BUDGETTYPE_SEQ", sequenceName="BUDGETTYPE_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class ObjectiveType implements Serializable {
-	
-	
+public class BudgetType implements Serializable {
+
 	/**
-	 * SerializedUID 
+	 * 
 	 */
-	private static final long serialVersionUID = -1906396844701411875L;
-	
+	private static final long serialVersionUID = -5984004367106256395L;
 	
 	// Field
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="OBJECTIVETYPE_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BUDGETTYPE_SEQ")
 	private Long id;
 	
 	@Basic
 	private String name;
 	
+	@Basic
+	private String code;
+	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="OBJECTIVETYPE_PARENT_ID")
-	private ObjectiveType parent;
+	@JoinColumn(name="BUDGETTYPE_PARENT_ID")
+	private BudgetType parent;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
-	private Set<ObjectiveType> children;
+	@OrderColumn(name="index")
+	private List<BudgetType> children;
 	
 	@Basic
 	private Integer fiscalYear;
 	
-	
-	// Normat get-set
+	@Basic
+	private Integer index;
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public ObjectiveType getParent() {
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public BudgetType getParent() {
 		return parent;
 	}
-	public void setParent(ObjectiveType parent) {
+
+	public void setParent(BudgetType parent) {
 		this.parent = parent;
 	}
-	public Set<ObjectiveType> getChildren() {
+
+	public List<BudgetType> getChildren() {
 		return children;
 	}
-	public void setChildren(Set<ObjectiveType> children) {
+
+	public void setChildren(List<BudgetType> children) {
 		this.children = children;
 	}
+
 	public Integer getFiscalYear() {
 		return fiscalYear;
 	}
+
 	public void setFiscalYear(Integer fiscalYear) {
 		this.fiscalYear = fiscalYear;
 	}
 
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}	
+
+	
 	
 	
 }

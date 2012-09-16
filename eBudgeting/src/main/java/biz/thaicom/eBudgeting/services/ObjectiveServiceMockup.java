@@ -6,12 +6,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import biz.thaicom.eBudgeting.model.bgt.Objective;
-import biz.thaicom.eBudgeting.model.bgt.ObjectiveType;
+import biz.thaicom.eBudgeting.model.pln.Objective;
+import biz.thaicom.eBudgeting.model.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
 
@@ -98,5 +97,33 @@ public class ObjectiveServiceMockup implements ObjectiveService {
 		return objectiveRepository.findRootFiscalYear();
 	}
 
+	@Override
+	public List<Integer> findObjectiveTypeRootFiscalYear() {
+		return objectiveTypeRepository.findRootFiscalYear();
+	}
 
+	@Override
+	public List<ObjectiveType> findObjectiveTypeByFiscalYearEager(
+			Integer fiscalYear, Long parentId) {
+		List<ObjectiveType>  list = objectiveTypeRepository.findByFiscalYearAndParentId(fiscalYear, parentId);
+		
+		// now we'll have to just fill 'em up
+		for(ObjectiveType type : list) {
+			deepInitObjectiveType(type);
+		}
+		
+		return list;
+		
+	}
+
+	private void deepInitObjectiveType(ObjectiveType type) {
+		if(type == null || type.getChildren() == null || type.getChildren().size() == 0) {
+			return;
+		} else {
+			type.getChildren().size();
+			for(ObjectiveType t : type.getChildren()) {
+				deepInitObjectiveType(t);
+			}
+		}
+	}
 }
