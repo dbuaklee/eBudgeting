@@ -1,0 +1,5 @@
+config.datasource.jdbc.url=jdbc:h2:file:///c:/temp/database/eBudgeting;AUTO_SERVER=TRUE
+config.datasource.jdbc.username=sa
+config.datasource.jdbc.password=
+config.datasource.jdbc.driver=org.h2.Driver
+config.hibernate.dialect=org.hibernate.dialect.H2Dialect

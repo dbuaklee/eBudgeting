@@ -13,7 +13,7 @@
 		    <li><a href="#">นโยบายการเก็บข้อมูลส่วนบุคคล</a></li>
 		    <li><a href="#">ข้อมูลการปฎิบัติงานทั่วไป</a></li>
 		    <li><a href="#">มิติการพัฒนาองค์กร</a></li>
-		    <li>Version 0.001-snapshot</li>
+		    <li>${project.version}</li>
 		</ul>
 		</div>
 	</div>

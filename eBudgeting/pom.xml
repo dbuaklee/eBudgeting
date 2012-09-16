@@ -270,6 +270,15 @@
 		</dependency>        
 	</dependencies>
     <build>
+    	<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>spring.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+	    </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-eclipse-plugin</artifactId>
@@ -307,4 +316,25 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+		<profile>
+			<id>dev-environment</id>
+			<activation>
+      			<activeByDefault>true</activeByDefault>
+    		</activation>
+    		<build>
+	    		<filters>
+	      			<filter>src/main/resources/config/development.properties</filter>
+	    		</filters>
+    		</build>
+		</profile>
+		<profile>
+			<id>prod-environment</id>
+			<build>
+				 <filters>
+	      			<filter>src/main/resources/config/production.properties</filter>
+	    		</filters>
+    		</build>
+		</profile>
+	</profiles>
 </project>

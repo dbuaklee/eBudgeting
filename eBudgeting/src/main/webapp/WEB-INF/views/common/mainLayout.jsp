@@ -17,6 +17,8 @@
     <![endif]-->	
 	
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.1/css/bootstrap.css'/>" rel="stylesheet">
+	<link href="<c:url value='/resources/jslibs/jqGrid-4.4.1/css/ui.jqgrid.css'/>" rel="stylesheet">
+	
 	<link href="<c:url value='/resources/css/app.css'/>" rel="stylesheet">
 	<script src="<c:url value='/resources/jslibs/jquery-dev-1.8.1.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/underscore-1.3.3.min.js'/>"></script>
@@ -25,6 +27,9 @@
 	<script src="<c:url value='/resources/jslibs/backbone-relational-0.6.0.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/handlebars-1.0.0.beta.6.js'/>"></script>
 	
+	<script src="<c:url value='/resources/jslibs/jqGrid-4.4.1/js/i18n/grid.locale-th.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jqGrid-4.4.1/js/jquery.jqGrid.src.js'/>"></script>
+		
 	<script src="<c:url value='/resources/js/appUtils.js'/>"></script>
 	<script src="<c:url value='/resources/js/eBudgeting-app.js'/>"></script>
 

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -121,4 +122,26 @@ public class GenericViewController {
 		model.addAttribute("currentPath", url);
 		return "m2f06";
 	}
+	
+	
+	@RequestMapping("/page/m2f11/")
+	public String runder_m2f11(
+			Model model, HttpServletRequest request) {
+		
+		return "m2f11";
+	}
+	
+	@RequestMapping("/page/m2f11/{fiscalYear}")
+	public String runder_m2f11OfYear(
+			@PathVariable Integer fiscalYear,
+			Model model, HttpServletRequest request) {
+		
+		if(fiscalYear == null) {
+			logger.debug("make year selection!");
+		}
+		
+		return "m2f11";
+	}
+
 }
+
