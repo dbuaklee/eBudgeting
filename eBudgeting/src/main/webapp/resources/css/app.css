@@ -33,3 +33,45 @@ div#container-body {
 .table-menu {
 	margin-bottom: 10px;
 }
+
+input[type="checkbox"].checkbox_tree {
+	display: none;
+}
+
+input[type="checkbox"].checkbox_tree + label.main{
+	margin-bottom: 0px;
+	padding-left: 3px;
+	padding-right: 5px;
+	display: inline;
+}
+
+label.expand{
+	background-image:  url("../graphics/minus.png");
+	background-repeat: no-repeat;
+	background-position: 0px 75%;
+	margin-right: 0px;
+	display: inline;
+	padding-left:5px;
+}
+label.expand:hover{
+	background-image:  url("../graphics/minus-over.png");
+}
+
+label.collapse{
+	background-image:  url("../graphics/plus.png");
+	background-repeat: no-repeat;
+	background-position: 0px 75%;
+	margin-right: 0px;
+	display: inline;
+	padding-left:5px;
+}
+label.collapse:hover{
+	background-image:  url("../graphics/plus-over.png");
+}
+
+
+input[type="checkbox"].checkbox_tree + label.main:hover{
+	background: rgba(232, 242, 254, 0.8);
+	border: 1px solid rgb(185,215,252);
+	
+}

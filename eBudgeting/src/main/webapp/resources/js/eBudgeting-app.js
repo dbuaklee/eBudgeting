@@ -1,3 +1,8 @@
+var myApiUrl = '/eBudgeting';
+function appUrl(url) {
+	return myApiUrl  + url; 
+}
+
 // Model
 Objective = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
@@ -35,6 +40,8 @@ ObjectiveType = Backbone.RelationalModel.extend({
 	    }
 	]
 });
+
+// Collection
 
 ObjectiveCollection = Backbone.Collection.extend({
 	model: Objective
