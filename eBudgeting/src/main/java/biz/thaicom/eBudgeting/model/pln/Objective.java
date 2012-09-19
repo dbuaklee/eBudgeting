@@ -128,6 +128,16 @@ public class Objective implements Serializable {
 		}
 		
 	}
+	public void doEagerLoad() {
+		// TODO Auto-generated method stub
+		this.getType().getId();
+		if(this.getChildren() != null && this.getChildren().size() > 0) {
+			// now load all the children
+			for(Objective obj : this.children) {
+				obj.doEagerLoad();
+			}
+		}
+	}
 	
 
 	

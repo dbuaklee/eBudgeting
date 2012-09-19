@@ -140,6 +140,25 @@ public class GenericViewController {
 		
 		return "m2f11";
 	}
+	
+	@RequestMapping("/page/m2f12/")
+	public String runder_m2f12(
+			Model model, HttpServletRequest request) {
+		
+		return "m2f12";
+	}
+	
+	@RequestMapping("/page/m2f12/{fiscalYear}")
+	public String runder_m2f12OfYear(
+			@PathVariable Integer fiscalYear,
+			Model model, HttpServletRequest request) {
+		
+		if(fiscalYear == null) {
+			logger.debug("make year selection!");
+		}
+		
+		return "m2f12";
+	}
 
 }
 

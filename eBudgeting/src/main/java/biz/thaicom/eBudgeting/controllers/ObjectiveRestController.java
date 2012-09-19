@@ -34,7 +34,14 @@ public class ObjectiveRestController {
 	public @ResponseBody List<Objective> getRootObjectiveByFiscalYear(
 			@PathVariable Integer fiscalYear) {
 		
-		return objectiveService.findRootObjectiveByFiscalyear(fiscalYear);
+		return objectiveService.findRootObjectiveByFiscalyear(fiscalYear, false);
+	};
+	
+	@RequestMapping(value="/Objective/rootEager/{fiscalYear}", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getRootEagerObjectiveByFiscalYear(
+			@PathVariable Integer fiscalYear) {
+		
+		return objectiveService.findRootObjectiveByFiscalyear(fiscalYear, true);
 	};
 
 	

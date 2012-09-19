@@ -20,7 +20,7 @@ public interface ObjectiveService {
 	public Objective findParentObjective(Objective objective);
 	public Objective findOjectiveById(Long id);
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id);
-	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear);
+	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad);
 	public List<Integer> findRootFiscalYear();
 	
 	

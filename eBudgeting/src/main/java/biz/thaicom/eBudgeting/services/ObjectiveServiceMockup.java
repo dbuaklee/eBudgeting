@@ -83,11 +83,17 @@ public class ObjectiveServiceMockup implements ObjectiveService {
 	}
 
 	@Override
-	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear) {
+	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad) {
 		
 		List<Objective> list = objectiveRepository.findByParentIdAndFiscalYear(null, fiscalYear);
-		for(Objective objective : list) {
-			objective.doBasicLazyLoad();
+		if(eagerLoad == true) {
+			for(Objective objective: list) {
+				objective.doEagerLoad();
+			}
+		} else {
+			for(Objective objective : list) {
+				objective.doBasicLazyLoad();
+			}
 		}
 		return list;
 	}
