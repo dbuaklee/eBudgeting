@@ -1,17 +1,20 @@
-package biz.thaicom.eBudgeting.controllers;
+package biz.thaicom.eBudgeting.controllers.rest;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import biz.thaicom.eBudgeting.model.pln.ObjectiveType;
-import biz.thaicom.eBudgeting.services.ObjectiveService;
+import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
 public class ObjectiveTypeRestController {
@@ -19,18 +22,26 @@ public class ObjectiveTypeRestController {
 	private static final Logger logger = LoggerFactory.getLogger(ObjectiveTypeRestController.class);
 	
 	@Autowired
-	private ObjectiveService objectiveService;
+	private EntityService entityService;
 	
 	@RequestMapping("/ObjectiveType/root")
 	public @ResponseBody List<Integer> getRootFiscalYear() {
-		return objectiveService.findObjectiveTypeRootFiscalYear();
+		return entityService.findObjectiveTypeRootFiscalYear();
 
 	}
 	
 	@RequestMapping("/ObjectiveType/root/{fiscalYear}")
 	public @ResponseBody List<ObjectiveType> getRootByFiscalYear(
 			@PathVariable Integer fiscalYear) {
-		return objectiveService.findObjectiveTypeByFiscalYearEager(fiscalYear, null);
+		return entityService.findObjectiveTypeByFiscalYearEager(fiscalYear, null);
+		
+	}
+	
+	@ExceptionHandler(value=Exception.class)
+	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {
+		logger.error(e.toString());
+		e.printStackTrace();
+		return "failed";
 		
 	}
 	

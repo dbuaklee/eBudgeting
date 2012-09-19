@@ -59,7 +59,7 @@
 	</bean>
 
 	
-	<bean id="objectiveService" class="biz.thaicom.eBudgeting.services.ObjectiveServiceMockup"/>
+	<bean id="entityService" class="biz.thaicom.eBudgeting.services.EntityJPAService"/>
 	<bean id="databaseSchemaExport" class="biz.thaicom.eBudgeting.repositories.DatabaseSchemaExport"/>
 	
 	<jpa:repositories base-package="biz.thaicom.eBudgeting.repositories"/>

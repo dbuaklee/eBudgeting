@@ -111,6 +111,18 @@ public class BudgetType implements Serializable {
 
 	public void setIndex(Integer index) {
 		this.index = index;
+	}
+
+	public void doEagerLoad() {
+		if(this.getParent() != null)
+			this.getParent().getId();
+		
+		if(this.children != null && this.children.size() > 0) {
+			for(BudgetType b : this.children) {
+				b.doEagerLoad();
+			}
+		}
+		
 	}	
 
 	

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.HandlerMapping;
 
 import biz.thaicom.eBudgeting.model.pln.Objective;
-import biz.thaicom.eBudgeting.services.ObjectiveService;
+import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
 public class GenericViewController {
@@ -27,7 +27,7 @@ public class GenericViewController {
 	public static Logger logger = LoggerFactory.getLogger(GenericViewController.class);
 	
 	@Autowired
-	private ObjectiveService objectiveService;
+	private EntityService entityService;
 	
 	@RequestMapping("/jsp/{jspName}")
 	public String renderJsp(@PathVariable String jspName) {
@@ -109,7 +109,7 @@ public class GenericViewController {
 						// we should just failed here! 
 					}
 					
-					objective = objectiveService.findOjectiveById(nextId);
+					objective = entityService.findOjectiveById(nextId);
 				}
 				
 				

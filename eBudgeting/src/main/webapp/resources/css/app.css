@@ -48,7 +48,7 @@ input[type="checkbox"].checkbox_tree + label.main{
 label.expand{
 	background-image:  url("../graphics/minus.png");
 	background-repeat: no-repeat;
-	background-position: 0px 75%;
+	background-position: 6px 75%;
 	margin-right: 0px;
 	display: inline;
 	padding-left:5px;
@@ -60,7 +60,7 @@ label.expand:hover{
 label.collapse{
 	background-image:  url("../graphics/plus.png");
 	background-repeat: no-repeat;
-	background-position: 0px 75%;
+	background-position: 6px 75%;
 	margin-right: 0px;
 	display: inline;
 	padding-left:5px;

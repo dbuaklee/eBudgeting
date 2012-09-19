@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.controllers;
+package biz.thaicom.eBudgeting.controllers.rest;
 
 import java.util.List;
 
@@ -16,45 +16,45 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 import biz.thaicom.eBudgeting.model.pln.Objective;
-import biz.thaicom.eBudgeting.services.ObjectiveService;
+import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
 public class ObjectiveRestController {
 	private static final Logger logger = LoggerFactory.getLogger(ObjectiveRestController.class);
 	
 	@Autowired
-	private ObjectiveService objectiveService;
+	private EntityService entityService;
 
 	@RequestMapping(value="/Objective/root", method=RequestMethod.GET)
 	public @ResponseBody List<Integer> getRootFiscalYear() {
-		return objectiveService.findRootFiscalYear();
+		return entityService.findRootFiscalYear();
 	}
 	
 	@RequestMapping(value="/Objective/root/{fiscalYear}", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getRootObjectiveByFiscalYear(
 			@PathVariable Integer fiscalYear) {
 		
-		return objectiveService.findRootObjectiveByFiscalyear(fiscalYear, false);
+		return entityService.findRootObjectiveByFiscalyear(fiscalYear, false);
 	};
 	
 	@RequestMapping(value="/Objective/rootEager/{fiscalYear}", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getRootEagerObjectiveByFiscalYear(
 			@PathVariable Integer fiscalYear) {
 		
-		return objectiveService.findRootObjectiveByFiscalyear(fiscalYear, true);
+		return entityService.findRootObjectiveByFiscalyear(fiscalYear, true);
 	};
 
 	
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.GET)
 	public @ResponseBody Objective getObjectiveById(@PathVariable Long id) {
 		logger.debug("id: " + id);
-		return objectiveService.findOjectiveById(id); 
+		return entityService.findOjectiveById(id); 
 	}
 	
 	@RequestMapping(value="/Objective/{id}/children", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getOChildrenObjectiveById(@PathVariable Long id) {
 		logger.debug("id: " + id);
-		List<Objective> list =objectiveService.findObjectiveChildrenByObjectiveId(id);
+		List<Objective> list =entityService.findObjectiveChildrenByObjectiveId(id);
 		logger.debug("children size: " + list.size());
 		for(Objective obj : list) {
 			logger.debug("  -> id : " + obj.getId());

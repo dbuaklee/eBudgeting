@@ -9,21 +9,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import biz.thaicom.eBudgeting.model.bgt.BudgetType;
 import biz.thaicom.eBudgeting.model.pln.Objective;
 import biz.thaicom.eBudgeting.model.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
 
 @Service
 @Transactional
-public class ObjectiveServiceMockup implements ObjectiveService {
-	private static final Logger logger = LoggerFactory.getLogger(ObjectiveServiceMockup.class);
+public class EntityJPAService implements EntityService {
+	private static final Logger logger = LoggerFactory.getLogger(EntityJPAService.class);
 	
 	@Autowired
 	private ObjectiveRepository objectiveRepository;
 	
 	@Autowired
 	private ObjectiveTypeRepository objectiveTypeRepository;
+	
+	@Autowired
+	private BudgetTypeRepository budgetTypeRepository;
 
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
@@ -131,5 +136,18 @@ public class ObjectiveServiceMockup implements ObjectiveService {
 				deepInitObjectiveType(t);
 			}
 		}
+	}
+
+	@Override
+	public BudgetType findeBudgetTyeById(Long id) {
+		return budgetTypeRepository.findOne(id);
+	}
+
+	@Override
+	public BudgetType findeBudgetTyeEagerLoadById(Long id) {
+		BudgetType b = findeBudgetTyeById(id);
+		b.doEagerLoad();
+		
+		return b;
 	}
 }

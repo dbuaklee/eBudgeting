@@ -1,6 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<style type="text/css">
+<!--
+#mainTbl {
+	border-top: 0 none;
+}
+
+#mainTbl th {
+	padding:0;
+	border:0;
+}
+
+td.disable {
+	background-color: #f9f9f9;
+}
+-->
+</style>
+
 <div class="row">
 	<div class="span12">
 		<div id="mainCtr">
@@ -16,17 +33,27 @@
 <table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
 	<thead>
 		<tr>
-			<td width="400"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong></td>
-			<td width="80">งบบุคลากร</td>
-			<td width="80">งบดำเนินงาน</td>
-			<td width="80">งบลงทุน</td>
-			<td width="80">งบอุดหนุน</td>
-			<td width="80">งบรายจ่ายอื่น</td>
+			<th width="400"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong></th>
+			<th width="80">งบบุคลากร</th>
+			<th width="80">งบดำเนินงาน</th>
+			<th width="80">งบลงทุน</th>
+			<th width="80">งบอุดหนุน</th>
+			<th width="80">งบรายจ่ายอื่น</th>
 		</tr>
 	</thead>
 </table>
-<div style="height: 200px; overflow: auto; width:930px">
-<table class="table table-bordered" id="mainTbl" style="width:900px; table-layout:fixed;">
+<div style="height: 400px; overflow: auto; width:920px">
+<table class="table table-bordered" id="mainTbl" style="width:896px; table-layout:fixed;">
+	<thead>
+		<tr>
+			<th class="" style="width: 400px; height: 0px;"></th>
+			<th class="" style="width: 80px; height: 0px;"></th>
+			<th class="" style="width: 80px; height: 0px;"></th>
+			<th class="" style="width: 80px; height: 0px;"></th>
+			<th class="" style="width: 80px; height: 0px;"></th>
+			<th class="" style="width: 80px; height: 0px;"></th>
+		</tr>
+	</thead>
 	<tbody>
 		{{{childrenNodeTpl this 0}}}
 	</tbody>
@@ -36,19 +63,34 @@
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-index="{{this.id}}">
-		<td width="400" style="padding-left:{{this.padding}}px;">
+		<td style="padding-left:{{this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
 			<span>
+					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
-					<label class="expand" for="bullet_{{this.id}}"><img width=5 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
+					<label class="expand" for="bullet_{{this.id}}"><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
+					{{else}}					
+						<img width=8 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/> - 
+					{{/if}}
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">{{this.type.name}} {{this.name}}</label>
 			</span> 
 		</td>
-			<td width="80">0.00 <a href="#" class="btn btn-mini">+</a> <a href="#" class="btn btn-mini">-</a></td>
-			<td width="80">0.00</td>
-			<td width="80">0.00</td>
-			<td width="80">0.00</td>
-			<td width="80">0.00</td>
+			<td class="{{#if this.children}}disable{{/if}}">0.00
+				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			</td>
+			<td class="{{#if this.children}}disable{{/if}}">0.00
+				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			</td>
+
+			<td class="{{#if this.children}}disable{{/if}}">0.00
+				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			</td>
+			<td class="{{#if this.children}}disable{{/if}}">0.00
+				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			</td>
+			<td class="{{#if this.children}}disable{{/if}}">0.00
+				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			</td>
 	</tr>
 	{{{childrenNodeTpl this.children this.level}}}
 </script>
@@ -60,10 +102,6 @@
 			<td>เลือกปีงบประมาณ</td>
 		</tr>
 	</thead>
-</table>
-<div style="height: 200px; overflow: auto; width:100%;">
-<table class="table table-bordered" id="mainTbl">
-<table>
 	<tbody>
 		<tr>
 			<td>{{this}} <a href="./{{this}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
@@ -74,6 +112,7 @@
 </script>
 
 <script id="mainfrmTemplate" type="text/x-handler-template">
+{{debug}}
 <br/>
 <hr/>
 {{this.type.name}} - {{this.name}}
@@ -89,8 +128,6 @@ var pageUrl = "/page/m2f12/";
 var mainTblView  = null;
 var objectiveCollection = null;
 var l = null;
-
-
 
 Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
 	  var out = '';
@@ -143,10 +180,12 @@ $(document).ready(function() {
 			
 			var objective = new Objective();
 			objective.url=appUrl('/Objective/' + collectionIdx);
-			objective.fetch();
+			objective.fetch({success: function(){
+				$('#mainfrm').html(mainFrmTpl(objective.toJSON()));	
+			}});
 			
 			l=objective;
-			$('#mainfrm').html(mainFrmTpl(objective.toJSON()));
+			
 		}
 		
 	});

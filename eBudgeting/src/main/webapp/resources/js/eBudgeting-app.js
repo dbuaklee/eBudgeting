@@ -49,3 +49,7 @@ ObjectiveCollection = Backbone.Collection.extend({
 ObjectiveTypeCollection = Backbone.Collection.extend({
 	model: ObjectiveType
 });
+
+//Handlebars Utils
+
+
