@@ -76,20 +76,20 @@ td.disable {
 			</span> 
 		</td>
 			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
 			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+				 {{#unless this.children}}<br/><a col-id="2" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
 
 			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+				 {{#unless this.children}}<br/><a col-id="3" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
 			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+				 {{#unless this.children}}<br/><a col-id="4" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
 			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a href="#" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+				 {{#unless this.children}}<br/><a col-id="5" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
 	</tr>
 	{{{childrenNodeTpl this.children this.level}}}
@@ -112,14 +112,24 @@ td.disable {
 </script>
 
 <script id="mainfrmTemplate" type="text/x-handler-template">
-{{debug}}
 <br/>
 <hr/>
-{{this.type.name}} - {{this.name}}
 <h4>กรุณากรอกข้อมูลงบประมาณ</h4>
+{{this.type.name}} - {{this.name}}
+</script>
 
+<script id="mainfrmInputTemplate" type="text/x-handler-template">
+<br/>เลือกหมวดงบประมาณ <select>
+	{{#each this.children}}
+		<option>{{this.name}}</option>
+	{{/each}}
+</select>
+<br/>
+ระบุชื่อรายการ <input type="text"/> <br/>
+ระบุจำนวนเงินงบประมาณ <input type="text"/> <br/>
 
-<input type="text"></input> บาท
+<button class="btn btn-primary">บันทึก</button> <button class="btn btn-primary">ยกเลิก</button> 
+
 </script>
 
 
@@ -160,7 +170,7 @@ $(document).ready(function() {
 		
 		events: {
 			"click input[type=checkbox].bullet" : "toggle",
-			"click tr" : "showForm"
+			"click a" : "showForm"
 		},
 		
 		toggle: function(e) {
@@ -175,16 +185,27 @@ $(document).ready(function() {
 		},
 		
 		showForm: function(e) {
-			mainFrmTpl = Handlebars.compile($("#mainfrmTemplate").html())
-			var collectionIdx = $(e.target).parents('tr').attr('data-index')
+			mainFrmTpl = Handlebars.compile($("#mainfrmTemplate").html());
+			mainFrmInputTpl = Handlebars.compile($("#mainfrmInputTemplate").html());
+			var collectionIdx = $(e.target).parents('tr').attr('data-index');
+			var budgetTypeId = $(e.target).attr('col-id');
+			
+			l = e;
 			
 			var objective = new Objective();
+			var budgetType = new BudgetType();
+			budgetType.url=appUrl('/BudgetType/' + budgetTypeId);
 			objective.url=appUrl('/Objective/' + collectionIdx);
 			objective.fetch({success: function(){
-				$('#mainfrm').html(mainFrmTpl(objective.toJSON()));	
+				budgetType.fetch({success: function(){
+					console.log(budgetType.toJSON());
+					
+					$('#mainfrm').html(mainFrmTpl(objective.toJSON()));
+					$('#mainfrm').append(mainFrmInputTpl(budgetType.toJSON()));
+				}});
 			}});
 			
-			l=objective;
+			
 			
 		}
 		

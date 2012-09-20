@@ -41,6 +41,22 @@ ObjectiveType = Backbone.RelationalModel.extend({
 	]
 });
 
+BudgetType = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [
+	    {
+	    	type: Backbone.HasMany,
+	    	key: 'children',
+	    	relatedModel: 'BudgetType',
+	    	collectionType: 'BudgetTypeCollection',
+	    	reverseRelation: {
+	    		type: Backbone.HasOne,
+	    		key: 'parent'
+	    	}
+	    }
+	]
+});
+
 // Collection
 
 ObjectiveCollection = Backbone.Collection.extend({
@@ -48,6 +64,9 @@ ObjectiveCollection = Backbone.Collection.extend({
 });
 ObjectiveTypeCollection = Backbone.Collection.extend({
 	model: ObjectiveType
+});
+BudgetTypeCollection = Backbone.Collection.extend({
+	model: BudgetType
 });
 
 //Handlebars Utils
