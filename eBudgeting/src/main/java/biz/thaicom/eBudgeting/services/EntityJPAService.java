@@ -140,7 +140,9 @@ public class EntityJPAService implements EntityService {
 
 	@Override
 	public BudgetType findeBudgetTyeById(Long id) {
-		return budgetTypeRepository.findOne(id);
+		BudgetType b = budgetTypeRepository.findOne(id);
+		b.doBasicLazyLoad();
+		return b;
 	}
 
 	@Override

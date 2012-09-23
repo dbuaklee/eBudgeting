@@ -54,7 +54,11 @@ BudgetType = Backbone.RelationalModel.extend({
 	    		key: 'parent'
 	    	}
 	    }
-	]
+	],
+	setIdUrl: function(id) {
+		this.url = this.urlRoot + "/" + id;
+	},
+	urlRoot: appUrl('/BudgetType')
 });
 
 // Collection

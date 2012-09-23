@@ -111,25 +111,34 @@ td.disable {
 </div>
 </script>
 
-<script id="mainfrmTemplate" type="text/x-handler-template">
-<br/>
-<hr/>
-<h4>กรุณากรอกข้อมูลงบประมาณ</h4>
-{{this.type.name}} - {{this.name}}
-</script>
-
-<script id="mainfrmInputTemplate" type="text/x-handler-template">
-<br/>เลือกหมวดงบประมาณ <select>
-	{{#each this.children}}
-		<option>{{this.name}}</option>
-	{{/each}}
-</select>
+<script id="proposalInputTemplate" type="text/x-handler-template">
+<div id="proposalInputCtr">
 <br/>
 ระบุชื่อรายการ <input type="text"/> <br/>
 ระบุจำนวนเงินงบประมาณ <input type="text"/> <br/>
 
 <button class="btn btn-primary">บันทึก</button> <button class="btn btn-primary">ยกเลิก</button> 
+</div>
+</script>
 
+
+<script id="mainfrmTemplate" type="text/x-handler-template">
+<br/>
+<hr/>
+<h4>กรุณากรอกข้อมูลงบประมาณ</h4>
+{{this.type.name}} - {{this.name}}
+<div id="budgetSelectionCtr"></div>
+</script>
+
+
+<script id="selectionTemplate" type="text/x-handler-template">
+<select id="budgetType_{{this.id}}">
+	<option value="0">กรุณาเลือกรายการ</option>
+	{{#each this.children}}
+	<option value="{{this.id}}">{{this.name}}</option>
+	{{/each}}
+</select>
+<div></div>
 </script>
 
 
@@ -137,6 +146,7 @@ td.disable {
 var pageUrl = "/page/m2f12/";
 var mainTblView  = null;
 var objectiveCollection = null;
+var budgetTypeSelectionView = null;
 var l = null;
 
 Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
@@ -154,13 +164,74 @@ Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
 	  return out;
 });
 
-$(document).ready(function() {
+
+var BudgetProposalView = Backbone.View.extend({
+	initialize: function(options){
+		if(options != null) {
+			this.el = options.el;
+			this.model = options.model;
+		} 
+		
+	},
+	el: "#budgetSelectionCtr",
+	budgetProposalInputTpl : Handlebars.compile($("#proposalInputTemplate").html()),
+	
+	render: function(){
+		// first clear the siblings select
+		this.$el.nextAll('div').remove();
+		this.$el.empty();
+		this.$el.html(this.budgetProposalInputTpl(this.model.toJSON()));
+	}
+});
+	
+	var BudgetTypeSelectionView = Backbone.View.extend({
+		initialize: function(options){
+			if(options != null) {
+				this.el = options.el;
+				this.model = options.model;
+			} 
+			
+		},
+		el: "#budgetSelectionCtr",
+		selectionTpl : Handlebars.compile($("#selectionTemplate").html()),
+		
+		render: function(){
+			// first clear the siblings select
+			this.$el.nextAll('div').remove();
+			this.$el.empty();
+			this.$el.html(this.selectionTpl(this.model.toJSON()));
+		},
+		
+		events: {
+			"change select:first" : "selectionChange" // only the first one
+		},
+		
+		selectionChange: function(e) {
+			var selectedBudgetTypeId = $(e.target).val();
+			// now try to get this model
+			var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
+			budgetType.fetch({success: _.bind(function(){
+				if(!budgetType.get('children').isEmpty()) {
+					var nextEl = this.$el.selector + " select + div";
+					this.nextBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType, el: nextEl});
+					this.nextBudgetTypeSelectionView.render();
+				} else {
+					// then we should now filling in the proposed budget
+					var nextEl = this.$el.selector + " select + div";
+					this.nextBudgetTypeSelectionView = new BudgetProposalView({model: budgetType, el: nextEl});
+					this.nextBudgetTypeSelectionView.render();
+				}
+			}, this)});
+			
+		}
+	});
+	
 	
 	var MainTblView = Backbone.View.extend({
 		initialize: function(){
 		    this.collection.bind('reset', this.render, this);
+		    _.bindAll(this, 'showForm');
 		},
-
 		el: "#mainCtr",
 		mainTblTpl : Handlebars.compile($("#mainCtrTemplate").html()),
 		
@@ -190,26 +261,27 @@ $(document).ready(function() {
 			var collectionIdx = $(e.target).parents('tr').attr('data-index');
 			var budgetTypeId = $(e.target).attr('col-id');
 			
-			l = e;
+			l = this;
 			
 			var objective = new Objective();
-			var budgetType = new BudgetType();
-			budgetType.url=appUrl('/BudgetType/' + budgetTypeId);
 			objective.url=appUrl('/Objective/' + collectionIdx);
-			objective.fetch({success: function(){
-				budgetType.fetch({success: function(){
-					console.log(budgetType.toJSON());
-					
-					$('#mainfrm').html(mainFrmTpl(objective.toJSON()));
-					$('#mainfrm').append(mainFrmInputTpl(budgetType.toJSON()));
-				}});
-			}});
-			
+			objective.fetch({success: _.bind(function(){
+				$('#mainfrm').html(mainFrmTpl(objective.toJSON()));
+				
+				var budgetType = BudgetType.findOrCreate({id: budgetTypeId});
+				budgetType.fetch({success: _.bind(function(){
+					this.firstBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType});
+					this.firstBudgetTypeSelectionView.render();
+				}, this)});
+			}, this)});
 			
 			
 		}
 		
 	});
+	
+	
+$(document).ready(function() {
 	
 	objectiveCollection = new ObjectiveCollection();
 	objectiveCollection.url = appUrl("/Objective/rootEager");

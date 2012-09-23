@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import biz.thaicom.eBudgeting.model.bgt.BudgetType;
@@ -24,11 +25,17 @@ public class BudgetTypeRestController {
 	@Autowired
 	private EntityService entityService;
 	
-	@Transactional(propagation=Propagation.MANDATORY)
 	@RequestMapping(value="/BudgetType/{id}", method=RequestMethod.GET)
-	public @ResponseBody BudgetType getRootFiscalYear(
-			@PathVariable Long id) {
-		BudgetType b = entityService.findeBudgetTyeEagerLoadById(id);
+	public @ResponseBody BudgetType getBudgetTypeEagerLoad(
+			@PathVariable Long id, 
+			@RequestParam(required=false) Boolean isEagerLoad) {
+		BudgetType b;
+		
+		if(isEagerLoad != null && isEagerLoad == true) 
+			 b = entityService.findeBudgetTyeEagerLoadById(id);
+		else {
+			b = entityService.findeBudgetTyeById(id);
+		}
 		
 		return b;
 	}
