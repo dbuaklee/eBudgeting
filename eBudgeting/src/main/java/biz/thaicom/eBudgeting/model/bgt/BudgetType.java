@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -48,13 +49,14 @@ public class BudgetType implements Serializable {
 	private BudgetType parent;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
-	@OrderColumn(name="index")
+	@OrderColumn(name="IDX")
 	private List<BudgetType> children;
 	
 	@Basic
 	private Integer fiscalYear;
 	
 	@Basic
+	@Column(name="IDX")
 	private Integer index;
 
 	public Long getId() {

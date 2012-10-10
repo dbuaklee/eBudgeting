@@ -34,11 +34,11 @@ td.disable {
 	<thead>
 		<tr>
 			<th width="400"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong></th>
-			<th width="80">งบบุคลากร</th>
-			<th width="80">งบดำเนินงาน</th>
-			<th width="80">งบลงทุน</th>
-			<th width="80">งบอุดหนุน</th>
-			<th width="80">งบรายจ่ายอื่น</th>
+			<th width="80">เป้าหมาย</th>
+			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
+			<th width="80">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
+			<th width="80">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
+			<th width="80">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
 		</tr>
 	</thead>
 </table>
@@ -75,22 +75,39 @@ td.disable {
 					<label class="main" for="item_{{this.id}}">{{this.type.name}} {{this.name}}</label>
 			</span> 
 		</td>
-			<td class="{{#if this.children}}disable{{/if}}">0.00
+			<td class="{{#if this.children}}disable{{/if}}"><span></span>
 				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
-			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a col-id="2" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			<td class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>0.00</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text">0.00</a>
+				{{/if}}
 			</td>
 
-			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a col-id="3" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			<td class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>0.00</span>
+				{{else}}
+					<a href="#" id="editable3-{{this.id}} data-type="text">0.00</a>
+				{{/if}}
 			</td>
-			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a col-id="4" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			<td class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>0.00</span>
+				{{else}}
+					<a href="#" id="editable4-{{this.id}} data-type="text">0.00</a>
+				{{/if}}
 			</td>
-			<td class="{{#if this.children}}disable{{/if}}">0.00
-				 {{#unless this.children}}<br/><a col-id="5" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			<td class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>0.00</span>
+				{{else}}
+					<a href="#" id="editable5-{{this.id}} data-type="text">0.00</a>
+				{{/if}}
 			</td>
+
 	</tr>
 	{{{childrenNodeTpl this.children this.level}}}
 </script>
@@ -164,69 +181,12 @@ Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
 	  return out;
 });
 
-
-var BudgetProposalView = Backbone.View.extend({
-	initialize: function(options){
-		if(options != null) {
-			this.el = options.el;
-			this.model = options.model;
-		} 
-		
-	},
-	el: "#budgetSelectionCtr",
-	budgetProposalInputTpl : Handlebars.compile($("#proposalInputTemplate").html()),
-	
-	render: function(){
-		// first clear the siblings select
-		this.$el.nextAll('div').remove();
-		this.$el.empty();
-		this.$el.html(this.budgetProposalInputTpl(this.model.toJSON()));
-	}
+Handlebars.registerHelper('next', function(val, next) {
+	return val+next;
 });
-	
-	var BudgetTypeSelectionView = Backbone.View.extend({
-		initialize: function(options){
-			if(options != null) {
-				this.el = options.el;
-				this.model = options.model;
-			} 
-			
-		},
-		el: "#budgetSelectionCtr",
-		selectionTpl : Handlebars.compile($("#selectionTemplate").html()),
-		
-		render: function(){
-			// first clear the siblings select
-			this.$el.nextAll('div').remove();
-			this.$el.empty();
-			this.$el.html(this.selectionTpl(this.model.toJSON()));
-		},
-		
-		events: {
-			"change select:first" : "selectionChange" // only the first one
-		},
-		
-		selectionChange: function(e) {
-			var selectedBudgetTypeId = $(e.target).val();
-			// now try to get this model
-			var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
-			budgetType.fetch({success: _.bind(function(){
-				if(!budgetType.get('children').isEmpty()) {
-					var nextEl = this.$el.selector + " select + div";
-					this.nextBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType, el: nextEl});
-					this.nextBudgetTypeSelectionView.render();
-				} else {
-					// then we should now filling in the proposed budget
-					var nextEl = this.$el.selector + " select + div";
-					this.nextBudgetTypeSelectionView = new BudgetProposalView({model: budgetType, el: nextEl});
-					this.nextBudgetTypeSelectionView.render();
-				}
-			}, this)});
-			
-		}
-	});
-	
-	
+
+
+
 	var MainTblView = Backbone.View.extend({
 		initialize: function(){
 		    this.collection.bind('reset', this.render, this);
@@ -237,6 +197,8 @@ var BudgetProposalView = Backbone.View.extend({
 		
 		render: function() {
 			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
+			
+			$('a[id*=editable]').editable()
 		},
 		
 		events: {
@@ -256,25 +218,9 @@ var BudgetProposalView = Backbone.View.extend({
 		},
 		
 		showForm: function(e) {
-			mainFrmTpl = Handlebars.compile($("#mainfrmTemplate").html());
-			mainFrmInputTpl = Handlebars.compile($("#mainfrmInputTemplate").html());
-			var collectionIdx = $(e.target).parents('tr').attr('data-index');
-			var budgetTypeId = $(e.target).attr('col-id');
+			l = e;
 			
-			l = this;
-			
-			var objective = new Objective();
-			objective.url=appUrl('/Objective/' + collectionIdx);
-			objective.fetch({success: _.bind(function(){
-				$('#mainfrm').html(mainFrmTpl(objective.toJSON()));
-				
-				var budgetType = BudgetType.findOrCreate({id: budgetTypeId});
-				budgetType.fetch({success: _.bind(function(){
-					this.firstBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType});
-					this.firstBudgetTypeSelectionView.render();
-				}, this)});
-			}, this)});
-			
+			$(e.target).prevAll('span').popover({title:'show', content:'content!'});
 			
 		}
 		

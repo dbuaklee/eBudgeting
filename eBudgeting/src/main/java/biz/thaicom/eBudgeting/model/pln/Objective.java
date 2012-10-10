@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,6 +45,7 @@ public class Objective implements Serializable {
 	private Integer fiscalYear;
 	
 	@Basic
+	@Column(name="IDX")
 	private Integer index;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -55,7 +57,7 @@ public class Objective implements Serializable {
 	private Objective parent;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
-	@OrderColumn(name="INDEX")
+	@OrderColumn(name="IDX")
 	private List<Objective> children;
 	
 	//Normal Getter/Setter

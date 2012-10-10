@@ -1,5 +1,7 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -32,12 +34,17 @@ public class BudgetTypeRestController {
 		BudgetType b;
 		
 		if(isEagerLoad != null && isEagerLoad == true) 
-			 b = entityService.findeBudgetTyeEagerLoadById(id);
+			 b = entityService.findBudgetTyeEagerLoadById(id);
 		else {
-			b = entityService.findeBudgetTyeById(id);
+			b = entityService.findBudgetTyeById(id);
 		}
 		
 		return b;
+	}
+	
+	@RequestMapping(value="/BudgetType/root", method=RequestMethod.GET)
+	public @ResponseBody List<BudgetType> getRootBudgetType() {
+		return entityService.findRootBudgetType();
 	}
 	
 	

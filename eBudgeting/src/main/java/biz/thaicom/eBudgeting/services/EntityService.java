@@ -27,8 +27,9 @@ public interface EntityService {
 	public List<Integer> findRootFiscalYear();
 	
 	//BudgetType
-	public BudgetType findeBudgetTyeById(Long id);
-	public BudgetType findeBudgetTyeEagerLoadById(Long id);
+	public List<BudgetType> findRootBudgetType();
+	public BudgetType findBudgetTyeById(Long id);
+	public BudgetType findBudgetTyeEagerLoadById(Long id);
 	
 	
 
