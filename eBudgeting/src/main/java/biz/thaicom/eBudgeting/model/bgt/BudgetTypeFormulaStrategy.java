@@ -1,0 +1,96 @@
+package biz.thaicom.eBudgeting.model.bgt;
+
+import java.io.Serializable;
+import java.util.List;
+
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@Entity
+@Table(name="BUDGETTYPEFORMULASTRATEGY")
+@SequenceGenerator(
+		name="BUDGETTYPEFORMULASTRATEGY_SEQ", 
+		sequenceName="BUDGETTYPEFORMULASTRATEGY_SEQ", allocationSize=1)
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+public class BudgetTypeFormulaStrategy  implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1200551194620169196L;
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BUDGETTYPEFORMULASTRATEGY_SEQ")
+	private Long id;
+	
+	@Basic
+	private Integer fiscalYear;
+	
+	@ManyToOne
+	@JoinColumn(name="BUDGETTYPE_ID")
+	private BudgetType budgetType;
+	
+	@Basic
+	private Integer numberColumn;
+
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="strategy")
+	@OrderColumn(name="IDX")
+	private List<BudgetTypeFormulaColumn> formulaColumns;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getFiscalYear() {
+		return fiscalYear;
+	}
+
+	public void setFiscalYear(Integer fiscalYear) {
+		this.fiscalYear = fiscalYear;
+	}
+
+	public BudgetType getBudgetType() {
+		return budgetType;
+	}
+
+	public void setBudgetType(BudgetType budgetType) {
+		this.budgetType = budgetType;
+	}
+
+	public Integer getNumberColumn() {
+		return numberColumn;
+	}
+
+	public void setNumberColumn(Integer numberColumn) {
+		this.numberColumn = numberColumn;
+	}
+
+	public List<BudgetTypeFormulaColumn> getFormulaColumns() {
+		return formulaColumns;
+	}
+
+	public void setFormulaColumns(List<BudgetTypeFormulaColumn> formulaColumns) {
+		this.formulaColumns = formulaColumns;
+	}
+
+	
+
+}
+

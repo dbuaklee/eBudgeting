@@ -2,6 +2,7 @@ package biz.thaicom.eBudgeting.controllers.rest;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -34,10 +35,12 @@ public class BudgetTypeRestController {
 		BudgetType b;
 		
 		if(isEagerLoad != null && isEagerLoad == true) 
-			 b = entityService.findBudgetTyeEagerLoadById(id);
+			 b = entityService.findBudgetTypeEagerLoadById(id);
 		else {
-			b = entityService.findBudgetTyeById(id);
+			b = entityService.findBudgetTypeById(id);
 		}
+		
+		if(b==null) throw new EntityNotFoundException("no BudgetType row with id " + id);
 		
 		return b;
 	}
@@ -52,7 +55,7 @@ public class BudgetTypeRestController {
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {
 		logger.error(e.toString());
 		e.printStackTrace();
-		return "failed" + e.toString();
+		return "failed: " + e.toString();
 		
 	}
 	

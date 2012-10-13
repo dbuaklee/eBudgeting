@@ -18,8 +18,8 @@ import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
 
 @Service
 @Transactional
-public class EntityJPAService implements EntityService {
-	private static final Logger logger = LoggerFactory.getLogger(EntityJPAService.class);
+public class EntityServiceJPA implements EntityService {
+	private static final Logger logger = LoggerFactory.getLogger(EntityServiceJPA.class);
 	
 	@Autowired
 	private ObjectiveRepository objectiveRepository;
@@ -144,17 +144,26 @@ public class EntityJPAService implements EntityService {
 	}
 	
 	@Override
-	public BudgetType findBudgetTyeById(Long id) {
+	public BudgetType findBudgetTypeById(Long id) {
 		BudgetType b = budgetTypeRepository.findOne(id);
-		b.doBasicLazyLoad();
+		if(b!=null) {
+			b.doBasicLazyLoad();
+		}
 		return b;
 	}
 
 	@Override
-	public BudgetType findBudgetTyeEagerLoadById(Long id) {
-		BudgetType b = findBudgetTyeById(id);
+	public BudgetType findBudgetTypeEagerLoadById(Long id) {
+		BudgetType b = findBudgetTypeById(id);
 		b.doEagerLoad();
 		
 		return b;
+	}
+
+	@Override
+	public List<Integer> findFiscalYearBudgetType() {
+		List<Integer> fiscalYears = budgetTypeRepository.findFiscalYears();
+		
+		return fiscalYears;
 	}
 }

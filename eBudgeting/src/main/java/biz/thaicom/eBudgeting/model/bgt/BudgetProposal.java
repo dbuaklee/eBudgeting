@@ -45,6 +45,8 @@ public class BudgetProposal implements Serializable {
 	@Basic
 	private String name;
 	
+
+	
 	@Basic
 	private Long amountRequest;
 	
@@ -57,6 +59,9 @@ public class BudgetProposal implements Serializable {
 	private Objective forObjective;
 	
 	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
-	private List<AllocationRecord> allocationRecords;
+	private List<AllocationRecord> allocationRecords;	
 
+	@OneToMany(mappedBy="column", fetch=FetchType.LAZY)
+	private List<BudgetTypeRequestColumn> requestColumns;
+	
 }

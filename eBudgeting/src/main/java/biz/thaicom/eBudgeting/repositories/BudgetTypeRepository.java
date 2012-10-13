@@ -15,4 +15,9 @@ public interface BudgetTypeRepository extends
 			"WHERE parent is null ")
 	List<BudgetType> findRootBudgetType();
 
+	@Query("SELECT DISTINCT budgetType.fiscalYear " +
+			"FROM BudgetType budgetType " +
+			"ORDER BY budgetType.fiscalYear asc")
+	List<Integer> findFiscalYears();
+
 }

@@ -16,8 +16,10 @@ import org.springframework.ui.Model;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.HandlerMapping;
 
+import biz.thaicom.eBudgeting.model.bgt.BudgetType;
 import biz.thaicom.eBudgeting.model.pln.Objective;
 import biz.thaicom.eBudgeting.services.EntityService;
 
@@ -25,6 +27,8 @@ import biz.thaicom.eBudgeting.services.EntityService;
 public class GenericViewController {
 
 	public static Logger logger = LoggerFactory.getLogger(GenericViewController.class);
+	
+	private static final String webAppcontext = "eBudgeting";
 	
 	@Autowired
 	private EntityService entityService;
@@ -35,6 +39,47 @@ public class GenericViewController {
 		return jspName;
 	}
 	
+	@RequestMapping("/page/m2f13/")
+	public String render_m2f13_fiscalYear(Model model) {
+		
+		List<Integer> fiscalYears = entityService.findRootFiscalYear();
+		
+		if(logger.isDebugEnabled()) {
+			for(Integer fiscalYear : fiscalYears) {
+				logger.debug("found fiscalYear : " + fiscalYear.toString());
+			}
+		}
+		model.addAttribute("breadcrumb", false);
+		model.addAttribute("fiscalYears", fiscalYears);
+		
+		return "m2f13";
+	}
+	
+	@RequestMapping("/page/m2f13/{fiscalYear}/{budgetTypeId}")
+	public String render_m2f13(Model model, HttpServletRequest request,
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long budgetTypeId) { 
+		
+		logger.debug("fiscalYear = {}, budgetTypeId = {}", fiscalYear, budgetTypeId);
+		
+		if(budgetTypeId == null) 
+			budgetTypeId = 0L;
+		
+		// now we just get the hold of this budgetType
+		BudgetType budgetType = entityService.findBudgetTypeById(budgetTypeId);
+		
+		if(budgetType != null) {
+			logger.debug("BudgetType found!");
+			
+		} else {
+			logger.debug("BudgetType NOT found!");
+			// go to the root one!
+			
+		}
+		
+		return "m2f13";
+	}
+	
 	@RequestMapping("/page/m2f06/**")
 	public String render_m2f06(Model model, HttpServletRequest request) {
 		String pattern = (String)
@@ -43,7 +88,7 @@ public class GenericViewController {
 		String searchTerm = new AntPathMatcher().extractPathWithinPattern(pattern, 
 		        request.getServletPath());
 
-		String url = "/eBudgeting/page/m2f06/";
+		String url = webAppcontext +  "/page/m2f06/";
 		List<Map<String,String>> breadcrumb = new ArrayList<Map<String,String>>();
 		
 		logger.debug(searchTerm);
