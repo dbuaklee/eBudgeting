@@ -63,7 +63,7 @@ BudgetType = Backbone.RelationalModel.extend({
 
 BudgetTypeFormulaColumn = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
-	urlRoot: appUrl('/BudgetTypeFormula')
+	urlRoot: appUrl('/BudgetTypeFormulaColumn')
 });
 
 BudgetTypeFormulaStrategy = Backbone.RelationalModel.extend({
@@ -75,7 +75,8 @@ BudgetTypeFormulaStrategy = Backbone.RelationalModel.extend({
 	    	relatedModel: 'BudgetTypeFormulaColumn',
 	    	reversRelation: {
 	    		type: Backbone.HasOne,
-	    		key: 'strategy'
+	    		key: 'strategy',
+	    		includeInJSON:  false
 	    	}
 	    	
 	    }

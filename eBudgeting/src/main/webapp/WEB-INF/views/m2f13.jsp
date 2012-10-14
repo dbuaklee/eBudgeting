@@ -30,8 +30,7 @@
 				
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="cancelBtn">Cancel</a> 
-				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+				<a href="#"	class="btn btn-primary" id="backBtn">กลับหน้าหลัก</a>
 			</div>
 		</div>
 
@@ -88,7 +87,7 @@
 <script id="formulaColumnFormTemplate"
 	type="text/x-handlebars-template">
 <form id="addFormulaForm" {{#unless columnName}}newForm="true"{{/unless}}
-	{{#if cid}}data-cid="{{cid}}"{{/if}} {{#if id}}data-id="{{id}}"{{/if}}>
+	{{#if id}}data-id="{{id}}"{{/if}}>
 		<label>ชื่อรายการ</label>
 		<input type="text" name="columnName" value="{{columnName}}"/>
 		<label class="checkbox">หน่วยขอตั้งเป็นผู้ระบุจำนวน/งบประมาณ
@@ -118,8 +117,8 @@
 
 <script id="formulaTemplate" type="text/x-handlebars-template">
 {{#each this}}
-	<li data-id={{id}}> <button class='btn btn-mini deleteFormula'>ลบ</button>{{name}} = {{{formulaLine formulaColumns}}} 
-		<button class='btn btn-mini editFormulaLineBtn'>แก้ไข</button><br/></li>
+	<li data-id={{id}}> <button class='btn btn-mini deleteFormula'>ลบ</button>{{name}} = {{{formulaLine formulaColumns false}}} 
+	</li>
 {{/each}}
 </script>
 
@@ -166,6 +165,13 @@ Handlebars.registerPartial("formulaTpl", $("#formulaTemplate").html());
 Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 	
 	var s = "";
+	if(editForm == false) {
+		s = s+ "<a class='editSpan editFormulaLineBtn' href='#'>";
+		
+		if(formulaColumns == null || formulaColumns.length == 0) {
+			s =	s+"เพิ่มรายการคำนวณ";
+		}
+	}
 	
 	if(formulaColumns != null) {
 		for(var i=0; i < formulaColumns.length; i++) {
@@ -175,13 +181,13 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 			}
 			
 			if(editForm == true) {
-				s = s + "<a class='editSpan' href='#' data-id="+ formulaColumns[i].id + " data-cid="+ formulaColumns[i].cid +">";
+				s = s + "<a class='editSpan' href='#' data-id="+ formulaColumns[i].id +">"; 
 			}
 			s = s + formulaColumns[i].columnName;
 			if(formulaColumns[i].isFixed) {
-				s = s + "(*)";
+				s = s + "(??? " + formulaColumns[i].unitName  + ")";
 			} else {
-				s = s + "("+ formulaColumns[i].value +")";
+				s = s + "("+ addCommas(formulaColumns[i].value) + " " + formulaColumns[i].unitName  + ")";
 			}
 			if(editForm == true) {
 				s = s + "</a>";
@@ -193,8 +199,10 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 			s = s + " X ";
 		}
 		s = s + "<a href='#' class='editSpan'>New</a>";
+	}else {
+		s += "</a>";	
 	}
-	s += "";
+	
 	
 	return s;
 });
@@ -205,10 +213,11 @@ $(document).ready(function() {
 	
 	var FormularLineModalView = Backbone.View.extend({
 		initialize: function() {
-			_.bindAll(this,'cancel');
+			_.bindAll(this,'back');
 			_.bindAll(this,'isFixedChanged');
 			_.bindAll(this,'addFormulaColumn');
 			_.bindAll(this,'editFormulaColumn');
+			_.bindAll(this,'deleteFormulaColumn');
 			_.bindAll(this,'renderFormulaLineWith');
 			
 			
@@ -222,12 +231,12 @@ $(document).ready(function() {
 		collection: new BudgetTypeFormulaColumnCollection(),
 		
 		events: {
-			"click #cancelBtn" : "cancel",
-			"click #saveBtn" : "saveFormulaColumn",
+			
+			"click #backBtn" : "back",
 			"change input[name=isFixed]" : "isFixedChanged",
 			"click .addFormulaColumnBtn" : "addFormulaColumn",
 			"click .cancelFormulaColumnBtn" : "cancelFormulaColumn",
-			
+			"click .deleteFormulaColumnBtn" : "deleteFormulaColumn",
 			"click .editSpan" : "editFormulaColumn"
 		},
 		
@@ -241,20 +250,26 @@ $(document).ready(function() {
 			this.$el.modal({show: true, backdrop: 'static', keyboard: false});
 		},
 		
-		renderFormulaLineWith: function(formulaStrategy){
+		renderFormulaLineWith: function(formulaStrategy, budgetType){
 			if(formulaStrategy != null) {
 				this.currentStrategy = formulaStrategy;
-				if(this.currentStrategy.get('formulaColumns') != null) {
-					this.collection = new BudgetTypeFormulaColumnCollection(this.currentStrategy.get('formulaColumns').toJSON());
-				} else {
-					this.collection = new BudgetTypeFormulaColumnCollection();
-				}
+				this.currentBudgetType = budgetType;
+				
+				this.collection = this.currentStrategy.get('formulaColumns');
+
 				this.collection.bind('add', this.addNewFormulaColumn, this);
 				this.render();
 			}
 		},
 		
-		cancel: function() {
+		back: function(e) {
+			if(this.currentStrategy.get('formulaColumns') == null) {
+				this.currentStrategy.set('formulaColumns', this.collection);
+			}
+			
+			
+			this.currentBudgetType.trigger('changeFormula', this.currentBudgetType);
+			
 			// nothing to recover just hide!
 			this.$el.modal('hide');
 		},
@@ -266,13 +281,26 @@ $(document).ready(function() {
 			} else {
 				inputValue.removeAttr('disabled');
 			}
-			console.log(this.$el.find('input[name=value]').attr('disabled'));
+			
+		},
+		
+		deleteFormulaColumn: function(e) {
+			var form = this.$el.find('form');
+			var formulaColumnId = form.attr('data-id');
+			var formulaColumn = this.collection.get(formulaColumnId);
+			
+			
+			//now we'll go to destroy it!
+			this.collection.remove(formulaColumn);
+			formulaColumn.destroy();
+			
+			this.render();
+			// reindexing!?
+			return false;
 		},
 		
 		addFormulaColumn : function(e) {
-			
 			// add this new Formula into formulaStrategy
-			
 			var form = this.$el.find('form');
 			var newForm = form.attr("newForm");
 			if(newForm) {
@@ -283,23 +311,41 @@ $(document).ready(function() {
 					unitName: form.find('input[name=unitName]').val()
 				});
 				
-				formulaColumn.set('cid', formulaColumn.cid);
-				this.collection.add(formulaColumn);
+				//formulaColumn.set('cid', formulaColumn.cid);
+				// now try to add this to the database
+				formulaColumn.set('index', this.collection.length);
+				formulaColumn.set('strategy', {id: this.currentStrategy.get('id')});
+				
+				formulaColumn.save(null, {
+					success: _.bind(function(model, response) {
+						this.collection.add(model);
+						
+						this.render();
+						
+					},this)
+				});
 			} else {
 				var formulaColumnId = form.attr('data-id');
-				var formulaColumnCid = form.attr('data-cid');
-				
 				var formulaColumn = this.collection.get(formulaColumnId);
-				if(formulaColumn == null) {
-					formulaColumn = this.collection.getByCid(formulaColumnCid);
-				}
 				
 				formulaColumn.set('columnName', form.find('input[name=columnName]').val());
 				formulaColumn.set('isFixed', form.find('input[name=isFixed]').attr('checked')=='checked'?true:false);
 				formulaColumn.set('value', form.find('input[name=value]').val());
 				formulaColumn.set('unitName',form.find('input[name=unitName]').val());
 				
-				this.render();
+				//temporarily fixed the relation isuue
+				formulaColumn.set('strategy', {id: this.currentStrategy.get('id')});
+				
+				
+				formulaColumn.save(null, {
+					success: _.bind(function(model, response) {
+						
+						//put back strategy 
+						formulaColumn.set('strategy', this.currentStrategy.get('id'));
+						
+						this.render();
+					},this)
+				});
 			}
 			return false;
 			
@@ -312,13 +358,8 @@ $(document).ready(function() {
 			this.render();
 		},
 		
-		saveFormulaColumn: function(e) {
-			this.collection.save();
-		},
-		
 		editFormulaColumn : function(e) {
 			var formulaColumnId = $(e.target).attr('data-id');
-			var formulaColumnCid = $(e.target).attr('data-cid');
 			if(formulaColumnId == null) {
 				//new Column!
 				var formHtml = this.formulaColumnFormTemplate(new BudgetTypeFormulaColumn());
@@ -326,9 +367,6 @@ $(document).ready(function() {
 			} else {
 				// now find the model 
 				var formulaColumn = this.collection.get(formulaColumnId);
-				if(formulaColumn == null) {
-					formulaColumn = this.collection.getByCid(formulaColumnCid);
-				}
 				
 				// now we should have formulColumn to be update!
 				var formHtml = this.formulaColumnFormTemplate(formulaColumn.toJSON());
@@ -386,12 +424,16 @@ $(document).ready(function() {
 			formulaStrategy.set('index', this.budgetType.get('formulaStrategy').length);
 			formulaStrategy.save(null, {
 				success:_.bind(function(data){
-					// now we must put this back to where it belong!
-					this.budgetType.get('formulaStrategy').push(data.toJSON());
 					
 					//now put back budgetType
-					formulaStrategy.set('budgetType', this.budgetType);
+					formulaStrategy.set('budgetType', this.budgetType.get('id'));
 					
+					// and initialize collection;
+					formulaStrategy.set('formulaColumns', new BudgetTypeFormulaColumnCollection());
+					
+					
+					
+					this.budgetType.get('formulaStrategy').add(formulaStrategy);
 					this.budgetType.trigger('changeFormula', this.budgetType);
 					this.$el.modal('hide');
 				},this)
@@ -439,11 +481,13 @@ $(document).ready(function() {
 		},
 		
 		editFormulaLine : function(e) {
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
 			
 			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
 			var currentFormula = BudgetTypeFormulaStrategy.findOrCreate(currentFormulaId);
 
-			this.formularLineModalView.renderFormulaLineWith(currentFormula);
+			this.formularLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
 		},
 		
 		deleteFormula: function(e) {
@@ -489,7 +533,8 @@ $(document).ready(function() {
 					success: function(data) {
 						child.set('formulaStrategy',strategyCollection);
 						child.trigger('changeFormula', child);
-				}});				
+					}
+				});
 			
 			});
 			

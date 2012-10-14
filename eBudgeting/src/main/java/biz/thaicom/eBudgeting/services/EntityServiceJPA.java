@@ -221,7 +221,7 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public List<BudgetTypeFormulaStrategy> findBudgetTypeFormulaStrategyByfiscalYearAndBudgetTypeId(
 			Integer fiscalYear, Long budgetTypeId) {
-		List<BudgetTypeFormulaStrategy> list = budgetTypeFormulaStrategyRepository.findByfiscalYearAndBudgetType_id(fiscalYear, budgetTypeId);
+		List<BudgetTypeFormulaStrategy> list = budgetTypeFormulaStrategyRepository.findByfiscalYearAndBudgetType_idOrderByIndexAsc(fiscalYear, budgetTypeId);
 		for(BudgetTypeFormulaStrategy strategy : list) {
 			strategy.getFormulaColumns().size();
 		}
@@ -230,8 +230,8 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public void saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy) {
-		budgetTypeFormulaStrategyRepository.save(strategy);
+	public BudgetTypeFormulaStrategy saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy) {
+		return budgetTypeFormulaStrategyRepository.save(strategy);
 		
 	}
 
@@ -239,19 +239,45 @@ public class EntityServiceJPA implements EntityService {
 	public void deleteBudgetTypeFormulaStrategy(Long id) {
 		// we'll have to update the rest of index !
 		// so get the one we want to delete first 
-		
+		BudgetTypeFormulaStrategy strategy = budgetTypeFormulaStrategyRepository.findOne(id);
 		
 		budgetTypeFormulaStrategyRepository.delete(id);
+		budgetTypeFormulaStrategyRepository.reIndex(strategy.getIndex(), 
+				strategy.getFiscalYear(), strategy.getBudgetType());
 	}
 
 	@Override
 	public void deleteBudgetTypeFormulaColumn(Long id) {
+		// get this one first
+		BudgetTypeFormulaColumn column = budgetTypeFormulaColumnRepository.findOne(id);
 		budgetTypeFormulaColumnRepository.delete(id);
+		budgetTypeFormulaColumnRepository.reIndex(column.getIndex(), column.getStrategy());
 	}
 
 	@Override
-	public void saveBudgetTypeFormulaColumn(
+	public BudgetTypeFormulaColumn saveBudgetTypeFormulaColumn(
 			BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
-		budgetTypeFormulaColumnRepository.save(budgetTypeFormulaColumn);
+		return budgetTypeFormulaColumnRepository.save(budgetTypeFormulaColumn);
+	}
+
+	@Override
+	public BudgetTypeFormulaColumn updateBudgetTypeFormulaColumn(
+			BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
+		// so we'll get BudgetTypeFormulaColumn First
+		BudgetTypeFormulaColumn columnFromJpa = budgetTypeFormulaColumnRepository.findOne(
+				budgetTypeFormulaColumn.getId());
+		
+		// now update this columnFromJpa
+		columnFromJpa.setColumnName(budgetTypeFormulaColumn.getColumnName());
+		columnFromJpa.setIsFixed(budgetTypeFormulaColumn.getIsFixed());
+		columnFromJpa.setUnitName(budgetTypeFormulaColumn.getUnitName());
+		columnFromJpa.setValue(budgetTypeFormulaColumn.getValue());
+		
+		
+		// and we can save now
+		budgetTypeFormulaColumnRepository.save(columnFromJpa);
+		
+		// and happily return 
+		return columnFromJpa;
 	}
 }

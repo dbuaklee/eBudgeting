@@ -60,10 +60,19 @@ public class BudgetTypeRestController {
 	//BudgetTypeFormulaColumn
 	@RequestMapping(value="/BudgetTypeFormulaColumn", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public @ResponseBody String createBudgetTypeFormulaColumn(
+	public @ResponseBody BudgetTypeFormulaColumn createBudgetTypeFormulaColumn(
 			@RequestBody BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
-		entityService.saveBudgetTypeFormulaColumn(budgetTypeFormulaColumn);
-		return "OK";
+		return entityService.saveBudgetTypeFormulaColumn(budgetTypeFormulaColumn);
+		
+	}
+	
+	@RequestMapping(value="/BudgetTypeFormulaColumn/{id}", method=RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.OK)
+	public @ResponseBody BudgetTypeFormulaColumn updateBudgetTypeFormulaColumn(
+			@PathVariable Long id,
+			@RequestBody BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
+		return entityService.updateBudgetTypeFormulaColumn(budgetTypeFormulaColumn);
+		
 	}
 	
 	
@@ -106,11 +115,10 @@ public class BudgetTypeRestController {
 	
 	@RequestMapping(value="/BudgetTypeFormulaStrategy", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public @ResponseBody String createBudgetTypeFormulaStrategy(
+	public @ResponseBody BudgetTypeFormulaStrategy createBudgetTypeFormulaStrategy(
 			@RequestBody BudgetTypeFormulaStrategy strategy) {
-		entityService.saveBudgetTypeFormulaStrategy(strategy);
-		return "OK";
-	}
+		return entityService.saveBudgetTypeFormulaStrategy(strategy);
+		}
 	
 	
 	@ExceptionHandler(value=EntityNotFoundException.class)

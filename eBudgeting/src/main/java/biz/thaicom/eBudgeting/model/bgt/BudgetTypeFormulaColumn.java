@@ -17,11 +17,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="BUDGETTYPEFORMULACOLUMN")
-@SequenceGenerator(
-		name="BUDGETTYPEFORMULACOLUMN_SEQ", 
-		sequenceName="BUDGETTYPEFORMULACOLUMN_SEQ", allocationSize=1)
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+@Table(name = "BUDGETTYPEFORMULACOLUMN")
+@SequenceGenerator(name = "BUDGETTYPEFORMULACOLUMN_SEQ", sequenceName = "BUDGETTYPEFORMULACOLUMN_SEQ", allocationSize = 1)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BudgetTypeFormulaColumn implements Serializable {
 
 	/**
@@ -30,26 +28,26 @@ public class BudgetTypeFormulaColumn implements Serializable {
 	private static final long serialVersionUID = -884672569445236675L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BUDGETTYPEFORMULACOLUMN_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BUDGETTYPEFORMULACOLUMN_SEQ")
 	private Long id;
 
 	@Basic
-	@Column(name="IDX")
+	@Column(name = "IDX")
 	private Integer index;
 
 	@ManyToOne
-	@JoinColumn(name="BUDGETTYPEFORMULASTRATEGY_ID")
+	@JoinColumn(name = "BUDGETTYPEFORMULASTRATEGY_ID")
 	private BudgetTypeFormulaStrategy strategy;
-	
+
 	@Basic
 	private String columnName;
-	
+
 	@Basic
 	private String unitName;
-	
+
 	@Basic
 	private Boolean isFixed;
-	
+
 	@Basic
 	private Long value;
 
@@ -108,6 +106,5 @@ public class BudgetTypeFormulaColumn implements Serializable {
 	public void setValue(Long value) {
 		this.value = value;
 	}
-	
-	
+
 }

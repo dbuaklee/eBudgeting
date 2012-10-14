@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -54,7 +57,8 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 	@Column(name="IDX")
 	private Integer index;
 
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="strategy")
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="strategy",
+			cascade=CascadeType.REMOVE)
 	@OrderColumn(name="IDX")
 	private List<BudgetTypeFormulaColumn> formulaColumns;
 

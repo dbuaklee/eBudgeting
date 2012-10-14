@@ -41,15 +41,16 @@ public interface EntityService {
 	//BudgetTypeFormulaStrategy
 	public List<BudgetTypeFormulaStrategy> findBudgetTypeFormulaStrategyByfiscalYearAndBudgetTypeId(
 			Integer fiscalYear, Long budgetTypeId);
-	public void saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy);
+	public BudgetTypeFormulaStrategy saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy);
 	public void deleteBudgetTypeFormulaStrategy(Long id);
 	
 	
 	//BudgetTypeFormulaColumn
 	public void deleteBudgetTypeFormulaColumn(Long id);
-	public void saveBudgetTypeFormulaColumn(
+	public BudgetTypeFormulaColumn saveBudgetTypeFormulaColumn(
 			BudgetTypeFormulaColumn budgetTypeFormulaColumn);
-	
+	public BudgetTypeFormulaColumn updateBudgetTypeFormulaColumn(
+			BudgetTypeFormulaColumn budgetTypeFormulaColumn);
 	
 
 	
