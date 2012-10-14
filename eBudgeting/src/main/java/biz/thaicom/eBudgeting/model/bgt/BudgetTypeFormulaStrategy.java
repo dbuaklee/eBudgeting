@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -38,13 +39,20 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 	
 	@Basic
 	private Integer fiscalYear;
+
+	@Basic
+	private String name;
 	
 	@ManyToOne
 	@JoinColumn(name="BUDGETTYPE_ID")
 	private BudgetType budgetType;
 	
 	@Basic
-	private Integer numberColumn;
+	private Integer numberColumns;
+	
+	@Basic
+	@Column(name="IDX")
+	private Integer index;
 
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="strategy")
 	@OrderColumn(name="IDX")
@@ -74,12 +82,12 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 		this.budgetType = budgetType;
 	}
 
-	public Integer getNumberColumn() {
-		return numberColumn;
+	public Integer getNumberColumns() {
+		return numberColumns;
 	}
 
-	public void setNumberColumn(Integer numberColumn) {
-		this.numberColumn = numberColumn;
+	public void setNumberColumns(Integer numberColumns) {
+		this.numberColumns = numberColumns;
 	}
 
 	public List<BudgetTypeFormulaColumn> getFormulaColumns() {
@@ -90,6 +98,23 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 		this.formulaColumns = formulaColumns;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+	
 	
 
 }

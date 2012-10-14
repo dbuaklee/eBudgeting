@@ -69,9 +69,18 @@ label.collapse:hover{
 	background-image:  url("../graphics/plus-over.png");
 }
 
+a.editSpan{
+	border-bottom: 1px dashed #0088CC;
+    text-decoration: none;
+}
+
 
 input[type="checkbox"].checkbox_tree + label.main:hover{
 	background: rgba(232, 242, 254, 0.8);
 	border: 1px solid rgb(185,215,252);
 	
+}
+
+.smallTxt {
+	font-size: small;
 }

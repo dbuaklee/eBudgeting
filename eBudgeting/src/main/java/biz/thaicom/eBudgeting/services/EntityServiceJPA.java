@@ -1,17 +1,25 @@
 package biz.thaicom.eBudgeting.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import biz.thaicom.eBudgeting.model.bgt.BudgetType;
+import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaColumn;
+import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaStrategy;
 import biz.thaicom.eBudgeting.model.pln.Objective;
 import biz.thaicom.eBudgeting.model.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.model.webui.Breadcrumb;
+import biz.thaicom.eBudgeting.repositories.BudgetTypeFormulaColumnRepository;
+import biz.thaicom.eBudgeting.repositories.BudgetTypeFormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
@@ -29,6 +37,12 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private BudgetTypeRepository budgetTypeRepository;
+	
+	@Autowired
+	private BudgetTypeFormulaStrategyRepository budgetTypeFormulaStrategyRepository;
+	
+	@Autowired
+	private BudgetTypeFormulaColumnRepository budgetTypeFormulaColumnRepository;
 
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
@@ -165,5 +179,79 @@ public class EntityServiceJPA implements EntityService {
 		List<Integer> fiscalYears = budgetTypeRepository.findFiscalYears();
 		
 		return fiscalYears;
+	}
+
+	@Override
+	@Transactional (propagation = Propagation.REQUIRED, readOnly = true)
+	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
+			BudgetType budgetType) {
+		if(budgetType == null) {
+			return null;
+		}
+		
+		
+		BudgetType current = budgetTypeRepository.findOne(budgetType.getId());
+		
+		// now we just have to init proxy
+		
+		
+		Stack<Breadcrumb> stack = new Stack<Breadcrumb>();
+		
+		
+		
+		while(current != null) {
+			Breadcrumb b = new Breadcrumb();
+			b.setUrl(prefix + "/" + current.getId() + "/");
+			b.setValue(current.getName());
+			
+			stack.push(b);
+			
+			current = current.getParent();
+		}
+		
+		List<Breadcrumb> list = new ArrayList<Breadcrumb>();
+		
+		while (stack.size() > 0) {
+			list.add(stack.pop());
+		}
+		
+		return list;
+	}
+
+	@Override
+	public List<BudgetTypeFormulaStrategy> findBudgetTypeFormulaStrategyByfiscalYearAndBudgetTypeId(
+			Integer fiscalYear, Long budgetTypeId) {
+		List<BudgetTypeFormulaStrategy> list = budgetTypeFormulaStrategyRepository.findByfiscalYearAndBudgetType_id(fiscalYear, budgetTypeId);
+		for(BudgetTypeFormulaStrategy strategy : list) {
+			strategy.getFormulaColumns().size();
+		}
+		
+		return list;
+	}
+
+	@Override
+	public void saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy) {
+		budgetTypeFormulaStrategyRepository.save(strategy);
+		
+	}
+
+	@Override
+	public void deleteBudgetTypeFormulaStrategy(Long id) {
+		// we'll have to update the rest of index !
+		// so get the one we want to delete first 
+		
+		
+		budgetTypeFormulaStrategyRepository.delete(id);
+	}
+
+	@Override
+	public void deleteBudgetTypeFormulaColumn(Long id) {
+		budgetTypeFormulaColumnRepository.delete(id);
+	}
+
+	@Override
+	public void saveBudgetTypeFormulaColumn(
+			BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
+		budgetTypeFormulaColumnRepository.save(budgetTypeFormulaColumn);
 	}
 }

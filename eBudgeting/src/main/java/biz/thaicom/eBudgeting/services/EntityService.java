@@ -2,10 +2,14 @@ package biz.thaicom.eBudgeting.services;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import biz.thaicom.eBudgeting.model.bgt.BudgetType;
+import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaColumn;
+import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaStrategy;
 import biz.thaicom.eBudgeting.model.pln.Objective;
 import biz.thaicom.eBudgeting.model.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.model.webui.Breadcrumb;
 
 public interface EntityService {
 	
@@ -31,6 +35,20 @@ public interface EntityService {
 	public BudgetType findBudgetTypeById(Long id);
 	public BudgetType findBudgetTypeEagerLoadById(Long id);
 	public List<Integer> findFiscalYearBudgetType();
+	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
+			BudgetType budgetType);
+	
+	//BudgetTypeFormulaStrategy
+	public List<BudgetTypeFormulaStrategy> findBudgetTypeFormulaStrategyByfiscalYearAndBudgetTypeId(
+			Integer fiscalYear, Long budgetTypeId);
+	public void saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy);
+	public void deleteBudgetTypeFormulaStrategy(Long id);
+	
+	
+	//BudgetTypeFormulaColumn
+	public void deleteBudgetTypeFormulaColumn(Long id);
+	public void saveBudgetTypeFormulaColumn(
+			BudgetTypeFormulaColumn budgetTypeFormulaColumn);
 	
 	
 

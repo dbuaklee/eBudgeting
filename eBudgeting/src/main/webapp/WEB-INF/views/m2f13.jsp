@@ -4,7 +4,7 @@
 <div class="row">
 	<div class="span12">
 		
-		<c:if test="${breadcrumb}">
+		<c:if test="${rootPage == false}">
 		    <ul class="breadcrumb" id="headNav">
 		    	<c:forEach items="${breadcrumb}" var="link" varStatus="status">
 		    		<c:choose>
@@ -12,32 +12,47 @@
 							<li class="active">${link.value}</li>
 						</c:when>
 						<c:otherwise>
-							<li><a href="${link.url}">${link.value}</a> <span class="divider">/</span></li>
+						
+							<li><a href="<c:url value='${link.url}'></c:url>">${link.value}</a> <span class="divider">/</span></li>
+							
 						</c:otherwise>
 					</c:choose>
 		    	</c:forEach>
 		    </ul>
 	    </c:if>
 
-		
-
-		<div id="modal" class="modal hide fade">
+		<div id="formulaLineModal" class="modal hide fade">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<span style="font-weight: bold;"></span>
 			</div>
 			<div class="modal-body">
 				
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="closeBtn">Close</a> 
+				<a href="#" class="btn" id="cancelBtn">Cancel</a> 
+				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+			</div>
+		</div>
+
+		<div id="modal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn" id="cancelBtn">Close</a> 
 				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
 			</div>
 		</div>
 
 
 		<div class="control-group" id="mainCtr">
-		<c:if test="${breadcrumb == false}">
+		<c:choose>
+		<c:when test="${rootPage}">
 			<table class="table table-bordered" id="mainTbl">
 				<thead>
 					<tr>
@@ -52,33 +67,435 @@
 					</tr>
 				</tbody>
 			</table>			
-		</c:if>
+		</c:when>
+		</c:choose>
 		</div>
 
 
 	</div>
 </div>
 
-<script id="fiscalYearMainCtrTemplate" type="text/x-handler-template">
+
+<script id="formulaLineModalTemplate" type="text/x-handlebars-template">
+<div><b>การคำนวณ</b>
+</div>
+<div id="formulaBox">
+	{{this.name}} = <span id="formulaLine"></span>
+</div>
+<div id="formulaColumnFormCtr"></div>
+</script>
+
+<script id="formulaColumnFormTemplate"
+	type="text/x-handlebars-template">
+<form id="addFormulaForm" {{#unless columnName}}newForm="true"{{/unless}}
+	{{#if cid}}data-cid="{{cid}}"{{/if}} {{#if id}}data-id="{{id}}"{{/if}}>
+		<label>ชื่อรายการ</label>
+		<input type="text" name="columnName" value="{{columnName}}"/>
+		<label class="checkbox">หน่วยขอตั้งเป็นผู้ระบุจำนวน/งบประมาณ
+		<input type="checkbox" name="isFixed" {{#if isFixed}}checked="checked"{{/if}}/></label>
+		<input type="text" name="value" {{#if isFixed}}disabled="disabled"{{/if}} value="{{value}}"/>
+		<label>หน่วยนับ</label>
+		<input type="text" name="unitName" value="{{unitName}}"/>
+		<br/>
+		<button class="btn btn-mini cancelFormulaColumnBtn">ยกเลิก</button>
+		{{#if columnName}}<button class="btn btn-mini deleteFormulaColumnBtn">ลบรายการ</button>{{/if}}
+		<button class="btn btn-mini btn-primary addFormulaColumnBtn">{{#if columnName}}แก้ไขรายการ{{else}}เพิ่มรายการ{{/if}}</button>
+</form>
+</script>
+
+<script id="formulaLineTemplate" type="text/x-handlebars-template">
+{{{formulaLine this true}}} 
+</script>
+
+<script id="modalTemplate" type="text/x-handlebars-template">
+<b>ตัวเลือกงบประมาณ</b>
+<form id="addFormulaForm">
+	<label>	ชื่อรายการ
+	</label>
+	<input id="name" type="text"/>
+</form>
+</script>
+
+<script id="formulaTemplate" type="text/x-handlebars-template">
+{{#each this}}
+	<li data-id={{id}}> <button class='btn btn-mini deleteFormula'>ลบ</button>{{name}} = {{{formulaLine formulaColumns}}} 
+		<button class='btn btn-mini editFormulaLineBtn'>แก้ไข</button><br/></li>
+{{/each}}
+</script>
+
+<script id="mainCtrTemplate" type="text/x-handler-template">
+
+<div class="controls" style="margin-bottom: 15px;">
+</div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
 		<tr>
-			<td>เลือกปีงบประมาณ</td>
+			<td width="50">ลำดับที่</td>
+			<td>หมวดรายจ่าย</td>
 		</tr>
 	</thead>
 	<tbody>
-		<tr>
-			{{#each this}}
-				<td>{{this}} <a href="./{{this}}/0/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-			{{/each}}
+		{{#each children}}
+		<tr data-id={{id}}>
+			<td> {{indexHuman index}} </td>
+			<td> {{name}} 
+				{{#if this.children}}
+					<a href="../{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a>
+				{{else}}
+					<div class="formulaCtr smallTxt">
+						<b>ตัวเลือกงบประมาณ</b> <button class="btn btn-mini addFormula">เพิ่ม</button>
+						<div class="formulaDetail">
+							<ol></ol>
+						</div>
+					</div>
+				{{/if}} 
+			</td>
 		</tr>
+		{{/each}}
 	</tbody>
 </table>
 </script>
 
 <script type="text/javascript">
+var budgetTypeId = "${budgetTypeId}";
+var fiscalYear = "${fiscalYear}";
+var e1;
+Handlebars.registerPartial("formulaTpl", $("#formulaTemplate").html());
+
+
+Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
+	
+	var s = "";
+	
+	if(formulaColumns != null) {
+		for(var i=0; i < formulaColumns.length; i++) {
+			
+			if(i>0) { 
+				s = s + " X "; 
+			}
+			
+			if(editForm == true) {
+				s = s + "<a class='editSpan' href='#' data-id="+ formulaColumns[i].id + " data-cid="+ formulaColumns[i].cid +">";
+			}
+			s = s + formulaColumns[i].columnName;
+			if(formulaColumns[i].isFixed) {
+				s = s + "(*)";
+			} else {
+				s = s + "("+ formulaColumns[i].value +")";
+			}
+			if(editForm == true) {
+				s = s + "</a>";
+			}
+		}
+	} 
+	if(editForm == true) {
+		if(formulaColumns.length > 0) {
+			s = s + " X ";
+		}
+		s = s + "<a href='#' class='editSpan'>New</a>";
+	}
+	s += "";
+	
+	return s;
+});
+
 $(document).ready(function() {
 
+	var formulaTpl = Handlebars.compile($("#formulaTemplate").html());
+	
+	var FormularLineModalView = Backbone.View.extend({
+		initialize: function() {
+			_.bindAll(this,'cancel');
+			_.bindAll(this,'isFixedChanged');
+			_.bindAll(this,'addFormulaColumn');
+			_.bindAll(this,'editFormulaColumn');
+			_.bindAll(this,'renderFormulaLineWith');
+			
+			
+		},
+		el: "#formulaLineModal",
+		model: null,
+		modalTemplate: Handlebars.compile($("#formulaLineModalTemplate").html()),
+		formulaLineTemplate: Handlebars.compile($("#formulaLineTemplate").html()),
+		formulaColumnFormTemplate: Handlebars.compile($("#formulaColumnFormTemplate").html()),
+		
+		collection: new BudgetTypeFormulaColumnCollection(),
+		
+		events: {
+			"click #cancelBtn" : "cancel",
+			"click #saveBtn" : "saveFormulaColumn",
+			"change input[name=isFixed]" : "isFixedChanged",
+			"click .addFormulaColumnBtn" : "addFormulaColumn",
+			"click .cancelFormulaColumnBtn" : "cancelFormulaColumn",
+			
+			"click .editSpan" : "editFormulaColumn"
+		},
+		
+		render: function() {
+			this.$el.find('.modal-header span').html(this.currentStrategy.get('name'));
+			
+			var html = this.modalTemplate(this.currentStrategy.toJSON());
+			var formularLinehtml = this.formulaLineTemplate(this.collection.toJSON());
+			this.$el.find('.modal-body').html(html);
+			this.$el.find('.modal-body #formulaLine').html(formularLinehtml);
+			this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+		},
+		
+		renderFormulaLineWith: function(formulaStrategy){
+			if(formulaStrategy != null) {
+				this.currentStrategy = formulaStrategy;
+				if(this.currentStrategy.get('formulaColumns') != null) {
+					this.collection = new BudgetTypeFormulaColumnCollection(this.currentStrategy.get('formulaColumns').toJSON());
+				} else {
+					this.collection = new BudgetTypeFormulaColumnCollection();
+				}
+				this.collection.bind('add', this.addNewFormulaColumn, this);
+				this.render();
+			}
+		},
+		
+		cancel: function() {
+			// nothing to recover just hide!
+			this.$el.modal('hide');
+		},
+		
+		isFixedChanged: function(e) {
+			var inputValue = this.$el.find('input[name=value]');
+			if($(e.target).attr('checked') == 'checked') {
+				inputValue.attr('disabled', 'disabled');
+			} else {
+				inputValue.removeAttr('disabled');
+			}
+			console.log(this.$el.find('input[name=value]').attr('disabled'));
+		},
+		
+		addFormulaColumn : function(e) {
+			
+			// add this new Formula into formulaStrategy
+			
+			var form = this.$el.find('form');
+			var newForm = form.attr("newForm");
+			if(newForm) {
+				var formulaColumn = new BudgetTypeFormulaColumn({
+					columnName: form.find('input[name=columnName]').val(),
+					isFixed: form.find('input[name=isFixed]').attr('checked')=='checked'?true:false,
+					value: form.find('input[name=value]').val(),
+					unitName: form.find('input[name=unitName]').val()
+				});
+				
+				formulaColumn.set('cid', formulaColumn.cid);
+				this.collection.add(formulaColumn);
+			} else {
+				var formulaColumnId = form.attr('data-id');
+				var formulaColumnCid = form.attr('data-cid');
+				
+				var formulaColumn = this.collection.get(formulaColumnId);
+				if(formulaColumn == null) {
+					formulaColumn = this.collection.getByCid(formulaColumnCid);
+				}
+				
+				formulaColumn.set('columnName', form.find('input[name=columnName]').val());
+				formulaColumn.set('isFixed', form.find('input[name=isFixed]').attr('checked')=='checked'?true:false);
+				formulaColumn.set('value', form.find('input[name=value]').val());
+				formulaColumn.set('unitName',form.find('input[name=unitName]').val());
+				
+				this.render();
+			}
+			return false;
+			
+		},
+		addNewFormulaColumn: function(options) {
+			this.render();
+		},
+		
+		cancelFormulaColumn : function(e) {
+			this.render();
+		},
+		
+		saveFormulaColumn: function(e) {
+			this.collection.save();
+		},
+		
+		editFormulaColumn : function(e) {
+			var formulaColumnId = $(e.target).attr('data-id');
+			var formulaColumnCid = $(e.target).attr('data-cid');
+			if(formulaColumnId == null) {
+				//new Column!
+				var formHtml = this.formulaColumnFormTemplate(new BudgetTypeFormulaColumn());
+				this.$el.find('#formulaColumnFormCtr').html(formHtml);
+			} else {
+				// now find the model 
+				var formulaColumn = this.collection.get(formulaColumnId);
+				if(formulaColumn == null) {
+					formulaColumn = this.collection.getByCid(formulaColumnCid);
+				}
+				
+				// now we should have formulColumn to be update!
+				var formHtml = this.formulaColumnFormTemplate(formulaColumn.toJSON());
+				this.$el.find('#formulaColumnFormCtr').html(formHtml);
+				
+			}
+			
+		}
+		
+	});
+	
+	var ModalView = Backbone.View.extend({
+		initialize: function() {
+			_.bindAll(this,'cancel');
+			//this.model.bind('reset', this.render, this);
+		},
+		el: "#modal",
+		model: null,
+		modalTemplate: Handlebars.compile($("#modalTemplate").html()),
+		
+		events: {
+			"click #saveBtn" : "save",
+			"click #cancelBtn" : "cancel",
+		},
+
+		
+		renderAddFormulaWith: function(budgetType) {
+			if(budgetType != null) {
+				this.budgetType = budgetType;
+				
+				
+				this.$el.find('.modal-header span').html(this.budgetType.get('name'));
+				
+				
+				var html = this.modalTemplate(budgetType.toJSON());
+				this.$el.find('.modal-body').html(html);	
+				
+				this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+			}
+				
+		},
+		
+		cancel: function() {
+			// nothing to recover just hide!
+			this.$el.modal('hide');
+		},
+		
+		save: function() {
+			var formulaStrategy = new BudgetTypeFormulaStrategy();
+			var formEl = this.$el.find('form');
+			formulaStrategy.set('name', $(formEl).find('#name').val());
+			formulaStrategy.set('budgetType', {id: this.budgetType.get('id')});
+			formulaStrategy.set('fiscalYear', fiscalYear);
+			formulaStrategy.set('numberColumns', 0);
+			formulaStrategy.set('index', this.budgetType.get('formulaStrategy').length);
+			formulaStrategy.save(null, {
+				success:_.bind(function(data){
+					// now we must put this back to where it belong!
+					this.budgetType.get('formulaStrategy').push(data.toJSON());
+					
+					//now put back budgetType
+					formulaStrategy.set('budgetType', this.budgetType);
+					
+					this.budgetType.trigger('changeFormula', this.budgetType);
+					this.$el.modal('hide');
+				},this)
+			});
+			
+		}
+		
+	});
+	
+	var MainCtrView = Backbone.View.extend({
+		initialize: function(options) {
+			this.model = options.model;
+			this.model.bind('reset', this.render, this);
+			this.model.get('children').bind('changeFormula', this.renderChild, this);
+		},
+		
+		el: "#mainCtr",
+		mainCtrTpl: Handlebars.compile($("#mainCtrTemplate").html()),
+		modalView: new ModalView(),
+		formularLineModalView : new FormularLineModalView(),
+		
+		render: function() {
+			this.$el.html(this.mainCtrTpl(this.model.toJSON()));
+		},
+		
+		renderChild: function(caller) {
+			var callerFormulaEl = "tr[data-id="+ caller.get('id') +"] .formulaDetail ol";
+			var html = formulaTpl(caller.get('formulaStrategy').toJSON());
+			$(callerFormulaEl).html(html);
+		},
+		
+		events: {
+			"click .addFormula" : "addFormula",
+			"click .deleteFormula" : "deleteFormula",
+			"click .editFormulaLineBtn" : "editFormulaLine"
+		},
+		
+		addFormula: function(e) {
+			// now prepare information for modal
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			
+			this.modalView.renderAddFormulaWith(currentBudgetType);
+			
+		},
+		
+		editFormulaLine : function(e) {
+			
+			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
+			var currentFormula = BudgetTypeFormulaStrategy.findOrCreate(currentFormulaId);
+
+			this.formularLineModalView.renderFormulaLineWith(currentFormula);
+		},
+		
+		deleteFormula: function(e) {
+			// now prepare information for modal
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			
+			
+			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
+			var currentFormula = BudgetTypeFormulaStrategy.findOrCreate(currentFormulaId);
+			
+			var ret = confirm("do you want to delete?");
+
+
+			if(ret) {
+			
+				currentBudgetType.get('formulaStrategy').remove(currentFormula);
+				currentFormula.destroy();
+			
+				currentBudgetType.trigger('changeFormula', currentBudgetType);
+			}
+			
+			
+		}
+	});
+	
+
+	if(budgetTypeId != null && budgetTypeId.length > 0) {
+	
+		budgetType = new BudgetType({id: budgetTypeId});
+		
+		mainCtrView = new MainCtrView({model: budgetType});
+		
+		budgetType.fetch({success: function() {
+			
+			budgetType.trigger('reset');
+			
+			budgetType.get('children').forEach(function(child) {
+				// now find BudgetFormula
+				var strategyCollection = new BudgetTypeFormulaStrategyCollection();
+				strategyCollection.fetch({
+					url: appUrl('/BudgetTypeFormulaStrategy/search/' + fiscalYear + "/" + child.get('id')),
+					success: function(data) {
+						child.set('formulaStrategy',strategyCollection);
+						child.trigger('changeFormula', child);
+				}});				
+			
+			});
+			
+		}});
+		
+	}
 	
 });
 </script>

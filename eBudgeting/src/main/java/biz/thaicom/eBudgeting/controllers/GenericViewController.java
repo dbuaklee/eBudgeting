@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import biz.thaicom.eBudgeting.model.bgt.BudgetType;
 import biz.thaicom.eBudgeting.model.pln.Objective;
+import biz.thaicom.eBudgeting.model.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
@@ -49,7 +51,7 @@ public class GenericViewController {
 				logger.debug("found fiscalYear : " + fiscalYear.toString());
 			}
 		}
-		model.addAttribute("breadcrumb", false);
+		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		
 		return "m2f13";
@@ -71,10 +73,19 @@ public class GenericViewController {
 		if(budgetType != null) {
 			logger.debug("BudgetType found!");
 			
-		} else {
-			logger.debug("BudgetType NOT found!");
-			// go to the root one!
+			model.addAttribute("budgetType", budgetType);
+			// now construct breadcrumb?
 			
+			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbBudgetType("/page/m2f13/"+fiscalYear, budgetType); 
+			
+			model.addAttribute("breadcrumb", breadcrumb.listIterator());
+			model.addAttribute("rootPage", false);
+			model.addAttribute("budgetType", budgetType);
+			
+		} else {
+			logger.debug("BudgetType NOT found! redirect to fiscal year selection");
+			// go to the root one!
+			return "redirect:/page/m2f13/";
 		}
 		
 		return "m2f13";

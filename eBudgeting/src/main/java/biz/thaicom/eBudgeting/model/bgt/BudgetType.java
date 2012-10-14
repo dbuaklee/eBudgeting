@@ -19,13 +19,17 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name="BUDGETTYPE")
 @SequenceGenerator(name="BUDGETTYPE_SEQ", sequenceName="BUDGETTYPE_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BudgetType implements Serializable {
 
 	/**
@@ -59,6 +63,15 @@ public class BudgetType implements Serializable {
 	@Column(name="IDX")
 	private Integer index;
 
+	public BudgetType() {
+		
+	}
+	
+	@JsonCreator
+	public BudgetType(@JsonProperty("id") Long id) {
+		this.id=id;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -122,7 +135,13 @@ public class BudgetType implements Serializable {
 		} 
 		
 		if(this.getChildren() != null) {
-			this.getChildren().size();
+			// we have to go deeper one level
+			for(BudgetType child : this.getChildren()){
+				if(child.getChildren() != null) {
+					child.getChildren().size();
+				}
+			}
+			
 		}
 	}
 	
