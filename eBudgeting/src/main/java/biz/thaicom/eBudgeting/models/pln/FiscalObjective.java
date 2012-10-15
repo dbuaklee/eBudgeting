@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.pln;
+package biz.thaicom.eBudgeting.models.pln;
 
 import java.io.Serializable;
 

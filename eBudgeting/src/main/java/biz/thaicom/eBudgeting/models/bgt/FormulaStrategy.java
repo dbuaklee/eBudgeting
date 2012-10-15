@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.bgt;
+package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,12 +24,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="BUDGETTYPEFORMULASTRATEGY")
+@Table(name="BGT_FORMULASTRATEGY")
 @SequenceGenerator(
-		name="BUDGETTYPEFORMULASTRATEGY_SEQ", 
-		sequenceName="BUDGETTYPEFORMULASTRATEGY_SEQ", allocationSize=1)
+		name="BGT_FORMULASTRATEGY_SEQ", 
+		sequenceName="BGT_FORMULASTRATEGY_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class BudgetTypeFormulaStrategy  implements Serializable{
+public class FormulaStrategy  implements Serializable{
 
 	/**
 	 * 
@@ -37,7 +37,7 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 	private static final long serialVersionUID = -1200551194620169196L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BUDGETTYPEFORMULASTRATEGY_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_FORMULASTRATEGY_SEQ")
 	private Long id;
 	
 	@Basic
@@ -47,8 +47,8 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 	private String name;
 	
 	@ManyToOne
-	@JoinColumn(name="BUDGETTYPE_ID")
-	private BudgetType budgetType;
+	@JoinColumn(name="TYPE_BGT_BUDGETTYPE_ID")
+	private BudgetType type;
 	
 	@Basic
 	private Integer numberColumns;
@@ -60,7 +60,7 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="strategy",
 			cascade=CascadeType.REMOVE)
 	@OrderColumn(name="IDX")
-	private List<BudgetTypeFormulaColumn> formulaColumns;
+	private List<FormulaColumn> formulaColumns;
 
 	public Long getId() {
 		return id;
@@ -78,12 +78,12 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 		this.fiscalYear = fiscalYear;
 	}
 
-	public BudgetType getBudgetType() {
-		return budgetType;
+	public BudgetType getType() {
+		return type;
 	}
 
-	public void setBudgetType(BudgetType budgetType) {
-		this.budgetType = budgetType;
+	public void setType(BudgetType type) {
+		this.type = type;
 	}
 
 	public Integer getNumberColumns() {
@@ -94,11 +94,11 @@ public class BudgetTypeFormulaStrategy  implements Serializable{
 		this.numberColumns = numberColumns;
 	}
 
-	public List<BudgetTypeFormulaColumn> getFormulaColumns() {
+	public List<FormulaColumn> getFormulaColumns() {
 		return formulaColumns;
 	}
 
-	public void setFormulaColumns(List<BudgetTypeFormulaColumn> formulaColumns) {
+	public void setFormulaColumns(List<FormulaColumn> formulaColumns) {
 		this.formulaColumns = formulaColumns;
 	}
 

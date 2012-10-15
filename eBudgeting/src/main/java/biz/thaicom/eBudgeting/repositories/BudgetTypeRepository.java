@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import biz.thaicom.eBudgeting.model.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 
 public interface BudgetTypeRepository extends
 		PagingAndSortingRepository<BudgetType, Long>, JpaSpecificationExecutor<BudgetType> {

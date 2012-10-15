@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.bgt;
+package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
 
@@ -17,12 +17,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="BUDGETTYPEREQUESTCOLUMN")
+@Table(name="BGT_BUDGETTYPEREQUESTCOLUMN")
 @SequenceGenerator(
-		name="BUDGETTYPEREQUESTCOLUMN_SEQ", 
-		sequenceName="BUDGETTYPEREQUESTCOLUMN_SEQ", allocationSize=1)
+		name="BGT_BUDGETTYPEREQUESTCOLUMN_SEQ", 
+		sequenceName="BGT_BUDGETTYPEREQUESTCOLUMN_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class BudgetTypeRequestColumn implements Serializable {
+public class RequestColumn implements Serializable {
 
 	/**
 	 * 
@@ -30,12 +30,12 @@ public class BudgetTypeRequestColumn implements Serializable {
 	private static final long serialVersionUID = 5065087026603553557L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BUDGETTYPEREQUESTCOLUMN_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_BUDGETTYPEREQUESTCOLUMN_SEQ")
 	private Long id;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="BUDGETTYPEFORMULACOLUMN_ID")
-	private BudgetTypeFormulaColumn column;
+	@JoinColumn(name="COLUMN_BGT_BUDGETTYPEFORMULACOLUMN_ID")
+	private FormulaColumn column;
 	
 	@Basic
 	private Integer amount;
@@ -48,11 +48,11 @@ public class BudgetTypeRequestColumn implements Serializable {
 		this.id = id;
 	}
 
-	public BudgetTypeFormulaColumn getColumn() {
+	public FormulaColumn getColumn() {
 		return column;
 	}
 
-	public void setColumn(BudgetTypeFormulaColumn column) {
+	public void setColumn(FormulaColumn column) {
 		this.column = column;
 	}
 

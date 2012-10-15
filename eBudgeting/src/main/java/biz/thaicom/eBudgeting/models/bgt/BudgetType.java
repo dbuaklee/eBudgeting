@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.bgt;
+package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,8 +26,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="BUDGETTYPE")
-@SequenceGenerator(name="BUDGETTYPE_SEQ", sequenceName="BUDGETTYPE_SEQ", allocationSize=1)
+@Table(name="BGT_BUDGETTYPE")
+@SequenceGenerator(name="BGT_BUDGETTYPE_SEQ", sequenceName="BGT_BUDGETTYPE_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BudgetType implements Serializable {
@@ -39,7 +39,7 @@ public class BudgetType implements Serializable {
 	
 	// Field
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BUDGETTYPE_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_BUDGETTYPE_SEQ")
 	private Long id;
 	
 	@Basic
@@ -49,7 +49,7 @@ public class BudgetType implements Serializable {
 	private String code;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="BUDGETTYPE_PARENT_ID")
+	@JoinColumn(name="PARENT_BGT_BUDGETTYPE_ID")
 	private BudgetType parent;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)

@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.pln;
+package biz.thaicom.eBudgeting.models.pln;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 @Entity
-@Table(name="OBJECTIVETYPE")
-@SequenceGenerator(name="OBJECTIVETYPE_SEQ", sequenceName="OBJECTIVETYPE_SEQ", allocationSize=1)
+@Table(name="PLN_OBJECTIVETYPE")
+@SequenceGenerator(name="PLN_OBJECTIVETYPE_SEQ", sequenceName="PLN_OBJECTIVETYPE_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class ObjectiveType implements Serializable {
 	
@@ -34,14 +34,14 @@ public class ObjectiveType implements Serializable {
 	
 	// Field
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="OBJECTIVETYPE_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PLN_OBJECTIVETYPE_SEQ")
 	private Long id;
 	
 	@Basic
 	private String name;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="OBJECTIVETYPE_PARENT_ID")
+	@JoinColumn(name="PARENT_PLN_OBJECTIVETYPE_ID")
 	private ObjectiveType parent;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)

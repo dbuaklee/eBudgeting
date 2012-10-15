@@ -61,12 +61,12 @@ BudgetType = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/BudgetType')
 });
 
-BudgetTypeFormulaColumn = Backbone.RelationalModel.extend({
+FormulaColumn = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
-	urlRoot: appUrl('/BudgetTypeFormulaColumn')
+	urlRoot: appUrl('/FormulaColumn')
 });
 
-BudgetTypeFormulaStrategy = Backbone.RelationalModel.extend({
+FormulaStrategy = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
 	relations: [
 	    {
@@ -81,7 +81,7 @@ BudgetTypeFormulaStrategy = Backbone.RelationalModel.extend({
 	    	
 	    }
 	],
-	urlRoot: appUrl('/BudgetTypeFormulaStrategy')
+	urlRoot: appUrl('/FormulaStrategy')
 
 });
 
@@ -96,11 +96,11 @@ ObjectiveTypeCollection = Backbone.Collection.extend({
 BudgetTypeCollection = Backbone.Collection.extend({
 	model: BudgetType
 });
-BudgetTypeFormulaStrategyCollection = Backbone.Collection.extend({
-	model: BudgetTypeFormulaStrategy
+FormulaStrategyCollection = Backbone.Collection.extend({
+	model: FormulaStrategy
 });
-BudgetTypeFormulaColumnCollection = Backbone.Collection.extend({
-	model: BudgetTypeFormulaColumn
+FormulaColumnCollection = Backbone.Collection.extend({
+	model: FormulaColumn
 });
 
 //Handlebars Utils

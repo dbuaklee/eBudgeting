@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.bgt;
+package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,15 +15,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import biz.thaicom.eBudgeting.model.hrx.Organization;
-import biz.thaicom.eBudgeting.model.pln.Objective;
+import biz.thaicom.eBudgeting.models.hrx.Organization;
+import biz.thaicom.eBudgeting.models.pln.Objective;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="BUDGETPROPOSAL")
-@SequenceGenerator(name="BUDGETPROPOSAL_SEQ", sequenceName="BUDGETPROPOSAL_SEQ", allocationSize=1)
+@Table(name="BGT_BUDGETPROPOSAL")
+@SequenceGenerator(name="BGT_BUDGETPROPOSAL_SEQ", sequenceName="BGT_BUDGETPROPOSAL_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class BudgetProposal implements Serializable {
 
@@ -35,11 +35,11 @@ public class BudgetProposal implements Serializable {
 	
 	// Field
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BUDGETPROPOSAL_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_BUDGETPROPOSAL_SEQ")
 	private Long id;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="BUDGETTYPE_ID")
+	@JoinColumn(name="BUDGETTYPE_BGT_BUDGETTYPE_ID")
 	private BudgetType budgetType;
 	
 	@Basic
@@ -62,6 +62,6 @@ public class BudgetProposal implements Serializable {
 	private List<AllocationRecord> allocationRecords;	
 
 	@OneToMany(mappedBy="column", fetch=FetchType.LAZY)
-	private List<BudgetTypeRequestColumn> requestColumns;
+	private List<RequestColumn> requestColumns;
 	
 }

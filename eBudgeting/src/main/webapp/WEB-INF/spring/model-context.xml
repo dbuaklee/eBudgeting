@@ -39,7 +39,7 @@
         </property>
         <property name="packagesToScan">
         	<list>
-            	<value>biz.thaicom.eBudgeting.model</value>
+            	<value>biz.thaicom.eBudgeting.models</value>
         	</list>
         </property>
  	</bean>

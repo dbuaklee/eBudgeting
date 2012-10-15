@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
-import biz.thaicom.eBudgeting.model.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller

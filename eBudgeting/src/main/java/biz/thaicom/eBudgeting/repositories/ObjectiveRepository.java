@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import biz.thaicom.eBudgeting.model.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.Objective;
 
 public interface ObjectiveRepository extends PagingAndSortingRepository<Objective, Long>, JpaSpecificationExecutor<Objective>{
 	public List<Objective> findByTypeId(Long id);

@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import biz.thaicom.eBudgeting.model.bgt.BudgetType;
-import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaColumn;
-import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaStrategy;
-import biz.thaicom.eBudgeting.model.pln.Objective;
-import biz.thaicom.eBudgeting.model.pln.ObjectiveType;
-import biz.thaicom.eBudgeting.model.webui.Breadcrumb;
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
+import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 
 public interface EntityService {
 	
@@ -38,19 +38,17 @@ public interface EntityService {
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
 			BudgetType budgetType);
 	
-	//BudgetTypeFormulaStrategy
-	public List<BudgetTypeFormulaStrategy> findBudgetTypeFormulaStrategyByfiscalYearAndBudgetTypeId(
+	//FormulaStrategy
+	public List<FormulaStrategy> findFormulaStrategyByfiscalYearAndTypeId(
 			Integer fiscalYear, Long budgetTypeId);
-	public BudgetTypeFormulaStrategy saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy);
-	public void deleteBudgetTypeFormulaStrategy(Long id);
+	public FormulaStrategy saveFormulaStrategy(FormulaStrategy strategy);
+	public void deleteFormulaStrategy(Long id);
 	
 	
-	//BudgetTypeFormulaColumn
-	public void deleteBudgetTypeFormulaColumn(Long id);
-	public BudgetTypeFormulaColumn saveBudgetTypeFormulaColumn(
-			BudgetTypeFormulaColumn budgetTypeFormulaColumn);
-	public BudgetTypeFormulaColumn updateBudgetTypeFormulaColumn(
-			BudgetTypeFormulaColumn budgetTypeFormulaColumn);
+	//FormulaColumn
+	public void deleteFormulaColumn(Long id);
+	public FormulaColumn saveFormulaColumn(FormulaColumn formulaColumn);
+	public FormulaColumn updateFormulaColumn(FormulaColumn formulaColumn);
 	
 
 	

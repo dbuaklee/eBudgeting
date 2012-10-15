@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import biz.thaicom.eBudgeting.model.bgt.BudgetType;
-import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaColumn;
-import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaStrategy;
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
+import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
@@ -57,42 +57,42 @@ public class BudgetTypeRestController {
 	}
 	
 
-	//BudgetTypeFormulaColumn
-	@RequestMapping(value="/BudgetTypeFormulaColumn", method=RequestMethod.POST)
+	//FormulaColumn
+	@RequestMapping(value="/FormulaColumn", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public @ResponseBody BudgetTypeFormulaColumn createBudgetTypeFormulaColumn(
-			@RequestBody BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
-		return entityService.saveBudgetTypeFormulaColumn(budgetTypeFormulaColumn);
+	public @ResponseBody FormulaColumn createBudgetTypeFormulaColumn(
+			@RequestBody FormulaColumn budgetTypeFormulaColumn) {
+		return entityService.saveFormulaColumn(budgetTypeFormulaColumn);
 		
 	}
 	
-	@RequestMapping(value="/BudgetTypeFormulaColumn/{id}", method=RequestMethod.PUT)
+	@RequestMapping(value="/FormulaColumn/{id}", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	public @ResponseBody BudgetTypeFormulaColumn updateBudgetTypeFormulaColumn(
+	public @ResponseBody FormulaColumn updateBudgetTypeFormulaColumn(
 			@PathVariable Long id,
-			@RequestBody BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
-		return entityService.updateBudgetTypeFormulaColumn(budgetTypeFormulaColumn);
+			@RequestBody FormulaColumn budgetTypeFormulaColumn) {
+		return entityService.updateFormulaColumn(budgetTypeFormulaColumn);
 		
 	}
 	
 	
-	@RequestMapping(value="/BudgetTypeFormulaColumn/{id}", method=RequestMethod.DELETE)
+	@RequestMapping(value="/FormulaColumn/{id}", method=RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String deleteBudgetTypeFormulaColumn(
 			@PathVariable Long id) {
-		entityService.deleteBudgetTypeFormulaColumn(id);
+		entityService.deleteFormulaColumn(id);
 		return "OK";
 	}
 	
 	
-	//BudgetTypeFormulaStrategy
+	//FormulaStrategy
 	
-	@RequestMapping(value="/BudgetTypeFormulaStrategy/search/{fiscalYear}/{budgetTypeId}")
-	public @ResponseBody List<BudgetTypeFormulaStrategy> getBudgetTypeFormulaStrategy(
+	@RequestMapping(value="/FormulaStrategy/search/{fiscalYear}/{budgetTypeId}")
+	public @ResponseBody List<FormulaStrategy> getBudgetTypeFormulaStrategy(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long budgetTypeId) {
 		
-		List<BudgetTypeFormulaStrategy> strategy = entityService.findBudgetTypeFormulaStrategyByfiscalYearAndBudgetTypeId(fiscalYear, budgetTypeId);
+		List<FormulaStrategy> strategy = entityService.findFormulaStrategyByfiscalYearAndTypeId(fiscalYear, budgetTypeId);
 		
 		if(strategy == null) {
 			throw new EntityNotFoundException();
@@ -103,21 +103,21 @@ public class BudgetTypeRestController {
 		
 	};
 	
-	@RequestMapping(value="/BudgetTypeFormulaStrategy/{id}", method=RequestMethod.DELETE)
+	@RequestMapping(value="/FormulaStrategy/{id}", method=RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String deleteBudgetTypeFormulaStrategy(
 			@PathVariable Long id) {
-		entityService.deleteBudgetTypeFormulaStrategy(id);
+		entityService.deleteFormulaStrategy(id);
 		return "OK";
 	}
 	
 	
 	
-	@RequestMapping(value="/BudgetTypeFormulaStrategy", method=RequestMethod.POST)
+	@RequestMapping(value="/FormulaStrategy", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public @ResponseBody BudgetTypeFormulaStrategy createBudgetTypeFormulaStrategy(
-			@RequestBody BudgetTypeFormulaStrategy strategy) {
-		return entityService.saveBudgetTypeFormulaStrategy(strategy);
+	public @ResponseBody FormulaStrategy createBudgetTypeFormulaStrategy(
+			@RequestBody FormulaStrategy strategy) {
+		return entityService.saveFormulaStrategy(strategy);
 		}
 	
 	

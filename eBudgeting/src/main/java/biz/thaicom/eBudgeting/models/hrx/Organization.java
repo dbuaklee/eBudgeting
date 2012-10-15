@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.hrx;
+package biz.thaicom.eBudgeting.models.hrx;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="ORGANIZATION")
-@SequenceGenerator(name="ORGANIZATION_SEQ", sequenceName="ORGANIZATION_SEQ", allocationSize=1)
+@Table(name="HRX_ORGANIZATION")
+@SequenceGenerator(name="HRX_ORGANIZATION_SEQ", sequenceName="HRX_ORGANIZATION_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Organization implements Serializable {
 	
@@ -32,7 +32,7 @@ public class Organization implements Serializable {
 	
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ORGANIZATION_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="HRX_ORGANIZATION_SEQ")
 	private Long id;
 	
 	@Basic
@@ -46,7 +46,7 @@ public class Organization implements Serializable {
 	private Integer index;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="ORGANIZATION_PARENT_ID")
+	@JoinColumn(name="PARENT_HRX_ORGANIZATION_ID")
 	private Organization parent;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)

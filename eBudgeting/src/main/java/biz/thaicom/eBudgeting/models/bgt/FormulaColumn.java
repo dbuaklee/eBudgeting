@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.bgt;
+package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
 
@@ -17,10 +17,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name = "BUDGETTYPEFORMULACOLUMN")
-@SequenceGenerator(name = "BUDGETTYPEFORMULACOLUMN_SEQ", sequenceName = "BUDGETTYPEFORMULACOLUMN_SEQ", allocationSize = 1)
+@Table(name = "BGT_FORMULACOLUMN")
+@SequenceGenerator(name = "BGT_FORMULACOLUMN_SEQ", sequenceName = "BGT_FORMULACOLUMN_SEQ", allocationSize = 1)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class BudgetTypeFormulaColumn implements Serializable {
+public class FormulaColumn implements Serializable {
 
 	/**
 	 * 
@@ -28,7 +28,7 @@ public class BudgetTypeFormulaColumn implements Serializable {
 	private static final long serialVersionUID = -884672569445236675L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BUDGETTYPEFORMULACOLUMN_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BGT_FORMULACOLUMN_SEQ")
 	private Long id;
 
 	@Basic
@@ -36,8 +36,8 @@ public class BudgetTypeFormulaColumn implements Serializable {
 	private Integer index;
 
 	@ManyToOne
-	@JoinColumn(name = "BUDGETTYPEFORMULASTRATEGY_ID")
-	private BudgetTypeFormulaStrategy strategy;
+	@JoinColumn(name = "STRATEGY_BGT_FORMULASTRATEGY_ID")
+	private FormulaStrategy strategy;
 
 	@Basic
 	private String columnName;
@@ -67,11 +67,11 @@ public class BudgetTypeFormulaColumn implements Serializable {
 		this.index = index;
 	}
 
-	public BudgetTypeFormulaStrategy getStrategy() {
+	public FormulaStrategy getStrategy() {
 		return strategy;
 	}
 
-	public void setStrategy(BudgetTypeFormulaStrategy strategy) {
+	public void setStrategy(FormulaStrategy strategy) {
 		this.strategy = strategy;
 	}
 

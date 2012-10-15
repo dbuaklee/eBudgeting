@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.webui;
+package biz.thaicom.eBudgeting.models.webui;
 
 import java.io.Serializable;
 

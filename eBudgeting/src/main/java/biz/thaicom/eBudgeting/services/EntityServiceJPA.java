@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import biz.thaicom.eBudgeting.model.bgt.BudgetType;
-import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaColumn;
-import biz.thaicom.eBudgeting.model.bgt.BudgetTypeFormulaStrategy;
-import biz.thaicom.eBudgeting.model.pln.Objective;
-import biz.thaicom.eBudgeting.model.pln.ObjectiveType;
-import biz.thaicom.eBudgeting.model.webui.Breadcrumb;
-import biz.thaicom.eBudgeting.repositories.BudgetTypeFormulaColumnRepository;
-import biz.thaicom.eBudgeting.repositories.BudgetTypeFormulaStrategyRepository;
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
+import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
+import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
+import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
@@ -39,10 +39,10 @@ public class EntityServiceJPA implements EntityService {
 	private BudgetTypeRepository budgetTypeRepository;
 	
 	@Autowired
-	private BudgetTypeFormulaStrategyRepository budgetTypeFormulaStrategyRepository;
+	private FormulaStrategyRepository formulaStrategyRepository;
 	
 	@Autowired
-	private BudgetTypeFormulaColumnRepository budgetTypeFormulaColumnRepository;
+	private FormulaColumnRepository formulaColumnRepository;
 
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
@@ -219,10 +219,10 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public List<BudgetTypeFormulaStrategy> findBudgetTypeFormulaStrategyByfiscalYearAndBudgetTypeId(
+	public List<FormulaStrategy> findFormulaStrategyByfiscalYearAndTypeId(
 			Integer fiscalYear, Long budgetTypeId) {
-		List<BudgetTypeFormulaStrategy> list = budgetTypeFormulaStrategyRepository.findByfiscalYearAndBudgetType_idOrderByIndexAsc(fiscalYear, budgetTypeId);
-		for(BudgetTypeFormulaStrategy strategy : list) {
+		List<FormulaStrategy> list = formulaStrategyRepository.findByfiscalYearAndType_idOrderByIndexAsc(fiscalYear, budgetTypeId);
+		for(FormulaStrategy strategy : list) {
 			strategy.getFormulaColumns().size();
 		}
 		
@@ -230,52 +230,52 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public BudgetTypeFormulaStrategy saveBudgetTypeFormulaStrategy(BudgetTypeFormulaStrategy strategy) {
-		return budgetTypeFormulaStrategyRepository.save(strategy);
+	public FormulaStrategy saveFormulaStrategy(FormulaStrategy strategy) {
+		return formulaStrategyRepository.save(strategy);
 		
 	}
 
 	@Override
-	public void deleteBudgetTypeFormulaStrategy(Long id) {
+	public void deleteFormulaStrategy(Long id) {
 		// we'll have to update the rest of index !
 		// so get the one we want to delete first 
-		BudgetTypeFormulaStrategy strategy = budgetTypeFormulaStrategyRepository.findOne(id);
+		FormulaStrategy strategy = formulaStrategyRepository.findOne(id);
 		
-		budgetTypeFormulaStrategyRepository.delete(id);
-		budgetTypeFormulaStrategyRepository.reIndex(strategy.getIndex(), 
-				strategy.getFiscalYear(), strategy.getBudgetType());
+		formulaStrategyRepository.delete(id);
+		formulaStrategyRepository.reIndex(strategy.getIndex(), 
+				strategy.getFiscalYear(), strategy.getType());
 	}
 
 	@Override
-	public void deleteBudgetTypeFormulaColumn(Long id) {
+	public void deleteFormulaColumn(Long id) {
 		// get this one first
-		BudgetTypeFormulaColumn column = budgetTypeFormulaColumnRepository.findOne(id);
-		budgetTypeFormulaColumnRepository.delete(id);
-		budgetTypeFormulaColumnRepository.reIndex(column.getIndex(), column.getStrategy());
+		FormulaColumn column = formulaColumnRepository.findOne(id);
+		formulaColumnRepository.delete(id);
+		formulaColumnRepository.reIndex(column.getIndex(), column.getStrategy());
 	}
 
 	@Override
-	public BudgetTypeFormulaColumn saveBudgetTypeFormulaColumn(
-			BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
-		return budgetTypeFormulaColumnRepository.save(budgetTypeFormulaColumn);
+	public FormulaColumn saveFormulaColumn(
+			FormulaColumn formulaColumn) {
+		return formulaColumnRepository.save(formulaColumn);
 	}
 
 	@Override
-	public BudgetTypeFormulaColumn updateBudgetTypeFormulaColumn(
-			BudgetTypeFormulaColumn budgetTypeFormulaColumn) {
-		// so we'll get BudgetTypeFormulaColumn First
-		BudgetTypeFormulaColumn columnFromJpa = budgetTypeFormulaColumnRepository.findOne(
-				budgetTypeFormulaColumn.getId());
+	public FormulaColumn updateFormulaColumn(
+			FormulaColumn formulaColumn) {
+		// so we'll get FormulaColumn First
+		FormulaColumn columnFromJpa = formulaColumnRepository.findOne(
+				formulaColumn.getId());
 		
 		// now update this columnFromJpa
-		columnFromJpa.setColumnName(budgetTypeFormulaColumn.getColumnName());
-		columnFromJpa.setIsFixed(budgetTypeFormulaColumn.getIsFixed());
-		columnFromJpa.setUnitName(budgetTypeFormulaColumn.getUnitName());
-		columnFromJpa.setValue(budgetTypeFormulaColumn.getValue());
+		columnFromJpa.setColumnName(formulaColumn.getColumnName());
+		columnFromJpa.setIsFixed(formulaColumn.getIsFixed());
+		columnFromJpa.setUnitName(formulaColumn.getUnitName());
+		columnFromJpa.setValue(formulaColumn.getValue());
 		
 		
 		// and we can save now
-		budgetTypeFormulaColumnRepository.save(columnFromJpa);
+		formulaColumnRepository.save(columnFromJpa);
 		
 		// and happily return 
 		return columnFromJpa;

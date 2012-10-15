@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.model.bgt;
+package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
 
@@ -17,8 +17,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="ALLOCATIONRECORD")
-@SequenceGenerator(name="ALLOCATIONRECORD_SEQ", sequenceName="ALLOCATIONRECORD_SEQ", allocationSize=1)
+@Table(name="BGT_ALLOCATIONRECORD")
+@SequenceGenerator(name="BGT_ALLOCATIONRECORD_SEQ", sequenceName="BGT_ALLOCATIONRECORD_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class AllocationRecord implements Serializable{
 	
@@ -28,11 +28,11 @@ public class AllocationRecord implements Serializable{
 	private static final long serialVersionUID = 8389152899753513205L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ALLOCATIONRECORD_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_ALLOCATIONRECORD_SEQ")
 	private Long id;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="BUDGETPROPOSAL_ID")
+	@JoinColumn(name="PROPOSAL_BGT_BUDGETPROPOSAL_ID")
 	private BudgetProposal proposal;
 	
 	@Basic

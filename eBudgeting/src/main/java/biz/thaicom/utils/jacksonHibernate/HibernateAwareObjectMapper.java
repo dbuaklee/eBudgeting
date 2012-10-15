@@ -9,6 +9,11 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module.Feature;
 
 
 public class HibernateAwareObjectMapper extends ObjectMapper {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6680743790736637700L;
+	
 	private static final Logger logger = LoggerFactory.getLogger(HibernateAwareObjectMapper.class);
 	 
 	public HibernateAwareObjectMapper() {

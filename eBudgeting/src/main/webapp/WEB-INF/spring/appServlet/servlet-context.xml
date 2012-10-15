@@ -47,5 +47,6 @@
 	</beans:bean>
 	
 	<context:component-scan base-package="biz.thaicom.eBudgeting.controllers" />
+		<context:component-scan base-package="biz.thaicom.security.controllers" />
 	
 </beans:beans>

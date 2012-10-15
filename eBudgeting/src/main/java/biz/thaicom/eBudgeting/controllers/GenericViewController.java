@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.HandlerMapping;
 
-import biz.thaicom.eBudgeting.model.bgt.BudgetType;
-import biz.thaicom.eBudgeting.model.pln.Objective;
-import biz.thaicom.eBudgeting.model.webui.Breadcrumb;
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
@@ -43,9 +43,13 @@ public class GenericViewController {
 	
 	@RequestMapping("/page/m2f13/")
 	public String render_m2f13_fiscalYear(Model model) {
+		prepareRootPage(model);
 		
-		List<Integer> fiscalYears = entityService.findRootFiscalYear();
-		
+		return "m2f13";
+	}
+	
+	private void prepareRootPage(Model model) {
+		List<Integer> fiscalYears = entityService.findRootFiscalYear();		
 		if(logger.isDebugEnabled()) {
 			for(Integer fiscalYear : fiscalYears) {
 				logger.debug("found fiscalYear : " + fiscalYear.toString());
@@ -54,9 +58,8 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		
-		return "m2f13";
 	}
-	
+
 	@RequestMapping("/page/m2f13/{fiscalYear}/{budgetTypeId}")
 	public String render_m2f13(Model model, HttpServletRequest request,
 			@PathVariable Integer fiscalYear,
@@ -181,6 +184,8 @@ public class GenericViewController {
 	@RequestMapping("/page/m2f11/")
 	public String runder_m2f11(
 			Model model, HttpServletRequest request) {
+		
+		prepareRootPage(model);
 		
 		return "m2f11";
 	}

@@ -228,7 +228,7 @@ $(document).ready(function() {
 		formulaLineTemplate: Handlebars.compile($("#formulaLineTemplate").html()),
 		formulaColumnFormTemplate: Handlebars.compile($("#formulaColumnFormTemplate").html()),
 		
-		collection: new BudgetTypeFormulaColumnCollection(),
+		collection: new FormulaColumnCollection(),
 		
 		events: {
 			
@@ -304,7 +304,7 @@ $(document).ready(function() {
 			var form = this.$el.find('form');
 			var newForm = form.attr("newForm");
 			if(newForm) {
-				var formulaColumn = new BudgetTypeFormulaColumn({
+				var formulaColumn = new FormulaColumn({
 					columnName: form.find('input[name=columnName]').val(),
 					isFixed: form.find('input[name=isFixed]').attr('checked')=='checked'?true:false,
 					value: form.find('input[name=value]').val(),
@@ -362,7 +362,7 @@ $(document).ready(function() {
 			var formulaColumnId = $(e.target).attr('data-id');
 			if(formulaColumnId == null) {
 				//new Column!
-				var formHtml = this.formulaColumnFormTemplate(new BudgetTypeFormulaColumn());
+				var formHtml = this.formulaColumnFormTemplate(new FormulaColumn());
 				this.$el.find('#formulaColumnFormCtr').html(formHtml);
 			} else {
 				// now find the model 
@@ -429,7 +429,7 @@ $(document).ready(function() {
 					formulaStrategy.set('budgetType', this.budgetType.get('id'));
 					
 					// and initialize collection;
-					formulaStrategy.set('formulaColumns', new BudgetTypeFormulaColumnCollection());
+					formulaStrategy.set('formulaColumns', new FormulaColumnCollection());
 					
 					
 					
@@ -485,7 +485,7 @@ $(document).ready(function() {
 			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
 			
 			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
-			var currentFormula = BudgetTypeFormulaStrategy.findOrCreate(currentFormulaId);
+			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
 
 			this.formularLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
 		},
@@ -497,7 +497,7 @@ $(document).ready(function() {
 			
 			
 			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
-			var currentFormula = BudgetTypeFormulaStrategy.findOrCreate(currentFormulaId);
+			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
 			
 			var ret = confirm("do you want to delete?");
 
@@ -527,9 +527,9 @@ $(document).ready(function() {
 			
 			budgetType.get('children').forEach(function(child) {
 				// now find BudgetFormula
-				var strategyCollection = new BudgetTypeFormulaStrategyCollection();
+				var strategyCollection = new FormulaStrategyCollection();
 				strategyCollection.fetch({
-					url: appUrl('/BudgetTypeFormulaStrategy/search/' + fiscalYear + "/" + child.get('id')),
+					url: appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + child.get('id')),
 					success: function(data) {
 						child.set('formulaStrategy',strategyCollection);
 						child.trigger('changeFormula', child);
