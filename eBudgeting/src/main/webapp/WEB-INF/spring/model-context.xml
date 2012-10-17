@@ -40,6 +40,7 @@
         <property name="packagesToScan">
         	<list>
             	<value>biz.thaicom.eBudgeting.models</value>
+            	<value>biz.thaicom.security.models</value>
         	</list>
         </property>
  	</bean>
@@ -57,7 +58,6 @@
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="myEmf" />
 	</bean>
-
 	
 	<bean id="entityService" class="biz.thaicom.eBudgeting.services.EntityServiceJPA"/>
 	<bean id="databaseSchemaExport" class="biz.thaicom.eBudgeting.repositories.DatabaseSchemaExport"/>

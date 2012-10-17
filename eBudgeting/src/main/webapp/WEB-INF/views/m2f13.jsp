@@ -61,7 +61,7 @@
 				<tbody>
 					<tr>
 						<c:forEach items="${fiscalYears}" var="fiscalYear">
-							<td>${fiscalYear} <a href="./${fiscalYear}/0/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+							<td>${fiscalYear.fiscalYear} <a href="./${fiscalYear.fiscalYear}/0/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
 						</c:forEach>
 					</tr>
 				</tbody>

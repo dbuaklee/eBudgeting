@@ -38,7 +38,11 @@ ObjectiveType = Backbone.RelationalModel.extend({
 	    		key: 'parent'
 	    	}
 	    }
-	]
+	],
+	isLastToSelect: function() {
+		console.log("isLastToSelect" + this.get('id'));
+		 return this.get('id') === 105;
+	}
 });
 
 BudgetType = Backbone.RelationalModel.extend({

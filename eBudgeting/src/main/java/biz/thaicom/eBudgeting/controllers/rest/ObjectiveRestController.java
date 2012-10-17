@@ -26,7 +26,7 @@ public class ObjectiveRestController {
 	private EntityService entityService;
 
 	@RequestMapping(value="/Objective/root", method=RequestMethod.GET)
-	public @ResponseBody List<Integer> getRootFiscalYear() {
+	public @ResponseBody List<Objective> getRootFiscalYear() {
 		return entityService.findRootFiscalYear();
 	}
 	

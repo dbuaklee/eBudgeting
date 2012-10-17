@@ -49,12 +49,7 @@ public class GenericViewController {
 	}
 	
 	private void prepareRootPage(Model model) {
-		List<Integer> fiscalYears = entityService.findRootFiscalYear();		
-		if(logger.isDebugEnabled()) {
-			for(Integer fiscalYear : fiscalYears) {
-				logger.debug("found fiscalYear : " + fiscalYear.toString());
-			}
-		}
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		
@@ -79,7 +74,7 @@ public class GenericViewController {
 			model.addAttribute("budgetType", budgetType);
 			// now construct breadcrumb?
 			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbBudgetType("/page/m2f13/"+fiscalYear, budgetType); 
+			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbBudgetType("/page/m2f13", fiscalYear, budgetType); 
 			
 			model.addAttribute("breadcrumb", breadcrumb.listIterator());
 			model.addAttribute("rootPage", false);
@@ -205,17 +200,39 @@ public class GenericViewController {
 	@RequestMapping("/page/m2f12/")
 	public String runder_m2f12(
 			Model model, HttpServletRequest request) {
-		
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
 		return "m2f12";
 	}
 	
-	@RequestMapping("/page/m2f12/{fiscalYear}")
+	@RequestMapping("/page/m2f12/{fiscalYear}/{objectiveId}")
 	public String runder_m2f12OfYear(
 			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
 			Model model, HttpServletRequest request) {
 		
-		if(fiscalYear == null) {
-			logger.debug("make year selection!");
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
+		
+		// now find the one we're looking for
+		Objective objective = entityService.findOjectiveById(objectiveId);
+		
+		if(objective != null) {
+			logger.debug("Objective found!");
+			
+			model.addAttribute("objective", objective);
+			// now construct breadcrumb?
+			
+			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m2f12", fiscalYear, objective); 
+			
+			model.addAttribute("breadcrumb", breadcrumb.listIterator());
+			model.addAttribute("rootPage", false);
+			model.addAttribute("objective", objective);
+			
+		} else {
+			logger.debug("Objective NOT found! redirect to fiscal year selection");
+			// go to the root one!
+			return "redirect:/page/m2f12/";
 		}
 		
 		return "m2f12";

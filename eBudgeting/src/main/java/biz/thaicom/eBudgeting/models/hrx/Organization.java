@@ -52,4 +52,54 @@ public class Organization implements Serializable {
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
 	private List<Organization> children;
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAbbr() {
+		return abbr;
+	}
+
+	public void setAbbr(String abbr) {
+		this.abbr = abbr;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+	public Organization getParent() {
+		return parent;
+	}
+
+	public void setParent(Organization parent) {
+		this.parent = parent;
+	}
+
+	public List<Organization> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<Organization> children) {
+		this.children = children;
+	}
+
+	
+	
 }

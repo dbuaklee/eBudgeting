@@ -6,22 +6,25 @@
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 	
 	<http use-expressions="true">
+		<intercept-url pattern="/login" access="permitAll"/>
+		<intercept-url pattern="/resources/**" access="permitAll"/>
 		<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')"/>
+		<intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
 		
 		<form-login login-page="/login" authentication-failure-url="/login?failed=1"
-			default-target-url="/admin/" always-use-default-target="true"/>
+			default-target-url="/" always-use-default-target="true"/>
 			
 		
 		<logout logout-url="/logout" logout-success-url="/login"/>
 	
 	</http>
 	
+	<beans:bean id="thaicomAuthenticationProvider" class="biz.thaicom.security.services.ThaicomAuthenticationProvider"></beans:bean>
+	<beans:bean id="thaicomUserDetailService" class="biz.thaicom.security.services.ThaicomUserDetailService"></beans:bean>
 	<authentication-manager>
-		<authentication-provider>
-			<user-service>
-				<user name="test" password="test" authorities="ROLE_ADMIN"/>
-			</user-service>
+		<authentication-provider user-service-ref="thaicomUserDetailService" >
 		</authentication-provider>
 	</authentication-manager>
+	
 
 </beans:beans>

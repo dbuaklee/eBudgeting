@@ -1,31 +1,58 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<style type="text/css">
-<!--
-#mainTbl {
-	border-top: 0 none;
-}
-
-#mainTbl th {
-	padding:0;
-	border:0;
-}
-
-td.disable {
-	background-color: #f9f9f9;
-}
--->
-</style>
-
 <div class="row">
 	<div class="span12">
+		<c:if test="${rootPage == false}">
+		    <ul class="breadcrumb" id="headNav">
+		    	<c:forEach items="${breadcrumb}" var="link" varStatus="status">
+		    		<c:choose>
+						<c:when test="${status.last}">
+							<li class="active">${link.value}</li>
+						</c:when>
+						<c:otherwise>
+							<li><a href="<c:url value='${link.url}'></c:url>">${link.value}</a> <span class="divider">/</span></li>
+						</c:otherwise>
+					</c:choose>
+		    	</c:forEach>
+		    </ul>
+	    </c:if>
+	
+		<div id="modal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn" id="cancelBtn">Close</a> 
+				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+			</div>
+		</div>
+	
 		<div id="mainCtr">
+		<c:choose>
+		<c:when test="${rootPage}">
+			<table class="table table-bordered" id="mainTbl">
+				<thead>
+					<tr>
+						<td>เลือกปีงบประมาณ</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<c:forEach items="${fiscalYears}" var="fiscalYear">
+							<td>${fiscalYear.fiscalYear} <a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+						</c:forEach>
+					</tr>
+				</tbody>
+			</table>			
+		</c:when>
+		</c:choose>
 		</div>
 		
-		<div id="mainfrm">
-		
-		</div>
 	</div>
 </div>
 
@@ -44,18 +71,21 @@ td.disable {
 </table>
 <div style="height: 400px; overflow: auto; width:920px">
 <table class="table table-bordered" id="mainTbl" style="width:896px; table-layout:fixed;">
-	<thead>
-		<tr>
-			<th class="" style="width: 400px; height: 0px;"></th>
-			<th class="" style="width: 80px; height: 0px;"></th>
-			<th class="" style="width: 80px; height: 0px;"></th>
-			<th class="" style="width: 80px; height: 0px;"></th>
-			<th class="" style="width: 80px; height: 0px;"></th>
-			<th class="" style="width: 80px; height: 0px;"></th>
-		</tr>
-	</thead>
 	<tbody>
-		{{{childrenNodeTpl this 0}}}
+		{{#if this.type.isLastToSelect}}
+			{{{childrenNodeTpl this 0}}}
+		{{else}}
+			{{#each this}}
+			<tr>
+				<td class="" style="width: 400px; height: 0px;">{{name}} <a href="../{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+				<td class="" style="width: 80px; height: 0px;"></td>
+				<td class="" style="width: 80px; height: 0px;"></td>
+				<td class="" style="width: 80px; height: 0px;"></td>
+				<td class="" style="width: 80px; height: 0px;"></td>
+				<td class="" style="width: 80px; height: 0px;"></td>
+			</tr>
+			{{/each}}
+		{{/if}}
 	</tbody>
 </table>
 </div>
@@ -160,6 +190,9 @@ td.disable {
 
 
 <script type="text/javascript">
+var objectiveId = "${objective.id}";
+var fiscalYear = "${fiscalYear}";
+
 var pageUrl = "/page/m2f12/";
 var mainTblView  = null;
 var objectiveCollection = null;
@@ -230,31 +263,12 @@ Handlebars.registerHelper('next', function(val, next) {
 $(document).ready(function() {
 	
 	objectiveCollection = new ObjectiveCollection();
-	objectiveCollection.url = appUrl("/Objective/rootEager");
+	objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
 	
 	mainTblView = new MainTblView({collection: objectiveCollection});
 	
-	//now if this is root url
-	if(location.pathname == myApiUrl +pageUrl ) {
-		// this is the root now
-		// now we'll load root one onto this mainTbl
-		$.get(appUrl("/Objective/root/"), function(data) {
-			var t = Handlebars.compile($("#rootMainCtrTemplate").html());
-			$('#mainCtr').html(t(data));
-		});
-	} else {
-		pathArray = location.pathname.split('/').slice(1,-1);
-		objectiveCollection.url=appUrl("/Objective/rootEager/" + pathArray[pathArray.length-1] );
-		
-		//now we can just fetch and render...
-		objectiveCollection.fetch();
-		
-		
-		
-	}
 	
-	
-	
+	objectiveCollection.fetch();
 	
 });
 </script>

@@ -28,7 +28,9 @@ public interface EntityService {
 	public Objective findOjectiveById(Long id);
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id);
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad);
-	public List<Integer> findRootFiscalYear();
+	public List<Objective> findRootFiscalYear();
+	public List<Breadcrumb> createBreadCrumbObjective(String string,
+			Integer fiscalYear, Objective objective);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -36,7 +38,7 @@ public interface EntityService {
 	public BudgetType findBudgetTypeEagerLoadById(Long id);
 	public List<Integer> findFiscalYearBudgetType();
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
-			BudgetType budgetType);
+			Integer fiscalYear, BudgetType budgetType);
 	
 	//FormulaStrategy
 	public List<FormulaStrategy> findFormulaStrategyByfiscalYearAndTypeId(
@@ -49,6 +51,7 @@ public interface EntityService {
 	public void deleteFormulaColumn(Long id);
 	public FormulaColumn saveFormulaColumn(FormulaColumn formulaColumn);
 	public FormulaColumn updateFormulaColumn(FormulaColumn formulaColumn);
+
 	
 
 	

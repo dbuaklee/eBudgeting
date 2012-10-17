@@ -118,7 +118,7 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public List<Integer> findRootFiscalYear() {
+	public List<Objective> findRootFiscalYear() {
 		return objectiveRepository.findRootFiscalYear();
 	}
 
@@ -184,27 +184,35 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	@Transactional (propagation = Propagation.REQUIRED, readOnly = true)
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
-			BudgetType budgetType) {
+			Integer fiscalYear, BudgetType budgetType) {
 		if(budgetType == null) {
 			return null;
 		}
 		
-		
 		BudgetType current = budgetTypeRepository.findOne(budgetType.getId());
-		
-		// now we just have to init proxy
-		
 		
 		Stack<Breadcrumb> stack = new Stack<Breadcrumb>();
 		
-		
-		
 		while(current != null) {
 			Breadcrumb b = new Breadcrumb();
-			b.setUrl(prefix + "/" + current.getId() + "/");
-			b.setValue(current.getName());
+			if(current.getParent() == null) {
+				// this is the root!
+				b.setUrl(prefix + "/" + fiscalYear + "/" + current.getId() + "/");
+				b.setValue("ปี " + fiscalYear);
+				stack.push(b);
+				
+				b = new Breadcrumb();
+				b.setUrl(prefix+ "/" );
+				b.setValue("ROOT");
+				stack.push(b);
+				
+			} else {
 			
-			stack.push(b);
+				
+				b.setUrl(prefix + "/" + + fiscalYear + "/" + current.getId() + "/");
+				b.setValue(current.getName());
+				stack.push(b);
+			}
 			
 			current = current.getParent();
 		}
@@ -279,5 +287,47 @@ public class EntityServiceJPA implements EntityService {
 		
 		// and happily return 
 		return columnFromJpa;
+	}
+
+	@Override
+	public List<Breadcrumb> createBreadCrumbObjective(String prefix,
+			Integer fiscalYear, Objective objective) {
+		if(objective == null) {
+			return null;
+		}
+		
+		Objective current = objectiveRepository.findOne(objective.getId());
+		
+		Stack<Breadcrumb> stack = new Stack<Breadcrumb>();
+		
+		while(current != null) {
+			Breadcrumb b = new Breadcrumb();
+			if(current.getParent() == null) {
+				// this is the root!
+				b.setUrl(prefix + "/" + fiscalYear + "/" + current.getId() + "/");
+				b.setValue("ปี " + fiscalYear);
+				stack.push(b);
+				
+				b = new Breadcrumb();
+				b.setUrl(prefix+ "/" );
+				b.setValue("ROOT");
+				stack.push(b);
+				
+			} else {
+				b.setUrl(prefix + "/" + + fiscalYear + "/" + current.getId() + "/");
+				b.setValue(current.getName());
+				stack.push(b);
+			}
+			
+			current = current.getParent();
+		}
+		
+		List<Breadcrumb> list = new ArrayList<Breadcrumb>();
+		
+		while (stack.size() > 0) {
+			list.add(stack.pop());
+		}
+		
+		return list;
 	}
 }

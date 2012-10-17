@@ -14,8 +14,9 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	public List<Objective> findByParentIdAndFiscalYear(Long id, Integer fiscalYear);
 
 	@Query("" +
-			"SELECT distinct objective.fiscalYear " +
+			"SELECT objective " +
 			"FROM Objective objective " +
+			"WHERE objective.parent is null " +
 			"")
-	public List<Integer> findRootFiscalYear();
+	public List<Objective> findRootFiscalYear();
 }
