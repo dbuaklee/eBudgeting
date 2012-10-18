@@ -76,11 +76,10 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 	    {
 	    	type:Backbone.HasMany,
 	    	key: 'formulaColumns',
-	    	relatedModel: 'BudgetTypeFormulaColumn',
+	    	relatedModel: 'FormulaColumn',
 	    	reversRelation: {
 	    		type: Backbone.HasOne,
-	    		key: 'strategy',
-	    		includeInJSON:  false
+	    		key: 'strategy'
 	    	}
 	    	
 	    }

@@ -17,10 +17,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="BGT_BUDGETTYPEREQUESTCOLUMN")
+@Table(name="BGT_REQUESTCOLUMN")
 @SequenceGenerator(
-		name="BGT_BUDGETTYPEREQUESTCOLUMN_SEQ", 
-		sequenceName="BGT_BUDGETTYPEREQUESTCOLUMN_SEQ", allocationSize=1)
+		name="BGT_REQUESTCOLUMN_SEQ", 
+		sequenceName="BGT_REQUESTCOLUMN_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class RequestColumn implements Serializable {
 
@@ -30,11 +30,11 @@ public class RequestColumn implements Serializable {
 	private static final long serialVersionUID = 5065087026603553557L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_BUDGETTYPEREQUESTCOLUMN_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_REQUESTCOLUMN_SEQ")
 	private Long id;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="COLUMN_BGT_BUDGETTYPEFORMULACOLUMN_ID")
+	@JoinColumn(name="COLUMN_BGT_FORMULACOLUMN_ID")
 	private FormulaColumn column;
 	
 	@ManyToOne()

@@ -36,7 +36,7 @@ public class FormulaColumn implements Serializable {
 	private Integer index;
 
 	@ManyToOne
-	@JoinColumn(name = "STRATEGY_BGT_FORMULASTRATEGY_ID")
+	@JoinColumn(name = "STRATEGY_BGT_STRATEGY_ID")
 	private FormulaStrategy strategy;
 
 	@Basic

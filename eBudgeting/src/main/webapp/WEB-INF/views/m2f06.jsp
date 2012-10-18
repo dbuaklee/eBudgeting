@@ -4,18 +4,20 @@
 <div class="row">
 	<div class="span12">
 
-	    <ul class="breadcrumb" id="headNav">
-	    	<c:forEach items="${breadcrumb}" var="link" varStatus="status">
-	    		<c:choose>
-					<c:when test="${status.last}">
-						<li class="active">${link.value}</li>
-					</c:when>
-					<c:otherwise>
-						<li><a href="${link.url}">${link.value}</a> <span class="divider">/</span></li>
-					</c:otherwise>
-				</c:choose>
-	    	</c:forEach>
-	    </ul>
+		<c:if test="${rootPage == false}">
+		    <ul class="breadcrumb" id="headNav">
+		    	<c:forEach items="${breadcrumb}" var="link" varStatus="status">
+		    		<c:choose>
+						<c:when test="${status.last}">
+							<li class="active">${link.value}</li>
+						</c:when>
+						<c:otherwise>
+							<li><a href="<c:url value='${link.url}'></c:url>">${link.value}</a> <span class="divider">/</span></li>
+						</c:otherwise>
+					</c:choose>
+		    	</c:forEach>
+		    </ul>
+	    </c:if>
 
 		
 
@@ -36,7 +38,24 @@
 
 		<div class="control-group" id="mainCtr">
 			
-		
+			<c:choose>
+			<c:when test="${rootPage}">
+				<table class="table table-bordered" id="mainTbl">
+					<thead>
+						<tr>
+							<td>เลือกปีงบประมาณ</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<c:forEach items="${fiscalYears}" var="fiscalYear">
+								<td>${fiscalYear.fiscalYear} <a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+							</c:forEach>
+						</tr>
+					</tbody>
+				</table>			
+			</c:when>
+			</c:choose>	
 		</div>
 
 
@@ -85,9 +104,9 @@
 	<td> {{indexHuman index}} </td>
 	<td> {{name}} 
 		{{#if this.children}}
-			<a href="./{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a>
+			<a href="../{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a>
 		{{else}}
-			<button class="btn btn-mini">เพิ่มรายการย่อย</button>
+			<button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button>
 			<button class="btn btn-mini detail">กำหนดรายละเอียด</button>
 		{{/if}} 
 	</td>
@@ -139,24 +158,76 @@
 </div>
 </script>
 
+<script id="formulaTemplate" type="text/x-handlebars-template">
+<div id="formulaLine">
+<ol>
+{{#each this}}
+	<li data-id={{id}}> <button class='btn btn-mini deleteFormula'>ลบ</button>{{name}} = {{{formulaLine formulaColumns false}}} 
+	</li>
+{{/each}}
+</ol>
+</div>
+</script>
+
 <script type="text/javascript">
 <!--
+var objectiveId = "${objective.id}";
+var fiscalYear = "${fiscalYear}";
+
+var pageUrl = "/page/m2f06/";
+
 var mainTblView;
 
 var e1;
 var objectiveCollection;
-var currentPath='${currentPath}';
 
-var ROOT='${ROOT}';
-
-
+Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
+	
+	var s = "";
+	if(editForm == false) {
+		s = s+ "<a class='editSpan editFormulaLineBtn' href='#'>";
+		
+		if(formulaColumns == null || formulaColumns.length == 0) {
+			s =	s+"เพิ่มรายการคำนวณ";
+		}
+	}
+	
+	if(formulaColumns != null) {
+		for(var i=0; i < formulaColumns.length; i++) {
+			
+			if(i>0) { 
+				s = s + " X "; 
+			}
+			
+			if(editForm == true) {
+				s = s + "<a class='editSpan' href='#' data-id="+ formulaColumns[i].id +">"; 
+			}
+			s = s + formulaColumns[i].columnName;
+			if(formulaColumns[i].isFixed) {
+				s = s + "(??? " + formulaColumns[i].unitName  + ")";
+			} else {
+				s = s + "("+ addCommas(formulaColumns[i].value) + " " + formulaColumns[i].unitName  + ")";
+			}
+			if(editForm == true) {
+				s = s + "</a>";
+			}
+		}
+	} 
+	if(editForm == true) {
+		if(formulaColumns.length > 0) {
+			s = s + " X ";
+		}
+		s = s + "<a href='#' class='editSpan'>New</a>";
+	}else {
+		s += "</a>";	
+	}
+	
+	
+	return s;
+});
 
 
 $(document).ready(function() {
-	// bind to popstate
-	$(window).bind('popstate', function(e) {
-	  console.log(e.state);
-	});
 
 	
 	var BudgetProposalView = Backbone.View.extend({
@@ -165,17 +236,36 @@ $(document).ready(function() {
 				this.el = options.el;
 				this.model = options.model;
 			} 
+			_.bindAll(this, 'render');
+			_.bindAll(this, 'fetchFormulaLine');
+			
 			
 		},
+		
 		el: "#budgetSelectionCtr",
-		budgetProposalInputTpl : Handlebars.compile($("#proposalInputTemplate").html()),
+		formulaLineTpl : Handlebars.compile($("#formulaTemplate").html()),
+		formulaStrategyCollection: null,
 		
 		render: function(){
 			// first clear the siblings select
 			this.$el.nextAll('div').remove();
 			this.$el.empty();
-			this.$el.html(this.budgetProposalInputTpl(this.model.toJSON()));
+			this.$el.html(this.formulaLineTpl(this.formulaStrategyCollection.toJSON()));
+		},
+		
+		fetchFormulaLine : function(budgetTypeId) {
+			this.formulaStrategyCollection = new FormulaStrategyCollection();
+			this.formulaStrategyCollection.bind('change', this.render, this);
+			
+			this.formulaStrategyCollection.fetch({
+				url: appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + budgetTypeId),
+				success: _.bind(function(data) {
+					this.formulaStrategyCollection.trigger('change');
+				}, this)
+			});			
 		}
+		
+		
 	});
 	
 	var ModalView = Backbone.View.extend({
@@ -257,15 +347,19 @@ $(document).ready(function() {
 			// now try to get this model
 			var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
 			budgetType.fetch({success: _.bind(function(){
+				
 				if(!budgetType.get('children').isEmpty()) {
+					
 					var nextEl = this.$el.selector + " select + div";
 					this.nextBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType, el: nextEl});
 					this.nextBudgetTypeSelectionView.render();
 				} else {
+					
 					// then we should now filling in the proposed budget
 					var nextEl = this.$el.selector + " select + div";
 					this.nextBudgetTypeSelectionView = new BudgetProposalView({model: budgetType, el: nextEl});
-					this.nextBudgetTypeSelectionView.render();
+					
+					this.nextBudgetTypeSelectionView.fetchFormulaLine(budgetType.get('id'));
 				}
 			}, this)});
 			
@@ -443,40 +537,15 @@ $(document).ready(function() {
 	});
 	
 	
-	//rowCol.trigger('reset');
-	
-	//experimental
-	objectiveCollection = new ObjectiveCollection();
-	
-	
-	
-	// now we can create a view
-	mainTblView = new MainTblView({
-		collection: objectiveCollection
-	});
-	
-	lastObjectiveId="${lastObjectiveId}";
-	if(!isNaN(parseInt(lastObjectiveId))) {
-		var objective = new Objective();
-		objective.url = "/eBudgeting/Objective/" + lastObjectiveId;
-		objective.fetch({success: function() {
-			mainTblView.selectedObjective = objective;
-			mainTblView.render();
-		}});
-			
-	}
-	
-	objectiveCollection.url = "${url}";
-	
-	if(ROOT != 'true') {
-		objectiveCollection.fetch();
+
+	if(objectiveId != null && objectiveId.length >0 ) {
+		objectiveCollection = new ObjectiveCollection();
+		objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
 		
-	} else {
-		// now we'll load different one onto this mainTbl
-		$.get(objectiveCollection.url, function(data) {
-			var t = Handlebars.compile($("#rootMainCtrTemplate").html());
-			$('#mainCtr').html(t(data));
-		});
+		mainTblView = new MainTblView({collection: objectiveCollection});
+		
+		
+		objectiveCollection.fetch();
 	}
 
 

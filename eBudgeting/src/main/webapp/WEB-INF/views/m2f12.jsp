@@ -82,7 +82,7 @@
 
 <script id="childrenNormalNodeTemplate" type="text/x-handler-template">
 		<tr>
-			<td stlye="width:400px;">{{this.name}} <a href="../{{this.id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+			<td stlye="width:400px;">{{this.id}} {{this.name}} <a href="../{{this.id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
 			<td width="80"></td>
 			<td width="80"></td>
 			<td width="80"></td>
@@ -273,13 +273,15 @@ Handlebars.registerHelper('next', function(val, next) {
 	
 $(document).ready(function() {
 	
-	objectiveCollection = new ObjectiveCollection();
-	objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
-	
-	mainTblView = new MainTblView({collection: objectiveCollection});
-	
-	
-	objectiveCollection.fetch();
+	if(objectiveId != null && objectiveId.length >0 ) {
+		objectiveCollection = new ObjectiveCollection();
+		objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
+		
+		mainTblView = new MainTblView({collection: objectiveCollection});
+		
+		
+		objectiveCollection.fetch();
+	}
 	
 });
 </script>

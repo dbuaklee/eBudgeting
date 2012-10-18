@@ -254,9 +254,10 @@ $(document).ready(function() {
 			if(formulaStrategy != null) {
 				this.currentStrategy = formulaStrategy;
 				this.currentBudgetType = budgetType;
+				if(this.currentStrategy.get('formulaColumns') != null) {
+					this.collection = this.currentStrategy.get('formulaColumns');
+				};
 				
-				this.collection = this.currentStrategy.get('formulaColumns');
-
 				this.collection.bind('add', this.addNewFormulaColumn, this);
 				this.render();
 			}
@@ -415,13 +416,15 @@ $(document).ready(function() {
 		},
 		
 		save: function() {
-			var formulaStrategy = new BudgetTypeFormulaStrategy();
+			var formulaStrategy = new FormulaStrategy();
 			var formEl = this.$el.find('form');
 			formulaStrategy.set('name', $(formEl).find('#name').val());
-			formulaStrategy.set('budgetType', {id: this.budgetType.get('id')});
+			formulaStrategy.set('type', {id: this.budgetType.get('id')});
 			formulaStrategy.set('fiscalYear', fiscalYear);
 			formulaStrategy.set('numberColumns', 0);
 			formulaStrategy.set('index', this.budgetType.get('formulaStrategy').length);
+			
+			
 			formulaStrategy.save(null, {
 				success:_.bind(function(data){
 					
@@ -429,9 +432,7 @@ $(document).ready(function() {
 					formulaStrategy.set('budgetType', this.budgetType.get('id'));
 					
 					// and initialize collection;
-					formulaStrategy.set('formulaColumns', new FormulaColumnCollection());
-					
-					
+					formulaStrategy.set('formulaColumns', new FormulaColumnCollection());		
 					
 					this.budgetType.get('formulaStrategy').add(formulaStrategy);
 					this.budgetType.trigger('changeFormula', this.budgetType);

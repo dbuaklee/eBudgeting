@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity

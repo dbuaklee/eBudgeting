@@ -31,6 +31,7 @@ public interface EntityService {
 	public List<Objective> findRootFiscalYear();
 	public List<Breadcrumb> createBreadCrumbObjective(String string,
 			Integer fiscalYear, Objective objective);
+	public Objective objectiveDoEagerLoad(Long ObjectiveId);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -51,6 +52,7 @@ public interface EntityService {
 	public void deleteFormulaColumn(Long id);
 	public FormulaColumn saveFormulaColumn(FormulaColumn formulaColumn);
 	public FormulaColumn updateFormulaColumn(FormulaColumn formulaColumn);
+
 
 	
 

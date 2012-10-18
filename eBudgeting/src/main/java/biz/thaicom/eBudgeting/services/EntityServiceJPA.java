@@ -330,4 +330,12 @@ public class EntityServiceJPA implements EntityService {
 		
 		return list;
 	}
+
+	@Override
+	public Objective objectiveDoEagerLoad(Long objectiveId) {
+		Objective objective = objectiveRepository.findOne(objectiveId);
+		objective.doEagerLoad();
+		
+		return objective;
+	}
 }

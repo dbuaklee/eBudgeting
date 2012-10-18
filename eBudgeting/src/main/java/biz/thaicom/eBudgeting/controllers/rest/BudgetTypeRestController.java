@@ -56,7 +56,6 @@ public class BudgetTypeRestController {
 	
 	}
 	
-
 	//FormulaColumn
 	@RequestMapping(value="/FormulaColumn", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
@@ -117,6 +116,9 @@ public class BudgetTypeRestController {
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody FormulaStrategy createBudgetTypeFormulaStrategy(
 			@RequestBody FormulaStrategy strategy) {
+		
+		logger.debug("id: " + strategy.getType().getId());
+		
 		return entityService.saveFormulaStrategy(strategy);
 		}
 	

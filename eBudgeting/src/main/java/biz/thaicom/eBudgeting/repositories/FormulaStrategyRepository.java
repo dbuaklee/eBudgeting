@@ -18,7 +18,7 @@ public interface FormulaStrategyRepository extends
 	@Modifying
 	@Query("update FormulaStrategy strategy " +
 			"set index = index-1 " +
-			"where index > ?1 and fiscalYear = ?2 and budgetType = ?3 ")
+			"where index > ?1 and fiscalYear = ?2 and type = ?3 ")
 	public int reIndex(Integer deleteIndex, Integer fiscalYear, BudgetType budgetType);
 	
 }
