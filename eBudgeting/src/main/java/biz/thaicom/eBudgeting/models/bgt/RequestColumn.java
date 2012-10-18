@@ -37,6 +37,11 @@ public class RequestColumn implements Serializable {
 	@JoinColumn(name="COLUMN_BGT_BUDGETTYPEFORMULACOLUMN_ID")
 	private FormulaColumn column;
 	
+	@ManyToOne()
+	@JoinColumn(name="PROPOSAL_BGT_BUDGET_PROPOSAL")
+	private BudgetProposal proposal;
+			
+	
 	@Basic
 	private Integer amount;
 
@@ -62,6 +67,14 @@ public class RequestColumn implements Serializable {
 
 	public void setAmount(Integer amount) {
 		this.amount = amount;
+	}
+
+	public BudgetProposal getProposal() {
+		return proposal;
+	}
+
+	public void setProposal(BudgetProposal proposal) {
+		this.proposal = proposal;
 	}
 
 	

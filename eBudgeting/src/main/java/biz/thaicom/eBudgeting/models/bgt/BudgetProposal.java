@@ -61,7 +61,7 @@ public class BudgetProposal implements Serializable {
 	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
 	private List<AllocationRecord> allocationRecords;	
 
-	@OneToMany(mappedBy="column", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
 	private List<RequestColumn> requestColumns;
 	
 }

@@ -60,7 +60,7 @@
 <table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
 	<thead>
 		<tr>
-			<th width="400"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong></th>
+			<th stlye="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
 			<th width="80">เป้าหมาย</th>
 			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
 			<th width="80">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
@@ -70,30 +70,30 @@
 	</thead>
 </table>
 <div style="height: 400px; overflow: auto; width:920px">
-<table class="table table-bordered" id="mainTbl" style="width:896px; table-layout:fixed;">
+<table class="table table-bordered" id="mainTbl" style="width:900px; table-layout:fixed;">
 	<tbody>
-		{{#if this.type.isLastToSelect}}
+		
 			{{{childrenNodeTpl this 0}}}
-		{{else}}
-			{{#each this}}
-			<tr>
-				<td class="" style="width: 400px; height: 0px;">{{name}} <a href="../{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-				<td class="" style="width: 80px; height: 0px;"></td>
-				<td class="" style="width: 80px; height: 0px;"></td>
-				<td class="" style="width: 80px; height: 0px;"></td>
-				<td class="" style="width: 80px; height: 0px;"></td>
-				<td class="" style="width: 80px; height: 0px;"></td>
-			</tr>
-			{{/each}}
-		{{/if}}
+		
 	</tbody>
 </table>
 </div>
 </script>
 
+<script id="childrenNormalNodeTemplate" type="text/x-handler-template">
+		<tr>
+			<td stlye="width:400px;">{{this.name}} <a href="../{{this.id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+			<td width="80"></td>
+			<td width="80"></td>
+			<td width="80"></td>
+			<td width="80"></td>
+			<td width="80"></td>
+		</tr>
+</script>
+
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-index="{{this.id}}">
-		<td style="padding-left:{{this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
+		<td style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
 			<span>
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
@@ -105,10 +105,10 @@
 					<label class="main" for="item_{{this.id}}">{{this.type.name}} {{this.name}}</label>
 			</span> 
 		</td>
-			<td class="{{#if this.children}}disable{{/if}}"><span></span>
+			<td  width="80" class="{{#if this.children}}disable{{/if}}"><span></span>
 				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
-			<td class="{{#if this.children}}disable{{/if}}">
+			<td width="80" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
@@ -116,21 +116,21 @@
 				{{/if}}
 			</td>
 
-			<td class="{{#if this.children}}disable{{/if}}">
+			<td width="80" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
 					<a href="#" id="editable3-{{this.id}} data-type="text">0.00</a>
 				{{/if}}
 			</td>
-			<td class="{{#if this.children}}disable{{/if}}">
+			<td width="80" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
 					<a href="#" id="editable4-{{this.id}} data-type="text">0.00</a>
 				{{/if}}
 			</td>
-			<td class="{{#if this.children}}disable{{/if}}">
+			<td width="80" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
@@ -199,16 +199,29 @@ var objectiveCollection = null;
 var budgetTypeSelectionView = null;
 var l = null;
 
+Handlebars.registerHelper('substract', function(a, b) {
+	return a - b;
+});
+
 Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
 	  var out = '';
 	  var childNodeTpl = Handlebars.compile($("#childrenNodeTemplate").html());
+	  var childNormalNodeTpl = Handlebars.compile($("#childrenNormalNodeTemplate").html());
 	  if(level==undefined) level=0;
 	  if(children != null && children.length > 0) {
-	  	children.forEach(function(child){
-	  		child["level"] = level+1;
-	  		child["padding"] = (parseInt(level)+1) * 12;
-	    	out = out + childNodeTpl(child);
-	  	});
+		 
+		if(children[0].type.id >= 104) {
+			children.forEach(function(child){
+		  		child["level"] = level+1;
+		  		child["padding"] = (parseInt(level)+1) * 12;
+		    	out = out + childNodeTpl(child);
+		  	});
+			
+		} else {
+			children.forEach(function(child){
+				out =  out + childNormalNodeTpl(child);
+			});
+		}
 	  }
 
 	  return out;
@@ -231,7 +244,6 @@ Handlebars.registerHelper('next', function(val, next) {
 		render: function() {
 			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
 			
-			$('a[id*=editable]').editable()
 		},
 		
 		events: {
@@ -246,14 +258,13 @@ Handlebars.registerHelper('next', function(val, next) {
 			
 			var currentTr = $(l.target).parents('tr');
 			
-			
 			currentTr.nextUntil('tr[data-level='+clickLevel+']').toggle();
 		},
 		
 		showForm: function(e) {
 			l = e;
 			
-			$(e.target).prevAll('span').popover({title:'show', content:'content!'});
+			
 			
 		}
 		
