@@ -17,6 +17,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -55,6 +57,10 @@ public class Objective implements Serializable {
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="PARENT_PLN_OBJECTIVE_ID")
 	private Objective parent;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="BUDGETTYPE_BGT_BUDGETTYPE_ID")
+	private BudgetType budgetType;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
 	@OrderColumn(name="IDX")
@@ -110,12 +116,22 @@ public class Objective implements Serializable {
 		this.parent = parent;
 	}
 	
+	public BudgetType getBudgetType() {
+		return budgetType;
+	}
+	public void setBudgetType(BudgetType budgetType) {
+		this.budgetType = budgetType;
+	}
+	
 	// loading barebone information about the entity
 	public void doBasicLazyLoad() {
 		//now we get one parent and its type
 		if(this.getParent() != null) {
 			this.getParent().getId();
 		} 
+		if(this.getBudgetType() != null) {
+			this.getBudgetType().getId();
+		}
 		if(this.getType() != null) {
 			this.getType().getId();
 			if(this.getType().getParent() != null) {
@@ -132,6 +148,9 @@ public class Objective implements Serializable {
 	}
 	public void doEagerLoad() {
 		this.getType().getId();
+		if(this.getBudgetType() != null) {
+			this.getBudgetType().getId();
+		}
 		if(this.getChildren() != null && this.getChildren().size() > 0) {
 			// now load all the children
 			for(Objective obj : this.children) {

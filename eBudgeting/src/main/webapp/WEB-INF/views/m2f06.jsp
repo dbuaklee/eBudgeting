@@ -49,7 +49,7 @@
 					<tbody>
 						<tr>
 							<c:forEach items="${fiscalYears}" var="fiscalYear">
-								<td>${fiscalYear.fiscalYear} <a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+								<td> <a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk">${fiscalYear.fiscalYear}<i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
 							</c:forEach>
 						</tr>
 					</tbody>
@@ -97,15 +97,29 @@
 </table>
 </script>
 
+<script id="objectiveRowTemplate" type="text/x-handelbars-template">
+<td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
+	<td> {{indexHuman index}} </td>
+	<td> {{#if this.children}}
+			<a href="../{{id}}/" class="nextChildrenLnk">{{name}} <i class="icon icon-chevron-right"></i> </a>
+		{{else}}
+			{{name}}
+			<button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button>
+			<button class="btn btn-mini detail">กำหนดรายละเอียด</button>
+			<br>
+				- {{budgetType.name}}
+		{{/if}} 
+</td>
+</script>
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
 {{#each this}}
 <tr data-id="{{id}}"><td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
 	<td> {{indexHuman index}} </td>
-	<td> {{name}} 
-		{{#if this.children}}
-			<a href="../{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a>
+	<td> {{#if this.children}}
+			<a href="../{{id}}/" class="nextChildrenLnk">{{name}} <i class="icon icon-chevron-right"></i> </a>
 		{{else}}
+			{{name}}
 			<button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button>
 			<button class="btn btn-mini detail">กำหนดรายละเอียด</button>
 		{{/if}} 
@@ -239,7 +253,6 @@ $(document).ready(function() {
 			_.bindAll(this, 'render');
 			_.bindAll(this, 'fetchFormulaLine');
 			
-			
 		},
 		
 		el: "#budgetSelectionCtr",
@@ -301,12 +314,47 @@ $(document).ready(function() {
 		},
 		
 		close: function(e) {
-			e1=this.$el;
 			this.$el.modal('hide');
 		},
 		
 		save: function(e) {
 			// try saving objective back to server!?
+			if(this.objective != null) {
+				// we have to get budgetType
+				var budgetTypeSelected = this.budgetTypeSelection;
+				while(budgetTypeSelected.nextBudgetTypeSelectionView != null) {
+					// advance to the next selection 
+					budgetTypeSelected = budgetTypeSelected.nextBudgetTypeSelectionView;
+				}
+				this.objective.url = appUrl('/Objective/'+this.objective.get('id'));				
+				//OK we'll get budgetType id here
+				this.objective.set('fiscalYear', fiscalYear);
+				
+				// now move out ObjectiveType children
+				var objectiveTypeChildren = this.objective.get('type').get('children');
+				this.objective.get('type').set('children', null);
+				
+				this.objective.set('budgetType', budgetTypeSelected.model);
+				
+				e1 = this.objective;
+				
+				this.objective.save(null, {
+					success: _.bind(function() {
+						// put back children
+						this.objective.get('type').set('children', objectiveTypeChildren);
+						this.$el.modal('hide');
+						this.objective.trigger('change', this.objective);
+						
+					},this)
+				});
+
+				//put back 
+				//this.objective.set('parent', parent);
+				//this.objective.set('type', objectiveType);
+				
+				
+			}
+					
 		},
 		
 		renderWith: function(objective) {
@@ -369,7 +417,6 @@ $(document).ready(function() {
 	var MainTblView = Backbone.View.extend({
 		initialize: function(){
 		    this.collection.bind('reset', this.render, this);
-		    
 		},
 	
 		el: "#mainCtr",
@@ -380,7 +427,7 @@ $(document).ready(function() {
 		newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
 		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
-	
+		objectiveRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
 		
 		render: function() {
 			// first render the control
@@ -395,6 +442,11 @@ $(document).ready(function() {
 			
 			// then the inside row
 			html = this.tbodyTemplate(this.collection.toJSON());
+			// bind all cell
+			this.collection.each(function(model){
+				model.bind('change', this.renderObjective, this);
+			}, this);
+			
 			this.$el.find('tbody').html(html);
 			
 			return this;
@@ -414,6 +466,12 @@ $(document).ready(function() {
 				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
 				this.$el.find('a.btn').toggleClass('disabled');
 			}
+		},
+		
+		renderObjective: function(objective) {
+			var objectiveEl = this.$el.find('tr[data-id='+ objective.get('id') +']');
+			objectiveEl.html(this.objectiveRowTemplate(objective.toJSON()));
+			
 		},
 		
 		cancelSaveLine: function(e) {

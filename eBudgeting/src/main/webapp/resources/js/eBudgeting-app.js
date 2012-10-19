@@ -15,11 +15,16 @@ Objective = Backbone.RelationalModel.extend({
 	    	type: Backbone.HasMany,
 	    	key: 'children',
 	    	relatedModel: 'Objective',
-	    	collectionType: 'ObjectiveCollection',
-	    	reverseRelation: {
-	    		type: Backbone.HasOne,
-	    		key: 'parent'
-	    	}
+	    	collectionType: 'ObjectiveCollection'	    
+	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'budgetType',
+	    	relatedModel: 'BudgetType'
+	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'parent',
+	    	relatedModel: 'Objective',
+	    	includeInJSON: ['id']
 	    }
 	    
 	]
@@ -35,7 +40,8 @@ ObjectiveType = Backbone.RelationalModel.extend({
 	    	collectionType: 'ObjectiveTypeCollection',
 	    	reverseRelation: {
 	    		type: Backbone.HasOne,
-	    		key: 'parent'
+	    		key: 'parent',
+	    		includeInJSON: ['id']
 	    	}
 	    }
 	],
@@ -55,7 +61,8 @@ BudgetType = Backbone.RelationalModel.extend({
 	    	collectionType: 'BudgetTypeCollection',
 	    	reverseRelation: {
 	    		type: Backbone.HasOne,
-	    		key: 'parent'
+	    		key: 'parent',
+	    		includeInJSON: ['id']
 	    	}
 	    }
 	],

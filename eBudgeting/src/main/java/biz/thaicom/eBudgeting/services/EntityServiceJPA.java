@@ -338,4 +338,35 @@ public class EntityServiceJPA implements EntityService {
 		
 		return objective;
 	}
+
+	@Override
+	public Objective updateObjective(Objective objective) {
+		// now get Objective form our DB first
+		Objective objectiveFromJpa = objectiveRepository.findOne(objective.getId());
+		
+		if(objectiveFromJpa != null) {
+			// OK go through the supposed model
+			objectiveFromJpa.setName(objective.getName());
+			objectiveFromJpa.setFiscalYear(objective.getFiscalYear());
+			
+			if(objective.getBudgetType() != null && objective.getBudgetType().getId() != null) {
+				objectiveFromJpa.setBudgetType(objective.getBudgetType());
+			} 
+			
+			if(objective.getParent() != null && objective.getParent().getId() != null) {
+				objectiveFromJpa.setParent(objective.getParent());
+			}
+			
+			if(objective.getType() != null && objective.getType().getId() != null) {
+				objectiveFromJpa.setType(objective.getType());
+			}
+			
+			// we don't do anything for children
+			
+			objectiveRepository.save(objectiveFromJpa);
+		}
+		
+		return objectiveFromJpa;
+		
+	}
 }

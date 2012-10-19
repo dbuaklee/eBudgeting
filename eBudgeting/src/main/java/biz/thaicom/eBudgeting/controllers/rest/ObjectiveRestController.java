@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -61,6 +62,20 @@ public class ObjectiveRestController {
 		}
 		logger.debug("returning...");
 		return  list;
+	}
+	
+	@RequestMapping(value="/Objective/{id}", method=RequestMethod.PUT)
+	public @ResponseBody Objective updateObjective(@PathVariable Long id,
+			@RequestBody Objective objective) {
+		logger.debug("got: " + objective.getBudgetType().getId());
+		
+		
+		// now we'll have to save this
+		Objective objectiveFromJpa = entityService.updateObjective(objective);
+		
+		
+		return objectiveFromJpa;
+		
 	}
 	
 	@ExceptionHandler(value=Exception.class)
