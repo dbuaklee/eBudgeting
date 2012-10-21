@@ -42,6 +42,7 @@ public class BudgetProposal implements Serializable {
 	@JoinColumn(name="BUDGETTYPE_BGT_BUDGETTYPE_ID")
 	private BudgetType budgetType;
 	
+	
 	@Basic
 	private String name;
 	

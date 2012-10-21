@@ -44,7 +44,7 @@
 				<tbody>
 					<tr>
 						<c:forEach items="${fiscalYears}" var="fiscalYear">
-							<td>${fiscalYear.fiscalYear} <a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+							<td><a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk">${fiscalYear.fiscalYear} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
 						</c:forEach>
 					</tr>
 				</tbody>
@@ -82,7 +82,7 @@
 
 <script id="childrenNormalNodeTemplate" type="text/x-handler-template">
 		<tr>
-			<td stlye="width:400px;">{{this.id}} {{this.name}} <a href="../{{this.id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+			<td stlye="width:400px;"><a href="../{{this.id}}/" class="nextChildrenLnk">{{this.name}} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
 			<td width="80"></td>
 			<td width="80"></td>
 			<td width="80"></td>
@@ -103,6 +103,9 @@
 					{{/if}}
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">{{this.type.name}} {{this.name}}</label>
+					{{#unless this.children}}
+						<br/><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>-{{this.budgetType.name}}
+					{{/unless}}
 			</span> 
 		</td>
 			<td  width="80" class="{{#if this.children}}disable{{/if}}"><span></span>
@@ -142,21 +145,6 @@
 	{{{childrenNodeTpl this.children this.level}}}
 </script>
 
-<script id="rootMainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl">
-	<thead>
-		<tr>
-			<td>เลือกปีงบประมาณ</td>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>{{this}} <a href="./{{this}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-		</tr>
-	</tbody>
-</table>
-</div>
-</script>
 
 <script id="proposalInputTemplate" type="text/x-handler-template">
 <div id="proposalInputCtr">

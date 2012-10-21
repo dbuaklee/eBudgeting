@@ -114,17 +114,7 @@
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
 {{#each this}}
-<tr data-id="{{id}}"><td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
-	<td> {{indexHuman index}} </td>
-	<td> {{#if this.children}}
-			<a href="../{{id}}/" class="nextChildrenLnk">{{name}} <i class="icon icon-chevron-right"></i> </a>
-		{{else}}
-			{{name}}
-			<button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button>
-			<button class="btn btn-mini detail">กำหนดรายละเอียด</button>
-		{{/if}} 
-	</td>
-
+<tr data-id="{{id}}">
 </tr>
 {{/each}}
 </script>
@@ -159,7 +149,7 @@
 <select id="budgetType_{{this.id}}">
 	<option value="0">กรุณาเลือกรายการ</option>
 	{{#each this.children}}
-	<option value="{{this.id}}">{{this.name}}</option>
+	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
 </select>
 <div></div>
@@ -290,22 +280,63 @@ $(document).ready(function() {
 		modalTemplate: Handlebars.compile($("#modalTemplate").html()),
 		
 		render: function() {
+			
 			if(this.objective != null) {
 			
 				var html = this.modalTemplate(this.objective.toJSON());
 				this.$el.find('.modal-header span').html(this.objective.get('name'));
 				this.$el.find('.modal-body').html(html);
 	
+				e1 = this.objective.get('budgetType');
 				
-			    var rootBudgetType = BudgetType.findOrCreate({id:0});
-			    rootBudgetType.fetch({success: _.bind(function(){
-			    	this.budgetTypeSelection = new BudgetTypeSelectionView({model: rootBudgetType, el:'#budgetSelectionCtr'});
-			    	this.budgetTypeSelection.render();
-			    },this)});
+				if(this.objective.get('budgetType') == null) {
 				
+				    var rootBudgetType = BudgetType.findOrCreate({id:0});
+				    rootBudgetType.fetch({success: _.bind(function(){
+				    	this.budgetTypeSelection = new BudgetTypeSelectionView({model: rootBudgetType, el:'#budgetSelectionCtr'});
+				    	this.budgetTypeSelection.render();
+			    	},this)});
 				
+				} else {
+					var currentBudgetType = this.objective.get('budgetType');
+					this.btCollection = new Backbone.Collection();
+					this.btCollection.bind('finishLoadParent', this.finishLoadParent, this);
+					currentBudgetType.fetch({
+						success:_.bind(function(model, response) {
+							if(model.get('parent') != null) {
+								model.loadParent(this.btCollection, response);
+							}
+														
+						}, this)
+					});
+										
+				}
 				this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+				return this;
 			}
+		},
+		
+		finishLoadParent: function(budgetTypeCollection) {
+			// here we will have to build the budgetTypeSelectionView;
+			var budgetType = budgetTypeCollection.pop();
+			var btEl = '#budgetSelectionCtr';
+			var i = 0;
+			var currentBudgetTypeSelectionView;
+			while(budgetType != null) {
+				var budgetTypeSelectionView = new BudgetTypeSelectionView({model:budgetType, el: btEl});
+				budgetTypeSelectionView.render();
+				if(i==0) {
+					this.budgetTypeSelection = budgetTypeSelectionView;
+				} else {
+					currentBudgetTypeSelectionView.nextBudgetTypeSelectionView =  budgetTypeSelectionView;
+				}
+				currentBudgetTypeSelectionView = budgetTypeSelectionView;
+				btEl  = btEl + " select + div";
+				budgetType = budgetTypeCollection.pop();
+				i = i+1;
+				
+			}
+			
 		},
 		
 		events: {
@@ -334,9 +365,9 @@ $(document).ready(function() {
 				var objectiveTypeChildren = this.objective.get('type').get('children');
 				this.objective.get('type').set('children', null);
 				
-				this.objective.set('budgetType', budgetTypeSelected.model);
+				var budgetType = BudgetType.findOrCreate(budgetTypeSelected.model.id);
 				
-				e1 = this.objective;
+				this.objective.set('budgetType', budgetType);
 				
 				this.objective.save(null, {
 					success: _.bind(function() {
@@ -348,11 +379,6 @@ $(document).ready(function() {
 					},this)
 				});
 
-				//put back 
-				//this.objective.set('parent', parent);
-				//this.objective.set('type', objectiveType);
-				
-				
 			}
 					
 		},
@@ -360,6 +386,7 @@ $(document).ready(function() {
 		renderWith: function(objective) {
 			this.setObjective(objective);
 			this.render();
+			return this;
 		},
 		
 		setObjective: function(objective) {
@@ -394,9 +421,10 @@ $(document).ready(function() {
 			var selectedBudgetTypeId = $(e.target).val();
 			// now try to get this model
 			var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
-			budgetType.fetch({success: _.bind(function(){
-				
-				if(!budgetType.get('children').isEmpty()) {
+			e1 = budgetType;
+			budgetType.fetch({success: _.bind(function(model, response){
+				var fetchedBudgetType = response;
+				if(fetchedBudgetType.children != null && fetchedBudgetType.children.length > 0) {
 					
 					var nextEl = this.$el.selector + " select + div";
 					this.nextBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType, el: nextEl});
@@ -405,11 +433,13 @@ $(document).ready(function() {
 					
 					// then we should now filling in the proposed budget
 					var nextEl = this.$el.selector + " select + div";
-					this.nextBudgetTypeSelectionView = new BudgetProposalView({model: budgetType, el: nextEl});
+					this.nextBudgetTypeSelectionView = new BudgetProposalView({model: fetchedBudgetType, el: nextEl});
 					
-					this.nextBudgetTypeSelectionView.fetchFormulaLine(budgetType.get('id'));
+					this.nextBudgetTypeSelectionView.fetchFormulaLine(fetchedBudgetType.id);
 				}
 			}, this)});
+			
+			// ok we'll have to set back to this!?
 			
 		}
 	});
@@ -442,13 +472,14 @@ $(document).ready(function() {
 			
 			// then the inside row
 			html = this.tbodyTemplate(this.collection.toJSON());
+			this.$el.find('tbody').html(html);
+
 			// bind all cell
 			this.collection.each(function(model){
 				model.bind('change', this.renderObjective, this);
+				this.renderObjective(model);
 			}, this);
-			
-			this.$el.find('tbody').html(html);
-			
+
 			return this;
 		},
 		
@@ -536,17 +567,14 @@ $(document).ready(function() {
 		
 		detailModal: function(e) {
 			// now prepare information for modal
-			e1 = $(e.currentTarget);
-			
 			var objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
 			var objective = this.collection.get(objectiveId);
 			
-			this.modalView.renderWith(objective);
+			this.modalView.budgetTypeSelection =  this.modalView.renderWith(objective);
 			
 		},
 		
 		slideInChildren: function(e) {
-			e1 = e;
 			var id = $(e.target).parents('tr').attr('data-id');
 			
 				

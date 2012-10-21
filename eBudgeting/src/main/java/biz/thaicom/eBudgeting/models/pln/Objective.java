@@ -130,6 +130,9 @@ public class Objective implements Serializable {
 			this.getParent().getId();
 		} 
 		if(this.getBudgetType() != null) {
+			if(this.getBudgetType().getParent() !=null) {
+				this.getBudgetType().getParent().getId();
+			}
 			this.getBudgetType().getId();
 		}
 		if(this.getType() != null) {

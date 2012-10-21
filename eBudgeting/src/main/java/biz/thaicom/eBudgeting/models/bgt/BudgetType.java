@@ -156,6 +156,12 @@ public class BudgetType implements Serializable {
 			}
 		}
 		
+	}
+
+	public void doLoadParent() {
+		if(this.getParent() != null) {
+			this.getParent().doLoadParent();
+		}
 	}	
 
 	

@@ -37,7 +37,7 @@ public interface EntityService {
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
 	public BudgetType findBudgetTypeById(Long id);
-	public BudgetType findBudgetTypeEagerLoadById(Long id);
+	public BudgetType findBudgetTypeEagerLoadById(Long id, Boolean isLoadParent);
 	public List<Integer> findFiscalYearBudgetType();
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
 			Integer fiscalYear, BudgetType budgetType);

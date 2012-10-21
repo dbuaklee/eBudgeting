@@ -69,7 +69,32 @@ BudgetType = Backbone.RelationalModel.extend({
 	setIdUrl: function(id) {
 		this.url = this.urlRoot + "/" + id;
 	},
-	urlRoot: appUrl('/BudgetType')
+	urlRoot: appUrl('/BudgetType'),
+	loadParent: function(budgetTypeCollection, current) {
+		if(this.get('parent') != null) {
+			this.get('parent').fetch({
+				success: _.bind(function(model, response) {
+					budgetTypeCollection.add(response);
+					_.each(response.children, function(child) {
+						if(child.id == current.id) {
+							child.selected = true;
+						}
+					});
+					
+					if(this.get('parent') != null) {
+						this.loadParent(budgetTypeCollection, response);
+					} else {
+						budgetTypeCollection.trigger('finishLoadParent', budgetTypeCollection);
+					}
+					
+				}, this.get('parent'))
+			});
+		} else {
+			console.log('2');
+			budgetTypeCollection.trigger('finishLoadParent', budgetTypeCollection);
+		}
+		
+	}
 });
 
 FormulaColumn = Backbone.RelationalModel.extend({

@@ -167,9 +167,13 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public BudgetType findBudgetTypeEagerLoadById(Long id) {
+	public BudgetType findBudgetTypeEagerLoadById(Long id, Boolean isLoadParent) {
 		BudgetType b = findBudgetTypeById(id);
 		b.doEagerLoad();
+		
+		if(isLoadParent) {
+			b.doLoadParent();
+		}
 		
 		return b;
 	}
@@ -315,7 +319,8 @@ public class EntityServiceJPA implements EntityService {
 				
 			} else {
 				b.setUrl(prefix + "/" + + fiscalYear + "/" + current.getId() + "/");
-				b.setValue(current.getName());
+				Integer index=current.getIndex() +1;
+				b.setValue(current.getType().getName() + "ที่ "+ index + ". <br/>" + current.getName());
 				stack.push(b);
 			}
 			

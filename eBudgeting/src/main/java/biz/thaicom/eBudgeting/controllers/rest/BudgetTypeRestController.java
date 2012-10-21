@@ -36,14 +36,18 @@ public class BudgetTypeRestController {
 	@RequestMapping(value="/BudgetType/{id}", method=RequestMethod.GET)
 	public @ResponseBody BudgetType getBudgetTypeEagerLoad(
 			@PathVariable Long id, 
-			@RequestParam(required=false) Boolean isEagerLoad) {
+			@RequestParam(required=false) Boolean isEagerLoad,
+			@RequestParam(required=false) Boolean isLoadParent) {
 		BudgetType b;
 		
-		if(isEagerLoad != null && isEagerLoad == true) 
-			 b = entityService.findBudgetTypeEagerLoadById(id);
+		if((isEagerLoad != null && isEagerLoad == true) || 
+			(isLoadParent != null && isLoadParent == true)) 
+			 b = entityService.findBudgetTypeEagerLoadById(id, isLoadParent);
 		else {
 			b = entityService.findBudgetTypeById(id);
 		}
+		
+
 		
 		if(b==null) throw new EntityNotFoundException("no BudgetType row with id " + id);
 		
