@@ -92,7 +92,7 @@
 </script>
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
-	<tr data-level="{{this.level}}" data-index="{{this.id}}">
+	<tr data-level="{{this.level}}" data-id="{{this.id}}">
 		<td style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
 			<span>
 					{{#if this.children}}
@@ -104,7 +104,7 @@
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">{{this.type.name}} {{this.name}}</label>
 					{{#unless this.children}}
-						<br/><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>-{{this.budgetType.name}}
+						<br/><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/> &gt; {{this.budgetType.name}}
 					{{/unless}}
 			</span> 
 		</td>
@@ -115,7 +115,7 @@
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text">0.00</a>
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">0.00</a>
 				{{/if}}
 			</td>
 
@@ -123,21 +123,21 @@
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
-					<a href="#" id="editable3-{{this.id}} data-type="text">0.00</a>
+					<a href="#" id="editable3-{{this.id}} data-type="text" class="detail">0.00</a>
 				{{/if}}
 			</td>
 			<td width="80" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
-					<a href="#" id="editable4-{{this.id}} data-type="text">0.00</a>
+					<a href="#" id="editable4-{{this.id}} data-type="text" class="detail">0.00</a>
 				{{/if}}
 			</td>
 			<td width="80" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>0.00</span>
 				{{else}}
-					<a href="#" id="editable5-{{this.id}} data-type="text">0.00</a>
+					<a href="#" id="editable5-{{this.id}} data-type="text" class="detail">0.00</a>
 				{{/if}}
 			</td>
 
@@ -145,6 +145,11 @@
 	{{{childrenNodeTpl this.children this.level}}}
 </script>
 
+<script id="modalTemplate" type="text/x-handler-template">
+	<form>
+
+	</form>
+</script>
 
 <script id="proposalInputTemplate" type="text/x-handler-template">
 <div id="proposalInputCtr">
@@ -186,6 +191,7 @@ var mainTblView  = null;
 var objectiveCollection = null;
 var budgetTypeSelectionView = null;
 var l = null;
+var e1;
 
 Handlebars.registerHelper('substract', function(a, b) {
 	return a - b;
@@ -219,24 +225,63 @@ Handlebars.registerHelper('next', function(val, next) {
 	return val+next;
 });
 
+	var ModalView = Backbone.View.extend({
+		initialize: function() {
+			
+		},
+		
+		el: "#modal",
+		
+		modalTemplate: Handlebars.compile($('#modalTemplate').html()),
+		
+		
+		render: function() {
+			if(this.objective != null) {
+				var html = this.modalTemplate(this.objective.toJSON());
+				this.$el.find('.modal-header span').html(this.objective.get('name'));
+				this.$el.find('.modal-body').html(html);
+				
+				
+				
+			}
+			
+			
+			this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+			return this;
+		},
+		
+		renderWith: function(currentObjective) {
+			this.objective = currentObjective;
+			this.render();
+		}
+	});
 
 
 	var MainTblView = Backbone.View.extend({
 		initialize: function(){
 		    this.collection.bind('reset', this.render, this);
-		    _.bindAll(this, 'showForm');
+		    _.bindAll(this, 'detailModal');
 		},
+		
 		el: "#mainCtr",
 		mainTblTpl : Handlebars.compile($("#mainCtrTemplate").html()),
+		modalView : new ModalView(),
 		
+		events:  {
+			"click input[type=checkbox].bullet" : "toggle",
+			"click .detail" : "detailModal"
+		},
+		
+		detailModal: function(e) {
+			var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
+			var currentObjective = Objective.findOrCreate(currentObjectiveId);
+
+			this.modalView.renderWith(currentObjective);
+			
+		},
 		render: function() {
 			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
 			
-		},
-		
-		events: {
-			"click input[type=checkbox].bullet" : "toggle",
-			"click a" : "showForm"
 		},
 		
 		toggle: function(e) {
@@ -247,13 +292,6 @@ Handlebars.registerHelper('next', function(val, next) {
 			var currentTr = $(l.target).parents('tr');
 			
 			currentTr.nextUntil('tr[data-level='+clickLevel+']').toggle();
-		},
-		
-		showForm: function(e) {
-			l = e;
-			
-			
-			
 		}
 		
 	});
