@@ -24,6 +24,8 @@ import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.services.EntityService;
+import biz.thaicom.security.models.Activeuser;
+import biz.thaicom.security.models.ThaicomUserDetail;
 
 @Controller
 public class GenericViewController {
@@ -234,7 +236,8 @@ public class GenericViewController {
 	public String render_m2f12OfYear(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
+			Model model, HttpServletRequest request,
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
 		

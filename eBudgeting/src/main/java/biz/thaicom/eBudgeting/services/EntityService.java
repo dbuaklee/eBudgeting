@@ -7,6 +7,7 @@ import java.util.Stack;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
@@ -33,6 +34,8 @@ public interface EntityService {
 			Integer fiscalYear, Objective objective);
 	public Objective objectiveDoEagerLoad(Long ObjectiveId);
 	public Objective updateObjective(Objective objective);
+	
+	public List<ObjectiveBudgetProposalDTO> findObjectiveBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();

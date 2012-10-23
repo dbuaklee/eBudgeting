@@ -11,6 +11,9 @@
 	
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven>
+		<argument-resolvers>
+        	<beans:bean class="biz.thaicom.security.controllers.CurrentUserHandlerMethodArgumentResolver"/>
+    	</argument-resolvers>
 		<message-converters>
 			<beans:bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 				<beans:property name="objectMapper">

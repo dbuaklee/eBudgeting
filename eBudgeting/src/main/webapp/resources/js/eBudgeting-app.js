@@ -120,6 +120,19 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 
 });
 
+BudgetProposal = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	urlRoot: appUrl('/BudgetProposal')
+});
+
+ObjectiveBudgetProposal = Backbone.RelationalModel.extend({
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'objective',
+		
+	}]
+});
+
 // Collection
 
 ObjectiveCollection = Backbone.Collection.extend({

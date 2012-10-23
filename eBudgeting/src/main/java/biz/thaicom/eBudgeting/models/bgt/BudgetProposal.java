@@ -64,5 +64,71 @@ public class BudgetProposal implements Serializable {
 
 	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
 	private List<RequestColumn> requestColumns;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public BudgetType getBudgetType() {
+		return budgetType;
+	}
+
+	public void setBudgetType(BudgetType budgetType) {
+		this.budgetType = budgetType;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Long getAmountRequest() {
+		return amountRequest;
+	}
+
+	public void setAmountRequest(Long amountRequest) {
+		this.amountRequest = amountRequest;
+	}
+
+	public Organization getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Organization owner) {
+		this.owner = owner;
+	}
+
+	public Objective getForObjective() {
+		return forObjective;
+	}
+
+	public void setForObjective(Objective forObjective) {
+		this.forObjective = forObjective;
+	}
+
+	public List<AllocationRecord> getAllocationRecords() {
+		return allocationRecords;
+	}
+
+	public void setAllocationRecords(List<AllocationRecord> allocationRecords) {
+		this.allocationRecords = allocationRecords;
+	}
+
+	public List<RequestColumn> getRequestColumns() {
+		return requestColumns;
+	}
+
+	public void setRequestColumns(List<RequestColumn> requestColumns) {
+		this.requestColumns = requestColumns;
+	}
+	
+	
 	
 }

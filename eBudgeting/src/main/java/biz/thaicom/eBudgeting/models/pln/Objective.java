@@ -17,6 +17,7 @@ import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -65,6 +66,9 @@ public class Objective implements Serializable {
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
 	@OrderColumn(name="IDX")
 	private List<Objective> children;
+	
+	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
+	private List<BudgetProposal> proposals;
 	
 	//Normal Getter/Setter
 	public Long getId() {
@@ -122,7 +126,12 @@ public class Objective implements Serializable {
 	public void setBudgetType(BudgetType budgetType) {
 		this.budgetType = budgetType;
 	}
-	
+	public List<BudgetProposal> getProposals() {
+		return proposals;
+	}
+	public void setProposals(List<BudgetProposal> proposals) {
+		this.proposals = proposals;
+	}
 	// loading barebone information about the entity
 	public void doBasicLazyLoad() {
 		//now we get one parent and its type

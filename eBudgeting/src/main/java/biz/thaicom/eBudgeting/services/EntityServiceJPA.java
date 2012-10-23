@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
@@ -373,5 +374,10 @@ public class EntityServiceJPA implements EntityService {
 		
 		return objectiveFromJpa;
 		
+	}
+
+	@Override
+	public List<ObjectiveBudgetProposalDTO> findObjectiveBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId) {
+		return objectiveRepository.findByObjectiveBudgetProposal(fiscalYear, ownerId, objectiveId);
 	}
 }
