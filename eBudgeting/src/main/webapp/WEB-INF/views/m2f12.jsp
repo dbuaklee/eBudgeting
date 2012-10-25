@@ -84,7 +84,7 @@
 		<tr>
 			<td stlye="width:400px;"><a href="../{{this.id}}/" class="nextChildrenLnk">{{this.name}} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
 			<td width="80"></td>
-			<td width="80"></td>
+			<td style="text-align:right" width="80">{{#if this.proposals}} {{formatNumber this.proposals.0.amountRequest}} {{else}}0.00{{/if}}</td>
 			<td width="80"></td>
 			<td width="80"></td>
 			<td width="80"></td>
@@ -113,7 +113,7 @@
 			</td>
 			<td width="80" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>0.00</span>
+					<span>{{#if this.proposals}}{{this.proposals.0.amountRequest}}{{else}}0.00{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">0.00</a>
 				{{/if}}
@@ -204,7 +204,7 @@ Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
 	  if(level==undefined) level=0;
 	  if(children != null && children.length > 0) {
 		 
-		if(children[0].type.id >= 104) {
+		if(children[0].type.id > 104) {
 			children.forEach(function(child){
 		  		child["level"] = level+1;
 		  		child["padding"] = (parseInt(level)+1) * 12;
@@ -213,6 +213,7 @@ Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
 			
 		} else {
 			children.forEach(function(child){
+				console.log(child);
 				out =  out + childNormalNodeTpl(child);
 			});
 		}
@@ -301,12 +302,23 @@ $(document).ready(function() {
 	
 	if(objectiveId != null && objectiveId.length >0 ) {
 		objectiveCollection = new ObjectiveCollection();
-		objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
+		
+		objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/"+ fiscalYear + "/" + objectiveId +"/children");
 		
 		mainTblView = new MainTblView({collection: objectiveCollection});
 		
-		
-		objectiveCollection.fetch();
+		//load curent objective 
+		parentObjective = new Objective({id: objectiveId});
+		parentObjective.url=appUrl("/Objective/"+objectiveId);
+		parentObjective.fetch({
+			success: function() {
+				e1 = parentObjective;
+				if(parentObjective.get('type').get('id') >= 104) {
+					objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/"+ fiscalYear + "/" + objectiveId +"/descendants");
+				}
+				objectiveCollection.fetch();
+			}
+		});
 	}
 	
 });

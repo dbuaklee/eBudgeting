@@ -75,6 +75,11 @@ Handlebars.registerHelper('indexHuman', function(index) {
 	}
 });
 
+Handlebars.registerHelper('formatNumber', function(number) {
+	return addCommas(number);
+});
+
+
 function addCommas(nStr)
 {
 	nStr += '';

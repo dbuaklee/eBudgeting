@@ -25,6 +25,10 @@ Objective = Backbone.RelationalModel.extend({
 	    	key: 'parent',
 	    	relatedModel: 'Objective',
 	    	includeInJSON: ['id']
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'proposals',
+	    	relatedModel: 'BudgetProposal'
 	    }
 	    
 	]
@@ -90,7 +94,6 @@ BudgetType = Backbone.RelationalModel.extend({
 				}, this.get('parent'))
 			});
 		} else {
-			console.log('2');
 			budgetTypeCollection.trigger('finishLoadParent', budgetTypeCollection);
 		}
 		
@@ -122,16 +125,41 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 
 BudgetProposal = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
+	relations: [{
+		type:Backbone.HasOne,
+		key: 'forObjective',
+		relatedModel: 'Objective'
+	},{
+		type:Backbone.HasMany,
+		key: 'proposalStrategies',
+		relatedModel: 'ProposalStrategy'
+	}],
 	urlRoot: appUrl('/BudgetProposal')
 });
 
-ObjectiveBudgetProposal = Backbone.RelationalModel.extend({
+ProposalStrategy = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
 	relations: [{
-		type: Backbone.HasOne,
-		key: 'objective',
-		
+		type:Backbone.HasOne,
+		key: 'formulaStrategy',
+		relatedModel: 'FormulaStrategy'
+	},{
+		type:Backbone.HasMany,
+		key: 'requestColumns',
+		relatedModel: 'RequestCOlumn'
 	}]
 });
+
+RequestCOlumn = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type:Backbone.HasOne,
+		key: 'proposalStrategy',
+		relatedModel: 'ProposalStrategy'
+	}]
+});
+
+
 
 // Collection
 

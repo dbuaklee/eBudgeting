@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.services.EntityService;
+import biz.thaicom.security.models.Activeuser;
+import biz.thaicom.security.models.ThaicomUserDetail;
 
 @Controller
 public class ObjectiveRestController {
@@ -67,6 +69,7 @@ public class ObjectiveRestController {
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.PUT)
 	public @ResponseBody Objective updateObjective(@PathVariable Long id,
 			@RequestBody Objective objective) {
+		
 		logger.debug("got: " + objective.getBudgetType().getId());
 		
 		
@@ -75,6 +78,56 @@ public class ObjectiveRestController {
 		
 		
 		return objectiveFromJpa;
+		
+	}
+	
+	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{ownerId}/{objectiveId}/children", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getChildrenbjectiveWithBudgetPorposalByOwnerId(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long ownerId,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser
+			) {
+		List<Objective> objectives = entityService.findChildrenObjectivewithBudgetProposal(fiscalYear, ownerId, objectiveId, false);
+		
+		return objectives;
+		
+	}
+	
+	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{objectiveId}/children", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getChildrenbjectiveWithBudgetPorposal(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser
+			) {
+		List<Objective> objectives = entityService.findChildrenObjectivewithBudgetProposal(fiscalYear, currentUser.getWorkAt().getId(), objectiveId, false);
+		
+		return objectives;
+		
+	}
+	
+	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{ownerId}/{objectiveId}/descendants", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getDescendantsbjectiveWithBudgetPorposalByOwnerId(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long ownerId,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser
+			) {
+		List<Objective> objectives = entityService.findChildrenObjectivewithBudgetProposal(fiscalYear, ownerId, objectiveId, true);
+		
+		return objectives;
+		
+	}
+	
+	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{objectiveId}/descendants", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getDescendantsbjectiveWithBudgetPorposal(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser
+			) {
+		List<Objective> objectives = entityService.findChildrenObjectivewithBudgetProposal(fiscalYear, currentUser.getWorkAt().getId(), objectiveId, true);
+		
+		return objectives;
 		
 	}
 	

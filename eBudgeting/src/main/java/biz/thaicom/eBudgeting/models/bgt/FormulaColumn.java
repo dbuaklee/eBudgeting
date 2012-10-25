@@ -55,6 +55,14 @@ public class FormulaColumn implements Serializable {
 		return id;
 	}
 
+	
+	
+	public FormulaColumn() {
+		this.id = null;
+	}
+
+
+
 	public void setId(Long id) {
 		this.id = id;
 	}

@@ -32,15 +32,14 @@ public class BudgetProposalRestController {
 	@Autowired
 	private EntityService entityService;
 	
-	@RequestMapping("/BudgetProposal/{fiscalYear}/{objectiveId}/")
-	public @ResponseBody List<ObjectiveBudgetProposalDTO> findBudgetProposalByFiscalYearAndOwnerId(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId, 
+	@RequestMapping("/BudgetProposal/{budgetProposalId}/")
+	public @ResponseBody BudgetProposal findBudgetProposalById(
+			@PathVariable Long budgetProposalId, 
 			@Activeuser ThaicomUserDetail activeUser) {
 		
-		 logger.debug(activeUser.getWorkAtAbbr());
+		 
 
-		return entityService.findObjectiveBudgetProposal(fiscalYear, activeUser.getWorkAt().getId(), objectiveId);
+		return entityService.findBudgetProposalById(budgetProposalId);
 	}
 	
 	@ExceptionHandler(value=EntityNotFoundException.class)

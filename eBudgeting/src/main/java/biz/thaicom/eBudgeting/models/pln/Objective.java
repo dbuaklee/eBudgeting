@@ -19,6 +19,8 @@ import javax.persistence.Table;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
+import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -167,6 +169,34 @@ public class Objective implements Serializable {
 			// now load all the children
 			for(Objective obj : this.children) {
 				obj.doEagerLoad();
+			}
+		}
+	}
+	
+	public void doEagerLoadWithBudgetProposal(Boolean isChildrenTraversal) {
+		this.getType().getId();
+		if(this.getBudgetType() != null) {
+			this.getBudgetType().getId();
+		}
+		
+		if(this.getProposals() != null && this.getProposals().size() > 0) {
+			for(BudgetProposal proposal : this.getProposals()) {
+				if(proposal.getProposalStrategies() != null && proposal.getProposalStrategies().size() >0 ) {
+					for(ProposalStrategy proposeStrategy: proposal.getProposalStrategies()) {
+						proposeStrategy.getFormulaStrategy().getFormulaColumns().size();
+						proposeStrategy.getRequestColumns().size();
+					}
+				}
+			}
+		}
+		
+		if(isChildrenTraversal) {
+		
+			if(this.getChildren() != null && this.getChildren().size() > 0) {
+				// now load all the children
+				for(Objective obj : this.children) {
+					obj.doEagerLoadWithBudgetProposal(true);
+				}
 			}
 		}
 	}

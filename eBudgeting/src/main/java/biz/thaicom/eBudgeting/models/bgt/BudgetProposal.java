@@ -46,8 +46,6 @@ public class BudgetProposal implements Serializable {
 	@Basic
 	private String name;
 	
-
-	
 	@Basic
 	private Long amountRequest;
 	
@@ -63,7 +61,7 @@ public class BudgetProposal implements Serializable {
 	private List<AllocationRecord> allocationRecords;	
 
 	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
-	private List<RequestColumn> requestColumns;
+	private List<ProposalStrategy> proposalStrategies;
 
 	public Long getId() {
 		return id;
@@ -121,12 +119,12 @@ public class BudgetProposal implements Serializable {
 		this.allocationRecords = allocationRecords;
 	}
 
-	public List<RequestColumn> getRequestColumns() {
-		return requestColumns;
+	public List<ProposalStrategy> getProposalStrategies() {
+		return proposalStrategies;
 	}
 
-	public void setRequestColumns(List<RequestColumn> requestColumns) {
-		this.requestColumns = requestColumns;
+	public void setProposalStrategies(List<ProposalStrategy> proposalStrategies) {
+		this.proposalStrategies = proposalStrategies;
 	}
 	
 	

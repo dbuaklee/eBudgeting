@@ -335,8 +335,9 @@ $(document).ready(function() {
 				formulaColumn.set('unitName',form.find('input[name=unitName]').val());
 				
 				//temporarily fixed the relation isuue
-				formulaColumn.set('strategy', {id: this.currentStrategy.get('id')});
-				
+				// no need to set formulaStrategy?
+				formulaColumn.set('strategy', null);
+				//formulaColumn.set('strategy', this.currentStrategy.toJSON());
 				
 				formulaColumn.save(null, {
 					success: _.bind(function(model, response) {

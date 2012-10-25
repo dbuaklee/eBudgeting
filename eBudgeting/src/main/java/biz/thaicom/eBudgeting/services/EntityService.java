@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
@@ -35,7 +36,7 @@ public interface EntityService {
 	public Objective objectiveDoEagerLoad(Long ObjectiveId);
 	public Objective updateObjective(Objective objective);
 	
-	public List<ObjectiveBudgetProposalDTO> findObjectiveBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId);
+	public List<Objective> findChildrenObjectivewithBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -56,6 +57,9 @@ public interface EntityService {
 	public void deleteFormulaColumn(Long id);
 	public FormulaColumn saveFormulaColumn(FormulaColumn formulaColumn);
 	public FormulaColumn updateFormulaColumn(FormulaColumn formulaColumn);
+	
+	//BudgetProposal
+	public BudgetProposal findBudgetProposalById(Long budgetProposalId);
 	
 
 

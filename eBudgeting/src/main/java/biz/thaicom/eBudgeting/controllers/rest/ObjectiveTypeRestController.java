@@ -37,6 +37,7 @@ public class ObjectiveTypeRestController {
 		
 	}
 	
+	
 	@ExceptionHandler(value=Exception.class)
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {
 		logger.error(e.toString());

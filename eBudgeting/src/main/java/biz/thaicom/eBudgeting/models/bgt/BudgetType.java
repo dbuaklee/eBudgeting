@@ -18,6 +18,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.sql.ForUpdateFragment;
+
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -62,6 +64,9 @@ public class BudgetType implements Serializable {
 	@Basic
 	@Column(name="IDX")
 	private Integer index;
+	
+	@OneToMany(mappedBy="type", fetch=FetchType.LAZY)
+	private List<FormulaStrategy> strategies;
 
 	public BudgetType() {
 		

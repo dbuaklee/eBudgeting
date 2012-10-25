@@ -22,18 +22,20 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	public List<Objective> findRootFiscalYear();
 	
 	
-	@Query("" +  
-			"SELECT objective, proposal " +
-			"FROM BudgetProposal proposal " +
-			"	RIGHT OUTER JOIN proposal.owner owner with owner.id = ?2 " +
-			"	RIGHT OUTER JOIN proposal.forObjective objective with objective.fiscalYear = ?1 " +
-			"WHERE " +
-			"	" +
-			"	 objective.parent.id = ?3 ")
 //	@Query("" +  
 //			"SELECT objective, proposal " +
-//			"FROM Objective objective" +
-//			"	LEFT OUTER JOIN BudgetProposal proposal" +
-//			" ")
-	public List<ObjectiveBudgetProposalDTO> findByObjectiveBudgetProposal(Integer fiscalYear, Long onwerId, long objectiveId);
+//			"FROM BudgetProposal proposal " +
+//			"	RIGHT OUTER JOIN proposal.owner owner with owner.id = ?2 " +
+//			"	RIGHT OUTER JOIN proposal.forObjective objective with objective.fiscalYear = ?1 " +
+//			"WHERE " +
+//			"	" +
+//			"	 objective.parent.id = ?3 ")
+	@Query("" +  
+			"SELECT objective " +
+			"FROM Objective objective" +
+			"	LEFT OUTER JOIN FETCH objective.proposals proposal " +
+			"	LEFT OUTER JOIN proposal.owner owner with owner.id = ?2 " +
+			"WHERE objective.parent.id = ?3 and objective.fiscalYear = ?1 " +
+			"ORDER BY objective.index asc ")
+	public List<Objective> findByObjectiveBudgetProposal(Integer fiscalYear, Long onwerId, Long objectiveId);
 }

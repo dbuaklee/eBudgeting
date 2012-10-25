@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
@@ -19,6 +20,7 @@ import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
+import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
@@ -44,6 +46,10 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private FormulaColumnRepository formulaColumnRepository;
+	
+	@Autowired
+	private BudgetProposalRepository budgetProposalRepository;
+	
 
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
@@ -377,7 +383,19 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public List<ObjectiveBudgetProposalDTO> findObjectiveBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId) {
-		return objectiveRepository.findByObjectiveBudgetProposal(fiscalYear, ownerId, objectiveId);
+	public List<Objective> findChildrenObjectivewithBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal) {
+		List<Objective> objectives = objectiveRepository.findByObjectiveBudgetProposal(fiscalYear, ownerId, objectiveId);
+		
+		for(Objective objective : objectives) {
+//			logger.debug("** " + objective.getBudgetType().getName());
+			objective.doEagerLoadWithBudgetProposal(isChildrenTraversal);
+		}
+		return objectives;
+	}
+
+	@Override
+	public BudgetProposal findBudgetProposalById(Long budgetProposalId) {
+		return budgetProposalRepository.findOne(budgetProposalId);
 	}
 }

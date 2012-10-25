@@ -63,6 +63,13 @@ public class FormulaStrategy  implements Serializable{
 	@OrderColumn(name="IDX")
 	private List<FormulaColumn> formulaColumns;
 
+	
+	
+	public FormulaStrategy() {
+		//new FormulaStrategy!
+		this.id = null;
+	}
+
 	public Long getId() {
 		return id;
 	}
