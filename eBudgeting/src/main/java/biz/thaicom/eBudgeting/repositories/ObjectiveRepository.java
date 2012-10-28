@@ -3,9 +3,11 @@ package biz.thaicom.eBudgeting.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 
@@ -32,10 +34,43 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 //			"	 objective.parent.id = ?3 ")
 	@Query("" +  
 			"SELECT objective " +
-			"FROM Objective objective" +
-			"	LEFT OUTER JOIN FETCH objective.proposals proposal " +
-			"	LEFT OUTER JOIN proposal.owner owner with owner.id = ?2 " +
+			"FROM Objective objective " +
+			"	LEFT OUTER JOIN objective.proposals proposal with proposal.owner.id = ?2 " +
 			"WHERE objective.parent.id = ?3 and objective.fiscalYear = ?1 " +
 			"ORDER BY objective.index asc ")
 	public List<Objective> findByObjectiveBudgetProposal(Integer fiscalYear, Long onwerId, Long objectiveId);
+
+	
+	
+	
+	@Query("" +  
+			"SELECT objective " +
+			"FROM Objective objective" +
+			"	INNER JOIN FETCH objective.parent parent " +
+			"	INNER JOIN FETCH objective.type type " +
+			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
+			"	LEFT OUTER JOIN objective.proposals proposal with proposal.owner.id = ?2 " +
+			"WHERE objective.fiscalYear = ?1 AND objective.parentPath like ?3 " +
+			"ORDER BY objective.index asc ")
+	public List<Objective> findFlatByObjectiveBudgetProposal(
+			Integer fiscalYear, Long ownerId, String parentPathLikeString);
+	
+	
+	@Query("" +  
+			"SELECT objective " +
+			"FROM Objective objective" +
+			"	INNER JOIN FETCH objective.type type " +
+			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
+			"WHERE objective.parent.id = ?1  " +
+			"ORDER BY objective.index asc ")
+	public List<Objective> findChildrenWithParentAndTypeAndBudgetType(
+			Long id);
+
+	@Modifying
+	@Query("update Objective objective " +
+			"set index = index-1 " +
+			"where index > ?1 and objective.parent = ?2 ")
+	public int reIndex(Integer deleteIndex, Objective parent);
+	
+
 }

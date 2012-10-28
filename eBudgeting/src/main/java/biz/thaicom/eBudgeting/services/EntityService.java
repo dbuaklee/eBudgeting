@@ -9,6 +9,8 @@ import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
+import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
+import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
@@ -37,6 +39,16 @@ public interface EntityService {
 	public Objective updateObjective(Objective objective);
 	
 	public List<Objective> findChildrenObjectivewithBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal);
+	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId);
+
+	public Objective addBudgetTypeToObjective(Long id, Long budgetTypeId);
+	public Objective removeBudgetTypeToObjective(Long id, Long budgetTypeId);
+	public Objective updateObjectiveFields(Long id, String name, String code);
+	public Objective saveObjective(Objective objective);
+	public Objective newObjectiveWithParam(String name, String code, Long parentId,
+			Long typeId);
+	public Objective deleteObjective(Long id);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -60,6 +72,21 @@ public interface EntityService {
 	
 	//BudgetProposal
 	public BudgetProposal findBudgetProposalById(Long budgetProposalId);
+	public BudgetProposal saveBudgetProposal(BudgetProposal proposal);
+	
+	//ProposalStrategy
+	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy);
+	
+	//RequestColumn
+	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
+
+
+
+
+
+	
+
+
 	
 
 

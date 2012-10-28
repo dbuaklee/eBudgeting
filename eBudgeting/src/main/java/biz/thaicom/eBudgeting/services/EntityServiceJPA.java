@@ -17,6 +17,9 @@ import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
+import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
+import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
+import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
@@ -26,6 +29,8 @@ import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
+import biz.thaicom.eBudgeting.repositories.ProposalStrategyRepository;
+import biz.thaicom.eBudgeting.repositories.RequestColumnRepositories;
 
 @Service
 @Transactional
@@ -49,6 +54,12 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private BudgetProposalRepository budgetProposalRepository;
+	
+	@Autowired
+	private RequestColumnRepositories requestColumnRepositories;
+	
+	@Autowired 
+	private ProposalStrategyRepository proposalStrategyRepository;
 	
 
 	@Override
@@ -95,17 +106,21 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id) {
-		Objective self = objectiveRepository.findOne(id);
-		if(self != null) {
-			logger.debug("--id: " + self.getId());
-			logger.debug("children.getSize() = " + self.getChildren().size());
-			self.getChildren().size();
-			for(Objective objective: self.getChildren()) {
-				logger.debug(" child.id --> " + objective.getId());
-				objective.doBasicLazyLoad();
-			}
-		}
-		return self.getChildren();
+//		Objective self = objectiveRepository.findOne(id);
+//		if(self != null) {
+//			logger.debug("--id: " + self.getId());
+//			logger.debug("children.getSize() = " + self.getChildren().size());
+//			self.getChildren().size();
+//			for(Objective objective: self.getChildren()) {
+//				if(objective != null) {
+//					logger.debug(" child.id --> " + objective.getId());
+//					objective.doBasicLazyLoad();
+//				}
+//			}
+//		}
+//		return self.getChildren();
+		
+		return objectiveRepository.findChildrenWithParentAndTypeAndBudgetType(id);
 	}
 
 	@Override
@@ -361,9 +376,9 @@ public class EntityServiceJPA implements EntityService {
 			objectiveFromJpa.setName(objective.getName());
 			objectiveFromJpa.setFiscalYear(objective.getFiscalYear());
 			
-			if(objective.getBudgetType() != null && objective.getBudgetType().getId() != null) {
-				objectiveFromJpa.setBudgetType(objective.getBudgetType());
-			} 
+//			if(objective.getBudgetType() != null && objective.getBudgetType().getId() != null) {
+//				objectiveFromJpa.setBudgetType(objective.getBudgetType());
+//			} 
 			
 			if(objective.getParent() != null && objective.getParent().getId() != null) {
 				objectiveFromJpa.setParent(objective.getParent());
@@ -397,5 +412,192 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public BudgetProposal findBudgetProposalById(Long budgetProposalId) {
 		return budgetProposalRepository.findOne(budgetProposalId);
+	}
+
+	@Override
+	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId) {
+		String parentPathLikeString = "%."+objectiveId.toString()+"%";
+		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear, ownerId, parentPathLikeString);
+		
+		List<BudgetProposal> proposalList = budgetProposalRepository
+				.findBudgetProposalByFiscalYearAndOwnerAndParentPath(fiscalYear, ownerId, parentPathLikeString);
+		
+		//loop through proposalList
+		for(BudgetProposal proposal : proposalList) {
+			Integer index = list.indexOf(proposal.getForObjective());
+			Objective o = list.get(index);
+			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
+			
+			o.setProposals(new ArrayList<BudgetProposal>());
+			
+			o.getProposals().add(proposal);
+			logger.debug("proposal size is " + o.getProposals().size());
+		}
+		
+		
+		return list;
+	}
+
+	@Override
+	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy) {
+		
+
+		
+		// 
+		BudgetProposal b = budgetProposalRepository.findOne(strategy.getProposal().getId());
+		b.addAmountRequest(strategy.getTotalCalculatedAmount());
+		budgetProposalRepository.save(b);
+		
+		Organization owner = b.getOwner();
+		
+		BudgetProposal temp = b;
+		// OK we'll go through the amount of this one and it's parent!?
+		while (temp.getForObjective().getParent() != null) {
+			// now we'll get all proposal
+			Objective parent = temp.getForObjective().getParent();
+			temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+			
+			if(temp!=null) {
+				temp.addAmountRequest(strategy.getTotalCalculatedAmount());
+			} else {
+				temp = new BudgetProposal();
+				temp.setForObjective(parent);
+				temp.setOwner(owner);
+//				temp.setBudgetType(parent.getBudgetType());
+				temp.setAmountRequest(strategy.getTotalCalculatedAmount());
+			}
+			budgetProposalRepository.save(temp);
+		}
+		
+		
+		ProposalStrategy strategyJpa =  proposalStrategyRepository.save(strategy);
+		
+		if(strategy.getRequestColumns() != null) {
+			// we have to save these columns first
+			
+			for(RequestColumn rc : strategy.getRequestColumns()) {
+				rc.setProposalStrategy(strategyJpa);
+				requestColumnRepositories.save(rc);
+			}
+		}
+		
+		return strategyJpa;
+	}
+
+	@Override
+	public BudgetProposal saveBudgetProposal(BudgetProposal proposal) {
+		logger.debug("budgetType id: " + proposal.getBudgetType().getId());
+		// make sure we have budgetType
+		BudgetType b = budgetTypeRepository.findOne(proposal.getBudgetType().getId());
+		proposal.setBudgetType(b);
+		
+		return budgetProposalRepository.save(proposal);
+	}
+
+	@Override
+	public RequestColumn saveRequestColumn(RequestColumn requestColumn) {
+		return requestColumnRepositories.save(requestColumn);
+	}
+
+	@Override
+	public Objective addBudgetTypeToObjective(Long id, Long budgetTypeId) {
+		// Ok so we get one objective
+		Objective obj = objectiveRepository.findOne(id);
+		
+		if(obj!= null) {
+			//now find the budgetType
+			BudgetType b = budgetTypeRepository.findOne(budgetTypeId);
+			
+			//now we're just ready to add to obj
+			obj.getBudgetTypes().add(b);
+			objectiveRepository.save(obj);
+			
+			return obj;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Objective removeBudgetTypeToObjective(Long id, Long budgetTypeId) {
+		// Ok so we get one objective
+		Objective obj = objectiveRepository.findOne(id);
+		
+		if(obj!= null) {
+			//now find the budgetType
+			BudgetType b = budgetTypeRepository.findOne(budgetTypeId);
+			
+			//now we're just ready to add to obj
+			obj.getBudgetTypes().remove(b);
+			objectiveRepository.save(obj);
+			
+			return obj;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Objective updateObjectiveFields(Long id, String name, String code) {
+		/// Ok so we get one objective
+		Objective obj = objectiveRepository.findOne(id);
+		
+		obj.setName(name);
+		obj.setCode(code);
+		
+		objectiveRepository.save(obj);
+		return obj;
+	}
+
+	@Override
+	public Objective saveObjective(Objective objective) {
+		
+		
+		return objectiveRepository.save(objective);
+	}
+
+	@Override
+	public Objective newObjectiveWithParam(String name, String code, Long parentId,
+			Long typeId) {
+		Objective obj = new Objective();
+		obj.setName(name);
+		obj.setCode(code);
+		
+		Objective parent = objectiveRepository.findOne(parentId);
+		ObjectiveType type = objectiveTypeRepository.findOne(typeId);
+		
+		obj.setParent(parent);
+		obj.setType(type);
+		
+		obj.setIsLeaf(true);
+		obj.setIndex(parent.getChildren().size());
+		
+		// now the parent will not be leaf node anymore
+		parent.setIsLeaf(false);
+		objectiveRepository.save(parent);
+		
+		return objectiveRepository.save(obj);
+	}
+
+	@Override
+	public Objective deleteObjective(Long id) {
+		// ok we'll have to get this one first
+		Objective obj = objectiveRepository.findOne(id);
+		
+		//then get its parent
+		Objective parent = obj.getParent();
+		
+		parent.getChildren().remove(obj);
+		
+		if(parent.getChildren().size() == 0) {
+			parent.setIsLeaf(true);
+			objectiveRepository.save(parent);
+		} else {
+			objectiveRepository.reIndex(obj.getIndex(), parent);
+		}
+		objectiveRepository.delete(obj);
+		
+		return obj;
 	}
 }

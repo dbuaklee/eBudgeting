@@ -50,6 +50,9 @@ public class BudgetType implements Serializable {
 	@Basic
 	private String code;
 	
+	@Basic
+	private String parentPath;
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="PARENT_BGT_BUDGETTYPE_ID")
 	private BudgetType parent;
@@ -132,7 +135,22 @@ public class BudgetType implements Serializable {
 	public void setIndex(Integer index) {
 		this.index = index;
 	}
-	
+	public String getParentPath() {
+		return parentPath;
+	}
+
+	public void setParentPath(String parentPath) {
+		this.parentPath = parentPath;
+	}
+
+	public List<FormulaStrategy> getStrategies() {
+		return strategies;
+	}
+
+	public void setStrategies(List<FormulaStrategy> strategies) {
+		this.strategies = strategies;
+	}
+
 	public void doBasicLazyLoad() {
 		//now we get one parent and its type
 		if(this.getParent() != null) {

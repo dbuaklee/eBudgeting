@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
@@ -58,11 +59,7 @@ public class ObjectiveRestController {
 	public @ResponseBody List<Objective> getOChildrenObjectiveById(@PathVariable Long id) {
 		logger.debug("id: " + id);
 		List<Objective> list =entityService.findObjectiveChildrenByObjectiveId(id);
-		logger.debug("children size: " + list.size());
-		for(Objective obj : list) {
-			logger.debug("  -> id : " + obj.getId());
-		}
-		logger.debug("returning...");
+
 		return  list;
 	}
 	
@@ -70,7 +67,6 @@ public class ObjectiveRestController {
 	public @ResponseBody Objective updateObjective(@PathVariable Long id,
 			@RequestBody Objective objective) {
 		
-		logger.debug("got: " + objective.getBudgetType().getId());
 		
 		
 		// now we'll have to save this
@@ -80,6 +76,48 @@ public class ObjectiveRestController {
 		return objectiveFromJpa;
 		
 	}
+	
+	@RequestMapping(value="/Objective/{id}", method=RequestMethod.DELETE) 
+	public @ResponseBody Objective deleteObjective(
+			@PathVariable Long id) {
+		return entityService.deleteObjective(id);
+	}
+	
+	@RequestMapping(value="/Objective", method=RequestMethod.POST) 
+	public @ResponseBody Objective saveObjective(@RequestBody Objective objective) {
+		return entityService.saveObjective(objective);
+	}
+	
+	@RequestMapping(value="/Objective/newObjectiveWithParam", method=RequestMethod.POST) 
+	public @ResponseBody Objective saveObjectiveWithParam(
+			@RequestParam String name,
+			@RequestParam String code,
+			@RequestParam Long parentId,
+			@RequestParam Long typeId) {
+		
+		return entityService.newObjectiveWithParam(name,code,parentId,typeId);
+	}
+	
+	
+	@RequestMapping(value="/Objective/{id}/addBudgetType", method=RequestMethod.POST)
+	public @ResponseBody Objective addBudgetType(@PathVariable Long id,
+			@RequestParam Long budgetTypeId){
+		return entityService.addBudgetTypeToObjective(id, budgetTypeId);
+	}
+	
+	@RequestMapping(value="/Objective/{id}/updateFields", method=RequestMethod.POST)
+	public @ResponseBody Objective updateFileds(@PathVariable Long id,
+			@RequestParam(required=false) String name,
+			@RequestParam(required=false) String code){
+		return entityService.updateObjectiveFields(id, name, code);
+	}
+	
+	@RequestMapping(value="/Objective/{id}/removeBudgetType", method=RequestMethod.POST)
+	public @ResponseBody Objective removeBudgetType(@PathVariable Long id,
+			@RequestParam Long budgetTypeId){
+		return entityService.removeBudgetTypeToObjective(id, budgetTypeId);
+	}
+	
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{ownerId}/{objectiveId}/children", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getChildrenbjectiveWithBudgetPorposalByOwnerId(
@@ -101,6 +139,18 @@ public class ObjectiveRestController {
 			@Activeuser ThaicomUserDetail currentUser
 			) {
 		List<Objective> objectives = entityService.findChildrenObjectivewithBudgetProposal(fiscalYear, currentUser.getWorkAt().getId(), objectiveId, false);
+		
+		return objectives;
+		
+	}
+	
+	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getFlatDescendantsbjectiveWithBudgetPorposalByOwnerId(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser
+			) {
+		List<Objective> objectives = entityService.findFlatChildrenObjectivewithBudgetProposal(fiscalYear, currentUser.getWorkAt().getId(), objectiveId);
 		
 		return objectives;
 		

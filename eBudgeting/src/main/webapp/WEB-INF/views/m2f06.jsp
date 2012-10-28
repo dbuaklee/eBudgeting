@@ -31,7 +31,6 @@
 			</div>
 			<div class="modal-footer">
 				<a href="#" class="btn" id="closeBtn">Close</a> 
-				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
 			</div>
 		</div>
 
@@ -100,15 +99,21 @@
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
 	<td> {{indexHuman index}} </td>
-	<td> {{#if this.children}}
-			<a href="../{{id}}/" class="nextChildrenLnk">{{name}} <i class="icon icon-chevron-right"></i> </a>
+	<td> {{#unless this.isLeaf}}
+			<a href="../{{id}}/" class="nextChildrenLnk">[{{code}}] {{name}} <i class="icon icon-chevron-right"></i> </a>
 		{{else}}
-			{{name}}
-			<button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button>
+			[{{code}}] {{name}}
+			{{#unless budgetTypes}} <button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button> {{/unless}}
 			<button class="btn btn-mini detail">กำหนดรายละเอียด</button>
-			<br>
-				- {{budgetType.name}}
-		{{/if}} 
+			<div><u>หมวดงบประมาณที่เลือกไว้</u>
+				<ul>
+					{{#each budgetTypes}}
+						<li>{{name}}</li>
+					{{/each}}
+				</ul>				
+
+			</div>
+		{{/unless}} 
 </td>
 </script>
 
@@ -127,7 +132,9 @@
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
 	<td> {{indexHuman index}} </td>
-	<td> <input type='text' placeholder='...' class='span7' value="{{name}}"></input> 
+	<td> <input id="codeTxt" type='text' placeholder='...' class='span7' value="{{code}}"></input> <br/>
+		<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}"></input>
+
 			<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
 			<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</td>
@@ -135,6 +142,15 @@
 </script>
 
 <script id="modalTemplate" type="text/x-handlebars-template">
+<div id="kpiListingDiv">
+</div>
+<div><u>หมวดงบประมาณที่เลือกไว้</u>
+	<ul id="budgetTypeLst">
+	{{#each budgetTypes}}
+		<li data-id="{{id}}"><span class="label label-important"><a href="#" class="removeBudgetType"><i class="icon icon-trash icon-white removeBudgetType"></i></a></span> {{name}}</li>
+	{{/each}}
+	</ul>				
+</div>
 <form>
 	<label>ตัวชี้วัด</label>
 	<input type="text" placeholder="Type something">
@@ -170,6 +186,7 @@
 	</li>
 {{/each}}
 </ol>
+<button class="btn btn-mini" type="button" id="addBtn">add</button>
 </div>
 </script>
 
@@ -177,6 +194,7 @@
 <!--
 var objectiveId = "${objective.id}";
 var fiscalYear = "${fiscalYear}";
+var pageObjective;
 
 var pageUrl = "/page/m2f06/";
 
@@ -283,34 +301,20 @@ $(document).ready(function() {
 			
 			if(this.objective != null) {
 			
+				
 				var html = this.modalTemplate(this.objective.toJSON());
 				this.$el.find('.modal-header span').html(this.objective.get('name'));
 				this.$el.find('.modal-body').html(html);
 	
-				e1 = this.objective.get('budgetType');
 				
-				if(this.objective.get('budgetType') == null) {
 				
-				    var rootBudgetType = BudgetType.findOrCreate({id:0});
-				    rootBudgetType.fetch({success: _.bind(function(){
-				    	this.budgetTypeSelection = new BudgetTypeSelectionView({model: rootBudgetType, el:'#budgetSelectionCtr'});
-				    	this.budgetTypeSelection.render();
-			    	},this)});
+					
+			    var rootBudgetType = BudgetType.findOrCreate({id:0});
+			    rootBudgetType.fetch({success: _.bind(function(){
+			    	this.budgetTypeSelection = new BudgetTypeSelectionView({model: rootBudgetType, el:'#budgetSelectionCtr'});
+			    	this.budgetTypeSelection.render();
+		    	},this)});
 				
-				} else {
-					var currentBudgetType = this.objective.get('budgetType');
-					this.btCollection = new Backbone.Collection();
-					this.btCollection.bind('finishLoadParent', this.finishLoadParent, this);
-					currentBudgetType.fetch({
-						success:_.bind(function(model, response) {
-							if(model.get('parent') != null) {
-								model.loadParent(this.btCollection, response);
-							}
-														
-						}, this)
-					});
-										
-				}
 				this.$el.modal({show: true, backdrop: 'static', keyboard: false});
 				return this;
 			}
@@ -341,48 +345,67 @@ $(document).ready(function() {
 		
 		events: {
 			"click #closeBtn" : "close",
-			"click #saveBtn" : "save"
-		},
+			"click #addBtn" : "add",
+			"click .removeBudgetType" : "removeBudgetType"
+ 		},
 		
 		close: function(e) {
 			this.$el.modal('hide');
 		},
 		
-		save: function(e) {
-			// try saving objective back to server!?
-			if(this.objective != null) {
+		add: function(e) {
+			if(this.objective !=null) {
 				// we have to get budgetType
 				var budgetTypeSelected = this.budgetTypeSelection;
 				while(budgetTypeSelected.nextBudgetTypeSelectionView != null) {
 					// advance to the next selection 
 					budgetTypeSelected = budgetTypeSelected.nextBudgetTypeSelectionView;
 				}
-				this.objective.url = appUrl('/Objective/'+this.objective.get('id'));				
-				//OK we'll get budgetType id here
-				this.objective.set('fiscalYear', fiscalYear);
-				
-				// now move out ObjectiveType children
-				var objectiveTypeChildren = this.objective.get('type').get('children');
-				this.objective.get('type').set('children', null);
-				
 				var budgetType = BudgetType.findOrCreate(budgetTypeSelected.model.id);
 				
-				this.objective.set('budgetType', budgetType);
-				
-				this.objective.save(null, {
-					success: _.bind(function() {
-						// put back children
-						this.objective.get('type').set('children', objectiveTypeChildren);
-						this.$el.modal('hide');
+				$.ajax({
+					type: 'POST',
+					
+					url: appUrl('/Objective/'+this.objective.get('id')+'/addBudgetType/'),
+					data: {
+						budgetTypeId: budgetType.get('id')
+					},
+					success: _.bind(function(){
+						console.log('save!');
+						this.objective.get('budgetTypes').push(budgetType);
 						this.objective.trigger('change', this.objective);
-						
+						this.render();
 					},this)
 				});
-
 			}
-					
+			return false;
 		},
 		
+		
+		removeBudgetType: function(e) {
+			var budgetTypeId = $(e.target).parents('li').attr('data-id');
+			var budgetType = BudgetType.findOrCreate(budgetTypeId);
+			
+			// we can call for confirmation
+			var r=confirm("คุณต้องการนำรายการนี้ออก?");
+			if (r==true) {
+				$.ajax({
+					type: 'POST',
+					url: appUrl('/Objective/'+this.objective.get('id')+'/removeBudgetType/'),
+					data: {
+						budgetTypeId: budgetTypeId
+					},
+					success: _.bind(function(){
+						console.log('save!');
+						this.objective.get('budgetTypes').remove(budgetType);
+						this.objective.trigger('change', this.objective);
+						this.render();
+					},this)
+				});
+				
+			} 
+			return false;
+		},
 		renderWith: function(objective) {
 			this.setObjective(objective);
 			this.render();
@@ -489,7 +512,8 @@ $(document).ready(function() {
 			"click .menuEdit"	: "editRow",
 			"click .lineSave" : "saveLine",
 			"click .cancelLineSave" : "cancelSaveLine",
-			"click .detail" : "detailModal"
+			"click .detail" : "detailModal",
+			"click .addNextLevel" : "goToNextLevel"
 		},
 		
 		newRow: function(e) {
@@ -514,21 +538,64 @@ $(document).ready(function() {
 			
 		},
 		
+		goToNextLevel: function(e) {
+			window.location.href = "../" + $(e.target).parents('tr').attr('data-id');
+		},
+		
 		saveLine: function(e) {
 			
-			 
-			inputVal = $(e.currentTarget).prev('input').val();
+			objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
+			
+			inputNameVal = $(e.currentTarget).prevAll('#nameTxt').val();
+			inputCodeVal = $(e.currentTarget).prevAll('#codeTxt').val();
 			indexRow = parseInt($(e.currentTarget).attr('indexHolder'));
+			
 			if(this.collection.at(indexRow) == null) {
+				var objType = pageObjective.get('type').get('children').at(0);
+				var newObj =  new Objective({name: inputNameVal, code: inputCodeVal, index: indexRow});
+				newObj.set('parent', pageObjective);
+				newObj.set('type', objType);
+				newObj.set('isLeaf', true);
 				
-				this.collection.add(new Objective({name: inputVal, index: indexRow}));
+				$.ajax({
+					type: 'POST',
+					url: appUrl('/Objective/newObjectiveWithParam'),
+					data: {
+						name: inputNameVal,
+						code: inputCodeVal,
+						parentId: pageObjective.get('id'),
+						typeId: objType.get('id')
+					},
+					success: _.bind(function(data){
+						newObj.set('id', data.id);
+						newObj.set('index', this.collection.length);
+						
+						this.collection.add(newObj);
+						
+						this.collection.trigger('reset');
+					},this)
+				});
+				
+				
 			} else {
 				var model  = this.collection.at(indexRow);
-				model.set('name', inputVal);
+				model.set('name', inputNameVal);
+				model.set('code', inputCodeVal);
+				
+				$.ajax({
+					type: 'POST',
+					url: appUrl('/Objective/'+objectiveId+'/updateFields/'),
+					data: {
+						name: inputNameVal,
+						code: inputCodeVal
+					},
+					success: _.bind(function(){
+						
+					},this)
+				});
 			}
 			
 			this.$el.find('a.btn').toggleClass('disabled');
-			
 			this.collection.trigger("reset");
 		
 		},
@@ -537,14 +604,25 @@ $(document).ready(function() {
 			if( (! $(e.currentTarget).hasClass('disabled')) && $('input[name=rowRdo]:checked').length == 1 ) {
 				var indexToDelete = $('input[name=rowRdo]:checked').val();
 				var modelToDelete = this.collection.at(indexToDelete);
-				this.collection.remove(modelToDelete);
+				if(modelToDelete.get('isLeaf') == true) {
 				
-				// now we have to run through and reindex
-				this.collection.each(function(model, index) {
-					model.set('index', index);
-				});
-				
-				this.collection.trigger('reset');
+					modelToDelete.destroy({
+						success: _.bind(function() {					
+							this.collection.remove(modelToDelete);
+						
+							// now we have to run through and reindex
+							this.collection.each(function(model, index) {
+								model.set('index', index);
+							});
+							
+							this.collection.trigger('reset');
+						},this)
+					});
+					
+					this.collection.trigger('reset');
+				} else{
+					alert('คุณต้องเข้าไปลบรายการจากรายการย่อยสุดเท่านั้น');
+				}
 			} else {
 				alert('กรุณาเลือกรายการที่ต้องการลบ');
 			}
@@ -572,52 +650,6 @@ $(document).ready(function() {
 			
 			this.modalView.budgetTypeSelection =  this.modalView.renderWith(objective);
 			
-		},
-		
-		slideInChildren: function(e) {
-			var id = $(e.target).parents('tr').attr('data-id');
-			
-				
-			var f1 = function() {
-				//once the animation is done
-				// now load content and replace in div...
-				this.collection.url='/eBudgeting/Objective/'+this.id+'/children';
-				this.collection.fetch();
-	
-			};
-			
-			f1 = _.bind(f1, {collection: this.collection, id: id});
-			
-			// change the ul
-			
-			
-			lastLiHtml = $('#headNav').children().last().html();
-			prevLiHref = $('#headNav').find('a:last').attr('href');
-			
-			if(this.selectedObjective.get('parent') == null) {
-				lastHref = prevLiHref + "2556/";
-			} else {
-				lastHref = prevLiHref + this.selectedObjective.get('id') + "/";	
-			}
-			
-			// get selected id;
-			this.selectedObjective = this.collection.get(id); 
-			
-			$('#headNav').children().last().html("<li><a href=" + lastHref +">"+ lastLiHtml +"</a> <span class='divider'>/</span></li>");
-			
-			var humanIndex = this.selectedObjective.get('index')+1;
-			$('#headNav').append("<li class='active'>" + this.selectedObjective.get('type').get('name') + "ที่ " +
-					humanIndex + "</li>");
-			
-			// now update currentPath with
-			//history.pushState($('#mainTbl').html(),null,window.document.URL+id+"/");
-			
-			html = "<div style='height: 100px;display: table-cell; vertical-align: middle; text-align: center;'>Loading <br/><img src='/eBudgeting/resources/graphics/spinner_bar.gif'></img></div>";
-			// slide In spinner
-			this.$el.slideLeft(html,f1);
-							
-			//return false to not navigate to new page
-			return false;
 		}
 		
 	});
@@ -625,6 +657,10 @@ $(document).ready(function() {
 	
 
 	if(objectiveId != null && objectiveId.length >0 ) {
+		pageObjective = new Objective({id: objectiveId});
+		pageObjective.fetch();
+		
+		
 		objectiveCollection = new ObjectiveCollection();
 		objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
 		

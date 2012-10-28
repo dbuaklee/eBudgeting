@@ -50,6 +50,8 @@ public class ObjectiveType implements Serializable {
 	@Basic
 	private Integer fiscalYear;
 	
+	@Basic
+	private String parentPath;
 	
 	// Normat get-set
 	public Long getId() {
@@ -81,6 +83,12 @@ public class ObjectiveType implements Serializable {
 	}
 	public void setFiscalYear(Integer fiscalYear) {
 		this.fiscalYear = fiscalYear;
+	}
+	public String getParentPath() {
+		return parentPath;
+	}
+	public void setParentPath(String parentPath) {
+		this.parentPath = parentPath;
 	}
 
 	

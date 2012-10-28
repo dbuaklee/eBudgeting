@@ -3,6 +3,7 @@ package biz.thaicom.eBudgeting.models.bgt;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @SequenceGenerator(
 		name="BGT_PROPOSALSTRATEGY_SEQ", 
 		sequenceName="BGT_PROPOSALSTRATEGY_SEQ", allocationSize=1)
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 public class ProposalStrategy implements Serializable {
 
 	/**
@@ -40,6 +41,9 @@ public class ProposalStrategy implements Serializable {
 	@ManyToOne()
 	@JoinColumn(name="BUDGETPROPOSAL_ID")
 	private BudgetProposal proposal;
+	
+	@Basic
+	Long totalCalculatedAmount;
 	
 	@ManyToOne
 	@JoinColumn(name="FORMULASTRATEGY_ID")
@@ -79,6 +83,14 @@ public class ProposalStrategy implements Serializable {
 
 	public void setProposal(BudgetProposal proposal) {
 		this.proposal = proposal;
+	}
+
+	public Long getTotalCalculatedAmount() {
+		return totalCalculatedAmount;
+	}
+
+	public void setTotalCalculatedAmount(Long totalCalculatedAmount) {
+		this.totalCalculatedAmount = totalCalculatedAmount;
 	}
 	
 	

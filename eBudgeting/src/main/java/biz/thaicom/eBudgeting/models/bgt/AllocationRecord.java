@@ -38,4 +38,30 @@ public class AllocationRecord implements Serializable{
 	@Basic
 	private Long amountAllocated;
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public BudgetProposal getProposal() {
+		return proposal;
+	}
+
+	public void setProposal(BudgetProposal proposal) {
+		this.proposal = proposal;
+	}
+
+	public Long getAmountAllocated() {
+		return amountAllocated;
+	}
+
+	public void setAmountAllocated(Long amountAllocated) {
+		this.amountAllocated = amountAllocated;
+	}
+	
+	
+
 }

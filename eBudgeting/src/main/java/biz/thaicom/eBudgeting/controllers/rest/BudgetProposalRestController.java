@@ -15,12 +15,18 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
+import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
+import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
+import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
 import biz.thaicom.security.models.ThaicomUserDetail;
@@ -41,6 +47,32 @@ public class BudgetProposalRestController {
 
 		return entityService.findBudgetProposalById(budgetProposalId);
 	}
+	
+	@RequestMapping(value="/ProposalStrategy", method=RequestMethod.POST)
+	public @ResponseBody ProposalStrategy saveProposalStrategy (
+			@RequestBody ProposalStrategy strategy){
+		if(strategy.getProposal()!=null){
+			BudgetProposal p = new BudgetProposal();
+			p.setId(strategy.getProposal().getId());
+			strategy.setProposal(p);
+		}
+		
+		return entityService.saveProposalStrategy(strategy);
+		
+	}
+	
+
+	@RequestMapping(value="/BudgetProposal", method=RequestMethod.POST)
+	public @ResponseBody BudgetProposal saveBudgetProposal (
+			@RequestBody BudgetProposal proposal,
+			@Activeuser ThaicomUserDetail currentUser){
+		
+		proposal.setOwner(currentUser.getWorkAt());
+		
+		return entityService.saveBudgetProposal(proposal);
+		
+	}
+	
 	
 	@ExceptionHandler(value=EntityNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)

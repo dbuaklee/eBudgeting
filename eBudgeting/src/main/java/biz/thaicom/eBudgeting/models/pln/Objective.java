@@ -11,12 +11,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import biz.thaicom.eBudgeting.controllers.rest.ObjectiveRestController;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
@@ -30,6 +36,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @SequenceGenerator(name="PLN_OBJECTIVE_SEQ", sequenceName="PLN_OBJECTIVE_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Objective implements Serializable {
+	private static final Logger logger = LoggerFactory.getLogger(Objective.class);
+	
 	/**
 	 * SerialUID 
 	 */
@@ -50,6 +58,12 @@ public class Objective implements Serializable {
 	private Integer fiscalYear;
 	
 	@Basic
+	private String parentPath;
+	
+	@Basic
+	private Boolean isLeaf;
+	
+	@Basic
 	@Column(name="IDX")
 	private Integer index;
 	
@@ -61,9 +75,9 @@ public class Objective implements Serializable {
 	@JoinColumn(name="PARENT_PLN_OBJECTIVE_ID")
 	private Objective parent;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="BUDGETTYPE_BGT_BUDGETTYPE_ID")
-	private BudgetType budgetType;
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name="BGT_OBJECTIVE_BUDGETTYPE")
+	private List<BudgetType> budgetTypes;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
 	@OrderColumn(name="IDX")
@@ -122,11 +136,12 @@ public class Objective implements Serializable {
 		this.parent = parent;
 	}
 	
-	public BudgetType getBudgetType() {
-		return budgetType;
+
+	public List<BudgetType> getBudgetTypes() {
+		return budgetTypes;
 	}
-	public void setBudgetType(BudgetType budgetType) {
-		this.budgetType = budgetType;
+	public void setBudgetTypes(List<BudgetType> budgetTypes) {
+		this.budgetTypes = budgetTypes;
 	}
 	public List<BudgetProposal> getProposals() {
 		return proposals;
@@ -134,18 +149,30 @@ public class Objective implements Serializable {
 	public void setProposals(List<BudgetProposal> proposals) {
 		this.proposals = proposals;
 	}
+	public String getParentPath() {
+		return parentPath;
+	}
+	public void setParentPath(String parentPath) {
+		this.parentPath = parentPath;
+	}
+	public Boolean getIsLeaf() {
+		return isLeaf;
+	}
+	public void setIsLeaf(Boolean isLeaf) {
+		this.isLeaf = isLeaf;
+	}
 	// loading barebone information about the entity
 	public void doBasicLazyLoad() {
 		//now we get one parent and its type
 		if(this.getParent() != null) {
 			this.getParent().getId();
 		} 
-		if(this.getBudgetType() != null) {
-			if(this.getBudgetType().getParent() !=null) {
-				this.getBudgetType().getParent().getId();
-			}
-			this.getBudgetType().getId();
-		}
+//		if(this.getBudgetType() != null) {
+//			if(this.getBudgetType().getParent() !=null) {
+//				this.getBudgetType().getParent().getId();
+//			}
+//			this.getBudgetType().getId();
+//		}
 		if(this.getType() != null) {
 			this.getType().getId();
 			if(this.getType().getParent() != null) {
@@ -155,16 +182,18 @@ public class Objective implements Serializable {
 				this.getType().getChildren().size();
 			}
 		}
+		
 		if(this.getChildren() != null) {
 			this.getChildren().size();
+			logger.debug("children size: " + this.getChildren().size());
 		}
 		
 	}
 	public void doEagerLoad() {
 		this.getType().getId();
-		if(this.getBudgetType() != null) {
-			this.getBudgetType().getId();
-		}
+//		if(this.getBudgetType() != null) {
+//			this.getBudgetType().getId();
+//		}
 		if(this.getChildren() != null && this.getChildren().size() > 0) {
 			// now load all the children
 			for(Objective obj : this.children) {
@@ -175,9 +204,9 @@ public class Objective implements Serializable {
 	
 	public void doEagerLoadWithBudgetProposal(Boolean isChildrenTraversal) {
 		this.getType().getId();
-		if(this.getBudgetType() != null) {
-			this.getBudgetType().getId();
-		}
+//		if(this.getBudgetType() != null) {
+//			this.getBudgetType().getId();
+//		}
 		
 		if(this.getProposals() != null && this.getProposals().size() > 0) {
 			for(BudgetProposal proposal : this.getProposals()) {
