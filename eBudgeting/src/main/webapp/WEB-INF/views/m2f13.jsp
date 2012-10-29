@@ -61,7 +61,7 @@
 				<tbody>
 					<tr>
 						<c:forEach items="${fiscalYears}" var="fiscalYear">
-							<td>${fiscalYear.fiscalYear} <a href="./${fiscalYear.fiscalYear}/0/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+							<td><a href="./${fiscalYear.fiscalYear}/0/" class="nextChildrenLnk"> ${fiscalYear.fiscalYear} <i class="icon icon-chevron-right nextChildrenLnk"></i></a></td>
 						</c:forEach>
 					</tr>
 				</tbody>
@@ -137,10 +137,11 @@
 		{{#each children}}
 		<tr data-id={{id}}>
 			<td> {{indexHuman index}} </td>
-			<td> {{name}} 
+			<td>  
 				{{#if this.children}}
-					<a href="../{{id}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right"></i> </a>
+					<a href="../{{id}}/" class="nextChildrenLnk">{{name}} <i class="icon icon-chevron-right"></i> </a>
 				{{else}}
+					{{name}}
 					<div class="formulaCtr smallTxt">
 						<b>ตัวเลือกงบประมาณ</b> <button class="btn btn-mini addFormula">เพิ่ม</button>
 						<div class="formulaDetail">

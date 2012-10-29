@@ -67,10 +67,10 @@ $.fn.slideRight = function(data, callBack) {
 };
 
 Handlebars.registerHelper('indexHuman', function(index) {
-	var output = index + 1;
-	if(isNaN(output)) {
+	if(isNaN(index) || index == null) {
 		return ""; 
 	} else {
+		var output = index + 1;
 		return output + ".";
 	}
 });

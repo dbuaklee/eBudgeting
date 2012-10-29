@@ -75,10 +75,18 @@ public interface EntityService {
 	public BudgetProposal saveBudgetProposal(BudgetProposal proposal);
 	
 	//ProposalStrategy
-	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy);
+	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long budgetProposalId, Long formulaStrategyId);
+	public List<ProposalStrategy> findProposalStrategyByBudgetProposal(
+			Long budgetProposalId);
+	public List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
+			Integer fiscalYear, Long ownerId, Long objectiveId);
+	public ProposalStrategy deleteProposalStrategy(Long id);
 	
 	//RequestColumn
 	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
+
+
+
 
 
 

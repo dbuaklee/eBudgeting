@@ -1,6 +1,5 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
-import java.security.Principal;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -10,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
-import biz.thaicom.eBudgeting.models.bgt.BudgetType;
-import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
-import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
-import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
 import biz.thaicom.security.models.ThaicomUserDetail;
@@ -48,16 +41,39 @@ public class BudgetProposalRestController {
 		return entityService.findBudgetProposalById(budgetProposalId);
 	}
 	
-	@RequestMapping(value="/ProposalStrategy", method=RequestMethod.POST)
-	public @ResponseBody ProposalStrategy saveProposalStrategy (
-			@RequestBody ProposalStrategy strategy){
-		if(strategy.getProposal()!=null){
-			BudgetProposal p = new BudgetProposal();
-			p.setId(strategy.getProposal().getId());
-			strategy.setProposal(p);
-		}
+	@RequestMapping(value="/ProposalStrategy/find/{fiscalYear}/{objectiveId}", method=RequestMethod.GET)
+	public @ResponseBody List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser){
+	
+		return entityService.findProposalStrategyByFiscalyearAndObjective(fiscalYear, currentUser.getWorkAt().getId(), objectiveId);
 		
-		return entityService.saveProposalStrategy(strategy);
+	}
+	
+	
+	@RequestMapping(value="/ProposalStrategy/BudgetProposal/{budgetProposalId}", method=RequestMethod.POST)
+	public @ResponseBody List<ProposalStrategy> findProposalStrategyByBudgetProposal(
+			@PathVariable Long budgetProposalId){
+		
+		return entityService.findProposalStrategyByBudgetProposal(budgetProposalId);
+		
+	}
+	
+	@RequestMapping(value="/ProposalStrategy/{id}", method=RequestMethod.DELETE)
+	public @ResponseBody ProposalStrategy deleteProposalStrategy(
+			@PathVariable Long id){
+		return entityService.deleteProposalStrategy(id);
+	}
+	
+	@RequestMapping(value="/ProposalStrategy/{budgetProposalId}/{formulaStrategyId}", method=RequestMethod.POST)
+	public @ResponseBody ProposalStrategy saveProposalStrategy (
+			@PathVariable Long budgetProposalId,
+			@PathVariable Long formulaStrategyId,
+			@RequestBody ProposalStrategy strategy){
+		
+		
+		return entityService.saveProposalStrategy(strategy, budgetProposalId, formulaStrategyId);
 		
 	}
 	

@@ -53,6 +53,9 @@ public class ObjectiveType implements Serializable {
 	@Basic
 	private String parentPath;
 	
+	@Basic
+	private Boolean isLeaf;
+	
 	// Normat get-set
 	public Long getId() {
 		return id;
@@ -90,7 +93,13 @@ public class ObjectiveType implements Serializable {
 	public void setParentPath(String parentPath) {
 		this.parentPath = parentPath;
 	}
-
+	public Boolean getIsLeaf() {
+		return isLeaf;
+	}
+	public void setIsLeaf(Boolean isLeaf) {
+		this.isLeaf = isLeaf;
+	}
+	
 	
 	
 }

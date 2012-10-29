@@ -56,6 +56,28 @@
 	</div>
 </div>
 
+<script id="budgetTypeSelectionTemplate" type="text/x-handler-template">
+<select id="budgetTypeSlt">
+	<option value="0">กรุณาเลือกรายการ</option>
+	{{#each this}}
+	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{name}}</option>
+	{{/each}}
+</select>
+<div id="strategySelectionDiv"></div>
+</script>
+
+<script id="strategySelectionTemplate" type="text/x-handler-template">
+<select id="strategySlt">
+	<option value="0">กรุณาเลือกรายการ</option>
+	{{#each this}}
+	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{name}}</option>
+	{{/each}}
+</select>
+<div><form id="input-form">
+		
+	</form></div>
+</script>
+
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
 	<thead>
@@ -102,42 +124,47 @@
 						<img width=8 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/> - 
 					{{/if}}
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
-					<label class="main" for="item_{{this.id}}"><b>{{this.type.name}}ที่ {{indexHuman this.index}}</b> {{this.name}}</label>
+					<label class="main" for="item_{{this.id}}"><b>{{this.type.name}}ที่ {{indexHuman this.index}}</b> [{{this.code}}] {{this.name}}</label>
 					{{#unless this.children}}
-						<br/><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/> &gt; {{this.budgetType.name}}
+						<img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>
+						<ul>
+						{{#each this.proposals}}
+							 <li> {{budgetType.name}} - {{{formatNumber amountRequest}}} บาท</li>
+						{{/each}}
+						</ul>
 					{{/unless}}
 			</span> 
 		</td>
-			<td  width="80" class="{{#if this.children}}disable{{/if}}"><span></span>
+			<td  width="80"  class="{{#if this.children}}disable{{/if}}"><span></span>
 				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
-			<td width="80" class="{{#if this.children}}disable{{/if}}">
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>{{#if this.proposals}}{{this.proposals.0.amountRequest}}{{else}}0.00{{/if}}</span>
+					<span>{{#if this.proposals}}{{{sumProposal this.proposals}}}{{else}}-{{/if}}</span>
 				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.proposals}}{{this.proposals.0.amountRequest}}{{else}}0.00{{/if}}</a>
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.proposals}}{{{sumProposal this.proposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 			</td>
 
-			<td width="80" class="{{#if this.children}}disable{{/if}}">
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>0.00</span>
+					<span>-</span>
 				{{else}}
-					<a href="#" id="editable3-{{this.id}} data-type="text" class="detail">0.00</a>
+					<a href="#" id="editable3-{{this.id}} data-type="text" class="detail">-</a>
 				{{/if}}
 			</td>
-			<td width="80" class="{{#if this.children}}disable{{/if}}">
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>0.00</span>
+					<span>-</span>
 				{{else}}
-					<a href="#" id="editable4-{{this.id}} data-type="text" class="detail">0.00</a>
+					<a href="#" id="editable4-{{this.id}} data-type="text" class="detail">-</a>
 				{{/if}}
 			</td>
-			<td width="80" class="{{#if this.children}}disable{{/if}}">
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>0.00</span>
+					<span>-</span>
 				{{else}}
-					<a href="#" id="editable5-{{this.id}} data-type="text" class="detail">0.00</a>
+					<a href="#" id="editable5-{{this.id}} data-type="text" class="detail">-</a>
 				{{/if}}
 			</td>
 
@@ -146,20 +173,26 @@
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
-	<h4>{{this.budgetType.name}}</h4>
-	<select id="strategySlt">
-		<option value="0">กรุณาเลือกรายการ</option>
-		{{#each this.budgetType.strategies}}
-			<option value="{{id}}">{{name}}</option>
+<div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
+	{{#each proposals}}
+	<div> 
+	<u>{{budgetType.name}}</u>
+	<ul id="budgetProposeLst">
+		{{#each proposalStrategies}} 
+			<li data-id="{{id}}" proposal-id="{{../id}}"><span class="label label-important"><a href="#" class="removeProposal"><i class="icon icon-trash icon-white removeProposal"></i></a></span> {{name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
 		{{/each}}
-	</select>
+	</ul>
+	</div>
+	{{/each}}				
+</div>
+	<h4>กรุณาเลือกงบประมาณ</h4>
+	<div id="budgetTypeSelectionDiv"></div>
 
-	<form id="input-form">
-		
-	</form>
+
 </script>
 
 <script id="inputModalTemplate"  type="text/x-handler-template">
+	<input type="text" id="proposalName"/>
 	<table class="formula">
 	<tr>
 	{{#each this}}
@@ -253,6 +286,48 @@ var rootCollection;
 var l = null;
 var e1;
 
+Handlebars.registerHelper("sumProposal", function(proposals) {
+	var amount = 0;
+	for(var i=0; i<proposals.length; i++ ){
+		amount += proposals[i].amountRequest;
+	}
+	return addCommas(amount);
+	
+});
+
+Handlebars.registerHelper("formulaLine", function(strategy){
+	
+	var s = "";
+	
+	if(strategy.formulaStrategy != null) {
+		var formulaColumns = strategy.formulaStrategy.formulaColumns;
+		for(var i=0; i < formulaColumns.length; i++) {
+			
+			if(i>0) { 
+				s = s + " X "; 
+			}
+			
+			s = s + formulaColumns[i].columnName;
+			if(formulaColumns[i].isFixed) {
+				// now we'll go through requestColumns
+				var j;
+				for(j=0; j<strategy.requestColumns.length;j++) {
+					if(strategy.requestColumns[j].column == formulaColumns[i].id) {
+						s = s + "(" + addCommas(strategy.requestColumns[j].amount) + formulaColumns[i].unitName  + ")";
+					}
+				}
+				
+			} else {
+				s = s + "("+ addCommas(formulaColumns[i].value) + " " + formulaColumns[i].unitName  + ")";
+			}
+			
+		}
+	} 
+	
+	
+	return s;
+});
+
 Handlebars.registerHelper('substract', function(a, b) {
 	return a - b;
 });
@@ -273,7 +348,6 @@ Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
 			
 		} else {
 			children.forEach(function(child){
-				console.log(child);
 				out =  out + childNormalNodeTpl(child);
 			});
 		}
@@ -286,114 +360,150 @@ Handlebars.registerHelper('next', function(val, next) {
 	return val+next;
 });
 
-	var ModalView = Backbone.View.extend({
-		initialize: function() {
-			
-		},
+
+var StrategySelectionView = Backbone.View.extend({
+	initialize: function() {
+		_.bindAll(this,'render');
+		_.bindAll(this,'renderWithStrategy');
+		_.bindAll(this,'strategySelect');
 		
-		el: "#modal",
+	},
+	
+	el: "#strategySelectionDiv",
+	events: {
+		"change #strategySlt" : "strategySelect",
+		"click .saveProposal" : "saveProposal"
+	},
+	inputModalTemplate: Handlebars.compile($('#inputModalTemplate').html()),
+	strategySelectionTemplate: Handlebars.compile($('#strategySelectionTemplate').html()),
+	currentStrategyCollection: null,
+	
+	render: function() {
+		if(this.currentStrategyCollection != null) {
+			var json = this.currentStrategyCollection.toJSON();
+			this.$el.html(this.strategySelectionTemplate(json));
+		}
 		
-		modalTemplate: Handlebars.compile($('#modalTemplate').html()),
-		inputModalTemplate: Handlebars.compile($('#inputModalTemplate').html()),
+	},
+	
+	renderWithStrategy: function(strategyCollection, parentModal) {
+		this.parentModal = parentModal;
+		this.currentStrategyCollection = strategyCollection;
+		this.render();
+	},
+	
+	strategySelect: function(e) {
 		
-		events: {
-			"change #strategySlt" : "strategySelect",
-			"click .saveProposal" : "saveProposal"
-		},
+		var strategyId= e.target.value;
+
+		var strategy = this.currentStrategyCollection.get(strategyId);
+		this.currentStrategy = strategy;
 		
-		strategySelect: function(e) {
-			var strategyId= e.target.value;
-			var strategies = this.objective.get('budgetType').get('strategies');
-			var strategy = strategies.get(strategyId);
-			
-			this.currentStrategy=strategy;
-			
-			var columns = 	strategy.get('formulaColumns');
-			//now set the last column
-			columns.at(columns.length-1).set("$last", true);
-			
-			// here we'll get the propose column
-			
-			var html = this.inputModalTemplate(strategy.get('formulaColumns').toJSON());
-			// render strategy!
-			this.$el.find('#input-form').html(html);
-			
-		},
+		var columns = 	strategy.get('formulaColumns');
+		//now set the last column
+		columns.at(columns.length-1).set("$last", true);
 		
-		saveProposal: function(e) {
-			if(this.currentStrategy != null) {
-				// check if budgetProposal is null
-				var budgetProposal;
-				if(this.objective.get('proposals').length == 0) {
-					// create new BudgetProposal
-					budgetProposal = new BudgetProposal();
-					budgetProposal.set('forObjective', {id:this.objective.get('id')});
-					budgetProposal.set('budgetType', {id:this.objective.get('budgetType').get('id')});
-					
-					// now put this proposal into objective;
-					this.objective.get('proposals').push(budgetProposal);
-				} else {
-					budgetProposal = this.objectvie.get('proposal').at(0);
+		// here we'll get the propose column
+		
+		var html = this.inputModalTemplate(strategy.get('formulaColumns').toJSON());
+		// render strategy!
+		this.$el.find('#input-form').html(html);
+		
+	},
+	
+	
+	saveProposal: function(e) {
+		if(this.currentStrategy != null) {
+			var objective = this.parentModal.objective;
+			var budgetType = this.parentModal.budgetTypeSelectionView.currentBudgetType;
+			
+			
+			var budgetProposal = null;
+			
+			//find appropriate budgetProposal, the one with budgetTypeid == the selected one
+			var pList = objective.get('proposals');
+			for(var i=0; i<pList.length; i++) {
+				var proposal = pList.at(i);
+				
+				if(proposal.get('budgetType').get('id') == budgetType.get('id')) {
+					budgetProposal = proposal;
+					break;
 				}
 				
-				// we will make a new ProposalStrategy
 				
-				var proposalStrategy = new ProposalStrategy();
-				console.log(proposalStrategy);
-				e1=proposalStrategy;
-				
-				proposalStrategy.set('formulaStrategy', {id: this.currentStrategy.get('id')});
-				
-				// loop through formulaColumns
-				var i;
-				var calculatedAmount = 0;
-				var formulaColumns = this.currentStrategy.get('formulaColumns');
-				for(i=0; i< formulaColumns.length; i++) {
-					var fc = formulaColumns.at(i); 
-					if(fc.get('isFixed')) {
-						var requestColumn = new RequestColumn();
-						requestColumn.set('amount', this.$el.find('#formulaColumnId-'+fc.get('id')).val());
-						requestColumn.set('column', fc);
-						requestColumn.set('proposalStrategy', proposalStrategy);
-						
-						proposalStrategy.get('requestColumns').add(requestColumn);
-						proposalStrategy.set('proposal', {id: this.objective.get('proposals').at(0).get('id')});
-						
-						if(calculatedAmount == 0) {
-							calculatedAmount = requestColumn.get('amount');
-						} else {
-							calculatedAmount = calculatedAmount * requestColumn.get('amount');
-						}
-						
+			}
+			
+			
+			if(budgetProposal == null) {
+				// create new BudgetProposal
+				budgetProposal = new BudgetProposal();
+				budgetProposal.set('forObjective', {id:objective.get('id')});
+				budgetProposal.set('budgetType', {id:budgetType.get('id')});
+					
+				// now put this proposal into objective;
+				objective.get('proposals').push(budgetProposal);
+			}
+			
+			
+			// we will make a new ProposalStrategy
+			var proposalStrategy = new ProposalStrategy();
+			
+			proposalStrategy.set('formulaStrategy', {id: this.currentStrategy.get('id')});
+			
+			// loop through formulaColumns
+			var i;
+			var calculatedAmount = 0;
+			var formulaColumns = this.currentStrategy.get('formulaColumns');
+			for(i=0; i< formulaColumns.length; i++) {
+				var fc = formulaColumns.at(i); 
+				if(fc.get('isFixed')) {
+					var requestColumn = new RequestColumn();
+					requestColumn.set('amount', this.$el.find('#formulaColumnId-'+fc.get('id')).val());
+					requestColumn.set('column', fc);
+					requestColumn.set('proposalStrategy', proposalStrategy);
+					
+					proposalStrategy.get('requestColumns').add(requestColumn);
+					
+					if(calculatedAmount == 0) {
+						calculatedAmount = requestColumn.get('amount');
 					} else {
-						if(calculatedAmount == 0) {
-							calculatedAmount = fc.get('value');
-						} else {
-							calculatedAmount = calculatedAmount * fc.get('value');
-						}
+						calculatedAmount = calculatedAmount * requestColumn.get('amount');
+					}
+					
+				} else {
+					if(calculatedAmount == 0) {
+						calculatedAmount = fc.get('value');
+					} else {
+						calculatedAmount = calculatedAmount * fc.get('value');
 					}
 				}
-				proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
-				proposalStrategy.set('proposal', budgetProposal);
-				
+			}
+			proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
+			proposalStrategy.set('proposal', budgetProposal);
+			proposalStrategy.set('name', this.$el.find('#proposalName').val());
+			
+			
+			if(budgetProposal.get('id') == null ) {
 				// now ready to post back
-				var json = this.objective.get('proposals').at(0).toJSON();
+				var json = budgetProposal.toJSON();
 				json.forObjective = {id: json.forObjective.id};
 				json.budgetType = {id: json.budgetType.id};
-
+				
+	
 				$.ajax({
 					type: 'POST',
 					url: appUrl('/BudgetProposal'),
 					data: JSON.stringify(json),
 					contentType: 'application/json;charset=utf-8',
 					dataType: "json",
-					success: function(data) {
-						console.log(data.id);
+					success: _.bind(function(data) {
+	
 						budgetProposal.set('id', data.id);
 					
 						var json = proposalStrategy.toJSON();
-						json.formulaStrategy = {id:json.formulaStrategy.id};
-						json.proposal = {id:json.proposal.id};
+						json.formulaStrategy = null;
+						json.proposal = null;
+						
 						var i;
 						for(i=0; i<json.requestColumns.length; i++) {
 							json.requestColumns[i].column = {id:json.requestColumns[i].column.id};
@@ -401,21 +511,169 @@ Handlebars.registerHelper('next', function(val, next) {
 						
 						$.ajax({
 							type: 'POST',
-							url: appUrl('/ProposalStrategy'),
+							url: appUrl('/ProposalStrategy/'+budgetProposal.get('id')+'/'+proposalStrategy.get('formulaStrategy').get('id')),
 							data: JSON.stringify(json),
 							contentType: 'application/json;charset=utf-8',
 							dataType: "json",
-							success: function() {
-								// do alert?
-							}
+							success: _.bind(function() {
+								budgetProposal.get('proposalStrategies').push(proposalStrategy);
+								
+								// rerender?
+								this.parentModal.render();
+							},this)
 						});
 						
-					}
+					},this)
 				});
+			} else {
+				var json = proposalStrategy.toJSON();
+				json.formulaStrategy = null;
+				json.proposal = null;
 				
+				var i;
+				for(i=0; i<json.requestColumns.length; i++) {
+					json.requestColumns[i].column = {id:json.requestColumns[i].column.id};
+				}
+				
+				$.ajax({
+					type: 'POST',
+					url: appUrl('/ProposalStrategy/'+budgetProposal.get('id')+'/'+proposalStrategy.get('formulaStrategy').get('id')),
+					data: JSON.stringify(json),
+					contentType: 'application/json;charset=utf-8',
+					dataType: "json",
+					success: _.bind(function() {
+						budgetProposal.get('proposalStrategies').push(proposalStrategy);
+						// rerender?
+						this.parentModal.render();
+					},this)
+				});
+			}
+			
+			
+		}
+	},
+	
+});
+
+
+var BudgetTypeSelectionView = Backbone.View.extend({
+	initialize: function() {
+		_.bindAll(this,'render');
+		_.bindAll(this,'selectionChange');
+		
+		
+	},
+	el: "#budgetTypeSelectionDiv",
+	
+	strategySelectionView : new StrategySelectionView(),
+	
+	budgetSelectionTemplate: Handlebars.compile($('#budgetTypeSelectionTemplate').html()),
+	render: function() {
+		if(this.currentBudgetTypeCollection != null) {
+			var json = this.currentBudgetTypeCollection.toJSON();
+			
+			this.$el.html(this.budgetSelectionTemplate(json));
+		}
+	}, 
+	events : {
+		"change #budgetTypeSlt" : "selectionChange" // only the first one
+		
+	},
+	
+	selectionChange: function(e) {
+
+		var budgetTypeId = $(e.target).val();
+		
+		if(budgetTypeId > 0) {
+			var budgetType = this.currentBudgetTypeCollection.get(budgetTypeId);
+			this.currentBudgetType = budgetType;
+			
+			// ok now we'll get the strategy here
+			var formulaStrategies = new FormulaStrategyCollection;
+				
+			formulaStrategies.fetch({
+				url: appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + budgetType.get('id')),
+				success: _.bind(function(data) {
+					budgetType.set('strategies', formulaStrategies);
+					this.strategySelectionView.setElement("#strategySelectionDiv");
+					
+					this.strategySelectionView.renderWithStrategy(formulaStrategies, this.parentModal);
+
+					this.strategySelectionView.render();
+				}, this)
+			});		
+			
+		}
+	},
+	
+	renderWithBudgetTypes: function(budgetTypeCollection, parentmodal) {
+		this.parentModal = parentmodal;
+		this.currentBudgetTypeCollection = budgetTypeCollection;
+		this.render();
+	}
+	
+});
+
+	var ModalView = Backbone.View.extend({
+		initialize: function() {
+			
+		},
+		
+		el: "#modal",
+		
+		budgetTypeSelectionView: new BudgetTypeSelectionView(),
+		
+		modalTemplate: Handlebars.compile($('#modalTemplate').html()),
+		
+		events: {
+			"click .removeProposal" : "removeProposal",
+			"click #cancelBtn" : "cancelModal",
+			"click .close" : "cancelModal"
+			
+		},
+		
+		cancelModal: function(e) {
+			  window.location.reload();
+		},
+		
+		removeProposal: function(e) {
+			var proposalStrategyId = $(e.target).parents('li').attr('data-id');
+			var budgetProposalId = $(e.target).parents('li').attr('proposal-id');
+			
+			
+			
+			// now get this one
+			var budgetProposal = this.objective.get('proposals').get(budgetProposalId);
+			var proposalStrategy = budgetProposal.get('proposalStrategies').get(proposalStrategyId);
+			
+			if( proposalStrategy != null) {
+				// we can start deleting it now.. 
+				
+				var r=confirm("คุณต้องการนำรายการนี้ออก?");
+				if (r==true) {
+					$.ajax({
+						type: 'DELETE',
+						url: appUrl('/ProposalStrategy/'+proposalStrategyId),
+						success: _.bind(function(){
+							
+							budgetProposal.get('proposalStrategies').remove(proposalStrategy);
+							var newAmount = budgetProposal.get('amountRequest') - proposalStrategy.get('totalCalculatedAmount');
+							budgetProposal.set('amountRequest', newAmount);
+							
+							// now we'll have to trigger change all the way up ward
+							
+							this.objective.trigger('change', this.objective);
+							this.render();
+						},this)
+					});
+					
+				} 
+				return false;
 				
 			}
 		},
+		
+
 		
 		render: function() {
 			if(this.objective != null) {
@@ -423,7 +681,8 @@ Handlebars.registerHelper('next', function(val, next) {
 				this.$el.find('.modal-header span').html(this.objective.get('name'));
 				this.$el.find('.modal-body').html(html);
 				
-				
+				this.budgetTypeSelectionView = new BudgetTypeSelectionView();
+				this.budgetTypeSelectionView.renderWithBudgetTypes(this.objective.get('budgetTypes'), this);
 				
 			}
 			
@@ -458,22 +717,23 @@ Handlebars.registerHelper('next', function(val, next) {
 			var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
 			var currentObjective = Objective.findOrCreate(currentObjectiveId);
 			
-			// if this currentObjective has budgetType lockin
-			if(currentObjective.get('budgetType') != null) {
-				var budgetType = currentObjective.get('budgetType');
-				
-				var formulaStrategies = new FormulaStrategyCollection;
-				
-				formulaStrategies.fetch({
-					url: appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + budgetType.get('id')),
-					success: _.bind(function(data) {
-						budgetType.set('strategies', formulaStrategies);
-			
-						this.modalView.renderWith(currentObjective);
-					}, this)
-				});		
-			}
-
+			var proposalStrategyCollection = new ProposalStrategyCollection();
+			proposalStrategyCollection.fetch({
+				url: appUrl('/ProposalStrategy/find/' + fiscalYear +'/'+ currentObjective.get('id')),
+				success: _.bind(function() {
+					console.log(proposalStrategyCollection.toJSON());
+					
+					var proposals = currentObjective.get('proposals');
+					var i;
+					for(i=0; i<proposalStrategyCollection.length;i++) {
+						var strategy = proposalStrategyCollection.at(i);
+						proposals.get(strategy.get('proposal').get('id')).get('proposalStrategies').add(strategy);
+					}
+					
+					
+					this.modalView.renderWith(currentObjective);		
+				},this)
+			});
 			
 			
 		},
@@ -481,6 +741,8 @@ Handlebars.registerHelper('next', function(val, next) {
 			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
 			
 		},
+		
+		
 		
 		toggle: function(e) {
 			l=e;

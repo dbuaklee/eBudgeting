@@ -88,7 +88,7 @@
 		<tr>
 			<td width="20"></td>
 			<td width="50">ลำดับที่</td>
-			<td>{{#each type.children}}{{name}} {{/each}}</td>
+			<td>{{nextType.name}}</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -102,8 +102,8 @@
 	<td> {{#unless this.isLeaf}}
 			<a href="../{{id}}/" class="nextChildrenLnk">[{{code}}] {{name}} <i class="icon icon-chevron-right"></i> </a>
 		{{else}}
-			[{{code}}] {{name}}
-			{{#unless budgetTypes}} <button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button> {{/unless}}
+			[{{code}}] {{name}} 
+			{{#if this.showNextLevel}} <button class="btn btn-mini addNextLevel">เพิ่มรายการย่อย</button> {{/if}}
 			<button class="btn btn-mini detail">กำหนดรายละเอียด</button>
 			<div><u>หมวดงบประมาณที่เลือกไว้</u>
 				<ul>
@@ -132,11 +132,24 @@
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
 	<td> {{indexHuman index}} </td>
-	<td> <input id="codeTxt" type='text' placeholder='...' class='span7' value="{{code}}"></input> <br/>
-		<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}"></input>
+	<td>
+		 <form class="form-inline">
+			<div class="control-group">
+				<label class="control-label" for="codeTxt"> <b>รหัส: </b> </label>
+				<div class="controls">
+					<input id="codeTxt" type='text' placeholder='...' class='span7' value="{{code}}"></input> <br/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="nameTxt"> <b>ชื่อ:</b> </label>
+				<div class="controls">
+					<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}"></input> <br/>
+				</div>
+			</div>
+		</form>
 
-			<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
-			<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
+		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
+		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</td>
 
 </script>
@@ -195,6 +208,7 @@
 var objectiveId = "${objective.id}";
 var fiscalYear = "${fiscalYear}";
 var pageObjective;
+var pageType;
 
 var pageUrl = "/page/m2f06/";
 
@@ -484,17 +498,29 @@ $(document).ready(function() {
 		
 		render: function() {
 			// first render the control
-			var html;
-			
-			if(this.selectedObjective != null) {
-				html = this.mainCtrTemplate(this.selectedObjective.toJSON());
-			} else {
-				html = this.mainCtrTemplate({name: 'ปี 2556', type:{name: 'งบประมาณ', children: [{name:'แผนงาน'}]} });
+			var json = pageObjective.toJSON();
+			json.nextType = pageType.children[0];
+			if(json.name == 'ROOT') {
+				json.name = 'ปีงบประมาณ ' + fiscalYear;
+				json.index = null;
+				json.type = null;
 			}
+			
+			var html = this.mainCtrTemplate(json);
+			
 			this.$el.html(html);
 			
 			// then the inside row
-			html = this.tbodyTemplate(this.collection.toJSON());
+			json=this.collection.toJSON();
+			
+			var i;
+			for(i=0; i<json.length; i++) {
+				json[i].showNextLevel = !((json[i].budgetTypes.length != 0) || pageType.children[0].isLeaf); 
+			}
+			
+			console.log(json);
+			
+			html = this.tbodyTemplate(json);
 			this.$el.find('tbody').html(html);
 
 			// bind all cell
@@ -525,7 +551,15 @@ $(document).ready(function() {
 		
 		renderObjective: function(objective) {
 			var objectiveEl = this.$el.find('tr[data-id='+ objective.get('id') +']');
-			objectiveEl.html(this.objectiveRowTemplate(objective.toJSON()));
+			
+			var json = objective.toJSON();
+			if(json.budgetTypes.length > 0 || pageType.children[0].isLeaf) {
+				json.showNextLevel = false;
+			} else {
+				json.showNextLevel = true;
+			}
+			
+			objectiveEl.html(this.objectiveRowTemplate(json));
 			
 		},
 		
@@ -539,22 +573,22 @@ $(document).ready(function() {
 		},
 		
 		goToNextLevel: function(e) {
-			window.location.href = "../" + $(e.target).parents('tr').attr('data-id');
+			window.location.href = "../" + $(e.target).parents('tr').attr('data-id') + "/";
 		},
 		
 		saveLine: function(e) {
 			
 			objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
 			
-			inputNameVal = $(e.currentTarget).prevAll('#nameTxt').val();
-			inputCodeVal = $(e.currentTarget).prevAll('#codeTxt').val();
+			inputNameVal = this.$el.find('#nameTxt').val();
+			inputCodeVal = this.$el.find('#codeTxt').val();
 			indexRow = parseInt($(e.currentTarget).attr('indexHolder'));
 			
 			if(this.collection.at(indexRow) == null) {
-				var objType = pageObjective.get('type').get('children').at(0);
+				//var objType = pageObjective.get('type').get('children').at(0);
 				var newObj =  new Objective({name: inputNameVal, code: inputCodeVal, index: indexRow});
 				newObj.set('parent', pageObjective);
-				newObj.set('type', objType);
+				newObj.set('type', {id: pageType.children[0].id});
 				newObj.set('isLeaf', true);
 				
 				$.ajax({
@@ -564,7 +598,7 @@ $(document).ready(function() {
 						name: inputNameVal,
 						code: inputCodeVal,
 						parentId: pageObjective.get('id'),
-						typeId: objType.get('id')
+						typeId: pageType.children[0].id
 					},
 					success: _.bind(function(data){
 						newObj.set('id', data.id);
@@ -658,16 +692,21 @@ $(document).ready(function() {
 
 	if(objectiveId != null && objectiveId.length >0 ) {
 		pageObjective = new Objective({id: objectiveId});
-		pageObjective.fetch();
+		pageObjective.fetch({
+			success: function(data,response) {
+				pageType = response.type;
+				
+				objectiveCollection = new ObjectiveCollection();
+				objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
+				
+				mainTblView = new MainTblView({collection: objectiveCollection});
+				
+				
+				objectiveCollection.fetch();
+				
+			}
+		});
 		
-		
-		objectiveCollection = new ObjectiveCollection();
-		objectiveCollection.url = appUrl("/Objective/"+ objectiveId +"/children");
-		
-		mainTblView = new MainTblView({collection: objectiveCollection});
-		
-		
-		objectiveCollection.fetch();
 	}
 
 

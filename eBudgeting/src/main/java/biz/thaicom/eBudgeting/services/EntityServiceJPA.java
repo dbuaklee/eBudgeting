@@ -429,9 +429,11 @@ public class EntityServiceJPA implements EntityService {
 			Objective o = list.get(index);
 			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
 			
-			o.setProposals(new ArrayList<BudgetProposal>());
+			if(o.getProposals()==null) {
+				o.setProposals(new ArrayList<BudgetProposal>());
+			}
 			
-			o.getProposals().add(proposal);
+			//o.getProposals().add(proposal);
 			logger.debug("proposal size is " + o.getProposals().size());
 		}
 		
@@ -440,14 +442,49 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy) {
+	public ProposalStrategy deleteProposalStrategy(Long id) {
+		ProposalStrategy proposalStrategy = proposalStrategyRepository.findOne(id);
 		
-
+		Long amountToBeReduced = proposalStrategy.getTotalCalculatedAmount();
+		
+		BudgetProposal b = proposalStrategy.getProposal();
+		b.addAmountRequest(-amountToBeReduced);
+		budgetProposalRepository.save(b);
+		
+		Organization owner = b.getOwner();
+		
+		// now walk up ward
+		BudgetProposal temp = b;
+		// OK we'll go through the amount of this one and it's parent!?
+		while (temp.getForObjective().getParent() != null) {
+			// now we'll get all proposal
+			Objective parent = temp.getForObjective().getParent();
+			temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+			
+			if(temp!=null) {
+				temp.addAmountRequest(-amountToBeReduced);
+			} 
+			budgetProposalRepository.save(temp);
+		}
+		
+		proposalStrategyRepository.delete(proposalStrategy);
+		
+		return proposalStrategy;
+	}
+	
+	@Override
+	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long budgetProposalId, Long formulaStrategyId) {
+		
+		FormulaStrategy formulaStrategy= formulaStrategyRepository.findOne(formulaStrategyId);
+		
+		strategy.setFormulaStrategy(formulaStrategy);
 		
 		// 
-		BudgetProposal b = budgetProposalRepository.findOne(strategy.getProposal().getId());
+		BudgetProposal b = budgetProposalRepository.findOne(budgetProposalId);
 		b.addAmountRequest(strategy.getTotalCalculatedAmount());
 		budgetProposalRepository.save(b);
+		
+		strategy.setProposal(b);
 		
 		Organization owner = b.getOwner();
 		
@@ -600,4 +637,19 @@ public class EntityServiceJPA implements EntityService {
 		
 		return obj;
 	}
+
+	@Override
+	public List<ProposalStrategy> findProposalStrategyByBudgetProposal(
+			Long budgetProposalId) {
+		BudgetProposal budgetProposal = budgetProposalRepository.findOne(budgetProposalId);
+		return proposalStrategyRepository.findByProposal(budgetProposal);
+	}
+
+	@Override
+	public List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
+			Integer fiscalYear, Long ownerId, Long objectiveId) {
+		return proposalStrategyRepository.findByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, ownerId, objectiveId);
+	}
+
+
 }

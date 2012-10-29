@@ -19,7 +19,7 @@ public interface BudgetProposalRepository extends
 	
 	
 	@Query("" +
-			"SELECT proposal " +
+			"SELECT distinct proposal " +
 			"FROM BudgetProposal proposal " +
 			"	INNER JOIN FETCH proposal.forObjective objective " +
 			"WHERE objective.fiscalYear =?1 and proposal.owner.id = ?2 and objective.parentPath like ?3 ")

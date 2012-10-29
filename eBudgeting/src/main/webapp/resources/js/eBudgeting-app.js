@@ -46,15 +46,10 @@ ObjectiveType = Backbone.RelationalModel.extend({
 	    	collectionType: 'ObjectiveTypeCollection',
 	    	reverseRelation: {
 	    		type: Backbone.HasOne,
-	    		key: 'parent',
-	    		includeInJSON: ['id']
+	    		key: 'parent'
 	    	}
 	    }
-	],
-	isLastToSelect: function() {
-		console.log("isLastToSelect" + this.get('id'));
-		 return this.get('id') === 105;
-	}
+	]
 });
 
 BudgetType = Backbone.RelationalModel.extend({
@@ -67,8 +62,7 @@ BudgetType = Backbone.RelationalModel.extend({
 	    	collectionType: 'BudgetTypeCollection',
 	    	reverseRelation: {
 	    		type: Backbone.HasOne,
-	    		key: 'parent',
-	    		includeInJSON: ['id']
+	    		key: 'parent'
 	    	}
 	    },{
 	    	type: Backbone.HasMany,
@@ -227,6 +221,10 @@ FormulaStrategyCollection = Backbone.Collection.extend({
 FormulaColumnCollection = Backbone.Collection.extend({
 	model: FormulaColumn
 });
+ProposalStrategyCollection = Backbone.Collection.extend({
+	model: ProposalStrategy
+});
+
 
 //Handlebars Utils
 

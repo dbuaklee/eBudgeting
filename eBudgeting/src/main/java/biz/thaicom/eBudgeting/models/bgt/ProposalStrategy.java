@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @SequenceGenerator(
 		name="BGT_PROPOSALSTRATEGY_SEQ", 
 		sequenceName="BGT_PROPOSALSTRATEGY_SEQ", allocationSize=1)
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ProposalStrategy implements Serializable {
 
 	/**
@@ -43,7 +43,10 @@ public class ProposalStrategy implements Serializable {
 	private BudgetProposal proposal;
 	
 	@Basic
-	Long totalCalculatedAmount;
+	private Long totalCalculatedAmount;
+	
+	@Basic
+	private String name;
 	
 	@ManyToOne
 	@JoinColumn(name="FORMULASTRATEGY_ID")
@@ -91,6 +94,14 @@ public class ProposalStrategy implements Serializable {
 
 	public void setTotalCalculatedAmount(Long totalCalculatedAmount) {
 		this.totalCalculatedAmount = totalCalculatedAmount;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

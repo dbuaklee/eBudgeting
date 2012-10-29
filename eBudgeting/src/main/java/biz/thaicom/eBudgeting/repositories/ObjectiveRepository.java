@@ -44,7 +44,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	
 	
 	@Query("" +  
-			"SELECT objective " +
+			"SELECT distinct objective " +
 			"FROM Objective objective" +
 			"	INNER JOIN FETCH objective.parent parent " +
 			"	INNER JOIN FETCH objective.type type " +

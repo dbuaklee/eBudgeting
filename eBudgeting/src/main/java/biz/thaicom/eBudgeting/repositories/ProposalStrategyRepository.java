@@ -3,6 +3,7 @@ package biz.thaicom.eBudgeting.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
@@ -12,4 +13,16 @@ public interface ProposalStrategyRepository extends
 		PagingAndSortingRepository<ProposalStrategy, Long>, JpaSpecificationExecutor<ProposalStrategy> {
 
 	public List<ProposalStrategy> findByProposal(BudgetProposal budgetProposal);
+	
+	@Query("" +
+			"select distinct proposalStrategy " +
+			"from ProposalStrategy proposalStrategy " +
+			"	INNER JOIN FETCH proposalStrategy.formulaStrategy formulaStrategy " +
+			"	INNER JOIN FETCH formulaStrategy.formulaColumns formulaColumns " +
+			"	INNER JOIN FETCH proposalStrategy.requestColumns requestColumns " +
+			"	INNER JOIN FETCH proposalStrategy.proposal proposal " +
+			"where proposal.owner.id=?2 and proposal.forObjective.fiscalYear=?1 " +
+			"	and proposal.forObjective.id=?3 ")
+	public List<ProposalStrategy> findByObjectiveIdAndfiscalYearAndOwnerId(Integer fiscalYear, Long ownerId, Long objectiveId);
+	
 }
