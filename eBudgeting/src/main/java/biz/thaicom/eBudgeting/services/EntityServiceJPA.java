@@ -482,6 +482,9 @@ public class EntityServiceJPA implements EntityService {
 		// 
 		BudgetProposal b = budgetProposalRepository.findOne(budgetProposalId);
 		b.addAmountRequest(strategy.getTotalCalculatedAmount());
+		b.addAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
+		b.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
+		b.addAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
 		budgetProposalRepository.save(b);
 		
 		strategy.setProposal(b);

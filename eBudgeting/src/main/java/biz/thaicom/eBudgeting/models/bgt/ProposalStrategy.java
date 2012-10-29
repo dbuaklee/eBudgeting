@@ -47,6 +47,14 @@ public class ProposalStrategy implements Serializable {
 	
 	@Basic
 	private String name;
+	@Basic
+	private Long amountRequestNext1Year;
+	
+	@Basic
+	private Long amountRequestNext2Year;
+	
+	@Basic
+	private Long amountRequestNext3Year;
 	
 	@ManyToOne
 	@JoinColumn(name="FORMULASTRATEGY_ID")
@@ -104,6 +112,29 @@ public class ProposalStrategy implements Serializable {
 		this.name = name;
 	}
 	
+	public Long getAmountRequestNext1Year() {
+		return amountRequestNext1Year;
+	}
+
+	public void setAmountRequestNext1Year(Long amountRequestNext1Year) {
+		this.amountRequestNext1Year = amountRequestNext1Year;
+	}
+
+	public Long getAmountRequestNext2Year() {
+		return amountRequestNext2Year;
+	}
+
+	public void setAmountRequestNext2Year(Long amountRequestNext2Year) {
+		this.amountRequestNext2Year = amountRequestNext2Year;
+	}
+
+	public Long getAmountRequestNext3Year() {
+		return amountRequestNext3Year;
+	}
+
+	public void setAmountRequestNext3Year(Long amountRequestNext3Year) {
+		this.amountRequestNext3Year = amountRequestNext3Year;
+	}
 	
 	
 

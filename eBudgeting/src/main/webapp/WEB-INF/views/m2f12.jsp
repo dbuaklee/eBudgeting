@@ -179,68 +179,78 @@
 	<u>{{budgetType.name}}</u>
 	<ul id="budgetProposeLst">
 		{{#each proposalStrategies}} 
-			<li data-id="{{id}}" proposal-id="{{../id}}"><span class="label label-important"><a href="#" class="removeProposal"><i class="icon icon-trash icon-white removeProposal"></i></a></span> {{name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+			<li data-id="{{id}}" proposal-id="{{../id}}">
+				<span class="label label-info"><a href="#" class="editProposal"><i class="icon icon-edit icon-white editProposal"></i></a></span>				
+				<span class="label label-important"><a href="#" class="removeProposal"><i class="icon icon-trash icon-white removeProposal"></i></a></span>
+				{{name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
 		{{/each}}
 	</ul>
 	</div>
 	{{/each}}				
 </div>
-	<h4>กรุณาเลือกงบประมาณ</h4>
+	<h4>ขอตั้งรายการ:</h4>
 	<div id="budgetTypeSelectionDiv"></div>
 
 
 </script>
 
 <script id="inputModalTemplate"  type="text/x-handler-template">
-	<input type="text" id="proposalName"/>
-	<table class="formula">
+	<hr/>
+	ชื่อรายการ: <input type="text" id="proposalName" value="{{name}}"/>
+	<table class="formula table table-condensed">
 	<tr>
-	{{#each this}}
-		<td>
+	{{#each this.formulaColumns}}
+		<td style="text-align:center" width=80>
 		{{columnName}} 
 		</td>
 		{{#if this.$last}}
-			<td rowspan="3">
+			<td style="text-align:center" width=5 rowspan="3">
 			=
 			</td>
 		{{else}}
-			<td rowspan="3">
+			<td style="text-align:center" width=5 rowspan="3">
 			X
 			</td>
 		{{/if}}
 	{{/each}}
-	<td>
+	<td  style="text-align:center" width=80>
 		คิดเป็น
 	</td>
 	<td rowspan="3">
-		<button class="btn btn-mini saveProposal">บันทึก</button>
+		<button class="btn btn-mini copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button>
 	</td>
 	</tr>
 	<tr>
-	{{#each this}}
-		<td>
+	{{#each this.formulaColumns}}
 		{{#if isFixed}}
-			<input id="formulaColumnId-{{id}}" type="text" class="span1"></input>
+		<td style="text-align:center" class="isNotFixed">
+			<input id="formulaColumnId-{{id}}" type="text" class="span1 formulaColumnInput"></input>
+		</td>
 		{{else}}
-			{{value}}
+		<td style="text-align:center" class="isFixed">
+			{{formatNumber value}}
+		</td>
 		{{/if}}
 		
-		</td>
 	{{/each}}
-	<td class="totalInputForm">
+	<td  style="text-align:center" id="totalInputForm">
 		
 	</td>
 	</tr>
 	<tr>
-	{{#each this}}
-		<td>
+	{{#each this.formulaColumns}}
+		<td style="text-align:center">
 		{{unitName}}
 		</td>
 	{{/each}}
-	<td>บาท
+	<td style="text-align:center">บาท
 	</td>
 	</tr>
 	</table>
+	ประมาณการปี {{next1Year}}: <input type="text" id="amountRequestNext1year"/> บาท <br/>
+	ประมาณการปี {{next2Year}}: <input type="text" id="amountRequestNext2year"/> บาท <br/>
+	ประมาณการปี {{next3Year}}: <input type="text" id="amountRequestNext3year"/> บาท <br/>
+	<button class="btn btn-mini saveProposal">บันทึก</button>
 </script>
 
 <script id="proposalInputTemplate" type="text/x-handler-template">
@@ -372,7 +382,9 @@ var StrategySelectionView = Backbone.View.extend({
 	el: "#strategySelectionDiv",
 	events: {
 		"change #strategySlt" : "strategySelect",
-		"click .saveProposal" : "saveProposal"
+		"click .saveProposal" : "saveProposal",
+		"click .copytoNextYear" : "copyToNextYear",
+		"change .formulaColumnInput" : 'inputChange'
 	},
 	inputModalTemplate: Handlebars.compile($('#inputModalTemplate').html()),
 	strategySelectionTemplate: Handlebars.compile($('#strategySelectionTemplate').html()),
@@ -386,10 +398,47 @@ var StrategySelectionView = Backbone.View.extend({
 		
 	},
 	
+	
 	renderWithStrategy: function(strategyCollection, parentModal) {
 		this.parentModal = parentModal;
 		this.currentStrategyCollection = strategyCollection;
 		this.render();
+	},
+	
+	inputChange: function(e) {
+		// OK we'll go through all td value
+		e1=e;
+		var allTdIsFixed = $(e.target).parents('tr').find('td.isFixed');
+		var allTdIsNotFixed = $(e.target).parents('tr').find('td.isNotFixed');
+		
+		var amount = 1;
+		
+		//now multiply all from is Fixed!
+		for(var i=0; i<allTdIsFixed.length; i++) {
+			var value = $(allTdIsFixed[i]).html();
+			amount = amount * parseInt(value);
+		}
+		
+		//now moveon to the rest
+		for(var i=0; i<allTdIsNotFixed.length; i++) {
+			var value = $(allTdIsNotFixed[i]).find('input').val();
+			if(isNaN(parseInt(value))) {
+				amount = "";
+				break;
+			}
+			amount = amount * parseInt(value);
+		}
+		
+		// now put amount back amount
+		$('#totalInputForm').html(addCommas(amount));
+	},
+	
+	copyToNextYear: function(e) {
+		var valueToCopy = $('#totalInputForm').html();
+		valueToCopy = valueToCopy.replace(/,/g,'');
+		this.$el.find('#amountRequestNext1year').val(valueToCopy);
+		this.$el.find('#amountRequestNext2year').val(valueToCopy);
+		this.$el.find('#amountRequestNext3year').val(valueToCopy);
 	},
 	
 	strategySelect: function(e) {
@@ -405,7 +454,11 @@ var StrategySelectionView = Backbone.View.extend({
 		
 		// here we'll get the propose column
 		
-		var html = this.inputModalTemplate(strategy.get('formulaColumns').toJSON());
+		var json = strategy.toJSON();
+		json.next1Year = strategy.get('fiscalYear') + 1;
+		json.next2Year = strategy.get('fiscalYear') + 2;
+		json.next3Year = strategy.get('fiscalYear') + 3;
+		var html = this.inputModalTemplate(json);
 		// render strategy!
 		this.$el.find('#input-form').html(html);
 		
@@ -481,6 +534,9 @@ var StrategySelectionView = Backbone.View.extend({
 			proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
 			proposalStrategy.set('proposal', budgetProposal);
 			proposalStrategy.set('name', this.$el.find('#proposalName').val());
+			proposalStrategy.set('amountRequestNext1year',this.$el.find('#amountRequestNext1year').val());
+			proposalStrategy.set('amountRequestNext2year',this.$el.find('#amountRequestNext2year').val());
+			proposalStrategy.set('amountRequestNext3year',this.$el.find('#amountRequestNext3year').val());
 			
 			
 			if(budgetProposal.get('id') == null ) {
@@ -610,6 +666,12 @@ var BudgetTypeSelectionView = Backbone.View.extend({
 		this.parentModal = parentmodal;
 		this.currentBudgetTypeCollection = budgetTypeCollection;
 		this.render();
+	},
+	
+	renderWithFixProposal: function(proposalStrategy, parentModal) {
+		this.parentModal = parentModal;
+		this.currentBudgetTypeCollection = null;
+		this.$el.html(proposalStrategy.get('proposal').get('budgetType').get('name'));
 	}
 	
 });
@@ -627,6 +689,7 @@ var BudgetTypeSelectionView = Backbone.View.extend({
 		
 		events: {
 			"click .removeProposal" : "removeProposal",
+			"click .editProposal" : "editProposal",
 			"click #cancelBtn" : "cancelModal",
 			"click .close" : "cancelModal"
 			
@@ -634,6 +697,19 @@ var BudgetTypeSelectionView = Backbone.View.extend({
 		
 		cancelModal: function(e) {
 			  window.location.reload();
+		},
+		
+		editProposal: function(e) {
+			var proposalStrategyId = $(e.target).parents('li').attr('data-id');
+			var budgetProposalId = $(e.target).parents('li').attr('proposal-id');
+			
+			// now get this one
+			var budgetProposal = this.objective.get('proposals').get(budgetProposalId);
+			var proposalStrategy = budgetProposal.get('proposalStrategies').get(proposalStrategyId);
+			
+			// we'll begin by render the budgetTypeSelectionView
+			this.budgetTypeSelectionView.renderWithFixProposal(proposalStrategy,this);
+			
 		},
 		
 		removeProposal: function(e) {

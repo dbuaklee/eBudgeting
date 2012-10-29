@@ -49,6 +49,16 @@ public class BudgetProposal implements Serializable {
 	@Basic
 	private Long amountRequest;
 	
+	@Basic
+	private Long amountRequestNext1Year;
+	
+	@Basic
+	private Long amountRequestNext2Year;
+	
+	@Basic
+	private Long amountRequestNext3Year;
+	
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="ORGANIZATION_ID")
 	private Organization owner;
@@ -133,9 +143,52 @@ public class BudgetProposal implements Serializable {
 		} else {
 			this.amountRequest += amount;
 		}
-		
-		
+	}
+
+	public Long getAmountRequestNext1Year() {
+		return amountRequestNext1Year;
+	}
+
+	public void setAmountRequestNext1Year(Long amountRequestNext1Year) {
+		this.amountRequestNext1Year = amountRequestNext1Year;
+	}
+
+	public Long getAmountRequestNext2Year() {
+		return amountRequestNext2Year;
+	}
+
+	public void setAmountRequestNext2Year(Long amountRequestNext2Year) {
+		this.amountRequestNext2Year = amountRequestNext2Year;
+	}
+
+	public Long getAmountRequestNext3Year() {
+		return amountRequestNext3Year;
+	}
+
+	public void setAmountRequestNext3Year(Long amountRequestNext3Year) {
+		this.amountRequestNext3Year = amountRequestNext3Year;
+	}
+
+	public void addAmountRequestNext1Year(Long amountRequestNext1Year) {
+		if(this.getAmountRequestNext1Year() == null) {
+			this.amountRequestNext1Year = amountRequestNext1Year;
+		} else {
+			this.amountRequestNext1Year += amountRequestNext1Year;
+		}
 	}
 	
-	
+	public void addAmountRequestNext2Year(Long amountRequestNext2Year) {
+		if(this.getAmountRequestNext1Year() == null) {
+			this.amountRequestNext2Year = amountRequestNext2Year;
+		} else {
+			this.amountRequestNext2Year += amountRequestNext2Year;
+		}
+	}	
+	public void addAmountRequestNext3Year(Long amountRequestNext3Year) {
+		if(this.getAmountRequestNext1Year() == null) {
+			this.amountRequestNext3Year = amountRequestNext1Year;
+		} else {
+			this.amountRequestNext3Year += amountRequestNext3Year;
+		}
+	}
 }
