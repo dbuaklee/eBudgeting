@@ -1,5 +1,7 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -15,8 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
@@ -30,6 +38,7 @@ public class BudgetProposalRestController {
 	
 	@Autowired
 	private EntityService entityService;
+	
 	
 	@RequestMapping("/BudgetProposal/{budgetProposalId}/")
 	public @ResponseBody BudgetProposal findBudgetProposalById(
@@ -64,6 +73,16 @@ public class BudgetProposalRestController {
 	public @ResponseBody ProposalStrategy deleteProposalStrategy(
 			@PathVariable Long id){
 		return entityService.deleteProposalStrategy(id);
+	}
+	
+	@RequestMapping(value="/ProposalStrategy/{id}", method=RequestMethod.PUT) 
+	public @ResponseBody ProposalStrategy updateProposalStrategy(
+			@PathVariable Long id,
+			@RequestParam String proposalStrategyJson) throws JsonParseException, JsonMappingException, IOException{
+		
+		// we just pass this to entityJPA
+		return entityService.updateProposalStrategy(id, proposalStrategyJson);		
+		
 	}
 	
 	@RequestMapping(value="/ProposalStrategy/{budgetProposalId}/{formulaStrategyId}", method=RequestMethod.POST)
@@ -107,6 +126,5 @@ public class BudgetProposalRestController {
 		return "failed: " + e.toString();
 		
 	}
-	
-	
+
 }

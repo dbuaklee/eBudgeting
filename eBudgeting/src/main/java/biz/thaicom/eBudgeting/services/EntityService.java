@@ -1,8 +1,12 @@
 package biz.thaicom.eBudgeting.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
@@ -81,9 +85,12 @@ public interface EntityService {
 	public List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
 			Integer fiscalYear, Long ownerId, Long objectiveId);
 	public ProposalStrategy deleteProposalStrategy(Long id);
+	public ProposalStrategy updateProposalStrategy(Long id,
+			String proposalStrategyJson) throws JsonParseException, JsonMappingException, IOException;
 	
 	//RequestColumn
 	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
+
 
 
 

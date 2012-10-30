@@ -1,5 +1,6 @@
 package biz.thaicom.eBudgeting.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
@@ -61,6 +68,8 @@ public class EntityServiceJPA implements EntityService {
 	@Autowired 
 	private ProposalStrategyRepository proposalStrategyRepository;
 	
+	@Autowired
+	private ObjectMapper mapper;
 
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
@@ -652,6 +661,50 @@ public class EntityServiceJPA implements EntityService {
 	public List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
 			Integer fiscalYear, Long ownerId, Long objectiveId) {
 		return proposalStrategyRepository.findByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, ownerId, objectiveId);
+	}
+
+	@Override
+	public ProposalStrategy updateProposalStrategy(Long id,
+			String proposalStrategyJson) throws JsonParseException, JsonMappingException, IOException {
+
+		ProposalStrategy strategy = proposalStrategyRepository.findOne(id);
+		
+		if(strategy != null) {
+			// now get information from JSON string?
+			JsonNode rootNode = mapper.readValue(proposalStrategyJson, JsonNode.class);
+			strategy.setName(rootNode.get("name").asText());
+			strategy.setTotalCalculatedAmount(rootNode.get("totalCalculatedAmount").asLong());
+			strategy.setAmountRequestNext1Year(rootNode.get("amountRequestNext1Year").asLong());
+			strategy.setAmountRequestNext2Year(rootNode.get("amountRequestNext2Year").asLong());
+			strategy.setAmountRequestNext3Year(rootNode.get("amountRequestNext3Year").asLong());
+			
+			// now looping through the RequestColumns
+			JsonNode requestColumnsArray = rootNode.get("requestColumns");
+			
+			List<RequestColumn> rcList = strategy.getRequestColumns();
+			for(RequestColumn rc : rcList) {
+				Long rcId = rc.getId();
+				// now find this in
+				for(JsonNode rcNode : requestColumnsArray) {
+					if( rcId == rcNode.get("id").asLong()) {
+						//we can just update this one ?
+						rc.setAmount(rcNode.get("amount").asInt());
+						break;
+					}
+				}
+				
+			}
+			
+			proposalStrategyRepository.save(strategy);
+			
+			// we should go about uptdating people?
+			
+			return strategy;
+		} else {
+			return null;
+		}
+		
+		
 	}
 
 
