@@ -178,14 +178,14 @@ public class BudgetProposal implements Serializable {
 	}
 	
 	public void addAmountRequestNext2Year(Long amountRequestNext2Year) {
-		if(this.getAmountRequestNext1Year() == null) {
+		if(this.getAmountRequestNext2Year() == null) {
 			this.amountRequestNext2Year = amountRequestNext2Year;
 		} else {
 			this.amountRequestNext2Year += amountRequestNext2Year;
 		}
 	}	
 	public void addAmountRequestNext3Year(Long amountRequestNext3Year) {
-		if(this.getAmountRequestNext1Year() == null) {
+		if(this.getAmountRequestNext3Year() == null) {
 			this.amountRequestNext3Year = amountRequestNext1Year;
 		} else {
 			this.amountRequestNext3Year += amountRequestNext3Year;

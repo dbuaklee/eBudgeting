@@ -509,12 +509,18 @@ public class EntityServiceJPA implements EntityService {
 			
 			if(temp!=null) {
 				temp.addAmountRequest(strategy.getTotalCalculatedAmount());
+				temp.addAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
+				temp.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
+				temp.addAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
 			} else {
 				temp = new BudgetProposal();
 				temp.setForObjective(parent);
 				temp.setOwner(owner);
 //				temp.setBudgetType(parent.getBudgetType());
 				temp.setAmountRequest(strategy.getTotalCalculatedAmount());
+				temp.setAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
+				temp.setAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
+				temp.setAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
 			}
 			budgetProposalRepository.save(temp);
 		}
