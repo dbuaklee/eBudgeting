@@ -46,6 +46,8 @@ public interface EntityService {
 	public List<Objective> findChildrenObjectivewithBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal);
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
 			Integer fiscalYear, Long ownerId, Long objectiveId);
+	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
+			Integer fiscalYear, Long objectiveId);
 
 	public Objective addBudgetTypeToObjective(Long id, Long budgetTypeId);
 	public Objective removeBudgetTypeToObjective(Long id, Long budgetTypeId);
@@ -91,6 +93,7 @@ public interface EntityService {
 	
 	//RequestColumn
 	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
+
 
 
 

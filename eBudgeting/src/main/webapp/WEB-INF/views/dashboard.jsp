@@ -56,10 +56,15 @@ var menuJson = [{
             {name: "m2f07: ยุทธศาสตร์กระทรวงฯ", link: "jsp/m2f07", disabled: "disabled"}
             
 			]
+},{
+	  name: "ระบบการปรับลดบประมาณ",
+	    menus: [{name: "m3f01: บันทึกการปรับลดงประมาณ  ชั้น สำนักงบ (อธิบดีปรับลด)",link: "page/m3f01/"},
+	            {name: "m3f02: บันทึกการปรับลดงบประมาณ ชั้น กรรมาธิการ (สงป. ปรับลด)]", link: "jsp/m3f02/", disabled: "disabled"},
+	            {name: "m3f03: บันทึกการปรับลดงบประมาณ ชั้น พ.ร.บ. (กมธ. ปรับลด)]", link: "jsp/m3f03/", disabled: "disabled"}]
 },{            
     name: "ระบบการจัดสรรงบประมาณ",
-    menus: [{name: "m3f01: บันทึกงบประมาณที่ได้รับการจัดสรร (รายกิจกรรม)",link: "jsp/m3f01", disabled: "disabled"},
-            {name: "m3f02: ปรับแก้ไขรายละเอียดงบประมาณกิจกรรมหน่วยงาน]", link: "jsp/m3f02", disabled: "disabled"}]
+    menus: [{name: "m4f01: บันทึกงบประมาณที่ได้รับการจัดสรร (รายกิจกรรม)",link: "jsp/m3f01", disabled: "disabled"},
+            {name: "m4f02: ปรับแก้ไขรายละเอียดงบประมาณกิจกรรมหน่วยงาน]", link: "jsp/m3f02", disabled: "disabled"}]
 },{            
     name: "ระบบรายงาน",
     menus: [{name: "m4f01: รายงาน1",link: "jsp/m4f01", disabled: "disabled"},

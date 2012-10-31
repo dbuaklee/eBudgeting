@@ -59,6 +59,9 @@ public class BudgetProposal implements Serializable {
 	private Long amountRequestNext3Year;
 	
 	
+	@Basic
+	private Long amountAllocated;
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="ORGANIZATION_ID")
 	private Organization owner;
@@ -67,8 +70,7 @@ public class BudgetProposal implements Serializable {
 	@JoinColumn(name="OBJECTIVE_ID")
 	private Objective forObjective;
 	
-	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
-	private List<AllocationRecord> allocationRecords;	
+	
 
 	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
 	private List<ProposalStrategy> proposalStrategies;
@@ -121,20 +123,22 @@ public class BudgetProposal implements Serializable {
 		this.forObjective = forObjective;
 	}
 
-	public List<AllocationRecord> getAllocationRecords() {
-		return allocationRecords;
-	}
-
-	public void setAllocationRecords(List<AllocationRecord> allocationRecords) {
-		this.allocationRecords = allocationRecords;
-	}
-
 	public List<ProposalStrategy> getProposalStrategies() {
 		return proposalStrategies;
 	}
 
 	public void setProposalStrategies(List<ProposalStrategy> proposalStrategies) {
 		this.proposalStrategies = proposalStrategies;
+	}
+	
+	
+
+	public Long getAmountAllocated() {
+		return amountAllocated;
+	}
+
+	public void setAmountAllocated(Long amountAllocated) {
+		this.amountAllocated = amountAllocated;
 	}
 
 	public void addAmountRequest(Long amount) {

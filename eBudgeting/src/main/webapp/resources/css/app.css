@@ -84,3 +84,16 @@ input[type="checkbox"].checkbox_tree + label.main:hover{
 .smallTxt {
 	font-size: small;
 }
+
+ul.right-align
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	text-align: right;
+}
+
+ul.right-align li 
+{
+	padding-right: .6em;
+}

@@ -145,7 +145,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getFlatDescendantsbjectiveWithBudgetPorposalByOwnerId(
+	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithBudgetPorposalByOwnerId(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
@@ -155,6 +155,20 @@ public class ObjectiveRestController {
 		return objectives;
 		
 	}
+	
+	
+	@RequestMapping(value="/ObjectiveWithBudgetProposalAndAllocation/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithBudgetPorposalAndAllocation(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser
+			) {
+		List<Objective> objectives = entityService.findFlatChildrenObjectivewithBudgetProposalAndAllocation(fiscalYear, objectiveId);
+		
+		return objectives;
+		
+	}
+	
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{ownerId}/{objectiveId}/descendants", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getDescendantsbjectiveWithBudgetPorposalByOwnerId(

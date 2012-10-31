@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import biz.thaicom.eBudgeting.controllers.rest.ObjectiveRestController;
+import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
@@ -85,6 +86,9 @@ public class Objective implements Serializable {
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
 	private List<BudgetProposal> proposals;
+	
+	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
+	private List<AllocationRecord> allocationRecords;	
 	
 	//Normal Getter/Setter
 	public Long getId() {
@@ -160,6 +164,12 @@ public class Objective implements Serializable {
 	}
 	public void setIsLeaf(Boolean isLeaf) {
 		this.isLeaf = isLeaf;
+	}
+	public List<AllocationRecord> getAllocationRecords() {
+		return allocationRecords;
+	}
+	public void setAllocationRecords(List<AllocationRecord> allocationRecords) {
+		this.allocationRecords = allocationRecords;
 	}
 	// loading barebone information about the entity
 	public void doBasicLazyLoad() {

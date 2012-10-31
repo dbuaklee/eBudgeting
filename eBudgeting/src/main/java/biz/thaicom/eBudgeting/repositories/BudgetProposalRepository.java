@@ -26,7 +26,16 @@ public interface BudgetProposalRepository extends
 	public List<BudgetProposal> findBudgetProposalByFiscalYearAndOwnerAndParentPath(
 			Integer fiscalYear, Long ownerId, String parentPathLikeString);
 
+	@Query("" +
+			"SELECT distinct proposal " +
+			"FROM BudgetProposal proposal " +
+			"	INNER JOIN FETCH proposal.forObjective objective " +
+			"WHERE objective.fiscalYear =?1 and objective.parentPath like ?2 ")
+	public List<BudgetProposal> findBudgetProposalByFiscalYearAndOwnerAndParentPath(
+			Integer fiscalYear, String parentPathLikeString);
 
+
+	
 	public BudgetProposal findByForObjectiveAndOwner(Objective parent,
 			Organization owner);
 }

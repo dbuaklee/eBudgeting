@@ -3,6 +3,7 @@ package biz.thaicom.eBudgeting.models.bgt;
 import java.io.Serializable;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import biz.thaicom.eBudgeting.models.pln.Objective;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -32,11 +35,19 @@ public class AllocationRecord implements Serializable{
 	private Long id;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="PROPOSAL_BGT_BUDGETPROPOSAL_ID")
-	private BudgetProposal proposal;
+	@JoinColumn(name="OBJECTIVE_PLN_OBJECTIVE_ID")
+	private Objective forObjective;
 	
 	@Basic
 	private Long amountAllocated;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="BUDGETTYPE_BGT_ID")
+	private BudgetType budgetType;
+	
+	@Basic
+	@Column(name="IDX")
+	private Integer index;
 
 	public Long getId() {
 		return id;
@@ -46,12 +57,22 @@ public class AllocationRecord implements Serializable{
 		this.id = id;
 	}
 
-	public BudgetProposal getProposal() {
-		return proposal;
+
+
+	public Objective getForObjective() {
+		return forObjective;
 	}
 
-	public void setProposal(BudgetProposal proposal) {
-		this.proposal = proposal;
+	public void setForObjective(Objective forObjective) {
+		this.forObjective = forObjective;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
 	}
 
 	public Long getAmountAllocated() {
@@ -60,6 +81,14 @@ public class AllocationRecord implements Serializable{
 
 	public void setAmountAllocated(Long amountAllocated) {
 		this.amountAllocated = amountAllocated;
+	}
+
+	public BudgetType getBudgetType() {
+		return budgetType;
+	}
+
+	public void setBudgetType(BudgetType budgetType) {
+		this.budgetType = budgetType;
 	}
 	
 	

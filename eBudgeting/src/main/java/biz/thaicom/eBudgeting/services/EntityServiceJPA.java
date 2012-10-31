@@ -17,6 +17,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
@@ -27,6 +29,7 @@ import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
+import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
@@ -64,6 +67,9 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired 
 	private ProposalStrategyRepository proposalStrategyRepository;
+	
+	@Autowired 
+	private AllocationRecordRepository allocationRecordRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -421,6 +427,48 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
+	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
+			Integer fiscalYear, Long objectiveId) {
+		String parentPathLikeString = "%."+objectiveId.toString()+"%";
+		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear, parentPathLikeString);
+		
+		List<BudgetProposal> proposalList = budgetProposalRepository
+				.findBudgetProposalByFiscalYearAndOwnerAndParentPath(fiscalYear, parentPathLikeString);
+		
+		//loop through proposalList
+		for(BudgetProposal proposal : proposalList) {
+			Integer index = list.indexOf(proposal.getForObjective());
+			Objective o = list.get(index);
+			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
+			
+			if(o.getProposals()==null) {
+				o.setProposals(new ArrayList<BudgetProposal>());
+			}
+			
+			//o.getProposals().add(proposal);
+			logger.debug("proposal size is " + o.getProposals().size());
+		}
+		
+		//now loop through allocationRecord
+		List<AllocationRecord> recordList = allocationRecordRepository
+				.findBudgetProposalByFiscalYearAndOwnerAndParentPath(fiscalYear, parentPathLikeString);
+		for(AllocationRecord record : recordList) {
+			Integer index = list.indexOf(record.getForObjective());
+			Objective o = list.get(index);
+			logger.debug("AAding Allocation {} to objective: {}", record.getId(), o.getId());
+			
+			if(o.getAllocationRecords()==null) {
+				o.setAllocationRecords(new ArrayList<AllocationRecord>());
+			}
+			
+			//o.getProposals().add(record);
+			logger.debug("proposal size is " + o.getAllocationRecords().size());
+		}
+		
+		return list;
+	}
+	
+	@Override
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
 			Integer fiscalYear, Long ownerId, Long objectiveId) {
 		String parentPathLikeString = "%."+objectiveId.toString()+"%";
@@ -753,6 +801,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 	}
+
+
 
 
 }
