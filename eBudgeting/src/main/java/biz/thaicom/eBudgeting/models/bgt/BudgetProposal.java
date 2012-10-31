@@ -191,4 +191,22 @@ public class BudgetProposal implements Serializable {
 			this.amountRequestNext3Year += amountRequestNext3Year;
 		}
 	}
+
+	public void adjustAmountRequest(Long adjustedAmount) {
+		this.amountRequest = this.amountRequest - adjustedAmount;
+	}
+
+	public void adjustAmountRequestNext1Year(Long adjustedAmountRequestNext1Year) {
+		this.amountRequestNext1Year = this.amountRequestNext1Year - adjustedAmountRequestNext1Year;
+	}
+
+	public void adjustAmountRequestNext2Year(Long adjustedAmountRequestNext2Year) {
+		this.amountRequestNext2Year = this.amountRequestNext2Year - adjustedAmountRequestNext2Year;	
+	}
+
+	public void adjustAmountRequestNext3Year(Long adjustedAmountRequestNext3Year) {
+		this.amountRequestNext3Year = this.amountRequestNext3Year - adjustedAmountRequestNext3Year;
+		
+	}
+	
 }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -78,10 +79,10 @@ public class BudgetProposalRestController {
 	@RequestMapping(value="/ProposalStrategy/{id}", method=RequestMethod.PUT) 
 	public @ResponseBody ProposalStrategy updateProposalStrategy(
 			@PathVariable Long id,
-			@RequestParam String proposalStrategyJson) throws JsonParseException, JsonMappingException, IOException{
+			@RequestBody JsonNode data) throws JsonParseException, JsonMappingException, IOException{
 		
 		// we just pass this to entityJPA
-		return entityService.updateProposalStrategy(id, proposalStrategyJson);		
+		return entityService.updateProposalStrategy(id, data);		
 		
 	}
 	

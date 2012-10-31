@@ -135,6 +135,28 @@ public class ProposalStrategy implements Serializable {
 	public void setAmountRequestNext3Year(Long amountRequestNext3Year) {
 		this.amountRequestNext3Year = amountRequestNext3Year;
 	}
+
+	public void adjustTotalCalculatedAmount(Long adjustedAmount) {
+		this.totalCalculatedAmount = this.totalCalculatedAmount - adjustedAmount;
+	}
+
+	public void adjustAmountRequestNext1Year(Long adjustedAmountRequestNext1Year) {
+		if(this.amountRequestNext1Year == null) this.amountRequestNext1Year = 0L;
+		this.amountRequestNext1Year = this.amountRequestNext1Year - adjustedAmountRequestNext1Year;
+		
+	}
+
+	public void adjustAmountRequestNext2Year(Long adjustedAmountRequestNext2Year) {
+		if(this.amountRequestNext2Year == null) this.amountRequestNext2Year = 0L;
+		this.amountRequestNext2Year = this.amountRequestNext2Year - adjustedAmountRequestNext2Year;
+		
+	}
+
+	public void adjustAmountRequestNext3Year(Long adjustedAmountRequestNext3Year) {
+		if(this.amountRequestNext3Year == null) this.amountRequestNext3Year = 0L;
+		this.amountRequestNext3Year = this.amountRequestNext3Year - adjustedAmountRequestNext3Year;
+		
+	}
 	
 	
 

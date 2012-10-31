@@ -559,13 +559,14 @@ var StrategySelectionView = Backbone.View.extend({
 	
 	updateProposal: function(e) {
 		if(this.currentEditProposalStrategy != null) {
-			var proposalStrategy = currentEditProposalStrategy;
+			var proposalStrategy = this.currentEditProposalStrategy;
 			// we just pick up changes
 			// loop through formulaColumns
 			var i;
 			var calculatedAmount = 0;
 			var formulaColumns = this.currentStrategy.get('formulaColumns');
 			for(i=0; i< formulaColumns.length; i++) {
+				
 				var fc = formulaColumns.at(i); 
 				if(fc.get('isFixed')) {
 					var colId = fc.get('id');
@@ -577,9 +578,9 @@ var StrategySelectionView = Backbone.View.extend({
 					
 					
 					if(calculatedAmount == 0) {
-						calculatedAmount = requestColumn.get('amount');
+						calculatedAmount = foundRC.get('amount');
 					} else {
-						calculatedAmount = calculatedAmount * requestColumn.get('amount');
+						calculatedAmount = calculatedAmount * foundRC.get('amount');
 					}
 					
 				} else {
@@ -591,16 +592,26 @@ var StrategySelectionView = Backbone.View.extend({
 				}
 			}
 			proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
-			proposalStrategy.set('proposal', budgetProposal);
 			proposalStrategy.set('name', this.$el.find('#proposalName').val());
 			proposalStrategy.set('amountRequestNext1Year',this.$el.find('#amountRequestNext1Year').val());
 			proposalStrategy.set('amountRequestNext2Year',this.$el.find('#amountRequestNext2Year').val());
 			proposalStrategy.set('amountRequestNext3Year',this.$el.find('#amountRequestNext3Year').val());
 			
 			// now we can send changes to the server?
+			var json = proposalStrategy.toJSON();
 			
-			
+			$.ajax({
+				type: 'PUT',
+				url: appUrl('/ProposalStrategy/' + proposalStrategy.get('id')),
+				data: JSON.stringify(json),
+				contentType: 'application/json;charset=utf-8',
+				dataType: "json",
+				success: _.bind(function(data) {
+					this.parentModal.render();
+				}, this)
+			});
 		}
+
 	},
 	
 	saveProposal: function(e) {

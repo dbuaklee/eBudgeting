@@ -17,13 +17,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
-import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
@@ -671,18 +668,26 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public ProposalStrategy updateProposalStrategy(Long id,
-			String proposalStrategyJson) throws JsonParseException, JsonMappingException, IOException {
+			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException {
 
 		ProposalStrategy strategy = proposalStrategyRepository.findOne(id);
 		
 		if(strategy != null) {
 			// now get information from JSON string?
-			JsonNode rootNode = mapper.readValue(proposalStrategyJson, JsonNode.class);
+			
 			strategy.setName(rootNode.get("name").asText());
-			strategy.setTotalCalculatedAmount(rootNode.get("totalCalculatedAmount").asLong());
-			strategy.setAmountRequestNext1Year(rootNode.get("amountRequestNext1Year").asLong());
-			strategy.setAmountRequestNext2Year(rootNode.get("amountRequestNext2Year").asLong());
-			strategy.setAmountRequestNext3Year(rootNode.get("amountRequestNext3Year").asLong());
+			
+			Long adjustedAmount = strategy.getTotalCalculatedAmount() - rootNode.get("totalCalculatedAmount").asLong();
+			Long adjustedAmountRequestNext1Year = strategy.getAmountRequestNext1Year()==null?0:strategy.getAmountRequestNext1Year() - rootNode.get("amountRequestNext1Year").asLong();
+			Long adjustedAmountRequestNext2Year = strategy.getAmountRequestNext2Year()==null?0:strategy.getAmountRequestNext2Year() - rootNode.get("amountRequestNext2Year").asLong();
+			Long adjustedAmountRequestNext3Year = strategy.getAmountRequestNext3Year()==null?0:strategy.getAmountRequestNext3Year() - rootNode.get("amountRequestNext3Year").asLong();
+			
+			
+			strategy.adjustTotalCalculatedAmount(adjustedAmount);
+			
+			strategy.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
+			strategy.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
+			strategy.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
 			
 			// now looping through the RequestColumns
 			JsonNode requestColumnsArray = rootNode.get("requestColumns");
@@ -703,7 +708,43 @@ public class EntityServiceJPA implements EntityService {
 			
 			proposalStrategyRepository.save(strategy);
 			
-			// we should go about uptdating people?
+			// now save this budgetProposal
+			BudgetProposal b = strategy.getProposal();
+			b.adjustAmountRequest(adjustedAmount);
+			b.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
+			b.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
+			b.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
+			
+			budgetProposalRepository.save(b);
+			
+			
+			
+			Organization owner = strategy.getProposal().getOwner();
+			
+			BudgetProposal temp = b;
+			// OK we'll go through the amount of this one and it's parent!?
+			while (temp.getForObjective().getParent() != null) {
+				// now we'll get all proposal
+				Objective parent = temp.getForObjective().getParent();
+				temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+				
+				if(temp!=null) {
+					temp.adjustAmountRequest(adjustedAmount);
+					temp.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
+					temp.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
+					temp.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
+				} else {
+					temp = new BudgetProposal();
+					temp.setForObjective(parent);
+					temp.setOwner(owner);
+//					temp.setBudgetType(parent.getBudgetType());
+					temp.setAmountRequest(strategy.getTotalCalculatedAmount());
+					temp.setAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
+					temp.setAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
+					temp.setAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
+				}
+				budgetProposalRepository.save(temp);
+			}
 			
 			return strategy;
 		} else {

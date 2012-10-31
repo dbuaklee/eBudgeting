@@ -16,7 +16,9 @@
     	</argument-resolvers>
 		<message-converters>
 			<beans:bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-				<beans:property name="objectMapper" ref="mappre"/>
+			<beans:property name="objectMapper">
+					<beans:bean class="biz.thaicom.utils.jacksonHibernate.HibernateAwareObjectMapper"/>
+				</beans:property>
 			</beans:bean>
 		</message-converters>
 	</annotation-driven>
@@ -33,7 +35,7 @@
 		</beans:property>
 	</beans:bean>
 	
-	<beans:bean id="mapper" class="biz.thaicom.utils.jacksonHibernate.HibernateAwareObjectMapper"/>
+
 		
 
 	<beans:bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">

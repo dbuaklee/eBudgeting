@@ -66,6 +66,6 @@
 	
 	
 	
-	
+	<bean id="mapper" class="biz.thaicom.utils.jacksonHibernate.HibernateAwareObjectMapper"/>
 	
 </beans>

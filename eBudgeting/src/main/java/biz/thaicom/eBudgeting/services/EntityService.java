@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
@@ -86,7 +87,7 @@ public interface EntityService {
 			Integer fiscalYear, Long ownerId, Long objectiveId);
 	public ProposalStrategy deleteProposalStrategy(Long id);
 	public ProposalStrategy updateProposalStrategy(Long id,
-			String proposalStrategyJson) throws JsonParseException, JsonMappingException, IOException;
+			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException;
 	
 	//RequestColumn
 	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
