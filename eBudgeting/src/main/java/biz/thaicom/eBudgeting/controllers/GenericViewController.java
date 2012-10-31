@@ -345,6 +345,15 @@ public class GenericViewController {
 		
 		return "m2f06";
 	}
+	
+	@RequestMapping("/page/m1f05/")
+	public String runder_m1f05(
+			Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m1f05";
+	}
 
 }
 

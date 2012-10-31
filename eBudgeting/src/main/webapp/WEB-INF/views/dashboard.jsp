@@ -38,7 +38,7 @@ var menuJson = [{
 	menus: [{name: "m1f01: โครงสร้างหมวดงบประมาณ", link:"jsp/m1f01", disabled: "disabled"},
 	        {name: "m1f02: หน่วยงานภายใน", link: "jsp/m1f02", disabled: "disabled"},
 	        {name: "m1f03: ข้อมูลหน่วยนับตัวชี้วัด", link: "jsp/m1f03", disabled: "disabled"},
-	        {name: "m1f04: ทะเบียนรายการครุภัณฑ์", link: "jsp/m1f04", disabled: "disabled"}]
+	        {name: "m1f05: เพิ่มข้อมูลเริ่มต้นปีงบประมาณ", link: "page/m1f05/"}]
 },{
 	name: "ระบบจัดทำคำขอตั้ง",
 	menus: [{name: "m2f13: กำหนดงบประมาณพื้นฐาน (default) ของหมวดงบประมาณ", link: "page/m2f13/"},
