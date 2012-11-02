@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
@@ -124,7 +126,18 @@ public class BudgetTypeRestController {
 		logger.debug("id: " + strategy.getType().getId());
 		
 		return entityService.saveFormulaStrategy(strategy);
-		}
+	}
+	
+	@RequestMapping(value="/FormulaStrategy/{id}", method=RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.OK)
+	public @ResponseBody FormulaStrategy updateBudgetTypeFormulaStrategy(
+			@PathVariable Long id,
+			@RequestBody JsonNode strategy) {
+		
+		//logger.debug("id: " + strategy.getType().getId());
+		
+		return entityService.updateFormulaStrategy(strategy);
+	}
 	
 	
 	@ExceptionHandler(value=EntityNotFoundException.class)

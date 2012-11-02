@@ -115,9 +115,17 @@
 </form>
 </script>
 
+<script id="formulaInLinEditTemplate" type="text/x-handlebars-template">
+	<div style="margin-top:4px; margin-bottom:4px;">
+		<input type="text" data-id="{{id}}" value="{{name}}"/> 
+		<button class="btn btn-mini updateFormulaStrategy"><i class="icon-ok" icon-white"/> แก้ไข</button>
+		<button class="btn btn-mini cancelUpdateFormulaStrategy"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+	</div>
+</script>
+
 <script id="formulaTemplate" type="text/x-handlebars-template">
 {{#each this}}
-	<li data-id={{id}}> <button class='btn btn-mini deleteFormula'>ลบ</button>{{name}} = {{{formulaLine formulaColumns false}}} 
+	<li data-id={{id}} style="list-style-type: none; padding: 0;"> <input type="radio" data-id="{{../id}}" name="formulaSlt-{{../id}}" id="formulaSlt-{{../id}}" value="{{id}}"> {{name}} = {{{formulaLine formulaColumns false}}} </input> 
 	</li>
 {{/each}}
 </script>
@@ -143,7 +151,12 @@
 				{{else}}
 					{{name}}
 					<div class="formulaCtr smallTxt">
-						<b>ตัวเลือกงบประมาณ</b> <button class="btn btn-mini addFormula">เพิ่ม</button>
+						<b>ตัวเลือกงบประมาณ</b> 
+						<span class="controls" style="margin-bottom: 15px;">
+							<a href="#" class="btn btn-mini btn-info addFormulaStrategy"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
+							<a href="#" class="btn btn-mini btn-primary editFormulaStrategy"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+							<a href="#" class="btn btn-mini btn-danger deleteFormulaStrategy"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+						</span>
 						<div class="formulaDetail">
 							<ol></ol>
 						</div>
@@ -210,8 +223,6 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 
 $(document).ready(function() {
 
-	var formulaTpl = Handlebars.compile($("#formulaTemplate").html());
-	
 	var FormularLineModalView = Backbone.View.extend({
 		initialize: function() {
 			_.bindAll(this,'back');
@@ -455,26 +466,36 @@ $(document).ready(function() {
 		
 		el: "#mainCtr",
 		mainCtrTpl: Handlebars.compile($("#mainCtrTemplate").html()),
+		formulaTpl : Handlebars.compile($("#formulaTemplate").html()),
+		formulaInLineEditTpl : Handlebars.compile($("#formulaInLinEditTemplate").html()),
+		
 		modalView: new ModalView(),
 		formularLineModalView : new FormularLineModalView(),
 		
 		render: function() {
+			
 			this.$el.html(this.mainCtrTpl(this.model.toJSON()));
 		},
 		
 		renderChild: function(caller) {
 			var callerFormulaEl = "tr[data-id="+ caller.get('id') +"] .formulaDetail ol";
-			var html = formulaTpl(caller.get('formulaStrategy').toJSON());
+			
+			var json = caller.get('formulaStrategy').toJSON();
+			json.id = caller.get('id');
+			var html = this.formulaTpl(json);
 			$(callerFormulaEl).html(html);
 		},
 		
 		events: {
-			"click .addFormula" : "addFormula",
-			"click .deleteFormula" : "deleteFormula",
-			"click .editFormulaLineBtn" : "editFormulaLine"
+			"click .addFormulaStrategy" : "addFormulaStrategy",
+			"click .deleteFormulaStrategy" : "deleteFormulaStrategy",
+			"click .editFormulaStrategy" : "editFormulaStrategy",
+			"click .editFormulaLineBtn" : "editFormulaLine",
+			"click .updateFormulaStrategy" : "updateFormulaStrategy",
+			"click .cancelUpdateFormulaStrategy" : "cancelUpdateFormulaStrategy"
 		},
 		
-		addFormula: function(e) {
+		addFormulaStrategy: function(e) {
 			// now prepare information for modal
 			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
 			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
@@ -493,26 +514,91 @@ $(document).ready(function() {
 			this.formularLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
 		},
 		
-		deleteFormula: function(e) {
+		deleteFormulaStrategy: function(e) {
 			// now prepare information for modal
 			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
 			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
 			
 			
-			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
+			var currentFormulaId = $("#formulaSlt-"+currentBudgetTypeId+":checked").val();
+			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
+			if(currentFormula != null) {
+			
+				var ret = confirm("คุณต้องการจะลบรายการ " + currentFormula.get('name'));
+	
+				if(ret) {
+				
+					currentBudgetType.get('formulaStrategy').remove(currentFormula);
+					currentFormula.destroy();
+				
+					currentBudgetType.trigger('changeFormula', currentBudgetType);
+				}
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการลบ');
+			}
+		},
+		
+		editFormulaStrategy: function(e) {
+			// now prepare information for modal
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			
+			var currentFormulaId = $("#formulaSlt-"+currentBudgetTypeId+":checked").val();
 			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
 			
-			var ret = confirm("do you want to delete?");
-
-
-			if(ret) {
-			
-				currentBudgetType.get('formulaStrategy').remove(currentFormula);
-				currentFormula.destroy();
-			
-				currentBudgetType.trigger('changeFormula', currentBudgetType);
+			if(currentFormula != null) {
+				// now disable the button
+				this.$el.find('tr[data-id='+ currentBudgetTypeId +'] .btn').toggleClass('disabled');
+				
+				// we turn this into edit
+				var formulaEl = "tr[data-id="+ currentBudgetTypeId +"] .formulaDetail ol li[data-id="+currentFormulaId+"]";
+				
+				var json = currentFormula.toJSON();
+				
+				var html = this.formulaInLineEditTpl(json);
+				$(formulaEl).html(html);
+				
+				
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
 			}
 			
+		},
+		
+		updateFormulaStrategy : function(e) {
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			
+			var currentFormulaId = $(e.currentTarget).prev().attr("data-id");
+			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
+			
+			currentFormula.set('name', $(e.currentTarget).prev().val());
+			
+			// we can save now !
+			var json = currentFormula.toJSON();
+			
+			$.ajax({
+				type: 'PUT',
+				url: appUrl('/FormulaStrategy/' + currentFormula.get('id')),
+				data: JSON.stringify(json),
+				contentType: 'application/json;charset=utf-8',
+				dataType: "json",
+				success: _.bind(function(data) {
+					this.renderChild(currentBudgetType);
+					this.$el.find('tr[data-id='+ currentBudgetTypeId +'] .btn').toggleClass('disabled');
+					
+				}, this)
+			});
+			
+			
+		},
+		
+		cancelUpdateFormulaStrategy : function(e) {
+			// now prepare information for modal
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			this.renderChild(currentBudgetType);
+			this.$el.find('tr[data-id='+ currentBudgetTypeId +'] .btn').toggleClass('disabled');
 			
 		}
 	});

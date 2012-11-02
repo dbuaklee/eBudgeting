@@ -802,6 +802,22 @@ public class EntityServiceJPA implements EntityService {
 		
 	}
 
+	@Override
+	public FormulaStrategy updateFormulaStrategy(JsonNode strategy) {
+		Long formulaStrategyId=strategy.get("id").asLong();
+		
+		FormulaStrategy formulaStrategy = formulaStrategyRepository.findOne(formulaStrategyId);
+		
+		if(formulaStrategy != null) {
+			String name = strategy.get("name").asText();
+			formulaStrategy.setName(name);
+			
+			formulaStrategyRepository.save(formulaStrategy);
+		}
+		
+		return formulaStrategy;
+	}
+
 
 
 

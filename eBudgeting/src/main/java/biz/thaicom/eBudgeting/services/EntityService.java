@@ -70,6 +70,8 @@ public interface EntityService {
 			Integer fiscalYear, Long budgetTypeId);
 	public FormulaStrategy saveFormulaStrategy(FormulaStrategy strategy);
 	public void deleteFormulaStrategy(Long id);
+	public FormulaStrategy updateFormulaStrategy(JsonNode strategy);
+
 	
 	
 	//FormulaColumn
@@ -90,6 +92,7 @@ public interface EntityService {
 	public ProposalStrategy deleteProposalStrategy(Long id);
 	public ProposalStrategy updateProposalStrategy(Long id,
 			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException;
+
 	
 	//RequestColumn
 	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
