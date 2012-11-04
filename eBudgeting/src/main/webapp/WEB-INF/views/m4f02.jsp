@@ -211,13 +211,21 @@
 	{{{childrenNodeTpl this.children this.level}}}
 </script>
 
+<script id="reservedBudgetInputTemplate" type="text/x-handler-template">
+	<div>
+		<input class="span2" type="text" data-id="{{id}}" {{#if amountReserved}}value="{{amountReserved}}"{{/if}} id="reservedBudgetInput"/> 
+		<button class="btn btn-mini updateReservedBudget"><i class="icon-ok" icon-white"/> แก้ไข</button>
+		<button class="btn btn-mini cancelUpdateReservedBudget"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+	</div>
+</script>
+
 <script id="modalHeaderTemplate" type="text/x-handler-template">
 <div>
 	หมวดงบประมาณ {{allocationRecordR3.budgetType.name}}
 	<table>
 		<tr><td>หลังปรับลดครั้งที่ 3 ได้รับ</td><td style="text-align:right">{{formatNumber allocationRecordR3.amountAllocated}} </td><td>บาท</td></tr>
 		<tr><td>จัดสรรให้หน่วยงาน</td><td style="text-align:right">{{sumAllocatedRecord proposals}}</td><td> บาท</td></tr>
-		<tr><td>จัดสรรเข้ายุทธศาสตร์กลาง</td><td style="text-align:right">{{sumAmountReserved reservedBudget}} </td><td>บาท</td></tr>
+		<tr><td><a href="#" id="reservedBudgetLnk">จัดสรรเข้ายุทธศาสตร์กลาง</td><td style="text-align:right" id="reservedBudgetCell">{{formatNumber reservedBudget.amountReserved}} </td><td>บาท</td></tr>
 		<tr><td>คงเหลือการจัดสรร</td><td style="text-align:right" id="amountLeftCell">{{amountLeft this}}</td><td>บาท</td></tr>
 	</table>
 </div>
@@ -229,7 +237,7 @@
 <div><u>รายการขอตั้งประมาณ</u></div>
 	<ul id="budgetProposeLst">	
 	{{#each this}}
-		<li><a href="#" data-id="{{id}}" class="proposalLnk">{{owner.abbr}} ขอตั้ง = {{formatNumber amountRequest}}</a> บาท </a> / จัดสรร = {{formatNumber amountAllocated}} บาท</li> <div class="strategyDetail" style="display:none"/>
+		<li data-id="{{id}}"><a href="#" data-id="{{id}}" class="proposalLnk">{{owner.abbr}} ขอตั้ง = {{formatNumber amountRequest}}</a> บาท </a> / จัดสรร = {{formatNumber amountAllocated}} บาท</li> <div class="strategyDetail" style="display:none"/>
 	{{/each}}
 	</ul>
 </div>
@@ -240,72 +248,24 @@
 <ul>
 {{#each this}} 
 	<li data-id="{{id}}" proposal-id="{{../id}}">
-		<span class="label label-info"><a href="#" class="editProposal"><i class="icon icon-edit icon-white editProposal"></i></a></span>				
+		<b>ขอตั้ง</b>			
 		{{name}} : {{{formulaLine this false}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
 
-	<li><u><b>จัดสรร</b></u>:  {{{formulaLine this true}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+	<li style="list-style: none;" data-id="{{id}}"><a href="#" class="editProposal"><span class="label label-info"><i class="icon icon-edit icon-white editProposal"></i></span> จัดสรร </a>:  {{{formulaLine this true}}} = {{{formatNumberNotNull totalCalculatedAllocatedAmount}}} บาท</li>
 
 {{/each}}
 </ul>
 </script>
 
-<script id="inputModalTemplate" type="text/x-handler-template">
-	<hr/>
-	ชื่อรายการ: <input type="text" id="proposalName" value="{{propsalStrategyName}}"/>
-	<table class="formula table table-condensed">
-	<tr>
-	{{#each this.formulaColumns}}
-		<td style="text-align:center" width=80>
-		{{columnName}} 
-		</td>
-		{{#if this.$last}}
-			<td style="text-align:center" width=5 rowspan="3">
-			=
-			</td>
-		{{else}}
-			<td style="text-align:center" width=5 rowspan="3">
-			X
-			</td>
-		{{/if}}
+<script id="editProposalFormTemplate" type="text/x-handler-template">
+	<span class="label label-info"><i class="icon icon-edit icon-white editProposal"></i></span> จัดสรร :  
+	{{#each formulaStrategy.formulaColumns}}
+	{{columnName}}(<input type="text" class="span1 proposalEditInput" id="formulaStrategy-{{id}}" data-id="{{id}}" requestColumn-id="{{requestColumnId}}"
+						 value="{{#if requestColumnId}}{{requestColumnAllocatedValue}}{{else}}{{allocatedAmount}}{{/if}}"/> {{unitName}}) {{#unless $last}} X {{/unless}} 
 	{{/each}}
-	<td  style="text-align:center" width=80>
-		คิดเป็น
-	</td>
-	<td rowspan="3">
-		<button class="btn btn-mini copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button>
-	</td>
-	</tr>
-	<tr>
-	{{#each this.formulaColumns}}
-		{{#if isFixed}}
-		<td style="text-align:center" class="isNotFixed">
-			<input id="formulaColumnId-{{id}}" type="text" class="span1 formulaColumnInput" value="{{value}}"></input>
-		</td>
-		{{else}}
-		<td style="text-align:center" class="isFixed">
-			{{formatNumber value}}
-		</td>
-		{{/if}}
-		
-	{{/each}}
-	<td  style="text-align:center" id="totalInputForm">
-		{{total}}
-	</td>
-	</tr>
-	<tr>
-	{{#each this.formulaColumns}}
-		<td style="text-align:center">
-		{{unitName}}
-		</td>
-	{{/each}}
-	<td style="text-align:center">บาท
-	</td>
-	</tr>
-	</table>
-	ประมาณการปี {{next1Year}}: <input type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/> บาท <br/>
-	ประมาณการปี {{next2Year}}: <input type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/> บาท <br/>
-	ประมาณการปี {{next3Year}}: <input type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/> บาท <br/>
-	{{#if editStrategy}}<button data-id="{{proposalStrategyId}}" class="btn btn-mini updateProposal">แก้ไข</button>{{else}}<button class="btn btn-mini saveProposal">บันทึก</button>{{/if}}
+	
+	 = <span id="totalCalculatedAllocatedAmount-{{id}}" class="totalCalculatedAllocatedAmount">{{{formatNumberNotNull totalCalculatedAllocatedAmount}}}</span> บาท <button class="btn btn-mini updateProposalStretegy"><i class="icon-ok" icon-white"/> แก้ไข</button>
+		<button class="btn btn-mini cancelUpdateProposalStretegy"><i class="icon-remove" icon-white"/> ยกเลิก</button>
 </script>
 
 <script id="proposalInputTemplate" type="text/x-handler-template">
@@ -351,11 +311,26 @@
 	var l = null;
 	var e1;
 
+	Handlebars.registerHelper("formatNumberNotNull", function(number){
+		if(number == null || isNaN(number)) {
+			return "????";
+		} else {
+			return addCommas(number);
+		}
+		
+	});
+	
 	Handlebars.registerHelper("amountLeft", function(json) {
 		var amountAllocated = json.allocationRecordR3.amountAllocated;
 		var amountDistribute = 0;
-		for(var i=0; i< json.proposals; i++){
-			amountDistribute += json.proposals[i].amountAllocated;
+		for(var i=0; i< json.proposals.length; i++){
+			
+			if(json.proposals[i].amountAllocated == null || isNaN(json.proposals[i].amountAllocated)) {
+				//we'll skip this one!
+					
+			} else {
+				amountDistribute = amountDistribute + json.proposals[i].amountAllocated;
+			}
 		}
 		var amountReserved = json.reservedBudget.amountReserved;
 		
@@ -414,6 +389,7 @@
 
 	});
 
+
 	Handlebars.registerHelper("formulaLine", function(strategy, isAllocated) {
 
 		var s = "";
@@ -427,7 +403,6 @@
 				}
 				
 				s = s + formulaColumns[i].columnName;
-				console.log("i= " + i + " s = " + s);
 				
 				if (formulaColumns[i].isFixed) {
 					// now we'll go through requestColumns
@@ -438,10 +413,10 @@
 							
 							if(isAllocated) {
 								var allocatedAmountStr = "";
-								if(strategy.requestColumns[j].allocatedAmount==null) {
+								if(strategy.requestColumns[j].allocatedValue==null) {
 									 allocatedAmountStr = "????";
 								} else {
-									allocatedAmountStr = addCommas(strategy.requestColumns[j].allocatedAmount);
+									allocatedAmountStr = addCommas(strategy.requestColumns[j].allocatedValue);
 								}
 								
 								str += "("
@@ -454,21 +429,17 @@
 								+ formulaColumns[i].unitName
 								+ ")";
 							}
-							
-							console.log("str: " + str);
 							s = s +  str;
-							console.log(s);
-									
 						}
 					}
 
 				} else {
 					if(isAllocated) {
 						var allocatedValueStr = "";
-						if(formulaColumns[i].allocatedValue == null) {
+						if(formulaColumns[i].allocatedAmount == null) {
 							allocatedValueStr = "????";
 						} else {
-							allocatedValueStr = addCommas(formulaColumns[i].allocatedValue);
+							allocatedValueStr = addCommas(formulaColumns[i].allocatedAmount);
 						}
 						
 						s = s
@@ -530,524 +501,6 @@
 		return val + next;
 	});
 
-	var StrategySelectionView = Backbone.View
-			.extend({
-				initialize : function() {
-					_.bindAll(this, 'render');
-					_.bindAll(this, 'renderWithStrategy');
-					_.bindAll(this, 'strategySelect');
-
-				},
-
-				el : "#strategySelectionDiv",
-				events : {
-					"change #strategySlt" : "strategySelect",
-					"click .saveProposal" : "saveProposal",
-					"click .copytoNextYear" : "copyToNextYear",
-					"change .formulaColumnInput" : 'inputChange',
-					"click .updateProposal" : 'updateProposal'
-				},
-				inputModalTemplate : Handlebars
-						.compile($('#inputModalTemplate').html()),
-				strategySelectionTemplate : Handlebars.compile($(
-						'#strategySelectionTemplate').html()),
-				currentStrategyCollection : null,
-
-				render : function() {
-					if (this.currentStrategyCollection != null) {
-						var json = this.currentStrategyCollection.toJSON();
-						this.$el.html(this.strategySelectionTemplate(json));
-					}
-
-				},
-
-				renderWithStrategy : function(strategyCollection, parentModal) {
-					this.parentModal = parentModal;
-					this.currentStrategyCollection = strategyCollection;
-					this.render();
-				},
-
-				renderWithWithDisableSelect : function(formulaStrategies,
-						proposalStrategy, parentModal) {
-					this.parentModal = parentModal;
-					this.currentStrategyCollection = formulaStrategies;
-					this.currentEditProposalStrategy = proposalStrategy;
-
-					if (this.currentStrategyCollection != null) {
-						var json = this.currentStrategyCollection.toJSON();
-
-						for ( var i = 0; i < json.length; i++) {
-							if (json[i].id == proposalStrategy.get(
-									'formulaStrategy').get('id')) {
-								json[i].selected = true;
-							}
-						}
-
-						json.editStrategy = true;
-
-						this.$el.html(this.strategySelectionTemplate(json));
-
-						// now the Form!
-						this.currentStrategy = proposalStrategy
-								.get('formulaStrategy');
-
-						var columns = this.currentStrategy
-								.get('formulaColumns');
-						//now set the last column
-						columns.at(columns.length - 1).set("$last", true);
-
-						// here we'll get the propose column
-
-						var json = this.currentStrategy.toJSON();
-						json.propsalStrategyName = proposalStrategy.get('name');
-						json.proposalStrategyId = proposalStrategy.get('id');
-						json.editStrategy = true;
-
-						json.next1Year = this.currentStrategy.get('fiscalYear') + 1;
-						json.next1YearValue = proposalStrategy
-								.get('amountRequestNext1Year');
-
-						json.next2Year = this.currentStrategy.get('fiscalYear') + 2;
-						json.next2YearValue = proposalStrategy
-								.get('amountRequestNext2Year');
-
-						json.next3Year = this.currentStrategy.get('fiscalYear') + 3;
-						json.next3YearValue = proposalStrategy
-								.get('amountRequestNext3Year');
-
-						var totalMulti = 1;
-
-						for ( var i = 0; i < json.formulaColumns.length; i++) {
-							if (json.formulaColumns[i].isFixed) {
-								var colId = json.formulaColumns[i].id;
-								// now find this colId in requestColumns
-								var rc = proposalStrategy.get('requestColumns');
-								var foundRC = rc.where({
-									column : FormulaColumn.findOrCreate(colId)
-								});
-								json.formulaColumns[i].value = foundRC[0]
-										.get('amount');
-
-								totalMulti = totalMulti
-										* parseInt(foundRC[0].get('amount'));
-							} else {
-								totalMulti = totalMulti
-										* parseInt(json.formulaColumns[i].value);
-							}
-
-						}
-						json.total = totalMulti;
-						// now will go through
-
-						var html = this.inputModalTemplate(json);
-						// render strategy!
-						this.$el.find('#input-form').html(html);
-
-					}
-
-				},
-
-				inputChange : function(e) {
-					// OK we'll go through all td value
-					var allTdIsFixed = $(e.target).parents('tr').find(
-							'td.isFixed');
-					var allTdIsNotFixed = $(e.target).parents('tr').find(
-							'td.isNotFixed');
-
-					var amount = 1;
-
-					//now multiply all from is Fixed!
-					for ( var i = 0; i < allTdIsFixed.length; i++) {
-						var value = $(allTdIsFixed[i]).html();
-						amount = amount * parseInt(value);
-					}
-
-					//now moveon to the rest
-					for ( var i = 0; i < allTdIsNotFixed.length; i++) {
-						var value = $(allTdIsNotFixed[i]).find('input').val();
-						if (isNaN(parseInt(value))) {
-							amount = "";
-							break;
-						}
-						amount = amount * parseInt(value);
-					}
-
-					// now put amount back amount
-					$('#totalInputForm').html(addCommas(amount));
-				},
-
-				copyToNextYear : function(e) {
-					var valueToCopy = $('#totalInputForm').html();
-					valueToCopy = valueToCopy.replace(/,/g, '');
-					this.$el.find('#amountRequestNext1Year').val(valueToCopy);
-					this.$el.find('#amountRequestNext2Year').val(valueToCopy);
-					this.$el.find('#amountRequestNext3Year').val(valueToCopy);
-				},
-
-				strategySelect : function(e) {
-
-					var strategyId = e.target.value;
-
-					var strategy = this.currentStrategyCollection
-							.get(strategyId);
-					this.currentStrategy = strategy;
-
-					var columns = strategy.get('formulaColumns');
-					//now set the last column
-					columns.at(columns.length - 1).set("$last", true);
-
-					// here we'll get the propose column
-
-					var json = strategy.toJSON();
-					json.next1Year = strategy.get('fiscalYear') + 1;
-					json.next2Year = strategy.get('fiscalYear') + 2;
-					json.next3Year = strategy.get('fiscalYear') + 3;
-					var html = this.inputModalTemplate(json);
-					// render strategy!
-					this.$el.find('#input-form').html(html);
-
-				},
-
-				updateProposal : function(e) {
-					if (this.currentEditProposalStrategy != null) {
-						var proposalStrategy = this.currentEditProposalStrategy;
-						// we just pick up changes
-						// loop through formulaColumns
-						var i;
-						var calculatedAmount = 0;
-						var formulaColumns = this.currentStrategy
-								.get('formulaColumns');
-						for (i = 0; i < formulaColumns.length; i++) {
-
-							var fc = formulaColumns.at(i);
-							if (fc.get('isFixed')) {
-								var colId = fc.get('id');
-								// now find this colId in requestColumns
-								var rc = proposalStrategy.get('requestColumns');
-								var foundRC = rc.where({
-									column : FormulaColumn.findOrCreate(colId)
-								})[0];
-
-								foundRC.set('amount', this.$el.find(
-										'#formulaColumnId-' + fc.get('id'))
-										.val());
-
-								if (calculatedAmount == 0) {
-									calculatedAmount = foundRC.get('amount');
-								} else {
-									calculatedAmount = calculatedAmount
-											* foundRC.get('amount');
-								}
-
-							} else {
-								if (calculatedAmount == 0) {
-									calculatedAmount = fc.get('value');
-								} else {
-									calculatedAmount = calculatedAmount
-											* fc.get('value');
-								}
-							}
-						}
-						proposalStrategy.set('totalCalculatedAmount',
-								calculatedAmount);
-						proposalStrategy.set('name', this.$el.find(
-								'#proposalName').val());
-						proposalStrategy.set('amountRequestNext1Year', this.$el
-								.find('#amountRequestNext1Year').val());
-						proposalStrategy.set('amountRequestNext2Year', this.$el
-								.find('#amountRequestNext2Year').val());
-						proposalStrategy.set('amountRequestNext3Year', this.$el
-								.find('#amountRequestNext3Year').val());
-
-						// now we can send changes to the server?
-						var json = proposalStrategy.toJSON();
-
-						$.ajax({
-							type : 'PUT',
-							url : appUrl('/ProposalStrategy/'
-									+ proposalStrategy.get('id')),
-							data : JSON.stringify(json),
-							contentType : 'application/json;charset=utf-8',
-							dataType : "json",
-							success : _.bind(function(data) {
-								this.parentModal.render();
-							}, this)
-						});
-					}
-
-				},
-
-				saveProposal : function(e) {
-					if (this.currentStrategy != null) {
-						var objective = this.parentModal.objective;
-						var budgetType = this.parentModal.budgetTypeSelectionView.currentBudgetType;
-
-						var budgetProposal = null;
-
-						//find appropriate budgetProposal, the one with budgetTypeid == the selected one
-						var pList = objective.get('filterProposals');
-						for ( var i = 0; i < pList.length; i++) {
-							var proposal = pList.at(i);
-
-							if (proposal.get('budgetType').get('id') == budgetType
-									.get('id')) {
-								budgetProposal = proposal;
-								break;
-							}
-
-						}
-
-						if (budgetProposal == null) {
-							// create new BudgetProposal
-							budgetProposal = new BudgetProposal();
-							budgetProposal.set('forObjective', {
-								id : objective.get('id')
-							});
-							budgetProposal.set('budgetType', {
-								id : budgetType.get('id')
-							});
-
-							// now put this proposal into objective;
-							objective.get('filterProposals').push(
-									budgetProposal);
-						}
-
-						// we will make a new ProposalStrategy
-						var proposalStrategy = new ProposalStrategy();
-
-						proposalStrategy.set('formulaStrategy', {
-							id : this.currentStrategy.get('id')
-						});
-
-						// loop through formulaColumns
-						var i;
-						var calculatedAmount = 0;
-						var formulaColumns = this.currentStrategy
-								.get('formulaColumns');
-						for (i = 0; i < formulaColumns.length; i++) {
-							var fc = formulaColumns.at(i);
-							if (fc.get('isFixed')) {
-								var requestColumn = new RequestColumn();
-								requestColumn.set('amount', this.$el.find(
-										'#formulaColumnId-' + fc.get('id'))
-										.val());
-								requestColumn.set('column', fc);
-								requestColumn.set('proposalStrategy',
-										proposalStrategy);
-
-								proposalStrategy.get('requestColumns').add(
-										requestColumn);
-
-								if (calculatedAmount == 0) {
-									calculatedAmount = requestColumn
-											.get('amount');
-								} else {
-									calculatedAmount = calculatedAmount
-											* requestColumn.get('amount');
-								}
-
-							} else {
-								if (calculatedAmount == 0) {
-									calculatedAmount = fc.get('value');
-								} else {
-									calculatedAmount = calculatedAmount
-											* fc.get('value');
-								}
-							}
-						}
-						proposalStrategy.set('totalCalculatedAmount',
-								calculatedAmount);
-						proposalStrategy.set('proposal', budgetProposal);
-						proposalStrategy.set('name', this.$el.find(
-								'#proposalName').val());
-						proposalStrategy.set('amountRequestNext1Year', this.$el
-								.find('#amountRequestNext1Year').val());
-						proposalStrategy.set('amountRequestNext2Year', this.$el
-								.find('#amountRequestNext2Year').val());
-						proposalStrategy.set('amountRequestNext3Year', this.$el
-								.find('#amountRequestNext3Year').val());
-
-						if (budgetProposal.get('id') == null) {
-							// now ready to post back
-							var json = budgetProposal.toJSON();
-							json.forObjective = {
-								id : json.forObjective.id
-							};
-							json.budgetType = {
-								id : json.budgetType.id
-							};
-
-							$.ajax({
-								type : 'POST',
-								url : appUrl('/BudgetProposal'),
-								data : JSON.stringify(json),
-								contentType : 'application/json;charset=utf-8',
-								dataType : "json",
-								success : _.bind(function(data) {
-
-									budgetProposal.set('id',data.id);
-
-									var json = proposalStrategy.toJSON();
-									json.formulaStrategy = null;
-									json.proposal = null;
-
-									var i;
-									for (i = 0; i < json.requestColumns.length; i++) {
-										json.requestColumns[i].column = {
-											id : json.requestColumns[i].column.id
-										};
-									}
-
-									$.ajax({
-										type : 'POST',
-										url : appUrl('/ProposalStrategy/' + budgetProposal.get('id') + '/' 	+ proposalStrategy.get('formulaStrategy').get('id')),
-										data : JSON.stringify(json),
-										contentType : 'application/json;charset=utf-8',
-										dataType : "json",
-										success : _.bind(function() {
-											budgetProposal.get('proposalStrategies').push(proposalStrategy);
-															// rerender?
-											this.parentModal.render();
-										},this)
-									});
-
-								}, this)
-							});
-						} else {
-							var json = proposalStrategy.toJSON();
-							json.formulaStrategy = null;
-							json.proposal = null;
-
-							var i;
-							for (i = 0; i < json.requestColumns.length; i++) {
-								json.requestColumns[i].column = {
-									id : json.requestColumns[i].column.id
-								};
-							}
-
-							$.ajax({
-								type : 'POST',
-								url : appUrl('/ProposalStrategy/'
-										+ budgetProposal.get('id')
-										+ '/'
-										+ proposalStrategy.get(
-												'formulaStrategy').get('id')),
-								data : JSON.stringify(json),
-								contentType : 'application/json;charset=utf-8',
-								dataType : "json",
-								success : _.bind(function() {
-									budgetProposal.get('proposalStrategies')
-											.push(proposalStrategy);
-									// rerender?
-									e1 = budgetProposal;
-									this.parentModal.render();
-								}, this)
-							});
-						}
-
-					}
-				},
-
-			});
-
-	var BudgetTypeSelectionView = Backbone.View.extend({
-		initialize : function() {
-			_.bindAll(this, 'render');
-			_.bindAll(this, 'selectionChange');
-
-		},
-		el : "#budgetTypeSelectionDiv",
-
-		strategySelectionView : new StrategySelectionView(),
-
-		budgetSelectionTemplate : Handlebars.compile($(
-				'#budgetTypeSelectionTemplate').html()),
-		render : function() {
-			if (this.currentBudgetTypeCollection != null) {
-				var json = this.currentBudgetTypeCollection.toJSON();
-
-				this.$el.html(this.budgetSelectionTemplate(json));
-			}
-		},
-		events : {
-			"change #budgetTypeSlt" : "selectionChange" // only the first one
-
-		},
-
-		selectionChange : function(e) {
-
-			var budgetTypeId = $(e.target).val();
-
-			if (budgetTypeId > 0) {
-				var budgetType = this.currentBudgetTypeCollection
-						.get(budgetTypeId);
-				this.currentBudgetType = budgetType;
-
-				// ok now we'll get the strategy here
-				var formulaStrategies = new FormulaStrategyCollection;
-
-				formulaStrategies.fetch({
-					url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/"
-							+ budgetType.get('id')),
-					success : _.bind(function(data) {
-						budgetType.set('strategies', formulaStrategies);
-						this.strategySelectionView
-								.setElement("#strategySelectionDiv");
-
-						this.strategySelectionView.renderWithStrategy(
-								formulaStrategies, this.parentModal);
-
-					}, this)
-				});
-
-			}
-		},
-
-		renderWithBudgetTypes : function(budgetTypeCollection, parentmodal) {
-			this.parentModal = parentmodal;
-			this.currentBudgetTypeCollection = budgetTypeCollection;
-			this.render();
-		},
-
-		renderWithDisableSelect : function(budgetProposal, proposalStrategy) {
-			if (this.currentBudgetTypeCollection != null) {
-				var budgetType = budgetProposal.get('budgetType');
-
-				var json = this.currentBudgetTypeCollection.toJSON();
-
-				// now mark the one with selected
-
-				for ( var i = 0; i < json.length; i++) {
-					if (json[i].id == budgetType.get('id')) {
-						json[i].selected = true;
-					}
-				}
-
-				json.editStrategy = true;
-
-				this.$el.html(this.budgetSelectionTemplate(json));
-
-				// ok now we'll get the strategy here
-				var formulaStrategies = new FormulaStrategyCollection;
-
-				formulaStrategies.fetch({
-					url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/"
-							+ budgetType.get('id')),
-					success : _.bind(function(data) {
-						budgetType.set('strategies', formulaStrategies);
-						this.strategySelectionView
-								.setElement("#strategySelectionDiv");
-
-						this.strategySelectionView.renderWithWithDisableSelect(
-								formulaStrategies, proposalStrategy,
-								this.parentModal);
-
-					}, this)
-				});
-			}
-		}
-
-	});
 
 	var ModalView = Backbone.View.extend({
 		initialize : function() {
@@ -1056,22 +509,166 @@
 
 		el : "#modal",
 
-		budgetTypeSelectionView : new BudgetTypeSelectionView(),
-
+		
 		modalTemplate : Handlebars.compile($('#modalTemplate').html()),
 		modalHeaderTemplate : Handlebars.compile($('#modalHeaderTemplate').html()),
 		stategiesTemplate : Handlebars.compile($('#strategiesTemplate').html()),
+		reservedBudgetInputTemplate : Handlebars.compile($('#reservedBudgetInputTemplate').html()),
+		editProposalFormTemplate : Handlebars.compile($('#editProposalFormTemplate').html()),
 
 		events : {
 			"click .editProposal" : "editProposal",
 			"click #cancelBtn" : "cancelModal",
+			"click #saveBtn" : "saveModal",
 			"click .close" : "cancelModal",
-			"click .proposalLnk" : "toggleStrategy"
+			"click .proposalLnk" : "toggleStrategy",
+			"click #reservedBudgetLnk" : "toggleReservedBudgetCellInput",
+			"click .cancelUpdateReservedBudget" : "cancelUpdateReservedBudget",
+			"click .updateReservedBudget" : "updateReservedBudget",
+			"change .proposalEditInput" : "updateTotalCalculatedValue",
+			"click .updateProposalStretegy" : "updateProposalStretegy",
+			"click .cancelUpdateProposalStretegy" : "cancelUpdateProposalStretegy"
 
+		},
+		
+		saveModal: function(e) {
+			//check first
+			
+			
+			if(parseInt($('#amountLeftCell').html()) != 0) {
+				alert("ยังเหลือยอดจัดสรร กรุณาจัดสรรให้ครบจำนวน");
+				return;
+			}
+			
+			//prepard json
+			var json = {};
+			json.proposals = this.budgetProposals.toJSON();
+			json.reservedBudget = this.reservedBudget.toJSON();
+			
+			// can send budgetProposals back to save here...
+			$.ajax({
+				type : 'PUT',
+				url : appUrl('/BudgetProposalsAndReservedBudget/'),
+				data : JSON.stringify(json),
+				contentType : 'application/json;charset=utf-8',
+				dataType : "json",
+				success : _.bind(function(data) {
+					this.parentModal.render();
+				}, this)
+			});
+			
 		},
 
 		cancelModal : function(e) {
 			window.location.reload();
+		},
+		
+		cancelUpdateProposalStretegy: function(e) {
+			this.render();	
+		},
+		
+		cancelUpdateReservedBudget: function(e) {
+			this.render();
+		},
+		
+		updateProposalStretegy: function(e) {
+			var allInput = $(e.target).parents('li').find('.proposalEditInput');
+			var strategyId = $(e.target).parents('li').attr('data-id');
+			var totalMulti = 1;
+			
+			for(var i=0; i<allInput.length; i++) {
+				// check if we update formulaStrategy or requestColumn
+				var requestColumnId = parseInt($(allInput[i]).attr('requestColumn-id'));
+				
+				if(isNaN(requestColumnId)) {
+					var formulaId = $(allInput[i]).attr('data-id');
+					var fc = FormulaColumn.findOrCreate(formulaId);
+					
+					var inputValue = parseInt($(allInput[i]).val());
+	
+					if(!isNaN(inputValue)) {
+						fc.set('allocatedAmount', inputValue);
+						if(totalMulti != null) {
+							totalMulti = totalMulti * inputValue;
+						}
+					} else {
+						totalMulti = null;
+					}
+				} else {
+					
+					var rc = RequestColumn.findOrCreate(requestColumnId);
+	
+					var inputValue = parseInt($(allInput[i]).val());
+					
+					if(!isNaN(inputValue)) {
+						rc.set('allocatedValue', inputValue);
+						if(totalMulti != null) {
+							totalMulti = totalMulti * inputValue;
+						}
+					} else {
+						totalMulti = null;
+					}
+
+				}
+				
+			}
+			// lastly 
+			var ps = ProposalStrategy.findOrCreate(strategyId);
+			ps.set('totalCalculatedAllocatedAmount', totalMulti);
+
+			//not quite , update budgetProposal
+			var budgetProposalId = $(e.target).parents('div.strategyDetail').prev().attr('data-id');
+			var bp = BudgetProposal.findOrCreate(budgetProposalId);
+			
+			var totalAllocatedAmount =0;
+			for(var i=0; i<bp.get('proposalStrategies').length;i++) {
+				var calculatedAllocatedAmount = bp.get('proposalStrategies').at(i).get('totalCalculatedAllocatedAmount');
+				if(calculatedAllocatedAmount != null) {
+					totalAllocatedAmount += calculatedAllocatedAmount;
+				}
+			}
+			
+			bp.set('amountAllocated', totalAllocatedAmount);
+			this.render();
+			
+		},
+		
+		updateReservedBudget : function(e) {
+			var reservedAmount = $('#reservedBudgetInput').val();
+			
+			this.reservedBudget.set('amountReserved', parseInt(reservedAmount));
+			
+			this.render();
+			
+		},
+		
+		
+		toggleReservedBudgetCellInput: function(e) {
+			var json = this.reservedBudget.toJSON();
+			var html = this.reservedBudgetInputTemplate(json);
+				
+			$('#reservedBudgetCell').html(html);
+		},
+		
+		updateTotalCalculatedValue: function(e) {
+			var allInput = $(e.target).parents('li').find('.proposalEditInput');
+			var totalMulti=1;
+			
+			// now multiply all input
+			for(var i=0; i<allInput.length; i++) {
+				var inputValue = parseInt($(allInput[i]).val());
+				
+				if(!isNaN(inputValue)) {
+					totalMulti = totalMulti * inputValue;
+				} else {
+					return false;
+				}
+			}
+			
+			// update the value
+			var totalSpan = $(e.target).parents('li').find('.totalCalculatedAllocatedAmount');
+			$(totalSpan).html(addCommas(totalMulti));
+			
 		},
 
 		toggleStrategy : function(e) {
@@ -1084,6 +681,8 @@
 			//prepare for data
 			var json = currentProposal.get('proposalStrategies').toJSON();
 			
+			
+			
 			var html = this.stategiesTemplate(json);
 			
 			nextDiv.html(html);
@@ -1092,21 +691,35 @@
 		},
 		
 		editProposal : function(e) {
-			var proposalStrategyId = $(e.target).parents('li').attr(
-					'data-id');
-			var budgetProposalId = $(e.target).parents('li').attr(
-					'proposal-id');
-
-			// now get this one
-			var budgetProposal = this.objective.get('filterProposals')
-					.get(budgetProposalId);
-			var proposalStrategy = budgetProposal.get(
-					'proposalStrategies').get(proposalStrategyId);
-
-			// we'll begin by render the budgetTypeSelectionView
-			this.budgetTypeSelectionView.renderWithDisableSelect(
-					budgetProposal, proposalStrategy);
-
+			
+			var psId = $(e.target).parent().attr('data-id');
+			// we have to turn this to input 
+			var ps = ProposalStrategy.findOrCreate(psId);
+			
+			var json = ps.toJSON();
+			
+			var l = json.formulaStrategy.formulaColumns.length;
+			
+			json.formulaStrategy.formulaColumns[l-1].$last = true;
+			// now go through and put the requestColumn back on
+			for(var i=0; i<json.formulaStrategy.formulaColumns.length; i++) {
+				if(json.formulaStrategy.formulaColumns[i].isFixed) {
+					var columnId = json.formulaStrategy.formulaColumns[i].id;
+					
+					var fc = FormulaColumn.findOrCreate(columnId);
+					
+					var rc = ps.get('requestColumns').where({column: fc})[0];
+					
+					json.formulaStrategy.formulaColumns[i].requestColumnId = rc.get('id');
+					json.formulaStrategy.formulaColumns[i].requestColumnAllocatedValue = rc.get('allocatedValue');
+					
+				}
+			}
+			
+			var html = this.editProposalFormTemplate(json);
+			
+			$(e.target).parent().html(html);
+			
 		},
 
 		render : function() {
@@ -1122,7 +735,7 @@
 				json.allocationRecordR3 = allocationRecordR3[0].toJSON();
 				json.proposals = this.budgetProposals.toJSON();
 				json.reservedBudget = this.reservedBudget.toJSON();
-				e1 = json;
+				
 				html = this.modalHeaderTemplate(json);
 				
 				this.$el.find('.modal-body').html(html);

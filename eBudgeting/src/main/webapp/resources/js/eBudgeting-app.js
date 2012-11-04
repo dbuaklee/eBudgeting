@@ -250,7 +250,7 @@ ProposalStrategy = Backbone.RelationalModel.extend({
 	},{
 		type:Backbone.HasMany,
 		key: 'requestColumns',
-		relatedModel: 'RequestCOlumn'
+		relatedModel: 'RequestColumn'
 	},{
 		type:Backbone.HasOne,
 		key: 'proposal',
@@ -259,7 +259,7 @@ ProposalStrategy = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/ProposalStrategy')
 });
 
-RequestCOlumn = Backbone.RelationalModel.extend({
+RequestColumn = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
 	relations: [{
 		type:Backbone.HasOne,
