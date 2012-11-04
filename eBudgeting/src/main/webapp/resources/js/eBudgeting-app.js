@@ -30,6 +30,41 @@ Objective = Backbone.RelationalModel.extend({
 	    	key: 'proposals',
 	    	relatedModel: 'BudgetProposal',
 	    	collectionType: 'BudgetProposalCollection'
+	    },{
+	    	type: Backbone.HasMany,
+	    	key: 'filterProposals',
+	    	relatedModel: 'BudgetProposal',
+	    	collectionType: 'BudgetProposalCollection'
+	    },{
+	    	type: Backbone.HasMany,
+	    	key: 'sumBudgetTypeProposals',
+	    	relatedModel: 'BudgetProposal',
+	    	collectionType: 'BudgetProposalCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'allocationRecords',
+	    	relatedModel: 'AllocationRecord',
+	    	collectionType: 'AllocationRecordCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'allocationRecordsR1',
+	    	relatedModel: 'AllocationRecord',
+	    	collectionType: 'AllocationRecordCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'allocationRecordsR2',
+	    	relatedModel: 'AllocationRecord',
+	    	collectionType: 'AllocationRecordCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'allocationRecordsR3',
+	    	relatedModel: 'AllocationRecord',
+	    	collectionType: 'AllocationRecordCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'reservedBudgets',
+	    	relatedModel: 'ReservedBudget',
+	    	collectionType: 'ReservedBudgetCollection'
 	    }
 	    
 	],
@@ -101,6 +136,8 @@ BudgetType = Backbone.RelationalModel.extend({
 	}
 });
 
+
+
 FormulaColumn = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
 
@@ -154,6 +191,20 @@ RequestColumn = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/RequestColumn')
 });
 
+AllocationRecord = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'forObjective',
+		relatedModel : 'Objective'
+	},{
+		type: Backbone.HasOne,
+		key: 'budgetType',
+		relatedModel : 'BudgetType'
+	}],
+	urlRoot: appUrl('/AllocationRecord')
+});
+
 BudgetProposal = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
 	relations: [{
@@ -168,8 +219,26 @@ BudgetProposal = Backbone.RelationalModel.extend({
 		type:Backbone.HasOne,
 		key: 'budgetType',
 		relatedModel: 'BudgetType'
+	},{
+		type:Backbone.HasOne,
+		key: 'owner',
+		relatedModel: 'Organization'
 	}],
 	urlRoot: appUrl('/BudgetProposal')
+});
+
+ReservedBudget = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type:Backbone.HasOne,
+		key: 'forObjective',
+		relatedModel: 'Objective'
+	},{
+		type:Backbone.HasOne,
+		key: 'budgetType',
+		relatedModel: 'BudgetType'
+	}],
+	urlRoot: appUrl('/ReservedBudget')
 });
 
 ProposalStrategy = Backbone.RelationalModel.extend({
@@ -196,7 +265,15 @@ RequestCOlumn = Backbone.RelationalModel.extend({
 		type:Backbone.HasOne,
 		key: 'proposalStrategy',
 		relatedModel: 'ProposalStrategy'
+	}, {
+		type:Backbone.HasOne,
+		key: 'column',
+		relatedModel: 'FormulaColumn'
 	}]
+});
+
+Organization = Backbone.RelationalModel.extend({
+	idAttribute: 'id'
 });
 
 
@@ -224,7 +301,12 @@ FormulaColumnCollection = Backbone.Collection.extend({
 ProposalStrategyCollection = Backbone.Collection.extend({
 	model: ProposalStrategy
 });
-
+AllocationRecordCollection =Backbone.Collection.extend({
+	model: AllocationRecord
+}); 
+ReservedBudgetCollection =Backbone.Collection.extend({
+	model: ReservedBudget
+});
 
 //Handlebars Utils
 

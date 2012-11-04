@@ -50,6 +50,9 @@ public class FormulaColumn implements Serializable {
 
 	@Basic
 	private Long value;
+	
+	@Basic
+	private Long allocatedValue;
 
 	public Long getId() {
 		return id;
@@ -114,5 +117,14 @@ public class FormulaColumn implements Serializable {
 	public void setValue(Long value) {
 		this.value = value;
 	}
+
+	public Long getAllocatedValue() {
+		return allocatedValue;
+	}
+
+	public void setAllocatedValue(Long allocatedValue) {
+		this.allocatedValue = allocatedValue;
+	}
+	
 
 }

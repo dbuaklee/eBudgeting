@@ -70,7 +70,6 @@ public class BudgetProposal implements Serializable {
 	@JoinColumn(name="OBJECTIVE_ID")
 	private Objective forObjective;
 	
-	
 
 	@OneToMany(mappedBy="proposal", fetch=FetchType.LAZY)
 	private List<ProposalStrategy> proposalStrategies;
@@ -212,5 +211,6 @@ public class BudgetProposal implements Serializable {
 		this.amountRequestNext3Year = this.amountRequestNext3Year - adjustedAmountRequestNext3Year;
 		
 	}
+	
 	
 }

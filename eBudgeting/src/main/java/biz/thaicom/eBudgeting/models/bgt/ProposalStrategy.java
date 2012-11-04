@@ -45,6 +45,9 @@ public class ProposalStrategy implements Serializable {
 	@Basic
 	private Long totalCalculatedAmount;
 	
+	@Basic 
+	private Long totalCalculatedAllocatedAmount;
+	
 	@Basic
 	private String name;
 	@Basic
@@ -156,6 +159,15 @@ public class ProposalStrategy implements Serializable {
 		if(this.amountRequestNext3Year == null) this.amountRequestNext3Year = 0L;
 		this.amountRequestNext3Year = this.amountRequestNext3Year - adjustedAmountRequestNext3Year;
 		
+	}
+
+	public Long getTotalCalculatedAllocatedAmount() {
+		return totalCalculatedAllocatedAmount;
+	}
+
+	public void setTotalCalculatedAllocatedAmount(
+			Long totalCalculatedAllocatedAmount) {
+		this.totalCalculatedAllocatedAmount = totalCalculatedAllocatedAmount;
 	}
 	
 	

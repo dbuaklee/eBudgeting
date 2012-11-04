@@ -89,9 +89,9 @@
 			<th stlye="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
 			<th width="80">เป้าหมาย</th>
 			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
-			<th width="80">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
-			<th width="80">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
-			<th width="80">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
+			<th width="80">ปรับลดครั้งที่ 3 (เหลือ) </th>
+			<th width="80">ยอดจัดสรรลงหน่วยรับ </th>
+			<th width="80">ยอดจัดสรรลงส่วนกลาง </th>
 		</tr>
 	</thead>
 </table>
@@ -136,7 +136,7 @@
 					{{#unless this.children}}
 						<img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>
 						<ul>
-						{{#each this.filterProposals}}
+						{{#each this.sumBudgetTypeProposals}}
 							 <li> {{budgetType.name}} - {{{formatNumber amountRequest}}} บาท</li>
 						{{/each}}
 						</ul>
@@ -148,31 +148,62 @@
 			</td>
 			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
+					<span>{{#if this.sumBudgetTypeProposals}}{{{sumProposal this.sumBudgetTypeProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</a>
+					<ul class="right-align">
+					<li>
+					<u>{{#if this.sumBudgetTypeProposals}}{{{sumProposal this.sumBudgetTypeProposals}}}{{/if}}</u>
+					</li>
+					{{#each this.sumBudgetTypeProposals}}
+							 <li> {{{formatNumber amountRequest}}}</li>
+					{{/each}}
+					</ul>
 				{{/if}}
 			</td>
 
 			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
+					<span>{{#if this.allocationRecordsR3}} {{{sumAllocatedRecord this.allocationRecordsR3}}} {{else}} - {{/if}}</span>
 				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
+					<ul class="right-align">					
+						<li><u>{{#if this.allocationRecordsR3}}{{{sumAllocatedRecord this.allocationRecordsR3}}}{{else}}-{{/if}}</u>
+					
+						{{#each this.allocationRecordsR3}}
+					 		<li> {{{formatNumber amountAllocated}}}</li>
+						{{/each}}
+					</ul>
 				{{/if}}
 			</td>
+			
 			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
+					<span>{{#if this.sumBudgetTypeProposals}} {{{sumAllocatedRecord this.sumBudgetTypeProposals}}} {{else}} - {{/if}}</span>
 				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
+					<ul class="right-align">					
+						<li><u>{{#if this.sumBudgetTypeProposals}}{{{sumAllocatedRecord this.sumBudgetTypeProposals}}}{{else}}-{{/if}}</u>
+					
+						{{#each this.sumBudgetTypeProposals}}
+							{{#if this.amountAllocated}}
+					 		<li><a href="#" data-id="{{budgetType.id}}" class="detail"> {{{formatNumber amountAllocated}}}</a></li>
+							{{else}}
+							<li><a href="#" data-id="{{budgetType.id}}" class="detail"> จัดสรร </a></li>
+							{{/if}}
+						{{/each}}
+					</ul>
 				{{/if}}
 			</td>
+
 			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
+					<span>{{#if this.reservedBudgets}} {{{sumAmountReserved this.reservedBudgets}}} {{else}} - {{/if}}</span>
 				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</a>
+					<ul class="right-align">					
+						<li><u>{{#if this.reservedBudgets}}{{{sumAmountReserved this.reservedBudgets}}}{{else}}-{{/if}}</u>
+					
+						{{#each this.reservedBudgets}}
+					 		<li>  {{{formatNumber amountReserved}}}</li>
+						{{/each}}
+					</ul>
 				{{/if}}
 			</td>
 
@@ -180,25 +211,42 @@
 	{{{childrenNodeTpl this.children this.level}}}
 </script>
 
+<script id="modalHeaderTemplate" type="text/x-handler-template">
+<div>
+	หมวดงบประมาณ {{allocationRecordR3.budgetType.name}}
+	<table>
+		<tr><td>หลังปรับลดครั้งที่ 3 ได้รับ</td><td style="text-align:right">{{formatNumber allocationRecordR3.amountAllocated}} </td><td>บาท</td></tr>
+		<tr><td>จัดสรรให้หน่วยงาน</td><td style="text-align:right">{{sumAllocatedRecord proposals}}</td><td> บาท</td></tr>
+		<tr><td>จัดสรรเข้ายุทธศาสตร์กลาง</td><td style="text-align:right">{{sumAmountReserved reservedBudget}} </td><td>บาท</td></tr>
+		<tr><td>คงเหลือการจัดสรร</td><td style="text-align:right" id="amountLeftCell">{{amountLeft this}}</td><td>บาท</td></tr>
+	</table>
+</div>
+	
+
+</script>
+
 <script id="modalTemplate" type="text/x-handler-template">
-<div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
-	{{#each filterProposals}}
-	<div> 
-	<u>{{budgetType.name}}</u>
-	<ul id="budgetProposeLst">
-		{{#each proposalStrategies}} 
-			<li data-id="{{id}}" proposal-id="{{../id}}">
-				<span class="label label-info"><a href="#" class="editProposal"><i class="icon icon-edit icon-white editProposal"></i></a></span>				
-				<span class="label label-important"><a href="#" class="removeProposal"><i class="icon icon-trash icon-white removeProposal"></i></a></span>
-				{{name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
-		{{/each}}
+<div><u>รายการขอตั้งประมาณ</u></div>
+	<ul id="budgetProposeLst">	
+	{{#each this}}
+		<li><a href="#" data-id="{{id}}" class="proposalLnk">{{owner.abbr}} ขอตั้ง = {{formatNumber amountRequest}}</a> บาท </a> / จัดสรร = {{formatNumber amountAllocated}} บาท</li> <div class="strategyDetail" style="display:none"/>
+	{{/each}}
 	</ul>
-	</div>
-	{{/each}}				
 </div>
 <div id="budgetTypeSelectionDiv"></div>
+</script>
 
+<script id="strategiesTemplate" type="text/x-handler-template">
+<ul>
+{{#each this}} 
+	<li data-id="{{id}}" proposal-id="{{../id}}">
+		<span class="label label-info"><a href="#" class="editProposal"><i class="icon icon-edit icon-white editProposal"></i></a></span>				
+		{{name}} : {{{formulaLine this false}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
 
+	<li><u><b>จัดสรร</b></u>:  {{{formulaLine this true}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+
+{{/each}}
+</ul>
 </script>
 
 <script id="inputModalTemplate" type="text/x-handler-template">
@@ -303,6 +351,17 @@
 	var l = null;
 	var e1;
 
+	Handlebars.registerHelper("amountLeft", function(json) {
+		var amountAllocated = json.allocationRecordR3.amountAllocated;
+		var amountDistribute = 0;
+		for(var i=0; i< json.proposals; i++){
+			amountDistribute += json.proposals[i].amountAllocated;
+		}
+		var amountReserved = json.reservedBudget.amountReserved;
+		
+		return addCommas( parseInt(amountAllocated) - parseInt(amountDistribute) - parseInt(amountReserved) );
+
+	});
 	Handlebars.registerHelper("sumProposal", function(proposals) {
 		var amount = 0;
 		for ( var i = 0; i < proposals.length; i++) {
@@ -310,6 +369,25 @@
 		}
 		return addCommas(amount);
 
+	});
+	Handlebars.registerHelper("sumAllocatedRecord", function(records) {
+		var amount = 0;
+		for(var i=0; i<records.length; i++ ){
+			amount += records[i].amountAllocated;
+		}
+		return addCommas(amount);
+		
+	});
+	Handlebars.registerHelper("sumAmountReserved", function(records) {
+		var amount = 0;
+		for(var i=0; i<records.length; i++ ){
+			amount += records[i].amountReserved;
+			if(amount == null || isNaN(amount)) {
+				return "จัดสรร";
+			}
+		}
+		return addCommas(amount);
+		
 	});
 	Handlebars.registerHelper("sumProposalNext1Year", function(proposals) {
 		var amount = 0;
@@ -336,7 +414,7 @@
 
 	});
 
-	Handlebars.registerHelper("formulaLine", function(strategy) {
+	Handlebars.registerHelper("formulaLine", function(strategy, isAllocated) {
 
 		var s = "";
 
@@ -347,27 +425,68 @@
 				if (i > 0) {
 					s = s + " X ";
 				}
-
+				
 				s = s + formulaColumns[i].columnName;
+				console.log("i= " + i + " s = " + s);
+				
 				if (formulaColumns[i].isFixed) {
 					// now we'll go through requestColumns
-					var j;
-					for (j = 0; j < strategy.requestColumns.length; j++) {
+					
+					for (var j = 0; j < strategy.requestColumns.length; j++) {
 						if (strategy.requestColumns[j].column.id == formulaColumns[i].id) {
-							s = s
-									+ "("
-									+ addCommas(strategy.requestColumns[j].amount)
-									+ formulaColumns[i].unitName
+							var str = "";
+							
+							if(isAllocated) {
+								var allocatedAmountStr = "";
+								if(strategy.requestColumns[j].allocatedAmount==null) {
+									 allocatedAmountStr = "????";
+								} else {
+									allocatedAmountStr = addCommas(strategy.requestColumns[j].allocatedAmount);
+								}
+								
+								str += "("
+									+ allocatedAmountStr
+									+ " "+  formulaColumns[i].unitName
 									+ ")";
+							} else {
+								str +=  "("
+								+ addCommas(strategy.requestColumns[j].amount)
+								+ formulaColumns[i].unitName
+								+ ")";
+							}
+							
+							console.log("str: " + str);
+							s = s +  str;
+							console.log(s);
+									
 						}
 					}
 
 				} else {
-					s = s
+					if(isAllocated) {
+						var allocatedValueStr = "";
+						if(formulaColumns[i].allocatedValue == null) {
+							allocatedValueStr = "????";
+						} else {
+							allocatedValueStr = addCommas(formulaColumns[i].allocatedValue);
+						}
+						
+						s = s
 							+ "("
-							+ addCommas(formulaColumns[i].value)
+							+ allocatedValueStr
 							+ " " + formulaColumns[i].unitName
 							+ ")";
+						
+					} else {
+					
+					s = s
+							+ "("
+							+ formulaColumns[i].value
+							+ " " + formulaColumns[i].unitName
+							+ ")";
+					
+					}
+					
 				}
 
 			}
@@ -758,71 +877,42 @@
 								id : json.budgetType.id
 							};
 
-							$
-									.ajax({
+							$.ajax({
+								type : 'POST',
+								url : appUrl('/BudgetProposal'),
+								data : JSON.stringify(json),
+								contentType : 'application/json;charset=utf-8',
+								dataType : "json",
+								success : _.bind(function(data) {
+
+									budgetProposal.set('id',data.id);
+
+									var json = proposalStrategy.toJSON();
+									json.formulaStrategy = null;
+									json.proposal = null;
+
+									var i;
+									for (i = 0; i < json.requestColumns.length; i++) {
+										json.requestColumns[i].column = {
+											id : json.requestColumns[i].column.id
+										};
+									}
+
+									$.ajax({
 										type : 'POST',
-										url : appUrl('/BudgetProposal'),
+										url : appUrl('/ProposalStrategy/' + budgetProposal.get('id') + '/' 	+ proposalStrategy.get('formulaStrategy').get('id')),
 										data : JSON.stringify(json),
 										contentType : 'application/json;charset=utf-8',
 										dataType : "json",
-										success : _
-												.bind(
-														function(data) {
-
-															budgetProposal.set(
-																	'id',
-																	data.id);
-
-															var json = proposalStrategy
-																	.toJSON();
-															json.formulaStrategy = null;
-															json.proposal = null;
-
-															var i;
-															for (i = 0; i < json.requestColumns.length; i++) {
-																json.requestColumns[i].column = {
-																	id : json.requestColumns[i].column.id
-																};
-															}
-
-															$
-																	.ajax({
-																		type : 'POST',
-																		url : appUrl('/ProposalStrategy/'
-																				+ budgetProposal
-																						.get('id')
-																				+ '/'
-																				+ proposalStrategy
-																						.get(
-																								'formulaStrategy')
-																						.get(
-																								'id')),
-																		data : JSON
-																				.stringify(json),
-																		contentType : 'application/json;charset=utf-8',
-																		dataType : "json",
-																		success : _
-																				.bind(
-																						function() {
-																							budgetProposal
-																									.get(
-																											'proposalStrategies')
-																									.push(
-																											proposalStrategy);
-																							console
-																									.log('budgetProposal: '
-																											+ budgetProposal
-																													.toJSON());
-																							e1 = budgetProposal;
-																							// rerender?
-																							this.parentModal
-																									.render();
-																						},
-																						this)
-																	});
-
-														}, this)
+										success : _.bind(function() {
+											budgetProposal.get('proposalStrategies').push(proposalStrategy);
+															// rerender?
+											this.parentModal.render();
+										},this)
 									});
+
+								}, this)
+							});
 						} else {
 							var json = proposalStrategy.toJSON();
 							json.formulaStrategy = null;
@@ -959,130 +1049,105 @@
 
 	});
 
-	var ModalView = Backbone.View
-			.extend({
-				initialize : function() {
+	var ModalView = Backbone.View.extend({
+		initialize : function() {
 
-				},
+		},
 
-				el : "#modal",
+		el : "#modal",
 
-				budgetTypeSelectionView : new BudgetTypeSelectionView(),
+		budgetTypeSelectionView : new BudgetTypeSelectionView(),
 
-				modalTemplate : Handlebars.compile($('#modalTemplate').html()),
+		modalTemplate : Handlebars.compile($('#modalTemplate').html()),
+		modalHeaderTemplate : Handlebars.compile($('#modalHeaderTemplate').html()),
+		stategiesTemplate : Handlebars.compile($('#strategiesTemplate').html()),
 
-				events : {
-					"click .removeProposal" : "removeProposal",
-					"click .editProposal" : "editProposal",
-					"click #cancelBtn" : "cancelModal",
-					"click .close" : "cancelModal"
+		events : {
+			"click .editProposal" : "editProposal",
+			"click #cancelBtn" : "cancelModal",
+			"click .close" : "cancelModal",
+			"click .proposalLnk" : "toggleStrategy"
 
-				},
+		},
 
-				cancelModal : function(e) {
-					window.location.reload();
-				},
+		cancelModal : function(e) {
+			window.location.reload();
+		},
 
-				editProposal : function(e) {
-					var proposalStrategyId = $(e.target).parents('li').attr(
-							'data-id');
-					var budgetProposalId = $(e.target).parents('li').attr(
-							'proposal-id');
+		toggleStrategy : function(e) {
+			var proposalId = $(e.target).attr('data-id');
+			var currentProposal = BudgetProposal.findOrCreate(proposalId);
+			
+			// now make a div after this
+			var nextDiv = $(e.target).parent().next();
+			
+			//prepare for data
+			var json = currentProposal.get('proposalStrategies').toJSON();
+			
+			var html = this.stategiesTemplate(json);
+			
+			nextDiv.html(html);
+			nextDiv.toggle();
+			
+		},
+		
+		editProposal : function(e) {
+			var proposalStrategyId = $(e.target).parents('li').attr(
+					'data-id');
+			var budgetProposalId = $(e.target).parents('li').attr(
+					'proposal-id');
 
-					// now get this one
-					var budgetProposal = this.objective.get('filterProposals')
-							.get(budgetProposalId);
-					var proposalStrategy = budgetProposal.get(
-							'proposalStrategies').get(proposalStrategyId);
+			// now get this one
+			var budgetProposal = this.objective.get('filterProposals')
+					.get(budgetProposalId);
+			var proposalStrategy = budgetProposal.get(
+					'proposalStrategies').get(proposalStrategyId);
 
-					// we'll begin by render the budgetTypeSelectionView
-					this.budgetTypeSelectionView.renderWithDisableSelect(
-							budgetProposal, proposalStrategy);
+			// we'll begin by render the budgetTypeSelectionView
+			this.budgetTypeSelectionView.renderWithDisableSelect(
+					budgetProposal, proposalStrategy);
 
-				},
+		},
 
-				removeProposal : function(e) {
-					var proposalStrategyId = $(e.target).parents('li').attr(
-							'data-id');
-					var budgetProposalId = $(e.target).parents('li').attr(
-							'proposal-id');
+		render : function() {
+			if (this.objective != null) {
+				this.$el.find('.modal-header span').html(this.objective.get('name'));
+				
+				var html;
+				
+				
+				
+				var allocationRecordR3 = this.objective.get('allocationRecordsR3').where({budgetType: this.budgetType});
+				var json = {};
+				json.allocationRecordR3 = allocationRecordR3[0].toJSON();
+				json.proposals = this.budgetProposals.toJSON();
+				json.reservedBudget = this.reservedBudget.toJSON();
+				e1 = json;
+				html = this.modalHeaderTemplate(json);
+				
+				this.$el.find('.modal-body').html(html);
+				
+				html = this.modalTemplate(this.budgetProposals.toJSON());
+				this.$el.find('.modal-body').append(html);
 
-					// now get this one
-					var budgetProposal = this.objective.get('filterProposals')
-							.get(budgetProposalId);
-					var proposalStrategy = budgetProposal.get(
-							'proposalStrategies').get(proposalStrategyId);
+			}
 
-					if (proposalStrategy != null) {
-						// we can start deleting it now.. 
-
-						var r = confirm("คุณต้องการนำรายการนี้ออก?");
-						if (r == true) {
-							$
-									.ajax({
-										type : 'DELETE',
-										url : appUrl('/ProposalStrategy/'
-												+ proposalStrategyId),
-										success : _
-												.bind(
-														function() {
-
-															budgetProposal
-																	.get(
-																			'proposalStrategies')
-																	.remove(
-																			proposalStrategy);
-															var newAmount = budgetProposal
-																	.get('amountRequest')
-																	- proposalStrategy
-																			.get('totalCalculatedAmount');
-															budgetProposal
-																	.set(
-																			'amountRequest',
-																			newAmount);
-
-															// now we'll have to trigger change all the way up ward
-
-															this.objective
-																	.trigger(
-																			'change',
-																			this.objective);
-															this.render();
-														}, this)
-									});
-
-						}
-						return false;
-
-					}
-				},
-
-				render : function() {
-					if (this.objective != null) {
-						var html = this.modalTemplate(this.objective.toJSON());
-						this.$el.find('.modal-header span').html(
-								this.objective.get('name'));
-						this.$el.find('.modal-body').html(html);
-
-						this.budgetTypeSelectionView = new BudgetTypeSelectionView();
-						this.budgetTypeSelectionView.renderWithBudgetTypes(
-								this.objective.get('budgetTypes'), this);
-
-					}
-
-					this.$el.modal({
-						show : true,
-						backdrop : 'static',
-						keyboard : false
-					});
-					return this;
-				},
-
-				renderWith : function(currentObjective) {
-					this.objective = currentObjective;
-					this.render();
-				}
+			this.$el.modal({
+				show : true,
+				backdrop : 'static',
+				keyboard : false
 			});
+			return this;
+		},
+
+		renderWith : function(currentObjective, currentBudgetType) {
+			this.objective = currentObjective;
+			this.budgetType = currentBudgetType;
+			this.budgetProposals = new BudgetProposalCollection(this.objective.get('proposals').where({budgetType:this.budgetType}));
+			this.reservedBudget = this.objective.get('reservedBudgets').where({budgetType:this.budgetType})[0];
+			this.render();
+		}
+	});
 
 	var MainTblView = Backbone.View.extend({
 		initialize : function() {
@@ -1104,21 +1169,23 @@
 			var currentObjective = Objective.findOrCreate(currentObjectiveId);
 
 			var proposalStrategyCollection = new ProposalStrategyCollection();
+			
+			
+			var currentBudgetTypeId = $(e.target).attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			
 			proposalStrategyCollection.fetch({
-				url : appUrl('/ProposalStrategy/find/' + fiscalYear + '/'
-						+ currentObjective.get('id')),
+				url : appUrl('/ProposalStrategy/findAll/' + fiscalYear + '/' + currentObjective.get('id')),
 				success : _.bind(function() {
-					console.log(proposalStrategyCollection.toJSON());
-
-					var proposals = currentObjective.get('filterProposals');
+					
+					var proposals = currentObjective.get('proposals');
 					var i;
 					for (i = 0; i < proposalStrategyCollection.length; i++) {
 						var strategy = proposalStrategyCollection.at(i);
-						proposals.get(strategy.get('proposal').get('id')).get(
-								'proposalStrategies').add(strategy);
+						proposals.get(strategy.get('proposal').get('id')).get('proposalStrategies').add(strategy);
 					}
 
-					this.modalView.renderWith(currentObjective);
+					this.modalView.renderWith(currentObjective, currentBudgetType);
 				}, this)
 			});
 
@@ -1140,75 +1207,58 @@
 
 	});
 
-	$(document)
-			.ready(
-					function() {
+	$(document).ready(function() {
+		
+		if(objectiveId != null && objectiveId.length >0 ) {
+			objectiveCollection = new ObjectiveCollection();
+			rootCollection = new ObjectiveCollection();
+			
+			objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + objectiveId +"/flatDescendants");
+			
+			
+			mainTblView = new MainTblView({collection: rootCollection});
+			
+			//load curent objective 
+			parentObjective = new Objective({id: objectiveId});
+			parentObjective.url=appUrl("/Objective/"+objectiveId);
+			parentObjective.fetch({
+				success: function() {
 
-						if (objectiveId != null && objectiveId.length > 0) {
-							objectiveCollection = new ObjectiveCollection();
-							rootCollection = new ObjectiveCollection();
-
-							objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/"
-									+ fiscalYear
-									+ "/"
-									+ objectiveId
-									+ "/flatDescendants");
-
-							mainTblView = new MainTblView({
-								collection : rootCollection
-							});
-
-							//load curent objective 
-							parentObjective = new Objective({
-								id : objectiveId
-							});
-							parentObjective.url = appUrl("/Objective/"
-									+ objectiveId);
-							parentObjective
-									.fetch({
-										success : function() {
-
-											objectiveCollection
-													.fetch({
-														success : function() {
-															// we will now sorted out this mess!
-															var i;
-															for (i = 0; i < objectiveCollection.length; i++) {
-																var o = objectiveCollection
-																		.at(i);
-																if (o
-																		.get('parent') != null) {
-																	var parentId = o
-																			.get(
-																					'parent')
-																			.get(
-																					'id');
-																	if (parentId == objectiveId) {
-																		rootCollection
-																				.add(o);
-																	}
-
-																	var parentObj = objectiveCollection
-																			.get(parentId);
-																	if (parentObj != null) {
-																		parentObj
-																				.get(
-																						'children')
-																				.add(
-																						o);
-																	}
-
-																}
-															}
-
-															rootCollection
-																	.trigger('reset');
-
-														}
-													});
-										}
-									});
+					objectiveCollection.fetch({
+						success: function() {
+							// we will now sorted out this mess!
+							var i;
+							for(i=0;i<objectiveCollection.length;i++){
+								var o = objectiveCollection.at(i);
+								if(o.get('parent') != null) {
+									var parentId = o.get('parent').get('id');
+									if(parentId == objectiveId) {
+										rootCollection.add(o);
+									}
+									
+									var parentObj = objectiveCollection.get(parentId);
+									if(parentObj != null) {
+										parentObj.get('children').add(o);	
+									}
+									
+									// now sort out AllocationRecords R1/R2/R3
+									
+									var records = o.get('allocationRecords');
+									
+									o.set('allocationRecordsR1', records.where({index: 0}));
+									o.set('allocationRecordsR2', records.where({index: 1}));
+									o.set('allocationRecordsR3', records.where({index: 2}));
+									
+								}
+							}
+							
+							rootCollection.trigger('reset');
+							
 						}
-
 					});
+				}
+			});
+		}
+		
+	});
 </script>

@@ -23,6 +23,14 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"")
 	public List<Objective> findRootFiscalYear();
 	
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"WHERE objective.parent is null and fiscalYear=?1 " +
+			"")
+	public Objective findRootOfFiscalYear(Integer fiscalYear);
+	
+	
 	
 //	@Query("" +  
 //			"SELECT objective, proposal " +

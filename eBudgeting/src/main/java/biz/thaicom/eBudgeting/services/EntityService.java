@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
@@ -82,6 +83,8 @@ public interface EntityService {
 	//BudgetProposal
 	public BudgetProposal findBudgetProposalById(Long budgetProposalId);
 	public BudgetProposal saveBudgetProposal(BudgetProposal proposal);
+	public List<BudgetProposal> findBudgetProposalByObjectiveIdAndBudgetTypeId(Long objectiveId, Long budgetTypeId);
+
 	
 	//ProposalStrategy
 	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long budgetProposalId, Long formulaStrategyId);
@@ -89,6 +92,8 @@ public interface EntityService {
 			Long budgetProposalId);
 	public List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
 			Integer fiscalYear, Long ownerId, Long objectiveId);
+	public List<ProposalStrategy> findAllProposalStrategyByFiscalyearAndObjective(
+			Integer fiscalYear, Long objectiveId);
 	public ProposalStrategy deleteProposalStrategy(Long id);
 	public ProposalStrategy updateProposalStrategy(Long id,
 			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException;
@@ -96,7 +101,15 @@ public interface EntityService {
 	
 	//RequestColumn
 	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
+	
+	//AllocationRecord
+	public String initAllocationRecord(Integer fiscalYear, Integer round);
+	public AllocationRecord updateAllocationRecord(Long id, JsonNode data);
+	
+	//BudgetReserved
+	public String initReservedBudget(Integer fiscalYear);
 
+	
 
 
 

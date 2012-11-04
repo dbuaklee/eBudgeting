@@ -87,6 +87,8 @@
 			<th width="80">เป้าหมาย</th>
 			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
 			<th width="80">ปรับลดครั้งที่ 1 (เหลือ)</th>
+			<th width="80">ปรับลดครั้งที่ 2 (เหลือ)</th>
+			<th width="80">ปรับลดครั้งที่ 3 (เหลือ)</th>
 		</tr>
 	</thead>
 </table>
@@ -158,6 +160,34 @@
 						<li><u>{{#if this.allocationRecordsR1}}{{{sumAllocatedRecord this.allocationRecordsR1}}}{{else}}-{{/if}}</u>
 					
 						{{#each this.allocationRecordsR1}}
+					 		<li> {{{formatNumber amountAllocated}}}</li>
+						{{/each}}
+					</ul>
+				{{/if}}
+			</td>
+			
+			<td width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.allocationRecordsR2}} {{{sumAllocatedRecord this.allocationRecordsR2}}} {{else}} - {{/if}}</span>
+				{{else}}
+					<ul class="right-align">					
+						<li><u>{{#if this.allocationRecordsR2}}{{{sumAllocatedRecord this.allocationRecordsR2}}}{{else}}-{{/if}}</u>
+					
+						{{#each this.allocationRecordsR2}}
+					 		<li> {{{formatNumber amountAllocated}}}</li>
+						{{/each}}
+					</ul>
+				{{/if}}
+			</td>
+
+			<td width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.allocationRecordsR3}} {{{sumAllocatedRecord this.allocationRecordsR3}}} {{else}} - {{/if}}</span>
+				{{else}}
+					<ul class="right-align">					
+						<li><u>{{#if this.allocationRecordsR3}}{{{sumAllocatedRecord this.allocationRecordsR3}}}{{else}}-{{/if}}</u>
+					
+						{{#each this.allocationRecordsR3}}
 					 		<li> <a href="#" data-id="{{id}}" class="detail"> {{{formatNumber amountAllocated}}}</a></li>
 						{{/each}}
 					</ul>
@@ -181,7 +211,7 @@
 
 <script id="inputModalTemplate"  type="text/x-handler-template">
 	<form>
-		เสนอปรับลดครับที่ 1 : <input data-id="{{id}}" type="text" id="amountAllocated" value="{{amountAllocated}}"/> บาท
+		เสนอปรับลดครับที่ 3 : <input data-id="{{id}}" type="text" id="amountAllocated" value="{{amountAllocated}}"/> บาท
 	</form>
 </script>
 
@@ -393,7 +423,6 @@ Handlebars.registerHelper('next', function(val, next) {
 				
 				var json =this.budgetProposalCollection.toJSON();
 				json.budgetType = this.budgetType.toJSON();
-				e1=json;
 				
 				var html = this.modalTemplate(json);
 				this.$el.find('.modal-body').html(html);
@@ -456,7 +485,10 @@ Handlebars.registerHelper('next', function(val, next) {
 			
 		},
 		render: function() {
-			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
+			
+			var json = this.collection.toJSON();
+			
+			this.$el.html(this.mainTblTpl(json));
 			
 		},
 		
@@ -509,12 +541,14 @@ $(document).ready(function() {
 									parentObj.get('children').add(o);	
 								}
 								
-
+								// now sort out AllocationRecords R1/R2/R3
+								
 								var records = o.get('allocationRecords');
 								
 								o.set('allocationRecordsR1', records.where({index: 0}));
 								o.set('allocationRecordsR2', records.where({index: 1}));
 								o.set('allocationRecordsR3', records.where({index: 2}));
+								
 							}
 						}
 						

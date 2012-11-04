@@ -25,8 +25,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.services.EntityService;
@@ -51,6 +53,15 @@ public class BudgetProposalRestController {
 		return entityService.findBudgetProposalById(budgetProposalId);
 	}
 	
+	
+	@RequestMapping(value="/BudgetProposal/find/{fiscalYear}/{objectiveId}/{budgetTypeId}", method=RequestMethod.GET)
+	public @ResponseBody List<BudgetProposal> findBudgetProposal(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@PathVariable Long budgetTypeId){
+		return entityService.findBudgetProposalByObjectiveIdAndBudgetTypeId(objectiveId, budgetTypeId);
+	}
+	
 	@RequestMapping(value="/ProposalStrategy/find/{fiscalYear}/{objectiveId}", method=RequestMethod.GET)
 	public @ResponseBody List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
 			@PathVariable Integer fiscalYear,
@@ -58,6 +69,16 @@ public class BudgetProposalRestController {
 			@Activeuser ThaicomUserDetail currentUser){
 	
 		return entityService.findProposalStrategyByFiscalyearAndObjective(fiscalYear, currentUser.getWorkAt().getId(), objectiveId);
+		
+	}
+	
+	@RequestMapping(value="/ProposalStrategy/findAll/{fiscalYear}/{objectiveId}", method=RequestMethod.GET)
+	public @ResponseBody List<ProposalStrategy> findAllProposalStrategyByFiscalyearAndObjective(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser){
+	
+		return entityService.findAllProposalStrategyByFiscalyearAndObjective(fiscalYear, objectiveId);
 		
 	}
 	
@@ -106,6 +127,39 @@ public class BudgetProposalRestController {
 		proposal.setOwner(currentUser.getWorkAt());
 		
 		return entityService.saveBudgetProposal(proposal);
+		
+	}
+	
+	@RequestMapping(value="/AllocationRecord/{fiscalYear}/R{round}", method=RequestMethod.GET)
+	public @ResponseBody String initAllocationRecord(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Integer round,
+			@Activeuser ThaicomUserDetail currentUser){
+		
+		
+		
+		return entityService.initAllocationRecord(fiscalYear, round);
+		
+	}
+	
+	@RequestMapping(value="/ReservedBudget/{fiscalYear}/initialize", method=RequestMethod.GET)
+	public @ResponseBody String initBudgetReserved(
+			@PathVariable Integer fiscalYear,
+			@Activeuser ThaicomUserDetail currentUser){
+		
+		
+		
+		return entityService.initReservedBudget(fiscalYear);
+		
+	}
+	
+	@RequestMapping(value="/AllocationRecord/{id}", method=RequestMethod.PUT)
+	public @ResponseBody AllocationRecord updateAllocationRecord(
+			@PathVariable Long id,
+			@RequestBody JsonNode data,
+			@Activeuser ThaicomUserDetail currentUser){
+		
+		return entityService.updateAllocationRecord(id, data);
 		
 	}
 	

@@ -25,6 +25,7 @@ import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
+import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
@@ -38,6 +39,7 @@ import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ProposalStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.RequestColumnRepositories;
+import biz.thaicom.eBudgeting.repositories.ReservedBudgetRepository;
 
 @Service
 @Transactional
@@ -72,7 +74,12 @@ public class EntityServiceJPA implements EntityService {
 	private AllocationRecordRepository allocationRecordRepository;
 	
 	@Autowired
+	private ReservedBudgetRepository reservedBudgetRepository;
+	
+	@Autowired
 	private ObjectMapper mapper;
+	
+
 
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
@@ -427,23 +434,141 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
+	public String initReservedBudget(Integer fiscalYear) {
+		Objective root = objectiveRepository.findRootOfFiscalYear(fiscalYear);
+		String parentPathLikeString = "%."+root.getId()+"%";		
+		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear,parentPathLikeString);
+		
+		// we will copy from the last round (index = 2)
+					List<AllocationRecord> allocationRecordList = allocationRecordRepository
+							.findAllByForObjective_fiscalYearAndIndex(fiscalYear, 2);
+					
+		// go through this one
+		for(AllocationRecord record: allocationRecordList) {
+			ReservedBudget reservedBudget = reservedBudgetRepository.findOneByBudgetTypeAndObjective(record.getBudgetType(), record.getForObjective());
+			
+			if(reservedBudget == null) {
+				reservedBudget = new ReservedBudget();
+			}
+			reservedBudget.setAmountReserved(0L);
+			reservedBudget.setBudgetType(record.getBudgetType());
+			reservedBudget.setForObjective(record.getForObjective());
+
+			
+			reservedBudgetRepository.save(reservedBudget);
+		}
+		
+//		List<RequestColumn> requestColumns = requestColumnRepositories.findAllByFiscalYear(fiscalYear);
+//		for(RequestColumn rc : requestColumns) {
+//			rc.setAllocatedAmount(rc.getAmount());
+//			requestColumnRepositories.save(rc);
+//		}
+//	
+//		List<FormulaColumn> formulaColumns = formulaColumnRepository.findAllByFiscalYear(fiscalYear);
+//		for(FormulaColumn fc : formulaColumns) {
+//			fc.setAllocatedValue(fc.getValue());
+//			formulaColumnRepository.save(fc);
+//		}
+		
+
+		return "success";
+	
+
+	}
+
+	
+	@Override
+	public String initAllocationRecord(Integer fiscalYear, Integer round) {
+		Objective root = objectiveRepository.findRootOfFiscalYear(fiscalYear);
+		String parentPathLikeString = "%."+root.getId()+"%";		
+		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear,parentPathLikeString);
+		
+		List<BudgetProposal> proposalList = budgetProposalRepository
+				.findBudgetProposalByFiscalYearAndParentPath(fiscalYear, parentPathLikeString);
+		
+		if(round == 1) {
+			//loop through proposalList
+			for(BudgetProposal proposal : proposalList) {
+				Integer index = list.indexOf(proposal.getForObjective());
+				Objective o = list.get(index);
+				o.getProposals().size();
+				
+				o.addToSumBudgetTypeProposals(proposal);
+				
+				logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
+				
+				
+				//o.getProposals().add(proposal);
+				logger.debug("proposal size is " + o.getProposals().size());
+				
+			}
+			
+			// now loop through the Objective
+			for(Objective o : list) {
+				if(o.getSumBudgetTypeProposals() != null) {
+					for(BudgetProposal b : o.getSumBudgetTypeProposals()) {
+						// now get this on
+						AllocationRecord allocationRecord = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(b.getBudgetType(), o ,round-1);  
+						if(allocationRecord != null) {
+							allocationRecord.setAmountAllocated(b.getAmountRequest());
+						} else {
+							
+							
+							allocationRecord = new AllocationRecord();
+							allocationRecord.setAmountAllocated(b.getAmountRequest());
+							allocationRecord.setBudgetType(b.getBudgetType());
+							allocationRecord.setForObjective(o);
+							allocationRecord.setIndex(round-1);
+							
+							allocationRecordRepository.save(allocationRecord);
+						}
+					}
+				}
+			}
+		} else {
+			// we will copy from the previous round...
+			List<AllocationRecord> allocationRecordList = allocationRecordRepository
+					.findAllByForObjective_fiscalYearAndIndex(fiscalYear, round-2);
+			
+			// go through this one
+			for(AllocationRecord record: allocationRecordList) {
+				AllocationRecord dbRecord = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(record.getBudgetType(), record.getForObjective(), round-1);
+				
+				if(dbRecord == null) {
+					dbRecord = new AllocationRecord();
+				}
+				dbRecord.setAmountAllocated(record.getAmountAllocated());
+				dbRecord.setBudgetType(record.getBudgetType());
+				dbRecord.setForObjective(record.getForObjective());
+				dbRecord.setIndex(round-1);
+				
+				allocationRecordRepository.save(dbRecord);
+			}
+		}
+		return "success";
+		
+	}
+
+	
+	@Override
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
 			Integer fiscalYear, Long objectiveId) {
 		String parentPathLikeString = "%."+objectiveId.toString()+"%";
 		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear, parentPathLikeString);
 		
 		List<BudgetProposal> proposalList = budgetProposalRepository
-				.findBudgetProposalByFiscalYearAndOwnerAndParentPath(fiscalYear, parentPathLikeString);
+				.findBudgetProposalByFiscalYearAndParentPath(fiscalYear, parentPathLikeString);
 		
 		//loop through proposalList
 		for(BudgetProposal proposal : proposalList) {
 			Integer index = list.indexOf(proposal.getForObjective());
 			Objective o = list.get(index);
+			o.getProposals().size();
+			
+			o.addToSumBudgetTypeProposals(proposal);
+			
 			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
 			
-			if(o.getProposals()==null) {
-				o.setProposals(new ArrayList<BudgetProposal>());
-			}
 			
 			//o.getProposals().add(proposal);
 			logger.debug("proposal size is " + o.getProposals().size());
@@ -465,6 +590,18 @@ public class EntityServiceJPA implements EntityService {
 			logger.debug("proposal size is " + o.getAllocationRecords().size());
 		}
 		
+		// And lastly loop through reservedBudget
+		List<ReservedBudget> reservedBudgets = reservedBudgetRepository.findAllByFiscalYearAndParentPathLike(fiscalYear, parentPathLikeString);
+		for(ReservedBudget rb : reservedBudgets) {
+			logger.debug("reservedBuget: {} ", rb.getForObjective().getId());
+			Integer index = list.indexOf(rb.getForObjective());
+			Objective o = list.get(index);
+			
+			o.getReservedBudgets().size();
+			
+			
+		}
+		
 		return list;
 	}
 	
@@ -483,12 +620,8 @@ public class EntityServiceJPA implements EntityService {
 			Objective o = list.get(index);
 			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
 			
-			if(o.getProposals()==null) {
-				o.setProposals(new ArrayList<BudgetProposal>());
-			}
-			
-			//o.getProposals().add(proposal);
-			logger.debug("proposal size is " + o.getProposals().size());
+			o.addfilterProposal(proposal);
+			//logger.debug("proposal size is " + o.getProposals().size());
 		}
 		
 		
@@ -544,29 +677,33 @@ public class EntityServiceJPA implements EntityService {
 		strategy.setProposal(b);
 		
 		Organization owner = b.getOwner();
+		BudgetType budgetType = b.getBudgetType();
 		
 		BudgetProposal temp = b;
 		// OK we'll go through the amount of this one and it's parent!?
 		while (temp.getForObjective().getParent() != null) {
 			// now we'll get all proposal
 			Objective parent = temp.getForObjective().getParent();
-			temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+			temp = budgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(parent,owner, budgetType);
 			
 			if(temp!=null) {
 				temp.addAmountRequest(strategy.getTotalCalculatedAmount());
+				temp.setBudgetType(budgetType);
 				temp.addAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
 				temp.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
 				temp.addAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
 			} else {
+				logger.debug("--------------------------------");
 				temp = new BudgetProposal();
 				temp.setForObjective(parent);
 				temp.setOwner(owner);
-//				temp.setBudgetType(parent.getBudgetType());
+				temp.setBudgetType(budgetType);
 				temp.setAmountRequest(strategy.getTotalCalculatedAmount());
 				temp.setAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
 				temp.setAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
 				temp.setAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
 			}
+			logger.debug("================================temp.getBudgetType() {}", temp.getBudgetType());
 			budgetProposalRepository.save(temp);
 		}
 		
@@ -713,6 +850,12 @@ public class EntityServiceJPA implements EntityService {
 			Integer fiscalYear, Long ownerId, Long objectiveId) {
 		return proposalStrategyRepository.findByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, ownerId, objectiveId);
 	}
+	
+	@Override
+	public List<ProposalStrategy> findAllProposalStrategyByFiscalyearAndObjective(
+			Integer fiscalYear, Long objectiveId) {
+		return proposalStrategyRepository.findAllByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, objectiveId);
+	}
 
 	@Override
 	public ProposalStrategy updateProposalStrategy(Long id,
@@ -817,6 +960,48 @@ public class EntityServiceJPA implements EntityService {
 		
 		return formulaStrategy;
 	}
+
+	@Override
+	public AllocationRecord updateAllocationRecord(Long id, JsonNode data) {
+		AllocationRecord record = allocationRecordRepository.findOne(id);
+		
+		// now update the value
+		Long amountUpdate = data.get("amountAllocated").asLong();
+		Long oldAmount = record.getAmountAllocated();
+		Long adjustedAmount = oldAmount - amountUpdate;
+		
+		Integer index = record.getIndex();
+		BudgetType budgetType = record.getBudgetType();
+		Objective objective = record.getForObjective();
+		
+		record.setAmountAllocated(amountUpdate);
+		allocationRecordRepository.save(record);
+		
+		
+		// now looking back
+		Objective parent = objective.getParent();
+		while(parent.getParent() != null) {
+			logger.debug("parent.id: {}", parent.getId());
+			AllocationRecord temp = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(budgetType, parent, index);
+			
+			temp.adjustAmountAllocated(adjustedAmount);
+			
+			allocationRecordRepository.save(temp);
+			
+			parent = parent.getParent();
+			logger.debug("parent.id--: {}", parent.getId());
+		}
+		
+		return record;
+	}
+
+	@Override
+	public List<BudgetProposal> findBudgetProposalByObjectiveIdAndBudgetTypeId(Long objectiveId, Long budgetTypeId) {
+		
+		return budgetProposalRepository.findByForObjective_idAndBudgetType_id(objectiveId, budgetTypeId);
+	}
+
+
 
 
 

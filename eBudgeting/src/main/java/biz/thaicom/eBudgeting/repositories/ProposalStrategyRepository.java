@@ -25,4 +25,16 @@ public interface ProposalStrategyRepository extends
 			"	and proposal.forObjective.id=?3 ")
 	public List<ProposalStrategy> findByObjectiveIdAndfiscalYearAndOwnerId(Integer fiscalYear, Long ownerId, Long objectiveId);
 	
+	
+	@Query("" +
+			"select distinct proposalStrategy " +
+			"from ProposalStrategy proposalStrategy " +
+			"	INNER JOIN FETCH proposalStrategy.formulaStrategy formulaStrategy " +
+			"	INNER JOIN FETCH formulaStrategy.formulaColumns formulaColumns " +
+			"	INNER JOIN FETCH proposalStrategy.requestColumns requestColumns " +
+			"	INNER JOIN FETCH proposalStrategy.proposal proposal " +
+			"	INNER JOIN FETCH proposal.owner owner " +
+			"where proposal.forObjective.fiscalYear=?1 " +
+			"	and proposal.forObjective.id=?2 ")
+	public List<ProposalStrategy> findAllByObjectiveIdAndfiscalYearAndOwnerId(Integer fiscalYear, Long objectiveId);
 }

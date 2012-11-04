@@ -58,17 +58,20 @@ var menuJson = [{
 			]
 },{
 	  name: "ระบบการปรับลดบประมาณ",
-	    menus: [{name: "m3f01: บันทึกการปรับลดงประมาณ  ชั้น สำนักงบ (อธิบดีปรับลด)",link: "page/m3f01/"},
-	            {name: "m3f02: บันทึกการปรับลดงบประมาณ ชั้น กรรมาธิการ (สงป. ปรับลด)]", link: "jsp/m3f02/", disabled: "disabled"},
-	            {name: "m3f03: บันทึกการปรับลดงบประมาณ ชั้น พ.ร.บ. (กมธ. ปรับลด)]", link: "jsp/m3f03/", disabled: "disabled"}]
+	    menus: [{name: "m3f04: ประมวลผลก่อนการปรับลดครั้งที่1",link: "page/m3f04/"},
+	            {name: "m3f01: บันทึกการปรับลดงประมาณ  ชั้น สำนักงบ (อธิบดีปรับลด)",link: "page/m3f01/"},
+	            {name: "m3f04: ประมวลผลก่อนการปรับลดครั้งที่2",link: "page/m3f05/"},
+	            {name: "m3f02: บันทึกการปรับลดงบประมาณ ชั้น กรรมาธิการ (สงป. ปรับลด)]", link: "page/m3f02/"},
+	            {name: "m3f04: ประมวลผลก่อนการปรับลดครั้งที่3",link: "page/m3f06/"},
+	            {name: "m3f03: บันทึกการปรับลดงบประมาณ ชั้น พ.ร.บ. (กมธ. ปรับลด)]", link: "page/m3f03/"}]
 },{            
     name: "ระบบการจัดสรรงบประมาณ",
-    menus: [{name: "m4f01: บันทึกงบประมาณที่ได้รับการจัดสรร (รายกิจกรรม)",link: "jsp/m3f01", disabled: "disabled"},
-            {name: "m4f02: ปรับแก้ไขรายละเอียดงบประมาณกิจกรรมหน่วยงาน]", link: "jsp/m3f02", disabled: "disabled"}]
+    menus: [{name: "m4f01: ประมวลผลก่อนการจัดสรร",link: "page/m4f01/"},
+            {name: "m4f02: จัดสรรงบประมาณที่ได้รับลงหน่วยรับ",link: "page/m4f02/"}]
 },{            
     name: "ระบบรายงาน",
-    menus: [{name: "m4f01: รายงาน1",link: "jsp/m4f01", disabled: "disabled"},
-            {name: "m4f02: รายงาน2", link: "jsp/m4f02", disabled: "disabled"}]
+    menus: [{name: "m5r01: รายงาน1",link: "jsp/m4f01/", disabled: "disabled"},
+            {name: "m5r02: รายงาน2", link: "jsp/m4f02/", disabled: "disabled"}]
 }];
 
 var menuTemplate = Handlebars.compile($("#menuTemplate").html());

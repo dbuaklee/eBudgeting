@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @SequenceGenerator(
 		name="BGT_REQUESTCOLUMN_SEQ", 
 		sequenceName="BGT_REQUESTCOLUMN_SEQ", allocationSize=1)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class RequestColumn implements Serializable {
 
 	/**
@@ -44,6 +45,9 @@ public class RequestColumn implements Serializable {
 	@Basic
 	private Integer amount;
 
+	@Basic 
+	private Integer allocatedAmount;
+	
 	public Long getId() {
 		return id;
 	}
@@ -74,6 +78,14 @@ public class RequestColumn implements Serializable {
 
 	public void setProposalStrategy(ProposalStrategy proposalStrategy) {
 		this.proposalStrategy = proposalStrategy;
+	}
+
+	public Integer getAllocatedAmount() {
+		return allocatedAmount;
+	}
+
+	public void setAllocatedAmount(Integer allocatedAmount) {
+		this.allocatedAmount = allocatedAmount;
 	}
 
 

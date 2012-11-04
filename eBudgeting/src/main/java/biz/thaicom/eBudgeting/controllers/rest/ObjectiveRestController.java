@@ -150,6 +150,9 @@ public class ObjectiveRestController {
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
 			) {
+		
+		logger.debug("current user workAt.id = {} ",currentUser.getWorkAt().getId());
+		
 		List<Objective> objectives = entityService.findFlatChildrenObjectivewithBudgetProposal(fiscalYear, currentUser.getWorkAt().getId(), objectiveId);
 		
 		return objectives;
