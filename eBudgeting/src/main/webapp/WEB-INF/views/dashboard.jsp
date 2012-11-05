@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <div class="row">
 	<div class="span12" id="#menuDiv">
@@ -32,6 +33,13 @@
 {{/each}}
 </script>
 
+<sec:authorize access="hasRole('ROLE_USER_PLAN')">
+<script type="text/javascript">
+var ROLE_USER_PLAN = true;
+</script>
+</sec:authorize>
+
+
 <script type="text/javascript">
 var menuJson = [{
 	name: "ข้อมูลพื้นฐานหน่วยงาน",
@@ -44,7 +52,7 @@ var menuJson = [{
 	menus: [{name: "m2f13: กำหนดงบประมาณพื้นฐาน (default) ของหมวดงบประมาณ", link: "page/m2f13/"},
 	        {name: "m2f11: การกำหนดระดับชั้นของแผนงาน", link: "page/m2f11/"},
 	        {name: "m2f06: โครงสร้างแผนงาน/กิจกรรม/ตัวชี้วัด/หน่วยงานปฏิบัติ", link: "page/m2f06/"},
-	        {name: "m2f12: บันทึกข้อมูลงบประมาณ", link: "page/m2f12/"},
+	        {name: "m2f12: บันทึกข้อมูลงบประมาณ", link: "page/m2f12/", user: true},
 	        {name: "m2f10: วิสัยทัศน์-พันธกิจ หน่วยงาน", link: "jsp/m2f10"},
 	        {name: "m2f08: กลยุทธ์หน่วยงาน", link: "jsp/m2f08", disabled: "disabled"},
             {name: "m2f09: กลยุทธ์-วิธีการกรมฯ", link: "jsp/m2f09", disabled: "disabled"},
@@ -70,14 +78,30 @@ var menuJson = [{
             {name: "m4f02: จัดสรรงบประมาณที่ได้รับลงหน่วยรับ",link: "page/m4f02/"}]
 },{            
     name: "ระบบรายงาน",
-    menus: [{name: "m5r01: รายงาน1",link: "jsp/m4f01/", disabled: "disabled"},
-            {name: "m5r02: รายงาน2", link: "jsp/m4f02/", disabled: "disabled"}]
+    menus: [{name: "m5r01: รายงานคำขอตั้งงบประมาณ",link: "jsp/m4f01/", disabled: "disabled", user: true},
+            {name: "m5r02: รายงานงบประมาณที่ได้รับจัดสรร", link: "jsp/m4f02/", disabled: "disabled", user: true}]
+}];
+
+
+var menuUserJson = [{
+	name: "ระบบจัดทำคำขอตั้ง",
+	menus: [{name: "m2f12: บันทึกข้อมูลงบประมาณ", link: "page/m2f12/", user: true},
+	        ]
+},{            
+    name: "ระบบรายงาน",
+    menus: [{name: "m5r01: รายงานคำขอตั้งงบประมาณ",link: "jsp/m4f01/", disabled: "disabled", user: true},
+            {name: "m5r02: รายงานงบประมาณที่ได้รับจัดสรร", link: "jsp/m4f02/", disabled: "disabled", user: true}]
 }];
 
 var menuTemplate = Handlebars.compile($("#menuTemplate").html());
 
+
 $(document).ready(function() {
-	 $("#menuDiv").html(menuTemplate(menuJson));
+	if (typeof ROLE_USER_PLAN != "undefined"){
+	 	$("#menuDiv").html(menuTemplate(menuJson));
+	} else {
+		$("#menuDiv").html(menuTemplate(menuUserJson));
+	}
 });
 
 </script>

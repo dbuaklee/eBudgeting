@@ -1108,8 +1108,6 @@
 				url : appUrl('/ProposalStrategy/find/' + fiscalYear + '/'
 						+ currentObjective.get('id')),
 				success : _.bind(function() {
-					console.log(proposalStrategyCollection.toJSON());
-
 					var proposals = currentObjective.get('filterProposals');
 					var i;
 					for (i = 0; i < proposalStrategyCollection.length; i++) {

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
 
 import biz.thaicom.eBudgeting.controllers.rest.BudgetTypeRestController;
 import biz.thaicom.eBudgeting.repositories.UserRepository;
+import biz.thaicom.security.models.User;
 
 public class ThaicomAuthenticationProvider implements AuthenticationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(ThaicomAuthenticationProvider.class);
@@ -26,14 +27,16 @@ public class ThaicomAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
-		logger.debug("Trying to authenticatet:" + authentication.getName() + " with Credentials: " + authentication.getCredentials());
+		logger.debug("Trying to authenticate:" + authentication.getName() + " with Credentials: " + authentication.getCredentials());
 		
 		 List<GrantedAuthority> AUTHORITIES = new ArrayList<GrantedAuthority>();
-	        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_USER"));
-	        if (userRepository.findByUsernameAndPassword(authentication.getName(),(String) authentication.getCredentials()) != null )
-	            return new UsernamePasswordAuthenticationToken(authentication.getName(), authentication.getCredentials(), AUTHORITIES);
-	        else
+	        
+	        if (userRepository.findByUsernameAndPassword(authentication.getName(),(String) authentication.getCredentials()) != null ) {
+	        	
+	        	return new UsernamePasswordAuthenticationToken(authentication.getName(), authentication.getCredentials(), AUTHORITIES);
+	        } else {
 	            return null;
+	        }
 	}
 
 	@Override

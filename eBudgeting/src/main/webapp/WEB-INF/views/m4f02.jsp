@@ -412,11 +412,11 @@
 							var str = "";
 							
 							if(isAllocated) {
-								var allocatedAmountStr = "";
-								if(strategy.requestColumns[j].allocatedValue==null) {
+								
+								if(strategy.requestColumns[j].allocatedAmount==null) {
 									 allocatedAmountStr = "????";
 								} else {
-									allocatedAmountStr = addCommas(strategy.requestColumns[j].allocatedValue);
+									allocatedAmountStr = addCommas(strategy.requestColumns[j].allocatedAmount);
 								}
 								
 								str += "("
@@ -436,10 +436,10 @@
 				} else {
 					if(isAllocated) {
 						var allocatedValueStr = "";
-						if(formulaColumns[i].allocatedAmount == null) {
+						if(formulaColumns[i].allocatedValue == null) {
 							allocatedValueStr = "????";
 						} else {
-							allocatedValueStr = addCommas(formulaColumns[i].allocatedAmount);
+							allocatedValueStr = addCommas(formulaColumns[i].allocatedValue);
 						}
 						
 						s = s
@@ -553,7 +553,7 @@
 				contentType : 'application/json;charset=utf-8',
 				dataType : "json",
 				success : _.bind(function(data) {
-					this.parentModal.render();
+					window.location.reload();
 				}, this)
 			});
 			
@@ -587,7 +587,7 @@
 					var inputValue = parseInt($(allInput[i]).val());
 	
 					if(!isNaN(inputValue)) {
-						fc.set('allocatedAmount', inputValue);
+						fc.set('allocatedValue', inputValue);
 						if(totalMulti != null) {
 							totalMulti = totalMulti * inputValue;
 						}
@@ -601,7 +601,7 @@
 					var inputValue = parseInt($(allInput[i]).val());
 					
 					if(!isNaN(inputValue)) {
-						rc.set('allocatedValue', inputValue);
+						rc.set('allocatedAmount', inputValue);
 						if(totalMulti != null) {
 							totalMulti = totalMulti * inputValue;
 						}

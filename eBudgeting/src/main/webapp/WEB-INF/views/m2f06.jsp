@@ -385,7 +385,6 @@ $(document).ready(function() {
 						budgetTypeId: budgetType.get('id')
 					},
 					success: _.bind(function(){
-						console.log('save!');
 						this.objective.get('budgetTypes').push(budgetType);
 						this.objective.trigger('change', this.objective);
 						this.render();
@@ -410,7 +409,6 @@ $(document).ready(function() {
 						budgetTypeId: budgetTypeId
 					},
 					success: _.bind(function(){
-						console.log('save!');
 						this.objective.get('budgetTypes').remove(budgetType);
 						this.objective.trigger('change', this.objective);
 						this.render();
@@ -518,8 +516,7 @@ $(document).ready(function() {
 				json[i].showNextLevel = !((json[i].budgetTypes.length != 0) || pageType.children[0].isLeaf); 
 			}
 			
-			console.log(json);
-			
+
 			html = this.tbodyTemplate(json);
 			this.$el.find('tbody').html(html);
 

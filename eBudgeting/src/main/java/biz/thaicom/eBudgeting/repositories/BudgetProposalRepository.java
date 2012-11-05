@@ -62,7 +62,7 @@ public interface BudgetProposalRepository extends
 	@Query("" +
 			"SELECT proposal " +
 			"FROM BudgetProposal proposal " +
-			"WHERE proposal.forObjective in (?1) and proposal.budgetType = ?2 ")
+			"WHERE proposal.forObjective.id in (?1) and proposal.budgetType = ?2 ")
 	public List<BudgetProposal> findAllByForObjectiveIdsAndBudgetType(List<Long> objectiveIds, BudgetType bdugetType);
 	
 }

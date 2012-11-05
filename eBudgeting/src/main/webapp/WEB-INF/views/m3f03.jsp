@@ -408,7 +408,7 @@ Handlebars.registerHelper('next', function(val, next) {
 					dataType: "json",
 					data: JSON.stringify(record.toJSON()),
 					success: function() {
-						
+						window.location.reload();
 					}
 				});
 			}
@@ -476,8 +476,6 @@ Handlebars.registerHelper('next', function(val, next) {
 			budgetProposalCollection.fetch({
 				url: appUrl('/BudgetProposal/find/' + fiscalYear +'/'+ currentObjective.get('id') + '/' + currentBudgetTypeId),
 				success: _.bind(function() {
-					console.log(budgetProposalCollection.toJSON());
-					
 					this.modalView.renderWith(currentObjective,  currentAllocationRecord, currentBudgetType, budgetProposalCollection);		
 				},this)
 			});

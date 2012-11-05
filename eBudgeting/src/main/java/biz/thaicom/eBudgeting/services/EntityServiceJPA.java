@@ -1064,8 +1064,27 @@ public class EntityServiceJPA implements EntityService {
 		// first get the budgetProposal into Hash
 		Map<Long, JsonNode> budgetProposalMap = new HashMap<Long, JsonNode>();
 		Map<Long, Long> ownerBudgetProposalAdjustedAllocationMap = new HashMap<Long, Long>();
+		Map<Long, JsonNode> requestColumnMap = new HashMap<Long, JsonNode>();
+		Map<Long, JsonNode> formulaColumnMap = new HashMap<Long, JsonNode>();
+		Map<Long, JsonNode> proposalStrategyMap = new HashMap<Long, JsonNode>();
 		for(JsonNode node : data.get("proposals")){
 			budgetProposalMap.put(node.get("id").asLong(), node);
+			
+			for(JsonNode proposalStrategyNode : node.get("proposalStrategies")) {
+				proposalStrategyMap.put(proposalStrategyNode.get("id").asLong(), proposalStrategyNode);
+				
+				for(JsonNode reqeustColumnNode : proposalStrategyNode.get("requestColumns")) {
+					requestColumnMap.put(reqeustColumnNode.get("id").asLong(), reqeustColumnNode);
+				}
+				
+				for(JsonNode formulaColumnNode : proposalStrategyNode.get("formulaStrategy").get("formulaColumns")) {
+					
+					if(!formulaColumnMap.containsKey(formulaColumnNode.get("id").asLong())) {
+						formulaColumnMap.put(formulaColumnNode.get("id").asLong(), formulaColumnNode);
+					}
+				}
+			}
+			
 		}
 		
 		List<BudgetProposal> proposals = budgetProposalRepository.findAllByForObjectiveAndBudgetType(currentObj, currentBudgetType);
@@ -1077,7 +1096,7 @@ public class EntityServiceJPA implements EntityService {
 			proposal.setAmountAllocated(newAmount);
 			
 			ownerBudgetProposalAdjustedAllocationMap.put(proposal.getOwner().getId(), oldAmount-newAmount);
-			
+			logger.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++adjusted BudgetProposal: {} " , oldAmount - newAmount);
 			budgetProposalRepository.save(proposal);
 			
 		}
@@ -1098,7 +1117,35 @@ public class EntityServiceJPA implements EntityService {
 		
 		//last thing is to update formularStrategy & RequestColumns!
 		
-		return null;
+		// let's get the easy one first, request columns
+		
+		for(JsonNode rcNode : requestColumnMap.values()) {
+			Long rcid = rcNode.get("id").asLong();
+			RequestColumn rc = requestColumnRepositories.findOne(rcid);
+			rc.setAllocatedAmount(rcNode.get("allocatedAmount").asInt());
+			
+			
+			logger.debug("saving... rc.id {} with allocatedAmount {}", rc.getId(), rcNode.get("allocatedAmount").asInt());
+			requestColumnRepositories.save(rc);
+		}
+		
+		for(JsonNode fcNode : formulaColumnMap.values()) {
+			Long fcid = fcNode.get("id").asLong();
+			FormulaColumn fc = formulaColumnRepository.findOne(fcid);
+			fc.setAllocatedValue(fcNode.get("allocatedValue").asLong());
+			
+			formulaColumnRepository.save(fc);
+		}
+		
+		for(JsonNode psNode : proposalStrategyMap.values()) {
+			Long psid = psNode.get("id").asLong();
+			ProposalStrategy ps = proposalStrategyRepository.findOne(psid);
+			ps.setTotalCalculatedAllocatedAmount(psNode.get("totalCalculatedAllocatedAmount").asLong());
+			
+			proposalStrategyRepository.save(ps);					
+		}
+		
+		return true;
 	}
 
 

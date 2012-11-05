@@ -64,7 +64,7 @@ function doBeginBudgetCutR1(fiscalYear) {
 		url: appUrl('/AllocationRecord/' + fiscalYear + '/R3'),
 		method: 'GET',
 		success: function() {
-			
+			alert("ดำเนินการเรียบร้อยแล้ว");
 		}
 	});
 	

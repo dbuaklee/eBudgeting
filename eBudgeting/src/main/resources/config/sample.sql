@@ -293,7 +293,7 @@ insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) value
 insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) values (4,'กองการเจ้าหน้าที่',3,NULL)
 insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) values (5,'กองการคลัง',4,NULL)
 insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) values (6,'สำนักวิศวกรรมเพื่อการพัฒนาที่ดิน',5,NULL)
-insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) values (7,'กองแผนงาน',6,NULL)
+insert into HRX_ORGANIZATION (ID, NAME, ABBR,  "IDX", PARENT_HRX_ORGANIZATION_ID) values (7,'กองแผนงาน','แผนงาน',6,NULL)
 insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) values (8,'สำนักเทคโนโลยีการสำรวจและทำแผนที่',7,NULL)
 insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) values (9,'ศูนย์สารสนเทศ',8,NULL)
 insert into HRX_ORGANIZATION (ID, NAME, "IDX", PARENT_HRX_ORGANIZATION_ID) values (10,'สำนักวิจัยและพัฒนาการจัดการที่ดิน',9,NULL)
@@ -313,9 +313,11 @@ insert into HRX_ORGANIZATION (ID, NAME, ABBR, "IDX", PARENT_HRX_ORGANIZATION_ID)
 insert into HRX_ORGANIZATION (ID, NAME, ABBR, "IDX", PARENT_HRX_ORGANIZATION_ID) values (24,'สำนักงานพัฒนาทีดินเขต 12','สพด12',23,NULL)
 
 insert into HRX_PERSON(ID, FIRSTNAME, LASTNAME, WORKAT_HRX_ORGANIZATION_ID) values (1, 'สมชาย', 'คนดี', 16)
-insert into HRX_PERSON(ID, FIRSTNAME, LASTNAME, WORKAT_HRX_ORGANIZATION_ID) values (2, 'สมปอง', 'ใจเด็ด', 12)
+insert into HRX_PERSON(ID, FIRSTNAME, LASTNAME, WORKAT_HRX_ORGANIZATION_ID) values (2, 'สมปอง', 'ใจเด็ด', 13)
+insert into HRX_PERSON(ID, FIRSTNAME, LASTNAME, WORKAT_HRX_ORGANIZATION_ID) values (3, 'สมหญิง', 'มั่นคง', 7)
 
 insert into SEC_USER(ID, USERNAME, PASSWORD, PERSON_HRX_PERSON_ID) values (1, 'somchai', '1234', 1)
 insert into SEC_USER(ID, USERNAME, PASSWORD, PERSON_HRX_PERSON_ID) values (2, 'sompong', '1234', 2)
+insert into SEC_USER(ID, USERNAME, PASSWORD, PERSON_HRX_PERSON_ID) values (3, 'somying', '1234', 3)
 
 
