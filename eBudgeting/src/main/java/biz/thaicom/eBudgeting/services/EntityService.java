@@ -108,6 +108,8 @@ public interface EntityService {
 	
 	//BudgetReserved
 	public String initReservedBudget(Integer fiscalYear);
+	
+	public Boolean updateBudgetProposalAndReservedBudget(JsonNode data);
 
 	
 

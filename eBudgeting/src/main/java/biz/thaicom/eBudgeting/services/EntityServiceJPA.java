@@ -2,9 +2,12 @@ package biz.thaicom.eBudgeting.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1001,9 +1004,102 @@ public class EntityServiceJPA implements EntityService {
 		return budgetProposalRepository.findByForObjective_idAndBudgetType_id(objectiveId, budgetTypeId);
 	}
 
-
-
-
+	@Override
+	public Boolean updateBudgetProposalAndReservedBudget(JsonNode data) {
+		//deal with BudgetReseved first
+		JsonNode reservedBudgetJson =  data.get("reservedBudget");
+		
+		Long rbId = reservedBudgetJson.get("id").asLong();
+		Long objectiveId = reservedBudgetJson.get("forObjective").get("id").asLong();
+		Long budgetTypeId = reservedBudgetJson.get("budgetType").get("id").asLong();
+		
+		//get Objective first
+		Objective currentObj = objectiveRepository.findOne(objectiveId);
+		//then BudgetType
+		BudgetType currentBudgetType = budgetTypeRepository.findOne(budgetTypeId);
+		
+		//now find the one
+		ReservedBudget rb = reservedBudgetRepository.findOne(rbId);
+		
+		//get Old value 
+		Long oldAmountReserved = rb.getAmountReserved();
+		if(oldAmountReserved == null) {
+			oldAmountReserved = 0L;
+		}
+		Long newAmountReserved = reservedBudgetJson.get("amountReserved").asLong();
+		Long adjustedAmountReserved = oldAmountReserved - newAmountReserved;
+		
+		rb.setAmountReserved(newAmountReserved);
+		
+		//should be OK to save here
+		reservedBudgetRepository.save(rb);
+		
+		// OK will have to travesre back up .. we can get the parent path
+		String parentPath = currentObj.getParentPath();
+		//we will tokenize and put it in List<Long>
+		List<Long> parentIds = new ArrayList<Long>();
+		
+		StringTokenizer tokens = new StringTokenizer(parentPath, ".");
+		
+		while(tokens.hasMoreTokens()) {
+			String token = tokens.nextToken();
+			//convert to Long
+			Long parentId = Long.parseLong(token);
+			
+			parentIds.add(parentId);
+		}
+		
+		// We are ready to update the parent...
+		
+		List<ReservedBudget> parentReservedBudgets = reservedBudgetRepository.findAllByObjetiveIds(parentIds, currentBudgetType);
+		for(ReservedBudget parentRB : parentReservedBudgets) {
+			Long parentOldAmountReserved = parentRB.getAmountReserved();
+			
+			parentRB.setAmountReserved(parentOldAmountReserved - adjustedAmountReserved);
+			// and we can save 'em
+			reservedBudgetRepository.save(parentRB);
+		}
+		
+		// now we're updating proposals
+		// first get the budgetProposal into Hash
+		Map<Long, JsonNode> budgetProposalMap = new HashMap<Long, JsonNode>();
+		Map<Long, Long> ownerBudgetProposalAdjustedAllocationMap = new HashMap<Long, Long>();
+		for(JsonNode node : data.get("proposals")){
+			budgetProposalMap.put(node.get("id").asLong(), node);
+		}
+		
+		List<BudgetProposal> proposals = budgetProposalRepository.findAllByForObjectiveAndBudgetType(currentObj, currentBudgetType);
+		// ready to loop through and set the owner..
+		for(BudgetProposal proposal : proposals) {
+			JsonNode node = budgetProposalMap.get(proposal.getId());
+			Long oldAmount = proposal.getAmountAllocated() == null ? 0L : proposal.getAmountAllocated();
+			Long newAmount = node.get("amountAllocated").asLong();
+			proposal.setAmountAllocated(newAmount);
+			
+			ownerBudgetProposalAdjustedAllocationMap.put(proposal.getOwner().getId(), oldAmount-newAmount);
+			
+			budgetProposalRepository.save(proposal);
+			
+		}
+		
+		//now update the parents
+		List<BudgetProposal> parentProposals = budgetProposalRepository.findAllByForObjectiveIdsAndBudgetType(parentIds, currentBudgetType);
+		for(BudgetProposal parentProposal:  parentProposals) {
+			Long adjustedAmount = ownerBudgetProposalAdjustedAllocationMap.get(parentProposal.getOwner().getId());
+			
+			if(parentProposal.getAmountAllocated() != null ) {
+				parentProposal.setAmountAllocated(parentProposal.getAmountAllocated() - adjustedAmount);
+			} else {
+				parentProposal.setAmountAllocated(adjustedAmount);
+			}
+			
+			budgetProposalRepository.save(parentProposal);
+		}
+		
+		//last thing is to update formularStrategy & RequestColumns!
+		
+		return null;
+	}
 
 
 }

@@ -163,6 +163,16 @@ public class BudgetProposalRestController {
 		
 	}
 	
+	@RequestMapping(value="/BudgetProposalsAndReservedBudget/", method=RequestMethod.PUT)
+	public @ResponseBody String updateBudgetProposalAndReservedBudget(
+			@RequestBody JsonNode data){
+		
+
+		Boolean result = entityService.updateBudgetProposalAndReservedBudget(data);
+		
+		return "success";
+	}
+	
 	
 	@ExceptionHandler(value=EntityNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)

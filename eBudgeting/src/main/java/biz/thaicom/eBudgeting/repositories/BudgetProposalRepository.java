@@ -52,4 +52,17 @@ public interface BudgetProposalRepository extends
 			"	INNER JOIN FETCH proposal.owner owner " +
 			"WHERE proposal.forObjective.id = ?1 AND proposal.budgetType.id = ?2 ")
 	public List<BudgetProposal> findByForObjective_idAndBudgetType_id(Long objectiveId, Long budgetTypeId);
+	
+	@Query("" +
+			"SELECT proposal " +
+			"FROM BudgetProposal proposal " +
+			"WHERE proposal.forObjective = ?1 and proposal.budgetType = ?2 ")
+	public List<BudgetProposal> findAllByForObjectiveAndBudgetType(Objective objective, BudgetType budgetType);
+	
+	@Query("" +
+			"SELECT proposal " +
+			"FROM BudgetProposal proposal " +
+			"WHERE proposal.forObjective in (?1) and proposal.budgetType = ?2 ")
+	public List<BudgetProposal> findAllByForObjectiveIdsAndBudgetType(List<Long> objectiveIds, BudgetType bdugetType);
+	
 }

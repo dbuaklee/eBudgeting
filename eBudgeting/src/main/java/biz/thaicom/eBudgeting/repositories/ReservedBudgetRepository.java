@@ -28,4 +28,16 @@ public interface ReservedBudgetRepository extends JpaSpecificationExecutor<Reser
 	List<ReservedBudget> findAllByFiscalYearAndParentPathLike(Integer fiscalYear,
 			String parentPathLikeString);
 
+	@Query("" +
+			"SELECT reservedBudget " +
+			"FROM ReservedBudget reservedBudget " +
+			"WHERE reservedBudget.forObjective = ?1 and reservedBudget.budgetType = ?2 ")
+	List<ReservedBudget> findAllByForObjectiveAndBudgetType(Objective objective, BudgetType budgetType);
+	
+	@Query("" +
+			"SELECT reservedBudget " +
+			"FROM ReservedBudget reservedBudget " +
+			"WHERE reservedBudget.forObjective.id in (?1) and reservedBudget.budgetType = ?2 ")
+	List<ReservedBudget> findAllByObjetiveIds(List<Long> objectiveIds, BudgetType budgetType);
+		
 }
