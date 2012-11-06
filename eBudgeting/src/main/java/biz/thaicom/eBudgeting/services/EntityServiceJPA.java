@@ -799,10 +799,11 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public Objective newObjectiveWithParam(String name, String code, Long parentId,
-			Long typeId) {
+			Long typeId, String parentPath) {
 		Objective obj = new Objective();
 		obj.setName(name);
 		obj.setCode(code);
+		obj.setParentPath(parentPath);
 		
 		Objective parent = objectiveRepository.findOne(parentId);
 		ObjectiveType type = objectiveTypeRepository.findOne(typeId);

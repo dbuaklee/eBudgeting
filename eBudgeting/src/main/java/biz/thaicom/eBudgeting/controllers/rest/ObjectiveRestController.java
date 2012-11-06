@@ -93,9 +93,10 @@ public class ObjectiveRestController {
 			@RequestParam String name,
 			@RequestParam String code,
 			@RequestParam Long parentId,
+			@RequestParam String parentPath,
 			@RequestParam Long typeId) {
 		
-		return entityService.newObjectiveWithParam(name,code,parentId,typeId);
+		return entityService.newObjectiveWithParam(name,code,parentId,typeId, parentPath);
 	}
 	
 	
