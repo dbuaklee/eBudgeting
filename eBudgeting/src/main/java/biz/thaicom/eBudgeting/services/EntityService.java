@@ -55,7 +55,7 @@ public interface EntityService {
 	public Objective updateObjectiveFields(Long id, String name, String code);
 	public Objective saveObjective(Objective objective);
 	public Objective newObjectiveWithParam(String name, String code, Long parentId,
-			Long typeId, String parentPath);
+			Long typeId, String parentPath, Integer fiscalYear);
 	public Objective deleteObjective(Long id);
 	
 	//BudgetType

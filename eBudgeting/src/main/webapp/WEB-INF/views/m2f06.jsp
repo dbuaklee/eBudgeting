@@ -586,8 +586,15 @@ $(document).ready(function() {
 				var newObj =  new Objective({name: inputNameVal, code: inputCodeVal, index: indexRow});
 				newObj.set('parent', pageObjective);
 				newObj.set('type', {id: pageType.children[0].id});
+				newObj.set('fiscalYear', fiscalYear);
 				// have to set parentPath here also
-				newObj.set('parentPath', '.'+pageObjective.get('id') + '.' + pageObjective.get('parentPath'));
+				var parentPathStr="";
+				if(pageObjective.get('parentPath') != null) {
+					parentPathStr = '.'+pageObjective.get('id') + '.' + pageObjective.get('parentPath');
+				} else {
+					parentPathStr = '.'+pageObjective.get('id');
+				}
+				newObj.set('parentPath', parentPathStr);
 				newObj.set('isLeaf', true);
 				
 				$.ajax({
@@ -598,7 +605,8 @@ $(document).ready(function() {
 						code: inputCodeVal,
 						parentId: pageObjective.get('id'),
 						parentPath: newObj.get('parentPath'),
-						typeId: pageType.children[0].id
+						typeId: pageType.children[0].id,
+						fiscalYear: newObj.get('fiscalYear')
 					},
 					success: _.bind(function(data){
 						newObj.set('id', data.id);
