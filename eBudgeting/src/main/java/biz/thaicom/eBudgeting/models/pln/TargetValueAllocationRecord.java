@@ -1,4 +1,4 @@
-package biz.thaicom.eBudgeting.models.bgt;
+package biz.thaicom.eBudgeting.models.pln;
 
 import java.io.Serializable;
 
@@ -14,25 +14,25 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import biz.thaicom.eBudgeting.models.pln.Objective;
-import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name="BGT_ALLOCATIONRECORD")
-@SequenceGenerator(name="BGT_ALLOCATIONRECORD_SEQ", sequenceName="BGT_ALLOCATIONRECORD_SEQ", allocationSize=1)
+@Table(name="PLN_TARGETVALUEALLOCRECORD")
+@SequenceGenerator(name="PLN_TARGETVALUEALLOCRECORD_SEQ", sequenceName="PLN_TARGETVALUEALLOCRECORD_SEQ", allocationSize=1)
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class AllocationRecord implements Serializable{
+public class TargetValueAllocationRecord implements Serializable {
+
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8389152899753513205L;
-	
+	private static final long serialVersionUID = 7077074717822508582L;
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_ALLOCATIONRECORD_SEQ")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PLN_TARGETVALUEALLOCRECORD_SEQ")
 	private Long id;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -43,8 +43,8 @@ public class AllocationRecord implements Serializable{
 	private Long amountAllocated;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="BUDGETTYPE_BGT_ID")
-	private BudgetType budgetType;
+	@JoinColumn(name="OBJECTIVETARGET_ID")
+	private ObjectiveTarget target;
 	
 	@Basic
 	@Column(name="IDX")
@@ -58,22 +58,12 @@ public class AllocationRecord implements Serializable{
 		this.id = id;
 	}
 
-
-
 	public Objective getForObjective() {
 		return forObjective;
 	}
 
 	public void setForObjective(Objective forObjective) {
 		this.forObjective = forObjective;
-	}
-
-	public Integer getIndex() {
-		return index;
-	}
-
-	public void setIndex(Integer index) {
-		this.index = index;
 	}
 
 	public Long getAmountAllocated() {
@@ -84,19 +74,21 @@ public class AllocationRecord implements Serializable{
 		this.amountAllocated = amountAllocated;
 	}
 
-	public BudgetType getBudgetType() {
-		return budgetType;
+	public ObjectiveTarget getTarget() {
+		return target;
 	}
 
-	public void setBudgetType(BudgetType budgetType) {
-		this.budgetType = budgetType;
+	public void setTarget(ObjectiveTarget target) {
+		this.target = target;
 	}
 
-	public void adjustAmountAllocated(Long adjustedAmount) {
-		this.amountAllocated = this.amountAllocated - adjustedAmount;
-		
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
 	}
 	
 	
-
 }

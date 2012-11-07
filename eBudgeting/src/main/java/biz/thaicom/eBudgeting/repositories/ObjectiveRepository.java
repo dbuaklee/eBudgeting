@@ -75,6 +75,12 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	public List<Objective> findFlatByObjectiveBudgetProposal(
 			Integer fiscalYear, String parentPathLikeString);
 	
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"WHERE objective.id in (?1) ")
+	public List<Objective> findAllObjectiveByIds(List<Long> ids);
+	
 	
 	@Query("" +  
 			"SELECT objective " +

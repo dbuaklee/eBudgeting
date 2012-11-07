@@ -18,7 +18,9 @@ import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 
 public interface EntityService {
@@ -57,6 +59,7 @@ public interface EntityService {
 	public Objective newObjectiveWithParam(String name, String code, Long parentId,
 			Long typeId, String parentPath, Integer fiscalYear);
 	public Objective deleteObjective(Long id);
+	public void addTargetToObjective(Long id, Long targetId);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -110,6 +113,30 @@ public interface EntityService {
 	public String initReservedBudget(Integer fiscalYear);
 	
 	public Boolean updateBudgetProposalAndReservedBudget(JsonNode data);
+	
+	
+	
+	//ObjectiveTarget
+	public List<ObjectiveTarget> findAllObjectiveTargets();
+	public List<ObjectiveTarget> findAllObjectiveTargetsByFiscalyear(Integer fiscalYear);
+	public ObjectiveTarget saveObjectiveTarget(ObjectiveTarget objectiveTarget);
+	public ObjectiveTarget updateObjectiveTarget(ObjectiveTarget objectiveTarget);
+	public ObjectiveTarget deleteObjectiveTarget(ObjectiveTarget objectiveTarget);
+	public ObjectiveTarget findOneObjectiveTarget(Long id);
+	public ObjectiveTarget updateObjectiveTarget(JsonNode node);
+	public ObjectiveTarget saveObjectiveTarget(JsonNode node);
+	public ObjectiveTarget deleteObjectiveTarget(Long id);
+
+	//TargetUnit
+	public List<TargetUnit> findAllTargetUnits();
+	public TargetUnit saveTargetUnits(TargetUnit targetUnit);
+	public TargetUnit updateTargetUnit(TargetUnit targetUnit);
+	public TargetUnit deleteTargetUnit(TargetUnit targetUnit);
+	public TargetUnit findOneTargetUnit(Long id);
+	public TargetUnit updateTargetUnit(JsonNode node);
+	public TargetUnit saveTargetUnit(JsonNode node);
+	public TargetUnit deleteTargetUnit(Long id);
+
 
 	
 

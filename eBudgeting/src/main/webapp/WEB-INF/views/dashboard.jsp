@@ -45,11 +45,12 @@ var menuJson = [{
 	name: "ข้อมูลพื้นฐานหน่วยงาน",
 	menus: [{name: "m1f01: โครงสร้างหมวดงบประมาณ", link:"jsp/m1f01", disabled: "disabled"},
 	        {name: "m1f02: หน่วยงานภายใน", link: "jsp/m1f02", disabled: "disabled"},
-	        {name: "m1f03: ข้อมูลหน่วยนับตัวชี้วัด", link: "jsp/m1f03", disabled: "disabled"},
+	        {name: "m1f03: ข้อมูลหน่วยนับเป้าหมาย", link: "page/m1f03/"},
 	        {name: "m1f05: เพิ่มข้อมูลเริ่มต้นปีงบประมาณ", link: "page/m1f05/"}]
 },{
 	name: "ระบบจัดทำคำขอตั้ง",
-	menus: [{name: "m2f13: กำหนดงบประมาณพื้นฐาน (default) ของหมวดงบประมาณ", link: "page/m2f13/"},
+	menus: [ {name: "m2f14: ข้อมูลเป้าหมาย", link: "page/m2f14/"},
+	        {name: "m2f13: กำหนดงบประมาณพื้นฐาน (default) ของหมวดงบประมาณ", link: "page/m2f13/"},
 	        {name: "m2f11: การกำหนดระดับชั้นของแผนงาน", link: "page/m2f11/"},
 	        {name: "m2f06: โครงสร้างแผนงาน/กิจกรรม/ตัวชี้วัด/หน่วยงานปฏิบัติ", link: "page/m2f06/"},
 	        {name: "m2f12: บันทึกข้อมูลงบประมาณ", link: "page/m2f12/", user: true},

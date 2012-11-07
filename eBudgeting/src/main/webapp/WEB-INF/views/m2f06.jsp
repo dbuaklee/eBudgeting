@@ -30,7 +30,8 @@
 				
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="closeBtn">Close</a> 
+				<a href="#" class="btn" id="closeBtn">ปิดหน้าต่าง</a>
+				<a href="#" class="btn" id="saveBtn">บันทึกรายละเอียด</a>  
 			</div>
 		</div>
 
@@ -88,6 +89,7 @@
 		<tr>
 			<td width="20"></td>
 			<td width="50">ลำดับที่</td>
+			<td width="50">หน่วยนับ</td>
 			<td>{{nextType.name}}</td>
 		</tr>
 	</thead>
@@ -99,6 +101,8 @@
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
 	<td> {{indexHuman index}} </td>
+	<td> <ul>{{#each targets}}<li>{{unit.name}}</li>{{/each}}</ul>
+	</td>
 	<td> {{#unless this.isLeaf}}
 			<a href="../{{id}}/" class="nextChildrenLnk">[{{code}}] {{name}} <i class="icon icon-chevron-right"></i> </a>
 		{{else}}
@@ -165,8 +169,13 @@
 	</ul>				
 </div>
 <form>
-	<label>ตัวชี้วัด</label>
-	<input type="text" placeholder="Type something">
+	<label>เป้าหมาย</label>
+	<select id="targetSlt">
+		<option value="0">ไม่กำหนดค่าเป้าหมาย</option>
+		{{#each targetList}}
+		<option value="{{id}}" {{#if selected}}selected="selected"{{/if}}>{{name}} ({{unit.name}})</option>
+		{{/each}} 
+	</select>
 
 	<label>หมวดงบประมาณ</label>
 	<div id="budgetSelectionCtr"></div>
@@ -261,10 +270,11 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 	
 	return s;
 });
-
+var listObjectiveTarget;
 
 $(document).ready(function() {
 
+	
 	
 	var BudgetProposalView = Backbone.View.extend({
 		initialize: function(options){
@@ -316,8 +326,24 @@ $(document).ready(function() {
 			if(this.objective != null) {
 			
 				
-				var html = this.modalTemplate(this.objective.toJSON());
+				
 				this.$el.find('.modal-header span').html(this.objective.get('name'));
+				
+				var json= this.objective.toJSON();
+				json.targetList = listObjectiveTarget.toJSON();
+				
+				if(this.objective.get('targets').length >0 ) {
+					for(var i=0; i<json.targetList.length; i++) {
+					
+						if(json.targetList[i].id == this.objective.get('targets').at(0).get('id')) {
+							json.targetList[i].selected = "selected";
+						}
+					}
+				}
+				
+				var html = this.modalTemplate(json);
+				
+				
 				this.$el.find('.modal-body').html(html);
 	
 				
@@ -359,6 +385,7 @@ $(document).ready(function() {
 		
 		events: {
 			"click #closeBtn" : "close",
+			"click #saveBtn" : "save",
 			"click #addBtn" : "add",
 			"click .removeBudgetType" : "removeBudgetType"
  		},
@@ -366,7 +393,43 @@ $(document).ready(function() {
 		close: function(e) {
 			this.$el.modal('hide');
 		},
-		
+		save: function(e) {
+
+			if(this.objective !=null) {
+				//get the selected objtectiveTarget
+				var otId = $('select#targetSlt').val();
+				var otSlt = ObjectiveTarget.findOrCreate(otId); 
+				
+				if(this.objective.get('targets').indexOf(otSlt) >= 0 ) {
+					// do nothing as we already have this in our list
+					this.$el.modal('hide');
+					return;
+				} 
+				
+				
+				
+				// otherwise just discard this one
+				this.objective.get('targets').pop();
+				
+				if(otSlt != null) {
+					this.objective.get('targets').add(otSlt);
+				}
+				
+				
+				$.ajax({
+					type: 'POST',
+					url: appUrl('/Objective/'+ this.objective.get('id') +'/addTarget'),
+					data: {
+						targetId: otId
+					},
+					success: _.bind(function(data){
+						this.$el.modal('hide');
+						mainTblView.collection.trigger('reset');
+					},this)
+				});				
+
+			}
+		},
 		add: function(e) {
 			if(this.objective !=null) {
 				// we have to get budgetType
@@ -375,6 +438,7 @@ $(document).ready(function() {
 					// advance to the next selection 
 					budgetTypeSelected = budgetTypeSelected.nextBudgetTypeSelectionView;
 				}
+				
 				var budgetType = BudgetType.findOrCreate(budgetTypeSelected.model.id);
 				
 				$.ajax({
@@ -699,9 +763,16 @@ $(document).ready(function() {
 	
 
 	if(objectiveId != null && objectiveId.length >0 ) {
+
+		listObjectiveTarget = new ObjectiveTargetCollection();
+		listObjectiveTarget.fetch({
+			url: appUrl('/ObjectiveTarget/fiscalYear/'+fiscalYear)
+		});
+		
 		pageObjective = new Objective({id: objectiveId});
 		pageObjective.fetch({
 			success: function(data,response) {
+				
 				pageType = response.type;
 				
 				objectiveCollection = new ObjectiveCollection();

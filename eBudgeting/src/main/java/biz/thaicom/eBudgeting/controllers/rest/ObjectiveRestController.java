@@ -63,6 +63,18 @@ public class ObjectiveRestController {
 		return  list;
 	}
 	
+	@RequestMapping(value="/Objective/{id}/addTarget", method=RequestMethod.POST)
+	public @ResponseBody String addTargetToObjective(@PathVariable Long id,
+			@RequestParam Long targetId) {
+		logger.debug("id: " + id);
+		logger.debug("targetId: " + id);
+		
+		entityService.addTargetToObjective(id, targetId);
+		
+		return  "success";
+	}
+	
+	
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.PUT)
 	public @ResponseBody Objective updateObjective(@PathVariable Long id,
 			@RequestBody Objective objective) {

@@ -22,6 +22,8 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
@@ -512,5 +514,35 @@ public class GenericViewController {
 		
 		return "m4f02";
 	}
+	
+	@RequestMapping("/page/m1f03/")
+	public String render_m1f03(
+			Model model, HttpServletRequest request) {
+		List<TargetUnit> targetUnits = entityService.findAllTargetUnits();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("targetUnits", targetUnits);
+		return "m1f03";
+	}
+	
+	@RequestMapping("/page/m2f14/")
+	public String render_m2f14(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m2f14";
+	}
+	
+	@RequestMapping("/page/m2f14/{fiscalYear}/")
+	public String render_m2f14WithFiscalYear(
+			@PathVariable Integer fiscalYear,
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m2f14";
+	}
+	
 }
 

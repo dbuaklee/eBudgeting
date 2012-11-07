@@ -3,6 +3,7 @@ package biz.thaicom.eBudgeting.models.pln;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.crypto.spec.PSource;
 import javax.persistence.Basic;
@@ -80,9 +81,7 @@ public class Objective implements Serializable {
 	@JoinColumn(name="PARENT_PLN_OBJECTIVE_ID")
 	private Objective parent;
 	
-	@ManyToMany(fetch=FetchType.LAZY)
-	@JoinTable(name="BGT_OBJECTIVE_BUDGETTYPE")
-	private List<BudgetType> budgetTypes;
+
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
 	@OrderColumn(name="IDX")
@@ -95,10 +94,24 @@ public class Objective implements Serializable {
 	private List<AllocationRecord> allocationRecords;
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
+	private List<TargetValueAllocationRecord> targetValueAllocationRecords;
+	
+	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
 	private List<ReservedBudget> reservedBudgets;
-
+	
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name="BGT_OBJECTIVE_BUDGETTYPE")
+	private List<BudgetType> budgetTypes;
+	
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name="PLN_JOIN_OBJECTIVE_TARGET")
+	private  List<ObjectiveTarget> targets;
+	
 	@Transient
 	private List<BudgetProposal> filterProposals;	
+	
+	@Transient
+	private List<TargetValue> filterTargetValues;
 	
 	@Transient
 	private List<BudgetProposal> sumBudgetTypeProposals;
@@ -400,6 +413,69 @@ public class Objective implements Serializable {
 	public void setReservedBudgets(List<ReservedBudget> reservedBudgets) {
 		this.reservedBudgets = reservedBudgets;
 	}
+	public List<ObjectiveTarget> getTargets() {
+		return targets;
+	}
+	public void setTargets(List<ObjectiveTarget> targets) {
+		this.targets = targets;
+	}
+	public List<TargetValue> getFilterTargetValues() {
+		return filterTargetValues;
+	}
+	public void setFilterTargetValues(List<TargetValue> filterTargetValues) {
+		this.filterTargetValues = filterTargetValues;
+	}
+	public List<TargetValueAllocationRecord> getTargetValueAllocationRecords() {
+		return targetValueAllocationRecords;
+	}
+	public void setTargetValueAllocationRecords(
+			List<TargetValueAllocationRecord> targetValueAllocationRecords) {
+		this.targetValueAllocationRecords = targetValueAllocationRecords;
+	}
+	public List<Long> getParentIds() {
+		// OK will have to travesre back up .. we can get the parent path
+		String parentPath = this.parentPath;
+		if(this.parentPath == null) {
+			return null;
+		}
+		
+		//we will tokenize and put it in List<Long>
+		List<Long> parentIds = new ArrayList<Long>();
+		
+		StringTokenizer tokens = new StringTokenizer(parentPath, ".");
+		
+		while(tokens.hasMoreTokens()) {
+			String token = tokens.nextToken();
+			//convert to Long
+			Long parentId = Long.parseLong(token);
+			
+			parentIds.add(parentId);
+		}
+		return parentIds;
+	}
+	public Boolean addTarget(ObjectiveTarget ot) {
+		if(ot == null) {
+			
+		}
+		
+		
+		if(this.targets != null) {
+			if(this.targets.lastIndexOf(ot) < 0) {
+				this.targets.add(ot);
+				return true;
+			}
+		} else {
+			this.targets = new ArrayList<ObjectiveTarget>();
+			this.targets.add(ot);
+			return true;
+		}
+		
+		return false;
+		
+	}
+	
+	
+
 	
 	
 }

@@ -65,10 +65,29 @@ Objective = Backbone.RelationalModel.extend({
 	    	key: 'reservedBudgets',
 	    	relatedModel: 'ReservedBudget',
 	    	collectionType: 'ReservedBudgetCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'targets',
+	    	relatedModel: 'ObjectiveTarget',
+	    	collectionType: 'ObjectiveTargetCollection' 
 	    }
 	    
 	],
-	urlRoot: appUrl('/Objective')
+	urlRoot: appUrl('/Objective'),
+	levelSort: function() {
+		if(this.get('parentPath') == null) {
+			return parseInt(0);
+		}
+		var levelNum = this.get('parentPath').split(".").length;
+		
+		// now padding to index 
+		if(this.get('index') > 9) {
+			return parseInt("" + levelNum + this.get('index'));
+		} else {
+			return parseInt("" + levelNum + "0" + this.get('index'));
+		}
+		
+	}
 });
 
 ObjectiveType = Backbone.RelationalModel.extend({
@@ -276,6 +295,31 @@ Organization = Backbone.RelationalModel.extend({
 	idAttribute: 'id'
 });
 
+ObjectiveTarget = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'unit',
+		relatedModel: 'TargetUnit',
+		reversRelation: {
+    		type: Backbone.HasMany,
+    		key: 'targets'
+    	}
+	}],
+	urlRoot: appUrl('/ObjectiveTarget/')
+});
+
+TargetUnit = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasMany,
+		key: 'targets',
+		relatedModel: 'ObjectiveTarget',
+	}],
+	urlRoot: appUrl('/TargetUnit/')
+});
+
+
 
 
 // Collection
@@ -306,6 +350,12 @@ AllocationRecordCollection =Backbone.Collection.extend({
 }); 
 ReservedBudgetCollection =Backbone.Collection.extend({
 	model: ReservedBudget
+});
+ObjectiveTargetCollection = Backbone.Collection.extend({
+	model: ObjectiveTarget
+});
+TargetUnitCollection = Backbone.Collection.extend({
+	model: TargetUnit
 });
 
 //Handlebars Utils

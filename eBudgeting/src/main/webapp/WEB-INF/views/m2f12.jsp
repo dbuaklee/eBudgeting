@@ -59,6 +59,10 @@
 	</div>
 </div>
 
+<script id="loadingTemplate" type="text/x-handler-template">
+	<div>Loading <img src="/eBudgeting/resources/graphics/spinner_bar.gif"/></div>
+</script>
+
 <script id="budgetTypeSelectionTemplate" type="text/x-handler-template">
 {{#if editStrategy}}<b>แก้ไขจำนวนเงิน</b>{{else}}<b>เลือกงบประมาณ</b>{{/if}}
 <select id="budgetTypeSlt" {{#if editStrategy}} disabled {{/if}}>
@@ -105,7 +109,29 @@
 </table>
 </div>
 </script>
-
+<script id="mainCtr1Template" type="text/x-handler-template">
+<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
+	<thead>
+		<tr>
+			<th stlye="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th width="80">เป้าหมาย</th>
+			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
+			<th width="80">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
+			<th width="80">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
+			<th width="80">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
+		</tr>
+	</thead>
+</table>
+<div style="height: 400px; overflow: auto; width:920px">
+<table class="table table-bordered" id="mainTbl" style="width:900px; table-layout:fixed;">
+	<tbody>
+		
+			
+		
+	</tbody>
+</table>
+</div>
+</script>
 <script id="childrenNormalNodeTemplate" type="text/x-handler-template">
 		<tr>
 			<td stlye="width:400px;"><a href="../{{this.id}}/" class="nextChildrenLnk">{{this.name}} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
@@ -115,6 +141,67 @@
 			<td width="80"></td>
 			<td width="80"></td>
 		</tr>
+</script>
+
+<script id="nodeRowTemplate" type="text/x-handler-template">
+	<tr data-level="{{this.level}}" data-id="{{this.id}}">
+		<td style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
+			<span>
+					{{#if this.children}}
+					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
+					<label class="expand" for="bullet_{{this.id}}"><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
+					{{else}}					
+						<img width=8 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/> - 
+					{{/if}}
+					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
+					<label class="main" for="item_{{this.id}}">
+						{{#unless this.children}}<a href="#" class="detail">{{/unless}}
+						<b>{{this.type.name}}ที่ {{indexHuman this.index}}</b> [{{this.code}}] {{this.name}}
+						{{#unless this.children}}</a>{{/unless}}
+					</label>
+					{{#unless this.children}}
+						<img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>
+						<ul>
+						{{#each this.filterProposals}}
+							 <li> {{budgetType.name}} - {{{formatNumber amountRequest}}} บาท</li>
+						{{/each}}
+						</ul>
+					{{/unless}}
+			</span> 
+		</td>
+			<td  width="80"  class="{{#if this.children}}disable{{/if}}"><span></span>
+				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			</td>
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+			</td>
+
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+			</td>
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+			</td>
+			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+			</td>
+	</tr>
 </script>
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
@@ -1020,38 +1107,20 @@
 
 						var r = confirm("คุณต้องการนำรายการนี้ออก?");
 						if (r == true) {
-							$
-									.ajax({
-										type : 'DELETE',
-										url : appUrl('/ProposalStrategy/'
-												+ proposalStrategyId),
-										success : _
-												.bind(
-														function() {
-
-															budgetProposal
-																	.get(
-																			'proposalStrategies')
-																	.remove(
-																			proposalStrategy);
-															var newAmount = budgetProposal
-																	.get('amountRequest')
-																	- proposalStrategy
-																			.get('totalCalculatedAmount');
-															budgetProposal
-																	.set(
-																			'amountRequest',
-																			newAmount);
-
-															// now we'll have to trigger change all the way up ward
-
-															this.objective
-																	.trigger(
-																			'change',
-																			this.objective);
-															this.render();
-														}, this)
-									});
+							$.ajax({
+								type : 'DELETE',
+								url : appUrl('/ProposalStrategy/' + proposalStrategyId),
+								success : _.bind(function() {
+										budgetProposal.get('proposalStrategies').remove(proposalStrategy);
+										var newAmount = budgetProposal.get('amountRequest') - proposalStrategy.get('totalCalculatedAmount');
+										budgetProposal.set('amountRequest', newAmount);
+	
+										// now we'll have to trigger change all the way up ward
+	
+										this.objective.trigger('change',this.objective);
+										this.render();
+									}, this)
+								});
 
 						}
 						return false;
@@ -1090,10 +1159,16 @@
 		initialize : function() {
 			this.collection.bind('reset', this.render, this);
 			_.bindAll(this, 'detailModal');
+			
+			// puting loading sign
+			this.$el.html(this.loadingTpl());
 		},
 
 		el : "#mainCtr",
+		loadingTpl : Handlebars.compile($("#loadingTemplate").html()),
 		mainTblTpl : Handlebars.compile($("#mainCtrTemplate").html()),
+		nodeRowTpl : Handlebars.compile($("#nodeRowTemplate").html()),
+		mainTbl1Tpl : Handlebars.compile($("#mainCtr1Template").html()),
 		modalView : new ModalView(),
 
 		events : {
@@ -1125,6 +1200,32 @@
 		},
 		render : function() {
 			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
+			
+			//render Each one in the collection first
+//			this.$el.html(this.mainTbl1Tpl(this.collection.toJSON()));
+//			for(var i= 0; i< this.collection.length; i++) {
+//				var o = this.collection.at(i);
+//				this.$el.find('#mainTbl tbody').append(this.nodeRowTpl(o.toJSON()));
+				
+				// get this children
+
+//			}
+			
+			// now render all the children
+//			var next = objectiveCollection.indexOf(this.collection.at(this.collection.length)) + 1;
+			
+//			for(next; next < objectiveCollection.length; next ++) {
+				
+//				var o = objectiveCollection.at(next);
+//				var html  = this.nodeRowTpl(o.toJSON());
+				
+				
+//				var parentEl = this.$el.find('tr[data-id='+ o.get('parent').get('id') +']');
+				
+				
+//				$(html).insertAfter(this.$el.find(parentEl));
+//			}
+			
 
 		},
 
@@ -1140,75 +1241,59 @@
 
 	});
 
-	$(document)
-			.ready(
-					function() {
+	$(document).ready(function() {
 
-						if (objectiveId != null && objectiveId.length > 0) {
-							objectiveCollection = new ObjectiveCollection();
-							rootCollection = new ObjectiveCollection();
+		if (objectiveId != null && objectiveId.length > 0) {
+			objectiveCollection = new ObjectiveCollection();
+			
+			rootCollection = new ObjectiveCollection();
+			
 
-							objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/"
-									+ fiscalYear
-									+ "/"
-									+ objectiveId
-									+ "/flatDescendants");
+			objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/"
+					+ fiscalYear
+					+ "/"
+					+ objectiveId
+					+ "/flatDescendants");
 
-							mainTblView = new MainTblView({
-								collection : rootCollection
-							});
+			mainTblView = new MainTblView({
+				collection : rootCollection
+			});
 
-							//load curent objective 
-							parentObjective = new Objective({
-								id : objectiveId
-							});
-							parentObjective.url = appUrl("/Objective/"
-									+ objectiveId);
-							parentObjective
-									.fetch({
-										success : function() {
+			//load curent objective 
+			parentObjective = new Objective({
+				id : objectiveId
+			});
+			parentObjective.url = appUrl("/Objective/" + objectiveId);
+			
+			
+			parentObjective.fetch({
+				success : function() {
+					objectiveCollection.fetch({
+						success : function() {
+							// we will now sorted out this mess!
+							var i;
+							for (i = 0; i < objectiveCollection.length; i++) {
+								var o = objectiveCollection.at(i);
+								if (o.get('parent') != null) {
+									var parentId = o.get('parent').get('id');
+									if (parentId == objectiveId) {
+										rootCollection.add(o);
+									}
 
-											objectiveCollection
-													.fetch({
-														success : function() {
-															// we will now sorted out this mess!
-															var i;
-															for (i = 0; i < objectiveCollection.length; i++) {
-																var o = objectiveCollection
-																		.at(i);
-																if (o
-																		.get('parent') != null) {
-																	var parentId = o
-																			.get(
-																					'parent')
-																			.get(
-																					'id');
-																	if (parentId == objectiveId) {
-																		rootCollection
-																				.add(o);
-																	}
-
-																	var parentObj = objectiveCollection
-																			.get(parentId);
-																	if (parentObj != null) {
-																		parentObj
-																				.get(
-																						'children')
-																				.add(
-																						o);
-																	}
-
-																}
-															}
-
-															rootCollection
-																	.trigger('reset');
-
-														}
-													});
-										}
-									});
+								var parentObj = objectiveCollection.get(parentId);
+									if (parentObj != null) {
+										parentObj.get('children').add(o);
+									}
+								}
+							}
+							rootCollection.add(objectiveCollection.where({parent: parentObjective}));
+							rootCollection.trigger('reset');
+							
 						}
-
 					});
+				}
+			});
+		}
+
+	});
 </script>

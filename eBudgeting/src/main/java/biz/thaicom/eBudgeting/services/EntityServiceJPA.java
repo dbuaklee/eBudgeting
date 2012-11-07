@@ -33,7 +33,10 @@ import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
+import biz.thaicom.eBudgeting.models.pln.TargetValue;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
@@ -41,10 +44,12 @@ import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
+import biz.thaicom.eBudgeting.repositories.ObjectiveTargetRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ProposalStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.RequestColumnRepositories;
 import biz.thaicom.eBudgeting.repositories.ReservedBudgetRepository;
+import biz.thaicom.eBudgeting.repositories.TargetUnitRepository;
 
 @Service
 @Transactional
@@ -80,6 +85,12 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private ReservedBudgetRepository reservedBudgetRepository;
+	
+	@Autowired
+	private ObjectiveTargetRepository objectiveTargetRepository;
+	
+	@Autowired
+	private TargetUnitRepository targetUnitRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -144,7 +155,13 @@ public class EntityServiceJPA implements EntityService {
 //		}
 //		return self.getChildren();
 		
-		return objectiveRepository.findChildrenWithParentAndTypeAndBudgetType(id);
+		List<Objective> objs =  objectiveRepository.findChildrenWithParentAndTypeAndBudgetType(id);
+		
+		for(Objective obj : objs){
+			obj.getTargets().size();
+		}
+		
+		return objs;
 	}
 
 	@Override
@@ -753,8 +770,12 @@ public class EntityServiceJPA implements EntityService {
 			
 			//now we're just ready to add to obj
 			obj.getBudgetTypes().add(b);
-			objectiveRepository.save(obj);
 			
+			obj.getTargets().size();
+			logger.debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+			
+			objectiveRepository.save(obj);
+			logger.debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");			
 			return obj;
 		} else {
 			return null;
@@ -1038,20 +1059,7 @@ public class EntityServiceJPA implements EntityService {
 		//should be OK to save here
 		reservedBudgetRepository.save(rb);
 		
-		// OK will have to travesre back up .. we can get the parent path
-		String parentPath = currentObj.getParentPath();
-		//we will tokenize and put it in List<Long>
-		List<Long> parentIds = new ArrayList<Long>();
-		
-		StringTokenizer tokens = new StringTokenizer(parentPath, ".");
-		
-		while(tokens.hasMoreTokens()) {
-			String token = tokens.nextToken();
-			//convert to Long
-			Long parentId = Long.parseLong(token);
-			
-			parentIds.add(parentId);
-		}
+		List<Long> parentIds = currentObj.getParentIds();
 		
 		// We are ready to update the parent...
 		
@@ -1152,5 +1160,217 @@ public class EntityServiceJPA implements EntityService {
 		return true;
 	}
 
+	@Override
+	public List<TargetUnit> findAllTargetUnits() {
+		return (List<TargetUnit>) targetUnitRepository.findAll();
+	}
+
+
+
+	@Override
+	public List<ObjectiveTarget> findAllObjectiveTargets() {
+		return (List<ObjectiveTarget>) objectiveTargetRepository.findAll();
+	}
+
+	@Override
+	public TargetUnit saveTargetUnits(TargetUnit targetUnit) {
+		return targetUnitRepository.save(targetUnit);
+	}
+
+	@Override
+	public TargetUnit updateTargetUnit(TargetUnit targetUnit) {
+		TargetUnit targetUnitJPA = targetUnitRepository.findOne(targetUnit.getId());
+		if(targetUnitJPA != null) {
+			targetUnitJPA.setName(targetUnit.getName());
+			
+			targetUnitRepository.save(targetUnitJPA);
+			return targetUnitJPA;
+		}
+		return null;
+	}
+
+	@Override
+	public TargetUnit deleteTargetUnit(TargetUnit targetUnit) {
+		TargetUnit targetUnitJPA = targetUnitRepository.findOne(targetUnit.getId());
+		if(targetUnitJPA != null) {
+			targetUnitRepository.delete(targetUnitJPA);
+			
+			return targetUnitJPA;
+		}
+		return null;	}
+
+	@Override
+	public ObjectiveTarget saveObjectiveTarget(ObjectiveTarget objectiveTarget) {
+		return objectiveTargetRepository.save(objectiveTarget);
+	}
+
+	@Override
+	public ObjectiveTarget updateObjectiveTarget(
+			ObjectiveTarget objectiveTarget) {
+		ObjectiveTarget objectiveTargetJPA = objectiveTargetRepository.findOne(objectiveTarget.getId());
+		if(objectiveTargetJPA != null) {
+			objectiveTargetJPA.setName(objectiveTarget.getName());
+			
+			objectiveTargetRepository.save(objectiveTargetJPA);
+			return objectiveTargetJPA;
+		}
+		return null;
+	}
+
+	@Override
+	public ObjectiveTarget deleteObjectiveTarget(
+			ObjectiveTarget objectiveTarget) {
+		ObjectiveTarget objectiveTargetJPA = objectiveTargetRepository.findOne(objectiveTarget.getId());
+		if(objectiveTargetJPA != null) {
+			
+			objectiveTargetRepository.delete(objectiveTargetJPA);
+			return objectiveTargetJPA;
+		}
+		return null;
+	}
+
+	@Override
+	public TargetUnit findOneTargetUnit(Long id) {
+		return targetUnitRepository.findOne(id);
+	}
+
+	@Override
+	public ObjectiveTarget findOneObjectiveTarget(Long id) {
+		return objectiveTargetRepository.findOne(id);
+	}
+
+	@Override
+	public ObjectiveTarget updateObjectiveTarget(JsonNode node) {
+		ObjectiveTarget ot = findOneObjectiveTarget(node.get("id").asLong());
+		// now filling in only what we need!
+		if(ot!=null) {
+			ot.setName(node.get("name").asText());
+			ot.setIsSumable(node.get("isSumable").asBoolean());
+			
+			TargetUnit tu = findOneTargetUnit(node.get("unit").get("id").asLong());
+			if(tu != null) {
+				ot.setUnit(tu);
+			}
+			
+			return saveObjectiveTarget(ot);
+		} 
+		 return null;
+	}
+
+	@Override
+	public ObjectiveTarget saveObjectiveTarget(JsonNode node) {
+		ObjectiveTarget ot = new ObjectiveTarget();
+		// now filling in only what we need!
+
+		ot.setName(node.get("name").asText());
+		ot.setIsSumable(node.get("isSumable").asBoolean());
+		ot.setFiscalYear(node.get("fiscalYear").asInt());
+		
+		TargetUnit tu = findOneTargetUnit(node.get("unit").get("id").asLong());
+		if(tu != null) {
+			ot.setUnit(tu);
+		}
+		
+		return saveObjectiveTarget(ot);
+	}
+
+	@Override
+	public ObjectiveTarget deleteObjectiveTarget(Long id) {
+		ObjectiveTarget objectiveTarget = objectiveTargetRepository.findOne(id);
+		return deleteObjectiveTarget(objectiveTarget);
+	}
+
+	@Override
+	public TargetUnit updateTargetUnit(JsonNode node) {
+		TargetUnit tu = findOneTargetUnit(node.get("id").asLong());
+		// now filling in only what we need!
+		if(tu!=null) {
+			tu.setName(node.get("name").asText());
+	
+			
+			return saveTargetUnits(tu);
+		} 
+		 return null;
+	}
+
+	@Override
+	public TargetUnit saveTargetUnit(JsonNode node) {
+		TargetUnit tu = new TargetUnit();
+		tu.setName(node.get("name").asText());
+		return saveTargetUnits(tu);
+	}
+
+	@Override
+	public TargetUnit deleteTargetUnit(Long id) {
+		TargetUnit targetUnit = findOneTargetUnit(id);
+		
+		return deleteTargetUnit(targetUnit);
+	}
+
+	@Override
+	public List<ObjectiveTarget> findAllObjectiveTargetsByFiscalyear(Integer fiscalYear) {
+		return objectiveTargetRepository.findAllByFiscalYear(fiscalYear);
+	}
+
+	@Override
+	public void addTargetToObjective(Long id, Long targetId) {
+		Objective o = objectiveRepository.findOne(id);
+		ObjectiveTarget ot = objectiveTargetRepository.findOne(targetId);
+		
+		if(o.getTargets().lastIndexOf(ot) >= 0) {
+			// we should be save to return here?
+			return;
+		} else {
+			
+			ObjectiveTarget otJPA = null;
+			if(o.getTargets().size() > 0) {
+				otJPA = o.getTargets().get(0);
+			}
+
+			// remove the one we have first
+			if(otJPA != null) {
+				o.getTargets().remove(otJPA);
+			} 
+			
+			o.addTarget(ot);
+			
+			// and we should be save this one
+			objectiveRepository.save(o);
+			
+			// now go on to its parents;
+			List<Objective> parents = objectiveRepository.findAllObjectiveByIds(
+					o.getParentIds());
+			
+			for(Objective parent: parents) {
+				
+				// we'll have to somehow take out the old one out too
+				if(otJPA != null) {
+					
+					
+					List<ObjectiveTarget> otList = findObjectiveTargetForChildrenObjective(parent.getId(), otJPA.getId());
+					if(otList.size() == 0) {
+						// now we can take the old out
+						parent.getTargets().remove(otJPA);
+					}
+				}					
+
+				if(parent.addTarget(ot)) {
+					objectiveRepository.save(parent);
+				}
+
+				
+			}
+		}
+		
+	}
+
+	private List<ObjectiveTarget> findObjectiveTargetForChildrenObjective(
+			Long objectiveId, Long targetId) {
+		
+		logger.debug("targetId: {} ",  targetId);
+		logger.debug("objectiveIdLike: {}", "%."+objectiveId+"%");
+		
+		return objectiveTargetRepository.findAllByIdAndChildrenOfObjectiveId(targetId, "%."+objectiveId+"%");
+	}
 
 }
