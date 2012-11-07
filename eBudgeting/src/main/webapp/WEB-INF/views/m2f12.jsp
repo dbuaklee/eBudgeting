@@ -130,7 +130,7 @@
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">
 						{{#unless this.children}}<a href="#" class="detail">{{/unless}}
-						<b>{{this.type.name}}ที่ {{indexHuman this.index}}</b> [{{this.id}}-{{this.code}}] {{this.name}}
+						<b>{{this.type.name}}ที่ {{indexHuman this.index}}</b> [{{this.code}}] {{this.name}}
 						{{#unless this.children}}</a>{{/unless}}
 					</label>
 					{{#unless this.children}}

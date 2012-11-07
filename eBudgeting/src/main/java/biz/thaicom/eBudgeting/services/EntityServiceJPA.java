@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import oracle.net.aso.f;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -799,11 +801,12 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public Objective newObjectiveWithParam(String name, String code, Long parentId,
-			Long typeId, String parentPath) {
+			Long typeId, String parentPath, Integer fiscalYear) {
 		Objective obj = new Objective();
 		obj.setName(name);
 		obj.setCode(code);
 		obj.setParentPath(parentPath);
+		obj.setFiscalYear(fiscalYear);
 		
 		Objective parent = objectiveRepository.findOne(parentId);
 		ObjectiveType type = objectiveTypeRepository.findOne(typeId);
