@@ -230,11 +230,11 @@
 	<tr>
 	{{#each this.formulaColumns}}
 		{{#if isFixed}}
-		<td style="text-align:center" class="isNotFixed">
+		<td style="text-align:center" class="isNotFixed" data-id="{{id}}">
 			<input id="formulaColumnId-{{id}}" type="text" class="span1 formulaColumnInput" value="{{value}}"></input>
 		</td>
 		{{else}}
-		<td style="text-align:center" class="isFixed">
+		<td style="text-align:center" class="isFixed" data-id="{{id}}">
 			{{formatNumber value}}
 		</td>
 		{{/if}}
@@ -539,13 +539,15 @@
 
 					//now multiply all from is Fixed!
 					for ( var i = 0; i < allTdIsFixed.length; i++) {
-						var value = $(allTdIsFixed[i]).html();
-						amount = amount * parseInt(value);
+						var formulaColumnId = $(allTdIsFixed[i]).attr('data-id');
+						var fc = FormulaColumn.findOrCreate(formulaColumnId);
+						amount = amount * fc.get('value');
 					}
 
 					//now moveon to the rest
 					for ( var i = 0; i < allTdIsNotFixed.length; i++) {
 						var value = $(allTdIsNotFixed[i]).find('input').val();
+						value = value.replace(/[^\d\.\-\ ]/g, '');
 						if (isNaN(parseInt(value))) {
 							amount = "";
 							break;
