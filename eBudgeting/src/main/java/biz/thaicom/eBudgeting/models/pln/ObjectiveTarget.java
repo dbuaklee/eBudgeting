@@ -22,6 +22,7 @@ import javax.persistence.Transient;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -46,6 +47,7 @@ public class ObjectiveTarget implements Serializable{
 	private Integer fiscalYear;
 	
 	@ManyToMany(mappedBy="targets")
+	@JsonIgnore
 	private List<Objective> forObjectives;
 	
 	@Basic

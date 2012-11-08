@@ -32,6 +32,18 @@
 			</div>
 		</div>
 
+		<div id="targetValueModal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<a href="#" class="btn" id="cancelBtn">Close</a> <a href="#"
+					class="btn btn-primary" id="saveBtn">Save changes</a>
+			</div>
+		</div>
+
 		<div id="mainCtr">
 			<c:choose>
 				<c:when test="${rootPage}">
@@ -87,20 +99,32 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
+<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:1150px; table-layout:fixed;">
 	<thead>
 		<tr>
-			<th stlye="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
-			<th width="80">เป้าหมาย</th>
-			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
-			<th width="80">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
-			<th width="80">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
-			<th width="80">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
+			<th style="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:60px;">เป้าหมาย</th>
+			<th style="width:60px;">หน่วยนับ</th>
+			<th style="width:120px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
+			<th style="width:120px;">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
+			<th style="width:120px;">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
+			<th style="width:120px;">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
 		</tr>
 	</thead>
+	<tbody>
+		<tr>
+			<td style="width:400px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
+			<td style="width:60px;"></td>
+			<td style="width:60px;"></td>
+			<td style="width:120px;"><strong>{{sumProposal allProposal}}</td>
+			<td style="width:120px;"><strong>{{sumProposalNext1Year allProposal}}</strong></td>
+			<td style="width:120px;"><strong>{{sumProposalNext2Year allProposal}}</strong></td>
+			<td style="width:120px;"><strong>{{sumProposalNext3Year allProposal}}</strong></td>
+		</tr>
+	</tbody>
 </table>
-<div style="height: 400px; overflow: auto; width:920px">
-<table class="table table-bordered" id="mainTbl" style="width:900px; table-layout:fixed;">
+<div style="height: 400px; overflow: auto; width:1170px">
+<table class="table table-bordered" id="mainTbl" style="width:1150px; table-layout:fixed;">
 	<tbody>
 		
 			{{{childrenNodeTpl this 0}}}
@@ -110,10 +134,10 @@
 </div>
 </script>
 <script id="mainCtr1Template" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
+<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:1150px; table-layout:fixed;">
 	<thead>
 		<tr>
-			<th stlye="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
 			<th width="80">เป้าหมาย</th>
 			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
 			<th width="80">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
@@ -122,8 +146,8 @@
 		</tr>
 	</thead>
 </table>
-<div style="height: 400px; overflow: auto; width:920px">
-<table class="table table-bordered" id="mainTbl" style="width:900px; table-layout:fixed;">
+<div style="height: 400px; overflow: auto; width:1150px">
+<table class="table table-bordered" id="mainTbl" style="width:1150px; table-layout:fixed;">
 	<tbody>
 		
 			
@@ -134,7 +158,7 @@
 </script>
 <script id="childrenNormalNodeTemplate" type="text/x-handler-template">
 		<tr>
-			<td stlye="width:400px;"><a href="../{{this.id}}/" class="nextChildrenLnk">{{this.name}} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+			<td style="width:400px;"><a href="../{{this.id}}/" class="nextChildrenLnk">{{this.name}} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
 			<td width="80"></td>
 			<td style="text-align:right" width="80">{{#if this.proposals}} {{formatNumber this.proposals.0.amountRequest}} {{else}}0.00{{/if}}</td>
 			<td width="80"></td>
@@ -145,8 +169,8 @@
 
 <script id="nodeRowTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}">
-		<td style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
-			<span>
+		<td style="width:400px;" class="{{#if this.children}}disable{{/if}}">
+			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
 					<label class="expand" for="bullet_{{this.id}}"><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
@@ -169,10 +193,19 @@
 					{{/unless}}
 			</span> 
 		</td>
-			<td  width="80"  class="{{#if this.children}}disable{{/if}}"><span></span>
+			<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+			<span>
+				<ul>{{#each targets}}<li>{{unit.name}}</li>{{/each}}</ul>
+			</span>
+				
 				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
 			</td>
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+			<span>
+				<ul>{{#each targets}}<li>{{unit.name}}</li>{{/each}}</ul>
+			</span>
+			</td>
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
@@ -180,21 +213,21 @@
 				{{/if}}
 			</td>
 
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 			</td>
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 			</td>
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
@@ -206,8 +239,8 @@
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}">
-		<td style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
-			<span>
+		<td style="width:400px;" class="{{#if this.children}}disable{{/if}}">
+			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
 					<label class="expand" for="bullet_{{this.id}}"><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
@@ -230,10 +263,19 @@
 					{{/unless}}
 			</span> 
 		</td>
-			<td  width="80"  class="{{#if this.children}}disable{{/if}}"><span></span>
-				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+			<span>
+				{{#each filterTargetValues}}{{#if ../this.isLeaf}}<a href="#" data-id="{{id}}" target-id="{{target.id}}" class="targetValueModal">{{/if}}
+				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}เพิ่ม{{/if}}
+				{{#if ../this.isLeaf}}</a>{{/if}}<br/>{{/each}}
+			</span>
 			</td>
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+			<span>
+				<ul>{{#each filterTargetValues}}<li style="list-style:none; padding: 0px;">{{target.unit.name}}</li>{{/each}}</ul>
+			</span>
+			</td>
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
@@ -241,30 +283,29 @@
 				{{/if}}
 			</td>
 
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 			</td>
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 			</td>
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 			</td>
-
 	</tr>
-	{{{childrenNodeTpl this.children this.level}}}
+	{{{childrenNodeTpl this.children this.level}}}  
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
@@ -286,6 +327,14 @@
 <div id="budgetTypeSelectionDiv"></div>
 
 
+</script>
+
+
+<script id="targetValueModalTemplate" type="text/x-handler-template">
+<form>
+	<label>ระบุเป้าหมาย</label>
+	<input type="text" value="{{value}}"/> {{target.unit.name}}
+</form>
 </script>
 
 <script id="inputModalTemplate" type="text/x-handler-template">
@@ -1154,6 +1203,69 @@
 					this.render();
 				}
 			});
+	
+	var TargetValueModalView=Backbone.View.extend({
+			initialize: function() {
+				
+			},
+			
+			el: "#targetValueModal",
+			
+			events : {
+				"click #saveBtn" : "saveTargetValue",
+				"click #cancelBtn" : "cancelTargetValue",
+			},
+			
+			targetValueModalTpl : Handlebars.compile($("#targetValueModalTemplate").html()),
+			render: function() {
+				
+				
+				this.$el.find('.modal-header span').html(this.objectiveTarget.get('name'));
+				
+				var html = this.targetValueModalTpl(this.targetValue.toJSON());
+				this.$el.find('.modal-body').html(html);
+
+				
+				
+				this.$el.modal({
+					show : true,
+					backdrop : 'static',
+					keyboard : false
+				});
+				return this;
+			},
+			cancelTargetValue: function() {
+				this.$el.modal('hide');
+			},
+			saveTargetValue: function() {
+				// we'll try to save
+				var input = parseInt(this.$el.find('input').val());
+				
+				this.targetValue.save({
+					requestedValue: input
+				}, {
+					success: function(){
+						window.location.reload();
+					}
+				});
+				
+				
+				
+			},
+			
+			renderWith: function(objective, targetId, valueId) {
+				this.objective = objective;
+				this.objectiveTarget=ObjectiveTarget.findOrCreate(targetId);
+				this.targetValue=TargetValue.findOrCreate(valueId);
+				if(this.targetValue == null) {
+					this.targetValue = new TargetValue();
+					this.targetValue.set('forObjective', objective);
+					this.targetValue.set('target', this.objectiveTarget);
+				}
+				this.render();
+			}
+		
+	});
 
 	var MainTblView = Backbone.View.extend({
 		initialize : function() {
@@ -1170,10 +1282,24 @@
 		nodeRowTpl : Handlebars.compile($("#nodeRowTemplate").html()),
 		mainTbl1Tpl : Handlebars.compile($("#mainCtr1Template").html()),
 		modalView : new ModalView(),
+		targetValueModalView : new TargetValueModalView(),
 
 		events : {
 			"click input[type=checkbox].bullet" : "toggle",
-			"click .detail" : "detailModal"
+			"click .detail" : "detailModal",
+			"click .targetValueModal" : "detailTargetValue"
+		},
+		
+		detailTargetValue: function(e) {
+			var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
+			var currentObjective = Objective.findOrCreate(currentObjectiveId);
+			
+			var targetId = $(e.target).attr('target-id');
+			var valueId = $(e.target).attr('data-id');
+			
+			this.targetValueModalView.renderWith(currentObjective, targetId, valueId);
+			
+			
 		},
 
 		detailModal : function(e) {
@@ -1199,7 +1325,23 @@
 
 		},
 		render : function() {
-			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
+			var allProposal = new BudgetProposalCollection(); 
+			_.each(rootCollection.pluck('filterProposals'), function(bpCollection) {
+				if(bpCollection.length > 0) {
+					bpCollection.each(function(bp) {
+						allProposal.add(bp);
+					});
+				}
+			});
+			
+			
+			
+			
+			
+			var json = this.collection.toJSON();
+			json.allProposal = allProposal.toJSON();
+			
+			this.$el.html(this.mainTblTpl(json));
 			
 			//render Each one in the collection first
 //			this.$el.html(this.mainTbl1Tpl(this.collection.toJSON()));

@@ -32,6 +32,18 @@
 			</div>
 		</div>
 
+		<div id="targetValueModal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<a href="#" class="btn" id="cancelBtn">Close</a> <a href="#"
+					class="btn btn-primary" id="saveBtn">Save changes</a>
+			</div>
+		</div>
+
 		<div id="mainCtr">
 			<c:choose>
 				<c:when test="${rootPage}">
@@ -83,20 +95,31 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
+<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:1130px; table-layout:fixed;">
 	<thead>
 		<tr>
-			<th stlye="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
-			<th width="80">เป้าหมาย</th>
-			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
-			<th width="80">ปรับลดครั้งที่ 3 (เหลือ) </th>
-			<th width="80">ยอดจัดสรรลงหน่วยรับ </th>
-			<th width="80">ยอดจัดสรรลงส่วนกลาง </th>
+			<th style="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:60px;">เป้าหมาย</th>
+			<th style="width:120px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
+			<th style="width:120px;">ปรับลดครั้งที่ 3 (เหลือ) </th>
+			<th style="width:120px;">ยอดจัดสรรลงหน่วยรับ </th>
+			<th style="width:120px;">สนับสนุนนโยบาย </th>
 		</tr>
+	<tbody>
+		<tr>
+			<td style="width:400px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
+			<td style="width:60px;"></td>
+			<td style="width:120px;"><strong>{{sumProposal allProposal}}</td>
+			<td style="width:120px;"><strong>{{sumAllocatedRecord allAllocationRecordsR3}}</strong></td>
+			<td style="width:120px;"><strong>{{sumAllocated allProposal}}</strong></td>
+			<td style="width:120px;"><strong>{{sumAmountReserved allReserved}}</strong></td>
+		</tr>
+	</tbody>
+
 	</thead>
 </table>
-<div style="height: 400px; overflow: auto; width:920px">
-<table class="table table-bordered" id="mainTbl" style="width:900px; table-layout:fixed;">
+<div style="height: 400px; overflow: auto; width:1150px">
+<table class="table table-bordered" id="mainTbl" style="width:1130px; table-layout:fixed;">
 	<tbody>
 		
 			{{{childrenNodeTpl this 0}}}
@@ -119,8 +142,8 @@
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}">
-		<td style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
-			<span>
+		<td style="width:400px;" class="{{#if this.children}}disable{{/if}}">
+			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
 					<label class="expand" for="bullet_{{this.id}}"><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
@@ -143,10 +166,12 @@
 					{{/unless}}
 			</span> 
 		</td>
-			<td  width="80"  class="{{#if this.children}}disable{{/if}}"><span></span>
-				 {{#unless this.children}}<br/><a col-id="1" href="#mainfrm" class="btn btn-mini">เพิ่ม/แก้ไข</a>{{/unless}}
+			<td  style="width:60px;"  class="{{#if this.children}}disable{{/if}}">
+			<span>{{#each this.targetValueAllocationRecordsR3}} {{#if ../this.isLeaf}}<a href="#" target-id="{{target.id}}" data-id="{{id}}" class="targetValueModal">{{/if}} 
+					{{formatNumber amountAllocated}} {{target.unit.name}} {{#if ../this.isLeaf}}</a>{{/if}} <br/> {{/each}}</span>
+				 
 			</td>
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.sumBudgetTypeProposals}}{{{sumProposal this.sumBudgetTypeProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
@@ -161,7 +186,7 @@
 				{{/if}}
 			</td>
 
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.allocationRecordsR3}} {{{sumAllocatedRecord this.allocationRecordsR3}}} {{else}} - {{/if}}</span>
 				{{else}}
@@ -175,7 +200,7 @@
 				{{/if}}
 			</td>
 			
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.sumBudgetTypeProposals}} {{{sumAllocatedRecord this.sumBudgetTypeProposals}}} {{else}} - {{/if}}</span>
 				{{else}}
@@ -193,7 +218,7 @@
 				{{/if}}
 			</td>
 
-			<td width="80" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.reservedBudgets}} {{{sumAmountReserved this.reservedBudgets}}} {{else}} - {{/if}}</span>
 				{{else}}
@@ -242,6 +267,32 @@
 	</ul>
 </div>
 <div id="budgetTypeSelectionDiv"></div>
+</script>
+
+
+<script id="targetValueModalTemplate" type="text/x-handler-template">
+<div>สรุปค่าเป้าหมาย</div>
+
+ยอดจัดสรร = {{formatNumber targetValueAllocationRecordsR3.amountAllocated}} {{targetValueAllocationRecordsR3.target.unit.name}}
+<table class="table table-bordered" id="mainTbl" style="width:600px; table-layout:fixed;">
+	<tr>
+		<td style="width:100px;">หน่วยงาน</td>
+		<td style="width:120px;">ขอตั้ง ({{targetValueAllocationRecordsR3.target.unit.name}})</td>
+		<td style="width:210px;">จัดสรร ({{targetValueAllocationRecordsR3.target.unit.name}})</td>
+	</tr>
+{{#each this.filterObjectiveTargets}}
+	<tr>
+ 		<td>{{owner.abbr}}</td>
+		<td>{{requestedValue}}</td>
+		<td><input class="targetValueInput" data-id="{{id}}" type="text" value="{{allocatedValue}}"/></td> 
+	</tr>
+{{/each}}
+	<tr>
+		<td>รวม</td>
+		<td><span>{{formatNumber sumFilterObjectiveTargets}} </span></td>
+		<td><span id="sumAllocated"> {{formatNumber sumAllocatedValue}}</span></td>
+	</tr>
+</table> 
 </script>
 
 <script id="strategiesTemplate" type="text/x-handler-template">
@@ -341,6 +392,14 @@
 		var amount = 0;
 		for ( var i = 0; i < proposals.length; i++) {
 			amount += proposals[i].amountRequest;
+		}
+		return addCommas(amount);
+
+	});
+	Handlebars.registerHelper("sumAllocated", function(proposals) {
+		var amount = 0;
+		for ( var i = 0; i < proposals.length; i++) {
+			amount += proposals[i].amountAllocated;
 		}
 		return addCommas(amount);
 
@@ -544,6 +603,8 @@
 			var json = {};
 			json.proposals = this.budgetProposals.toJSON();
 			json.reservedBudget = this.reservedBudget.toJSON();
+			json.budgetType = this.budgetType.toJSON();
+			
 			
 			// can send budgetProposals back to save here...
 			$.ajax({
@@ -732,6 +793,7 @@
 				
 				var allocationRecordR3 = this.objective.get('allocationRecordsR3').where({budgetType: this.budgetType});
 				var json = {};
+				
 				json.allocationRecordR3 = allocationRecordR3[0].toJSON();
 				json.proposals = this.budgetProposals.toJSON();
 				json.reservedBudget = this.reservedBudget.toJSON();
@@ -762,6 +824,134 @@
 		}
 	});
 
+	var TargetValueModalView=Backbone.View.extend({
+		initialize: function() {
+			
+		},
+		
+		el: "#targetValueModal",
+		
+		events : {
+			"click #saveBtn" : "saveTargetValue",
+			"click #cancelBtn" : "cancelTargetValue",
+			"change .targetValueInput" : "updateTotalCalculatedValue",
+			
+		},
+		
+		targetValueModalTpl : Handlebars.compile($("#targetValueModalTemplate").html()),
+		render: function() {
+			
+			
+			this.$el.find('.modal-header span').html(this.objectiveTarget.get('name'));
+			
+			
+			var filterTargets = new TargetValueCollection(this.objective.get('targetValues').where({target: this.objectiveTarget}));
+			
+			
+			var json = {};
+			json.filterObjectiveTargets = filterTargets.toJSON();
+			json.targetValueAllocationRecordsR3 = this.objective.get('targetValueAllocationRecordsR3').where({target: this.objectiveTarget})[0].toJSON();
+			var values =  _.pluck(json.filterObjectiveTargets, "requestedValue");
+			var sum=0;
+			for(var i=0;i<values.length;i++) {
+				sum += values[i];
+			}
+			json.sumFilterObjectiveTargets = sum;
+			
+			values = _.pluck(json.filterObjectiveTargets, "allocatedValue");
+			sum=0;
+			for(var i=0;i<values.length;i++) {
+				if(isNaN(values[i]) || values[i] == null) {
+					sum = 0;
+					break;
+				}
+				sum += values[i];
+			}
+			json.sumAllocatedValue = sum;
+
+			e1=json;	
+			var html = this.targetValueModalTpl(json);
+			this.$el.find('.modal-body').html(html);
+
+		
+			
+			this.$el.modal({
+				show : true,
+				backdrop : 'static',
+				keyboard : false
+			});
+			return this;
+		},
+		
+		updateTotalCalculatedValue: function(e) {
+			var allInput = this.$el.find('.targetValueInput');
+			var totalMulti=0;
+			
+			// now multiply all input
+			for(var i=0; i<allInput.length; i++) {
+				var inputValue = parseInt($(allInput[i]).val());
+				
+				if(!isNaN(inputValue)) {
+					totalMulti = totalMulti + inputValue;
+				} else {
+					return false;
+				}
+			}
+
+			// update the value
+			var totalSpan = this.$el.find('#sumAllocated');
+			$(totalSpan).html(addCommas(totalMulti));
+		},
+		cancelTargetValue: function() {
+			this.$el.modal('hide');
+		},
+		saveTargetValue: function() {
+			// we'll try to save
+			var allInput = this.$el.find('.targetValueInput');
+			
+			var targetValues = new TargetValueCollection();
+			
+			for(var i=0; i< allInput.length; i++) {
+				var tv = TargetValue.findOrCreate($(allInput[i]).attr("data-id"));
+				if( tv!= null ) {
+					tv.set('allocatedValue', $(allInput[i]).val());
+					targetValues.add(tv);
+				}
+		
+			}
+		
+			$.ajax({
+				type:'PUT',
+				url: appUrl('/TargetValue/LotsUpdate'),
+				data: JSON.stringify(targetValues.toJSON()),
+				contentType : 'application/json;charset=utf-8',
+				dataType : "json",
+				success: function(){
+					window.location.reload();	
+				}
+			});
+			
+			
+			
+			
+		},
+		
+		renderWith: function(objective, targetId, valueId) {
+			this.objective = objective;
+			this.objectiveTarget=ObjectiveTarget.findOrCreate(targetId);
+			this.targetValue=TargetValueAllocationRecord.findOrCreate(valueId);
+			if(this.targetValue == null) {
+				this.targetValue = new TargetValue();
+				this.targetValue.set('forObjective', objective);
+				this.targetValue.set('target', this.objectiveTarget);
+			}
+			
+
+			this.render();
+		}
+	
+	});
+	
 	var MainTblView = Backbone.View.extend({
 		initialize : function() {
 			this.collection.bind('reset', this.render, this);
@@ -771,10 +961,22 @@
 		el : "#mainCtr",
 		mainTblTpl : Handlebars.compile($("#mainCtrTemplate").html()),
 		modalView : new ModalView(),
+		targetValueModalView : new TargetValueModalView(),
 
 		events : {
 			"click input[type=checkbox].bullet" : "toggle",
-			"click .detail" : "detailModal"
+			"click .detail" : "detailModal",
+			"click .targetValueModal" : "targetValueModal"
+		},
+		
+		targetValueModal: function(e) {
+			var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
+			var currentObjective = Objective.findOrCreate(currentObjectiveId);
+			
+			var targetId = $(e.target).attr('target-id');
+			var valueId = $(e.target).attr('data-id');
+			
+			this.targetValueModalView.renderWith(currentObjective, targetId, valueId);
 		},
 
 		detailModal : function(e) {
@@ -804,7 +1006,61 @@
 
 		},
 		render : function() {
-			this.$el.html(this.mainTblTpl(this.collection.toJSON()));
+			var json= this.collection.toJSON();
+			
+			var allProposal = new BudgetProposalCollection(); 
+			_.each(rootCollection.pluck('sumBudgetTypeProposals'), function(bpCollection) {
+				if(bpCollection.length > 0) {
+					bpCollection.each(function(bp) {
+						allProposal.add(bp);
+					});
+				}
+			});
+			
+			
+			var allAllocationRecordsR1 = new AllocationRecordCollection(); 
+			_.each(rootCollection.pluck('allocationRecordsR1'), function(ar1Collection) {
+				if(ar1Collection.length > 0) {
+					ar1Collection.each(function(ar) {
+						allAllocationRecordsR1.add(ar);
+					});
+				}
+			});
+			
+			var allAllocationRecordsR2 = new AllocationRecordCollection(); 
+			_.each(rootCollection.pluck('allocationRecordsR2'), function(ar2Collection) {
+				if(ar2Collection.length > 0) {
+					ar2Collection.each(function(ar) {
+						allAllocationRecordsR2.add(ar);
+					});
+				}
+			});
+			
+			var allAllocationRecordsR3 = new AllocationRecordCollection(); 
+			_.each(rootCollection.pluck('allocationRecordsR3'), function(ar3Collection) {
+				if(ar3Collection.length > 0) {
+					ar3Collection.each(function(ar) {
+						allAllocationRecordsR3.add(ar);
+					});
+				}
+			});
+			
+			var allResereved = new ReservedBudgetCollection(); 
+			_.each(rootCollection.pluck('reservedBudgets'), function(reservedCollection) {
+				if(reservedCollection.length > 0) {
+					reservedCollection.each(function(rb) {
+						allResereved.add(rb);
+					});
+				}
+			});
+			
+			
+			json.allProposal = allProposal.toJSON();
+			json.allAllocationRecordsR1 = allAllocationRecordsR1.toJSON();
+			json.allAllocationRecordsR2 = allAllocationRecordsR2.toJSON();
+			json.allAllocationRecordsR3 = allAllocationRecordsR3.toJSON();
+			json.allReserved = allResereved.toJSON();
+			this.$el.html(this.mainTblTpl(json));
 
 		},
 
@@ -861,7 +1117,12 @@
 									o.set('allocationRecordsR1', records.where({index: 0}));
 									o.set('allocationRecordsR2', records.where({index: 1}));
 									o.set('allocationRecordsR3', records.where({index: 2}));
+								
 									
+									var tvRecords = o.get('targetValueAllocationRecords');
+									o.set('targetValueAllocationRecordsR1', tvRecords.where({index: 0}));
+									o.set('targetValueAllocationRecordsR2', tvRecords.where({index: 1}));
+									o.set('targetValueAllocationRecordsR3', tvRecords.where({index: 2}));
 								}
 							}
 							

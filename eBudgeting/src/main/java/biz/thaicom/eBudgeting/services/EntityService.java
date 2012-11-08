@@ -17,10 +17,13 @@ import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
+import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
+import biz.thaicom.eBudgeting.models.pln.TargetValue;
+import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 
 public interface EntityService {
@@ -136,6 +139,15 @@ public interface EntityService {
 	public TargetUnit updateTargetUnit(JsonNode node);
 	public TargetUnit saveTargetUnit(JsonNode node);
 	public TargetUnit deleteTargetUnit(Long id);
+	
+	//TargetValue
+	public TargetValue saveTargetValue(JsonNode node, Organization workAt) throws 	Exception;
+	public void saveLotsTargetValue(JsonNode node);
+	
+	//TargetValueAllocationRecord
+	public TargetValueAllocationRecord saveTargetValueAllocationRecord(JsonNode node,
+			Organization workAt);
+
 
 
 	

@@ -136,6 +136,7 @@
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
 	<td> {{indexHuman index}} </td>
+	<td> </td>
 	<td>
 		 <form class="form-inline">
 			<div class="control-group">

@@ -19,7 +19,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
+import biz.thaicom.eBudgeting.models.pln.TargetValue;
+import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.services.EntityService;
+import biz.thaicom.security.models.Activeuser;
+import biz.thaicom.security.models.ThaicomUserDetail;
 
 @Controller
 public class ObjectiveTargetRestController {
@@ -92,6 +96,36 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectiveTargetRest
 		return entityService.deleteTargetUnit(id);
 	}
 	
+	@RequestMapping(value="/TargetValue/", method=RequestMethod.POST)
+	public @ResponseBody TargetValue saveTargetValue(
+			@RequestBody JsonNode node,
+			@Activeuser ThaicomUserDetail currentUser) throws Exception {
+		return entityService.saveTargetValue(node, currentUser.getWorkAt());
+	}
+	
+	@RequestMapping(value="/TargetValue/{id}", method=RequestMethod.PUT)
+	public @ResponseBody TargetValue updateTargetValue(
+			@PathVariable Long id,
+			@RequestBody JsonNode node,
+			@Activeuser ThaicomUserDetail currentUser) throws Exception {
+		return entityService.saveTargetValue(node, currentUser.getWorkAt());
+	}
+	
+	@RequestMapping(value="/TargetValue/LotsUpdate", method=RequestMethod.PUT)
+	public @ResponseBody void updateLotsTargetValue(
+			@RequestBody JsonNode node,
+			@Activeuser ThaicomUserDetail currentUser) throws Exception {
+		entityService.saveLotsTargetValue(node);
+	}
+	
+	
+	@RequestMapping(value="/TargetValueAllocationRecord/{id}", method=RequestMethod.PUT)
+	public @ResponseBody TargetValueAllocationRecord updateTargetValueAllocationRecord(
+			@PathVariable Long id,
+			@RequestBody JsonNode node,
+			@Activeuser ThaicomUserDetail currentUser) throws Exception {
+		return entityService.saveTargetValueAllocationRecord(node, currentUser.getWorkAt());
+	}
 	
 	@ExceptionHandler(value=Exception.class)
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {

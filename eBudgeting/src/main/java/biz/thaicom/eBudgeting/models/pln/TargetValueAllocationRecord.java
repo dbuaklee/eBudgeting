@@ -42,7 +42,7 @@ public class TargetValueAllocationRecord implements Serializable {
 	@Basic
 	private Long amountAllocated;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="OBJECTIVETARGET_ID")
 	private ObjectiveTarget target;
 	
@@ -88,6 +88,11 @@ public class TargetValueAllocationRecord implements Serializable {
 
 	public void setIndex(Integer index) {
 		this.index = index;
+	}
+
+	public void adjustAmountAllocated(Long adjustedRequestedValue) {
+		this.amountAllocated -= adjustedRequestedValue;
+		
 	}
 	
 	

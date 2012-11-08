@@ -69,7 +69,37 @@ Objective = Backbone.RelationalModel.extend({
 	    	type: Backbone.HasMany,
 	    	key: 'targets',
 	    	relatedModel: 'ObjectiveTarget',
-	    	collectionType: 'ObjectiveTargetCollection' 
+	    	collectionType: 'ObjectiveTargetCollection'
+	    },{
+	    	type: Backbone.HasMany,
+	    	key: 'targetValues',
+	    	relatedModel: 'TargetValue',
+	    	collectionType: 'TargetValueCollection'
+	    }, {
+	    	type:Backbone.HasMany,
+	    	key: 'filterTargetValues',
+	    	relatedModel: 'TargetValue',
+	    	collectionType: 'TargetValueCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'targetValueAllocationRecords',
+	    	relatedModel: 'TargetValueAllocationRecord',
+	    	collectionType: 'TargetValueAllocationRecordCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'targetValueAllocationRecordsR1',
+	    	relatedModel: 'TargetValueAllocationRecord',
+	    	collectionType: 'TargetValueAllocationRecordCollection'
+	    },  {
+	    	type: Backbone.HasMany,
+	    	key: 'targetValueAllocationRecordsR2',
+	    	relatedModel: 'TargetValueAllocationRecord',
+	    	collectionType: 'TargetValueAllocationRecordCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'targetValueAllocationRecordsR3',
+	    	relatedModel: 'TargetValueAllocationRecord',
+	    	collectionType: 'TargetValueAllocationRecordCollection'
 	    }
 	    
 	],
@@ -318,7 +348,36 @@ TargetUnit = Backbone.RelationalModel.extend({
 	}],
 	urlRoot: appUrl('/TargetUnit/')
 });
-
+TargetValue = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'target',
+		relatedModel: 'ObjectiveTarget',
+	},{
+		type: Backbone.HasOne,
+		key: 'forObjective',
+		relatedModel: 'Objective'
+	},{
+		type:Backbone.HasOne,
+		key: 'owner',
+		relatedModel: 'Organization'
+	}],
+	urlRoot: appUrl('/TargetValue/')
+});
+TargetValueAllocationRecord = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'forObjective',
+		relatedModel : 'Objective'
+	},{
+		type: Backbone.HasOne,
+		key: 'target',
+		relatedModel : 'ObjectiveTarget'
+	}],
+	urlRoot: appUrl('/TargetValueAllocationRecord')
+});
 
 
 
@@ -348,6 +407,9 @@ ProposalStrategyCollection = Backbone.Collection.extend({
 AllocationRecordCollection =Backbone.Collection.extend({
 	model: AllocationRecord
 }); 
+TargetValueAllocationRecordCollection=Backbone.Collection.extend({
+	model: TargetValueAllocationRecord
+});
 ReservedBudgetCollection =Backbone.Collection.extend({
 	model: ReservedBudget
 });
@@ -357,6 +419,10 @@ ObjectiveTargetCollection = Backbone.Collection.extend({
 TargetUnitCollection = Backbone.Collection.extend({
 	model: TargetUnit
 });
+TargetValueCollection = Backbone.Collection.extend({
+	model: TargetValue
+});
+
 
 //Handlebars Utils
 

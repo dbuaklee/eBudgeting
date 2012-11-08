@@ -37,6 +37,7 @@ import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.models.pln.TargetValue;
+import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
@@ -50,6 +51,8 @@ import biz.thaicom.eBudgeting.repositories.ProposalStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.RequestColumnRepositories;
 import biz.thaicom.eBudgeting.repositories.ReservedBudgetRepository;
 import biz.thaicom.eBudgeting.repositories.TargetUnitRepository;
+import biz.thaicom.eBudgeting.repositories.TargetValueAllocationRecordRepository;
+import biz.thaicom.eBudgeting.repositories.TargetValueRepository;
 
 @Service
 @Transactional
@@ -90,7 +93,13 @@ public class EntityServiceJPA implements EntityService {
 	private ObjectiveTargetRepository objectiveTargetRepository;
 	
 	@Autowired
+	private TargetValueRepository targetValueRepository;
+	
+	@Autowired
 	private TargetUnitRepository targetUnitRepository;
+	
+	@Autowired
+	private TargetValueAllocationRecordRepository targetValueAllocationRecordRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -135,6 +144,8 @@ public class EntityServiceJPA implements EntityService {
 	public Objective findOjectiveById(Long id) {
 		Objective objective = objectiveRepository.findOne(id);
 		objective.doBasicLazyLoad();
+		
+		
 		
 		return objective;
 	}
@@ -525,6 +536,8 @@ public class EntityServiceJPA implements EntityService {
 				
 			}
 			
+			
+			
 			// now loop through the Objective
 			for(Objective o : list) {
 				if(o.getSumBudgetTypeProposals() != null) {
@@ -546,6 +559,34 @@ public class EntityServiceJPA implements EntityService {
 						}
 					}
 				}
+				
+				// now the targetValue
+				for(ObjectiveTarget target: o.getTargets()) {
+					List<TargetValue> targetvalues = targetValueRepository.findAllByTargetIdAndObjectiveId(target.getId(), o.getId());
+					
+					logger.debug("----------------------------- {} / {} ", o.getId(), target.getId());
+					
+					Long sum = 0L;
+					for(TargetValue tv : targetvalues) {
+						sum += tv.getRequestedValue();
+					}
+					
+					// now we can add 
+					TargetValueAllocationRecord tvar = targetValueAllocationRecordRepository.findOneByIndexAndForObjectiveAndTarget(round-1, o, target);
+					if(tvar == null) {
+						logger.debug("+++++++++++++++++++++++++++++++++++++++++ {} / {} ", o.getId(), target.getId());
+						tvar = new TargetValueAllocationRecord();
+						tvar.setIndex(round-1);
+						tvar.setForObjective(o);
+						tvar.setTarget(target);
+					} 
+					
+					tvar.setAmountAllocated(sum);
+					
+					targetValueAllocationRecordRepository.save(tvar);
+					
+				}
+				
 			}
 		} else {
 			// we will copy from the previous round...
@@ -565,6 +606,25 @@ public class EntityServiceJPA implements EntityService {
 				dbRecord.setIndex(round-1);
 				
 				allocationRecordRepository.save(dbRecord);
+			}
+			
+			List<TargetValueAllocationRecord> tvarList = targetValueAllocationRecordRepository
+					.findAllByForObjective_FiscalYearAndIndex(fiscalYear, round-2);
+			for(TargetValueAllocationRecord rvar : tvarList) {
+				TargetValueAllocationRecord dbRecord = targetValueAllocationRecordRepository
+						.findOneByTargetAndForObjectiveAndIndex(rvar.getTarget(), rvar.getForObjective(), round-1);
+				
+				logger.debug("objectiveid: {}", rvar.getForObjective().getId());
+				
+				if(dbRecord == null) {
+					dbRecord = new TargetValueAllocationRecord();
+					dbRecord.setIndex(round-1);
+					dbRecord.setForObjective(rvar.getForObjective());
+					dbRecord.setTarget(rvar.getTarget());
+				}
+				
+				dbRecord.setAmountAllocated(rvar.getAmountAllocated());
+				targetValueAllocationRecordRepository.save(dbRecord);
 			}
 		}
 		return "success";
@@ -624,6 +684,17 @@ public class EntityServiceJPA implements EntityService {
 			
 		}
 		
+		// oh not yet!
+		for(Objective o : list) {
+			o.getTargetValueAllocationRecords().size();
+			o.getTargetValues().size();
+			for(TargetValue tv : o.getTargetValues()) {
+				tv.getOwner().getId();
+			}
+			
+			
+		}
+		
 		return list;
 	}
 	
@@ -645,6 +716,39 @@ public class EntityServiceJPA implements EntityService {
 			o.addfilterProposal(proposal);
 			//logger.debug("proposal size is " + o.getProposals().size());
 		}
+		
+		// get List of targetValue
+		Map<String, TargetValue> targetValueMap = new HashMap<String, TargetValue>();
+		List<TargetValue> targetValues = targetValueRepository.findAllByOnwerIdAndObjectiveParentPathLike(ownerId, parentPathLikeString);
+		for(TargetValue tv : targetValues) {
+			targetValueMap.put(tv.getForObjective().getId()+ "," + tv.getTarget().getId(), tv);
+				
+		}
+		
+		// get List of ObjectiveTarget?
+		List<ObjectiveTarget> targets = objectiveTargetRepository.findAllByObjectiveParentPathLike(parentPathLikeString);
+		for(ObjectiveTarget target : targets) {
+			target.getForObjectives().size();
+			for(Objective o : target.getForObjectives()) {
+				logger.debug("Adding objective target to list");
+				Integer index = list.indexOf(o);
+				Objective objInlist = list.get(index);
+				logger.debug("objInList target size = " + objInlist.getTargets().size());
+				
+				TargetValue tv = targetValueMap.get(objInlist.getId() + "," + target.getId());
+				if(tv==null) {
+					tv = new TargetValue();
+					tv.setTarget(target);
+					tv.setForObjective(objInlist);
+					
+				}
+				objInlist.addfilterTargetValue(tv);
+				
+			}
+						
+		}
+		
+		
 		
 		
 		return list;
@@ -1121,7 +1225,7 @@ public class EntityServiceJPA implements EntityService {
 			if(parentProposal.getAmountAllocated() != null ) {
 				parentProposal.setAmountAllocated(parentProposal.getAmountAllocated() - adjustedAmount);
 			} else {
-				parentProposal.setAmountAllocated(adjustedAmount);
+				parentProposal.setAmountAllocated(0-adjustedAmount);
 			}
 			
 			budgetProposalRepository.save(parentProposal);
@@ -1371,6 +1475,151 @@ public class EntityServiceJPA implements EntityService {
 		logger.debug("objectiveIdLike: {}", "%."+objectiveId+"%");
 		
 		return objectiveTargetRepository.findAllByIdAndChildrenOfObjectiveId(targetId, "%."+objectiveId+"%");
+	}
+
+	@Override
+	public TargetValue saveTargetValue(JsonNode node, Organization workAt) throws Exception {
+		Long targetValueId = null;
+		if(node.get("id") != null) {
+			targetValueId = node.get("id").asLong();
+		}
+		
+		Long forObjectiveId = node.get("forObjective").get("id").asLong();
+		Objective obj = objectiveRepository.findOne(forObjectiveId);
+
+		Long objectiveTargetId = node.get("target").get("id").asLong();
+		ObjectiveTarget target = objectiveTargetRepository.findOne(objectiveTargetId);
+		
+		Long adjustedRequestedValue = 0L;
+		Long requestedValue = node.get("requestedValue").asLong();
+		
+		TargetValue tv;
+		if(targetValueId == null) {
+			tv = new TargetValue();
+			tv.setOwner(workAt);
+			tv.setForObjective(obj);
+			tv.setTarget(target);
+			
+			
+		} else {
+			tv = targetValueRepository.findOne(targetValueId);
+			tv.setOwner(workAt);
+			adjustedRequestedValue = tv.getRequestedValue();
+			
+		}
+		
+		tv.setRequestedValue(node.get("requestedValue").asLong());
+		adjustedRequestedValue -= requestedValue;
+		targetValueRepository.save(tv);
+		
+		
+		for(Objective parent : objectiveRepository.findAllObjectiveByIds(obj.getParentIds())) {
+			List<TargetValue> parentTvs = targetValueRepository.findAllByOnwerIdAndTargetIdAndObjectiveId(workAt.getId(), target.getId(), parent.getId());
+			
+			if(parentTvs.size() > 1 ) throw new Exception("parent has more target");
+			
+			TargetValue parentTv;
+			if(parentTvs.size() == 0) {
+				parentTv = new TargetValue();
+				parentTv.setOwner(workAt);
+				parentTv.setForObjective(parent);
+				parentTv.setTarget(target);
+				
+			} else {
+				parentTv = parentTvs.get(0);
+			}
+			
+			parentTv.adjustRequestedValue(adjustedRequestedValue);
+			
+			targetValueRepository.save(parentTv);			
+			
+		}
+		
+		return tv;
+	}
+
+	@Override
+	public TargetValueAllocationRecord saveTargetValueAllocationRecord(JsonNode node,
+			Organization workAt) {
+		Long tvarId = null;
+		if(node.get("id") != null) {
+			tvarId = node.get("id").asLong();
+		}
+		
+		Long forObjectiveId = node.get("forObjective").get("id").asLong();
+		Objective obj = objectiveRepository.findOne(forObjectiveId);
+
+		Long objectiveTargetId = node.get("target").get("id").asLong();
+		ObjectiveTarget target = objectiveTargetRepository.findOne(objectiveTargetId);
+		
+		Long adjustedRequestedValue = 0L;
+		Long requestedValue = node.get("amountAllocated").asLong();
+		
+		TargetValueAllocationRecord tvar;
+		tvar = targetValueAllocationRecordRepository.findOne(tvarId);
+		
+		adjustedRequestedValue = tvar.getAmountAllocated();
+			
+	
+		
+		tvar.setAmountAllocated(requestedValue);
+		adjustedRequestedValue -= requestedValue;
+		targetValueAllocationRecordRepository.save(tvar);
+		
+		
+		for(Objective parent : objectiveRepository.findAllObjectiveByIds(obj.getParentIds())) {
+			TargetValueAllocationRecord parentTvar = targetValueAllocationRecordRepository.findOneByIndexAndForObjectiveAndTarget(tvar.getIndex(), parent, tvar.getTarget());
+			
+			
+			parentTvar.adjustAmountAllocated(adjustedRequestedValue);
+			
+			targetValueAllocationRecordRepository.save(parentTvar);			
+			
+		}
+		
+		return tvar;
+	}
+
+	@Override
+	public void saveLotsTargetValue(JsonNode node) {
+		for(JsonNode n: node) {
+			
+			
+			Long id = n.get("id").asLong();
+			logger.debug("++++++++++++++++++++++++++++++++++++++++++++++++++ {} ", id);
+			
+			
+			
+			TargetValue tv = targetValueRepository.findOne(id);
+			
+			Long oldAmount = tv.getAllocatedValue();
+			if(oldAmount == null) {
+				oldAmount = 0L;
+			}
+			
+			tv.setAllocatedValue(n.get("allocatedValue").asLong());
+			
+			Long newAmout = tv.getAllocatedValue();
+			Long adjustedRequestedValue = oldAmount-newAmout;
+			
+			
+			targetValueRepository.save(tv);
+			
+			List<TargetValue> tvs = targetValueRepository
+				.findAllByOnwerIdAndObjectiveIdIn(
+						tv.getOwner().getId(), tv.getTarget().getId(),  tv.getForObjective().getParentIds());
+
+			
+			for(TargetValue parentTv: tvs) {
+				parentTv.adjustAllocatedValue(adjustedRequestedValue);
+				
+				targetValueRepository.save(parentTv);
+			}
+			
+			//now ineach tv has to go get the parents?
+		}
+
+		
 	}
 
 }

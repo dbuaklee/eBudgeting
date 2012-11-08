@@ -43,6 +43,11 @@ public class TargetValue implements Serializable{
 	@JoinColumn(name="OWNER_ORAGANIZATION_ID")
 	private Organization owner;
 	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="FOROBJECTIVE_ID")
+	private Objective forObjective;
+	
+	
 	@Basic
 	private Long requestedValue;
 		
@@ -87,6 +92,32 @@ public class TargetValue implements Serializable{
 
 	public void setAllocatedValue(Long allocatedValue) {
 		this.allocatedValue = allocatedValue;
+	}
+
+	public Objective getForObjective() {
+		return forObjective;
+	}
+
+	public void setForObjective(Objective forObjective) {
+		this.forObjective = forObjective;
+	}
+
+	public void adjustRequestedValue(Long adjustedRequestedValue) {
+		if(this.requestedValue != null) {
+			this.requestedValue -= adjustedRequestedValue;
+		} else {
+			this.requestedValue = 0L - adjustedRequestedValue;
+		}
+		
+	}
+
+	public void adjustAllocatedValue(Long adjustedRequestedValue) {
+		if(this.allocatedValue != null) {
+			this.allocatedValue -= adjustedRequestedValue;
+		} else {
+			this.allocatedValue = 0L - adjustedRequestedValue;
+		}
+		
 	}
 
 	

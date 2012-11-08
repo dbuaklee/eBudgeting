@@ -31,6 +31,18 @@
 				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
 			</div>
 		</div>
+		
+		<div id="targetValueModal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<a href="#" class="btn" id="cancelBtn">Close</a> <a href="#"
+					class="btn btn-primary" id="saveBtn">Save changes</a>
+			</div>
+		</div>
 	
 		<div id="mainCtr">
 		<c:choose>
@@ -80,20 +92,32 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:900px; table-layout:fixed;">
+<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:1130px; table-layout:fixed;">
 	<thead>
 		<tr>
-			<th stlye="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
-			<th width="80">เป้าหมาย</th>
-			<th width="80">ขอตั้งปี  {{this.0.fiscalYear}}</th>
-			<th width="80">ปรับลดครั้งที่ 1 (เหลือ)</th>
-			<th width="80">ปรับลดครั้งที่ 2 (เหลือ)</th>
-			<th width="80">ปรับลดครั้งที่ 3 (เหลือ)</th>
+			<th style="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:60px;">เป้าหมายลดครั้งที่ 2</th>
+			<th style="width:60px;">เป้าหมายลดครั้งที่ 3</th>
+			<th style="width:120px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
+			<th style="width:120px;">ปรับลดครั้งที่ 1 (เหลือ)</th>
+			<th style="width:120px;">ปรับลดครั้งที่ 2 (เหลือ)</th>
+			<th style="width:120px;">ปรับลดครั้งที่ 3 (เหลือ)</th>
 		</tr>
 	</thead>
+	<tbody>
+		<tr>
+			<td style="width:400px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
+			<td style="width:60px;"></td>
+			<td style="width:60px;"></td>
+			<td style="width:120px;"><strong>{{sumProposal allProposal}}</td>
+			<td style="width:120px;"><strong>{{sumAllocatedRecord allAllocationRecordsR1}}</strong></td>
+			<td style="width:120px;"><strong>{{sumAllocatedRecord allAllocationRecordsR2}}</strong></td>
+			<td style="width:120px;"><strong>{{sumAllocatedRecord allAllocationRecordsR3}}</strong></td>
+		</tr>
+	</tbody>
 </table>
-<div style="height: 400px; overflow: auto; width:920px">
-<table class="table table-bordered" id="mainTbl" style="width:900px; table-layout:fixed;">
+<div style="height: 400px; overflow: auto; width:1150px">
+<table class="table table-bordered" id="mainTbl" style="width:1150px; table-layout:fixed;">
 	<tbody>
 		
 			{{{childrenNodeTpl this 0}}}
@@ -114,8 +138,8 @@
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}">
-		<td style="padding-left:{{this.padding}}px;width:{{substract 409 this.padding}}px;" class="{{#if this.children}}disable{{/if}}">
-			<span>
+		<td  style="width:400px;"  class="{{#if this.children}}disable{{/if}}">
+			<span style="padding-left:{{this.padding}}px;width:{{substract 409 this.padding}}px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
 					<label class="expand" for="bullet_{{this.id}}"><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
@@ -134,10 +158,16 @@
 					{{/unless}}
 			</span> 
 		</td>
-			<td  width="50"  class="{{#if this.children}}disable{{/if}}"><span></span>
+			<td  style="width:60px;"  class="{{#if this.children}}disable{{/if}}">
+				 <span>{{#each this.targetValueAllocationRecordsR2}} {{formatNumber amountAllocated}} {{target.unit.name}} <br/> {{/each}}</span>
 				 {{#unless this.children}}<br/>{{/unless}}
 			</td>
-			<td width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td  style="width:60px;"  class="{{#if this.children}}disable{{/if}}">
+			<span>{{#each this.targetValueAllocationRecordsR3}} {{#if ../this.isLeaf}}<a href="#" target-id="{{target.id}}" data-id="{{id}}" class="targetValueModal">{{/if}} 
+					{{formatNumber amountAllocated}} {{target.unit.name}} {{#if ../this.isLeaf}}</a>{{/if}} <br/> {{/each}}</span>
+				 
+			</td>
+			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.sumBudgetTypeProposals}}{{{sumProposal this.sumBudgetTypeProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
@@ -152,7 +182,7 @@
 				{{/if}}
 			</td>
 
-			<td width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td  style="width:120px;" width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.allocationRecordsR1}} {{{sumAllocatedRecord this.allocationRecordsR1}}} {{else}} - {{/if}}</span>
 				{{else}}
@@ -166,7 +196,7 @@
 				{{/if}}
 			</td>
 			
-			<td width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.allocationRecordsR2}} {{{sumAllocatedRecord this.allocationRecordsR2}}} {{else}} - {{/if}}</span>
 				{{else}}
@@ -180,7 +210,7 @@
 				{{/if}}
 			</td>
 
-			<td width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+			<td style="width:120px;" width="50" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.allocationRecordsR3}} {{{sumAllocatedRecord this.allocationRecordsR3}}} {{else}} - {{/if}}</span>
 				{{else}}
@@ -207,6 +237,13 @@
 </div>
 <div id="amountAllocatedForm"></div>
 
+</script>
+
+<script id="targetValueModalTemplate" type="text/x-handler-template">
+<form>
+	<label>ระบุเป้าหมาย</label>
+	<input type="text" value="{{amountAllocated}}"/> {{target.unit.name}}
+</form>
 </script>
 
 <script id="inputModalTemplate"  type="text/x-handler-template">
@@ -446,6 +483,70 @@ Handlebars.registerHelper('next', function(val, next) {
 		}
 	});
 
+	var TargetValueModalView=Backbone.View.extend({
+		initialize: function() {
+			
+		},
+		
+		el: "#targetValueModal",
+		
+		events : {
+			"click #saveBtn" : "saveTargetValue",
+			"click #cancelBtn" : "cancelTargetValue",
+		},
+		
+		targetValueModalTpl : Handlebars.compile($("#targetValueModalTemplate").html()),
+		render: function() {
+			
+			
+			this.$el.find('.modal-header span').html(this.objectiveTarget.get('name'));
+			
+			var html = this.targetValueModalTpl(this.targetValue.toJSON());
+			this.$el.find('.modal-body').html(html);
+
+
+			
+			this.$el.modal({
+				show : true,
+				backdrop : 'static',
+				keyboard : false
+			});
+			return this;
+		},
+		cancelTargetValue: function() {
+			this.$el.modal('hide');
+		},
+		saveTargetValue: function() {
+			// we'll try to save
+			var input = parseInt(this.$el.find('input').val());
+			
+			this.targetValue.save({
+				 amountAllocated: input
+			}, {
+				success: function(){
+					window.location.reload();
+				}
+			});
+			
+			
+			
+		},
+		
+		renderWith: function(objective, targetId, valueId) {
+			this.objective = objective;
+			this.objectiveTarget=ObjectiveTarget.findOrCreate(targetId);
+			this.targetValue=TargetValueAllocationRecord.findOrCreate(valueId);
+			if(this.targetValue == null) {
+				this.targetValue = new TargetValue();
+				this.targetValue.set('forObjective', objective);
+				this.targetValue.set('target', this.objectiveTarget);
+			}
+			
+
+			this.render();
+		}
+	
+	});
 
 	var MainTblView = Backbone.View.extend({
 		initialize: function(){
@@ -456,10 +557,22 @@ Handlebars.registerHelper('next', function(val, next) {
 		el: "#mainCtr",
 		mainTblTpl : Handlebars.compile($("#mainCtrTemplate").html()),
 		modalView : new ModalView(),
+		targetValueModalView : new TargetValueModalView(),
 		
 		events:  {
 			"click input[type=checkbox].bullet" : "toggle",
-			"click .detail" : "detailModal"
+			"click .detail" : "detailModal",
+			"click .targetValueModal" : "targetValueModal"
+		},
+		
+		targetValueModal: function(e) {
+			var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
+			var currentObjective = Objective.findOrCreate(currentObjectiveId);
+			
+			var targetId = $(e.target).attr('target-id');
+			var valueId = $(e.target).attr('data-id');
+			
+			this.targetValueModalView.renderWith(currentObjective, targetId, valueId);
 		},
 		
 		detailModal: function(e) {
@@ -483,9 +596,49 @@ Handlebars.registerHelper('next', function(val, next) {
 			
 		},
 		render: function() {
+var json= this.collection.toJSON();
 			
-			var json = this.collection.toJSON();
+			var allProposal = new BudgetProposalCollection(); 
+			_.each(rootCollection.pluck('sumBudgetTypeProposals'), function(bpCollection) {
+				if(bpCollection.length > 0) {
+					bpCollection.each(function(bp) {
+						allProposal.add(bp);
+					});
+				}
+			});
 			
+			
+			var allAllocationRecordsR1 = new AllocationRecordCollection(); 
+			_.each(rootCollection.pluck('allocationRecordsR1'), function(ar1Collection) {
+				if(ar1Collection.length > 0) {
+					ar1Collection.each(function(ar) {
+						ar1Collection.add(ar);
+					});
+				}
+			});
+			
+			var allAllocationRecordsR2 = new AllocationRecordCollection(); 
+			_.each(rootCollection.pluck('allocationRecordsR2'), function(ar2Collection) {
+				if(ar2Collection.length > 0) {
+					ar2Collection.each(function(ar) {
+						ar2Collection.add(ar);
+					});
+				}
+			});
+			
+			var allAllocationRecordsR3 = new AllocationRecordCollection(); 
+			_.each(rootCollection.pluck('allocationRecordsR3'), function(ar3Collection) {
+				if(ar3Collection.length > 0) {
+					ar3Collection.each(function(ar) {
+						ar3Collection.add(ar);
+					});
+				}
+			});
+			
+			json.allProposal = allProposal.toJSON();
+			json.allAllocationRecordsR1 = allAllocationRecordsR1.toJSON();
+			json.allAllocationRecordsR2 = allAllocationRecordsR2.toJSON();
+			json.allAllocationRecordsR3 = allAllocationRecordsR3.toJSON();
 			this.$el.html(this.mainTblTpl(json));
 			
 		},
@@ -502,9 +655,7 @@ Handlebars.registerHelper('next', function(val, next) {
 			currentTr.nextUntil('tr[data-level='+clickLevel+']').toggle();
 		}
 		
-	});
-	
-	
+	});	
 $(document).ready(function() {
 	
 	if(objectiveId != null && objectiveId.length >0 ) {
@@ -546,6 +697,11 @@ $(document).ready(function() {
 								o.set('allocationRecordsR1', records.where({index: 0}));
 								o.set('allocationRecordsR2', records.where({index: 1}));
 								o.set('allocationRecordsR3', records.where({index: 2}));
+								
+								var tvRecords = o.get('targetValueAllocationRecords');
+								o.set('targetValueAllocationRecordsR1', tvRecords.where({index: 0}));
+								o.set('targetValueAllocationRecordsR2', tvRecords.where({index: 1}));
+								o.set('targetValueAllocationRecordsR3', tvRecords.where({index: 2}));
 								
 							}
 						}

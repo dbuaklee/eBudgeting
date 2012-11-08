@@ -58,7 +58,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"	INNER JOIN FETCH objective.type type " +
 			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
 			"	LEFT OUTER JOIN objective.proposals proposal with proposal.owner.id = ?2 " +
-			"WHERE objective.fiscalYear = ?1 AND objective.parentPath like ?3 " +
+			"WHERE objective.fiscalYear = ?1 AND (objective.parentPath like ?3 OR objective.parentPath is null) " +
 			"ORDER BY objective.index asc ")
 	public List<Objective> findFlatByObjectiveBudgetProposal(
 			Integer fiscalYear, Long ownerId, String parentPathLikeString);
@@ -66,11 +66,11 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	@Query("" +  
 			"SELECT distinct objective " +
 			"FROM Objective objective" +
-			"	INNER JOIN FETCH objective.parent parent " +
+			"	LEFT OUTER JOIN FETCH objective.parent parent " +
 			"	INNER JOIN FETCH objective.type type " +
 			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
 			"	LEFT OUTER JOIN objective.proposals proposal " +
-			"WHERE objective.fiscalYear = ?1 AND objective.parentPath like ?2 " +
+			"WHERE objective.fiscalYear = ?1 AND (objective.parentPath like ?2 OR objective.parentPath is null) " +
 			"ORDER BY objective.index asc ")
 	public List<Objective> findFlatByObjectiveBudgetProposal(
 			Integer fiscalYear, String parentPathLikeString);

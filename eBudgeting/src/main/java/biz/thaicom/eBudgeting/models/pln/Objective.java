@@ -107,6 +107,9 @@ public class Objective implements Serializable {
 	@JoinTable(name="PLN_JOIN_OBJECTIVE_TARGET")
 	private  List<ObjectiveTarget> targets;
 	
+	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY) 
+	private List<TargetValue> targetValues;
+	
 	@Transient
 	private List<BudgetProposal> filterProposals;	
 	
@@ -472,6 +475,19 @@ public class Objective implements Serializable {
 		
 		return false;
 		
+	}
+	public void addfilterTargetValue(TargetValue tv) {
+		if(this.filterTargetValues == null) {
+			this.filterTargetValues  = new ArrayList<TargetValue>();
+		}
+		
+		this.filterTargetValues.add(tv);
+	}
+	public List<TargetValue> getTargetValues() {
+		return targetValues;
+	}
+	public void setTargetValues(List<TargetValue> targetValues) {
+		this.targetValues = targetValues;
 	}
 	
 	

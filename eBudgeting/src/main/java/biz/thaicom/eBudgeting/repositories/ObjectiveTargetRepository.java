@@ -21,4 +21,12 @@ public interface ObjectiveTargetRepository extends
 			"	AND targets.id = ?1 ")
 	public List<ObjectiveTarget> findAllByIdAndChildrenOfObjectiveId(
 			Long targetId, String string);
+	
+	@Query("" +
+			"SELECT distinct target " +
+			"FROM ObjectiveTarget target " +
+			"	INNER JOIN FETCH target.forObjectives objective " +
+			"WHERE objective.parentPath like ?1 ")
+	public List<ObjectiveTarget> findAllByObjectiveParentPathLike(
+			String parentPathLikeString);
 }

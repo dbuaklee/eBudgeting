@@ -64,7 +64,7 @@ function doBeginReservedBudget(fiscalYear) {
 		url: appUrl('/ReservedBudget/' + fiscalYear + '/initialize'),
 		method: 'GET',
 		success: function() {
-			
+			alert("ประมวลผลเสร็จแล้ว");
 		}
 	});
 	
