@@ -133,7 +133,8 @@ ObjectiveType = Backbone.RelationalModel.extend({
 	    		key: 'parent'
 	    	}
 	    }
-	]
+	],
+	urlRoot: appUrl('/ObjectiveType')
 });
 
 BudgetType = Backbone.RelationalModel.extend({
