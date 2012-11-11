@@ -19,14 +19,14 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	@Query("" +
 			"SELECT objective " +
 			"FROM Objective objective " +
-			"WHERE objective.parent is null " +
+			"WHERE objective.name = 'ROOT' " +
 			"")
 	public List<Objective> findRootFiscalYear();
 	
 	@Query("" +
 			"SELECT objective " +
 			"FROM Objective objective " +
-			"WHERE objective.parent is null and fiscalYear=?1 " +
+			"WHERE objective.name='ROOT' and fiscalYear=?1 " +
 			"")
 	public Objective findRootOfFiscalYear(Integer fiscalYear);
 	
@@ -97,6 +97,16 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"set index = index-1 " +
 			"where index > ?1 and objective.parent = ?2 ")
 	public int reIndex(Integer deleteIndex, Objective parent);
+
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"	INNER JOIN FETCH objective.type type " +
+			"WHERE objective.fiscalYear=?1 " +
+			"	AND objective.type.id=?2 " +
+			"ORDER BY objective.index asc, objective.id asc ")
+	public List<Objective> findAllByFiscalYearAndType_id(Integer fiscalYear,
+			Long typeId);
 	
 
 }

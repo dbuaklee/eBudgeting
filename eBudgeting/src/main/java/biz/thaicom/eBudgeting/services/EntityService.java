@@ -58,11 +58,14 @@ public interface EntityService {
 	public Objective addBudgetTypeToObjective(Long id, Long budgetTypeId);
 	public Objective removeBudgetTypeToObjective(Long id, Long budgetTypeId);
 	public Objective updateObjectiveFields(Long id, String name, String code);
-	public Objective saveObjective(Objective objective);
+	public Objective saveObjective(JsonNode objective);
 	public Objective newObjectiveWithParam(String name, String code, Long parentId,
 			Long typeId, String parentPath, Integer fiscalYear);
 	public Objective deleteObjective(Long id);
 	public void addTargetToObjective(Long id, Long targetId);
+	
+	public List<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -147,6 +150,7 @@ public interface EntityService {
 	//TargetValueAllocationRecord
 	public TargetValueAllocationRecord saveTargetValueAllocationRecord(JsonNode node,
 			Organization workAt);
+
 
 
 

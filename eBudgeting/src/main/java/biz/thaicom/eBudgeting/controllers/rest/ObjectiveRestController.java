@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.services.EntityService;
@@ -63,6 +65,13 @@ public class ObjectiveRestController {
 		return  list;
 	}
 	
+	@RequestMapping(value="/Objective/{fiscalYear}/type/{typeId}") 
+	public @ResponseBody List<Objective> getObjectiveByFiscalYearAndType(
+			@PathVariable Integer fiscalYear, @PathVariable Long typeId) {
+		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId);
+	}
+	
+	
 	@RequestMapping(value="/Objective/{id}/addTarget", method=RequestMethod.POST)
 	public @ResponseBody String addTargetToObjective(@PathVariable Long id,
 			@RequestParam Long targetId) {
@@ -96,7 +105,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/Objective", method=RequestMethod.POST) 
-	public @ResponseBody Objective saveObjective(@RequestBody Objective objective) {
+	public @ResponseBody Objective saveObjective(@RequestBody JsonNode objective) {
 		return entityService.saveObjective(objective);
 	}
 	

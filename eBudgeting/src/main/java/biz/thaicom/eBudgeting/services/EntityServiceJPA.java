@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import javax.print.attribute.standard.Fidelity;
+
 import oracle.net.aso.f;
 
 import org.slf4j.Logger;
@@ -918,8 +920,48 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public Objective saveObjective(Objective objective) {
+	public Objective saveObjective(JsonNode objectiveJsonNode) {
 		
+		Objective objective = new Objective();
+		objective.setName(objectiveJsonNode.get("name").asText());
+		
+		objective.setFiscalYear(objectiveJsonNode.get("fiscalYear").asInt());
+		objective.setIndex(objectiveJsonNode.get("index").asInt());
+
+		if(objectiveJsonNode.get("type") != null) {
+			Long objectiveTypeId = objectiveJsonNode.get("type").get("id").asLong();
+			ObjectiveType ot = objectiveTypeRepository.findOne(objectiveTypeId);
+			
+			objective.setType(ot);
+		}
+		
+		logger.debug("1. {} " , objectiveJsonNode.get("parent"));
+		
+		if(objectiveJsonNode.get("parent") != null &&  objectiveJsonNode.get("parent").get("id") != null  ) {
+			Long parentId = objectiveJsonNode.get("parent").get("id").asLong();
+			Objective parent = objectiveRepository.findOne(parentId);
+			
+			objective.setParent(parent);
+			
+			if(parent.getParentPath() == null) {
+			
+				objective.setParentPath("."+parentId+".");
+			} else {
+				objective.setParentPath("."+parentId+parent.getParentPath());
+			}
+		}
+		
+		if(objectiveJsonNode.get("isLeaf") != null) {
+			objective.setIsLeaf(objectiveJsonNode.get("isLeaf").asBoolean());
+		}
+		
+		if(objectiveJsonNode.get("code") != null) {
+			objective.setCode(objectiveJsonNode.get("code").asText());
+		} else {
+			//will have to find the maxone and put the increment here!
+		}
+		
+		// we have to assume to save only the parameter!
 		
 		return objectiveRepository.save(objective);
 	}
@@ -957,13 +999,16 @@ public class EntityServiceJPA implements EntityService {
 		//then get its parent
 		Objective parent = obj.getParent();
 		
-		parent.getChildren().remove(obj);
+		if(parent != null) {
+			parent.getChildren().remove(obj);
 		
-		if(parent.getChildren().size() == 0) {
-			parent.setIsLeaf(true);
-			objectiveRepository.save(parent);
-		} else {
-			objectiveRepository.reIndex(obj.getIndex(), parent);
+		
+			if(parent.getChildren() != null && parent.getChildren().size() == 0) {
+				parent.setIsLeaf(true);
+				objectiveRepository.save(parent);
+			} else {
+				objectiveRepository.reIndex(obj.getIndex(), parent);
+			}
 		}
 		objectiveRepository.delete(obj);
 		
@@ -1620,6 +1665,13 @@ public class EntityServiceJPA implements EntityService {
 		}
 
 		
+	}
+
+	@Override
+	public List<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId) {
+		// TODO Auto-generated method stub
+		return objectiveRepository.findAllByFiscalYearAndType_id(fiscalYear, typeId);
 	}
 
 }
