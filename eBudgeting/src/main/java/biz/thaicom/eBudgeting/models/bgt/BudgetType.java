@@ -1,8 +1,10 @@
 package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -187,7 +189,27 @@ public class BudgetType implements Serializable {
 		}
 	}	
 
-	
+	public List<Long> getParentIds() {
+		// OK will have to travesre back up .. we can get the parent path
+		String parentPath = this.parentPath;
+		if(this.parentPath == null) {
+			return null;
+		}
+		
+		//we will tokenize and put it in List<Long>
+		List<Long> parentIds = new ArrayList<Long>();
+		
+		StringTokenizer tokens = new StringTokenizer(parentPath, ".");
+		
+		while(tokens.hasMoreTokens()) {
+			String token = tokens.nextToken();
+			//convert to Long
+			Long parentId = Long.parseLong(token);
+			
+			parentIds.add(parentId);
+		}
+		return parentIds;
+	}
 	
 	
 }

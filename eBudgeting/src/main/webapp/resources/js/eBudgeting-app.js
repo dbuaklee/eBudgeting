@@ -206,7 +206,12 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 	    		key: 'strategy'
 	    	}
 	    	
-	    }
+	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'type',
+	    	relatedModel: 'BudgetType',
+	    	collectionType: 'BudgetTypeCollection'
+	    },
 	],
 	urlRoot: appUrl('/FormulaStrategy')
 

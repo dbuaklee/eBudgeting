@@ -316,6 +316,18 @@ public class EntityServiceJPA implements EntityService {
 		
 		return list;
 	}
+	
+	@Override
+	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndBudgetType_ParentPathLike(
+			Integer fiscalYear, String parentPath) {
+		logger.debug("parentPath: {} ", parentPath);
+		List<FormulaStrategy> list = formulaStrategyRepository.findAllByfiscalYearAndType_ParentPathLike(fiscalYear, parentPath);
+		for(FormulaStrategy strategy : list) {
+			strategy.getFormulaColumns().size();
+		}
+		
+		return list;
+	}
 
 	@Override
 	public FormulaStrategy saveFormulaStrategy(FormulaStrategy strategy) {
@@ -1670,8 +1682,9 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId) {
-		// TODO Auto-generated method stub
 		return objectiveRepository.findAllByFiscalYearAndType_id(fiscalYear, typeId);
 	}
+
+	
 
 }

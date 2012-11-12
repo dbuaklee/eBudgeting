@@ -734,6 +734,29 @@ public class GenericViewController {
 		return "m51f08";
 	}
 	
+	@RequestMapping("/page/m51f09/")
+	public String render_m51f09(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		
+		return "m51f09";
+	}
+	
+	@RequestMapping("/page/m51f09/{fiscalYear}")
+	public String render_m51f09(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m51f09";
+	}
+	
 	@RequestMapping("/page/m52f01/")
 	public String render_m52f01(
 			Model model, HttpServletRequest request) {

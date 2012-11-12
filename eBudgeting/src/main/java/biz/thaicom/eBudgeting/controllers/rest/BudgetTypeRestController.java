@@ -108,6 +108,24 @@ public class BudgetTypeRestController {
 		
 	};
 	
+	@RequestMapping(value="/FormulaStrategy/search/{fiscalYear}/rootBudgetType/{budgetTypeId}")
+	public @ResponseBody List<FormulaStrategy> getBudgetTypeFormulaStrategyFromRootBudgetType(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long budgetTypeId) {
+		
+		String parentPath = "%." + budgetTypeId.toString() + ".%";
+		
+		List<FormulaStrategy> strategy = entityService.findAllFormulaStrategyByfiscalYearAndBudgetType_ParentPathLike(fiscalYear, parentPath);
+		
+		if(strategy == null) {
+			throw new EntityNotFoundException();
+			
+		}
+		
+		return strategy;
+		
+	};
+	
 	@RequestMapping(value="/FormulaStrategy/{id}", method=RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String deleteBudgetTypeFormulaStrategy(

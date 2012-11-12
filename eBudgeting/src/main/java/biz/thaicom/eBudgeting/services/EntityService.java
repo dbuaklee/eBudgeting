@@ -81,6 +81,8 @@ public interface EntityService {
 	public FormulaStrategy saveFormulaStrategy(FormulaStrategy strategy);
 	public void deleteFormulaStrategy(Long id);
 	public FormulaStrategy updateFormulaStrategy(JsonNode strategy);
+	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndBudgetType_ParentPathLike(
+			Integer fiscalYear, String parentPath);
 
 	
 	
@@ -150,6 +152,7 @@ public interface EntityService {
 	//TargetValueAllocationRecord
 	public TargetValueAllocationRecord saveTargetValueAllocationRecord(JsonNode node,
 			Organization workAt);
+
 
 
 

@@ -20,5 +20,8 @@ public interface FormulaStrategyRepository extends
 			"set index = index-1 " +
 			"where index > ?1 and fiscalYear = ?2 and type = ?3 ")
 	public int reIndex(Integer deleteIndex, Integer fiscalYear, BudgetType budgetType);
+
+	public List<FormulaStrategy> findAllByfiscalYearAndType_ParentPathLike(
+			Integer fiscalYear, String parentPath);
 	
 }
