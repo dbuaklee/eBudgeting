@@ -1020,7 +1020,7 @@ public class EntityServiceJPA implements EntityService {
 			
 			objective.setParent(parent);
 			
-			if(parent.getParentPath() == null) {
+			if(parent.getParentPath() == null || parent.getParentPath().length() == 0) {
 			
 				objective.setParentPath("."+parentId+".");
 			} else {
@@ -1768,7 +1768,11 @@ public class EntityServiceJPA implements EntityService {
 		
 		if(o != null && parent != null) {
 			o.setParent(parent);
-			o.setParentPath("."+parent.getId()+parent.getParentPath());
+			if(parent.getParentPath()==null) {
+				o.setParentPath("."+parent.getId()+".");
+			} else {
+				o.setParentPath("."+parent.getId()+parent.getParentPath());
+			}
 			objectiveRepository.save(o);
 			return o;
 		}

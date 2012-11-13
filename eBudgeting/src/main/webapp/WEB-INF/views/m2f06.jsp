@@ -655,9 +655,9 @@ $(document).ready(function() {
 				// have to set parentPath here also
 				var parentPathStr="";
 				if(pageObjective.get('parentPath') != null) {
-					parentPathStr = '.'+pageObjective.get('id') + '.' + pageObjective.get('parentPath');
+					parentPathStr = '.'+pageObjective.get('id')  + pageObjective.get('parentPath');
 				} else {
-					parentPathStr = '.'+pageObjective.get('id');
+					parentPathStr = '.'+pageObjective.get('id') + '.';
 				}
 				newObj.set('parentPath', parentPathStr);
 				newObj.set('isLeaf', true);

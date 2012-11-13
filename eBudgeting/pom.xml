@@ -289,6 +289,9 @@
 				<filtering>true</filtering>
 			</resource>
 	    </resources>
+		<filters>
+	    	<filter>src/main/resources/config/${env}.properties</filter>
+	    </filters>
         <plugins>
             <plugin>
                 <artifactId>maven-eclipse-plugin</artifactId>
@@ -327,24 +330,24 @@
         </plugins>
     </build>
     <profiles>
-		<profile>
-			<id>dev-environment</id>
-			<activation>
-      			<activeByDefault>true</activeByDefault>
-    		</activation>
-    		<build>
-	    		<filters>
-	      			<filter>src/main/resources/config/development.properties</filter>
-	    		</filters>
-    		</build>
-		</profile>
+		
 		<profile>
 			<id>prod-environment</id>
-			<build>
-				 <filters>
-	      			<filter>src/main/resources/config/production.properties</filter>
-	    		</filters>
-    		</build>
+				
+				 <properties>
+					<env>production</env>
+				</properties>
+    		
+		</profile>
+		<profile>
+			<id>dev-environment</id>
+				<activation>
+					<activeByDefault>true</activeByDefault>
+				</activation>
+	    		<properties>
+				<env>development</env>
+			</properties>
+    		
 		</profile>
 	</profiles>
 </project>
