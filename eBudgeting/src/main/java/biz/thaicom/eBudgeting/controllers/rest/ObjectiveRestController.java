@@ -98,6 +98,20 @@ public class ObjectiveRestController {
 		
 	}
 	
+	@RequestMapping(value="/Objective/{id}/updateToParent/{parentId}", method=RequestMethod.PUT)
+	public @ResponseBody Objective updateObjectiveParent(@PathVariable Long id,
+			@PathVariable Long parentId) {
+		
+		
+		
+		// now we'll have to save this
+		Objective objectiveFromJpa = entityService.updateObjectiveParent(id, parentId);
+		
+		
+		return objectiveFromJpa;
+		
+	}
+	
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.DELETE) 
 	public @ResponseBody Objective deleteObjective(
 			@PathVariable Long id) {

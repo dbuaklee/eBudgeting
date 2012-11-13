@@ -74,7 +74,6 @@
 	<thead>
 		<tr>
 			<td width="20"></td>
-			<td width="50">ลำดับที่</td>
 			<td width="50">รหัส</td>
 			<td>{{name}}</td>
 		</tr>
@@ -86,7 +85,6 @@
 
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
-	<td> {{indexHuman index}} </td>
 	<td> {{code}} </td>
 	<td> {{name}} </td>
 </script>
@@ -102,7 +100,7 @@
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
-	<td> {{indexHuman index}} </td>
+	<td> </td>
 	<td colspan="2">
 		 <form class="form-inline">
 			<div class="control-group">

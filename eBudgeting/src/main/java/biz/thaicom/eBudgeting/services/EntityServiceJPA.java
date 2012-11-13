@@ -110,7 +110,9 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
-		return objectiveTypeRepository.findOne(id);
+		ObjectiveType type = objectiveTypeRepository.findOne(id);
+		type.getChildren().size();
+		return type;
 	}
 
 	@Override
@@ -328,10 +330,44 @@ public class EntityServiceJPA implements EntityService {
 		
 		return list;
 	}
+	
+	@Override
+	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(
+			Integer fiscalYear, Boolean isStandardItem, String parentPath) {
+		List<FormulaStrategy> list = formulaStrategyRepository.findAllByfiscalYearAndIsStandardItemAndType_ParentPathLike(fiscalYear, isStandardItem, parentPath);
+		for(FormulaStrategy strategy : list) {
+			strategy.getFormulaColumns().size();
+		}
+		
+		return list;
+	}
+
 
 	@Override
-	public FormulaStrategy saveFormulaStrategy(FormulaStrategy strategy) {
-		return formulaStrategyRepository.save(strategy);
+	public FormulaStrategy saveFormulaStrategy(JsonNode strategy) {
+		FormulaStrategy fs;
+		if(strategy.get("id") == null) {
+			fs=new FormulaStrategy();
+		} else {
+			fs = formulaStrategyRepository.findOne(strategy.get("id").asLong());
+		}
+		
+		fs.setName(strategy.get("name").asText());
+		fs.setFiscalYear(strategy.get("fiscalYear").asInt());
+		if(strategy.get("isStandardItem") != null) {
+			fs.setIsStandardItem(strategy.get("isStandardItem").asBoolean());
+		} else {
+			fs.setIsStandardItem(false);
+		}
+		
+		// now get the budgetType
+		if(strategy.get("type") != null) {
+			Long btId = strategy.get("type").get("id").asLong();
+			BudgetType budgetType = budgetTypeRepository.findOne(btId);
+			fs.setType(budgetType);
+		}
+		
+		return formulaStrategyRepository.save(fs);
 		
 	}
 
@@ -385,7 +421,19 @@ public class EntityServiceJPA implements EntityService {
 	public List<Breadcrumb> createBreadCrumbObjective(String prefix,
 			Integer fiscalYear, Objective objective) {
 		if(objective == null) {
-			return null;
+			List<Breadcrumb> list = new ArrayList<Breadcrumb>();
+			Breadcrumb b = new Breadcrumb();
+			b.setUrl(prefix+ "/" );
+			b.setValue("ROOT");
+			
+			list.add(b);
+			
+			b = new Breadcrumb();
+			b.setUrl(prefix + "/" + fiscalYear + "/");
+			b.setValue("ทะเบียนปี " + fiscalYear);
+			list.add(b);
+			
+			return list;
 		}
 		
 		Objective current = objectiveRepository.findOne(objective.getId());
@@ -394,21 +442,38 @@ public class EntityServiceJPA implements EntityService {
 		
 		while(current != null) {
 			Breadcrumb b = new Breadcrumb();
-			if(current.getParent() == null) {
+			String code = current.getCode();
+			if(code==null) {
+				code= "";
+			}
+			
+			if(current.getParent() == null || current.getType().getId() == 103) {
 				// this is the root!
-				b.setUrl(prefix + "/" + fiscalYear + "/" + current.getId() + "/");
-				b.setValue("ปี " + fiscalYear);
+				
+						
+				b.setUrl(prefix + "/" + fiscalYear + "/");
+				b.setValue(current.getType().getName() + " "+ code + ". <br/>" + current.getName());
 				stack.push(b);
+				
+				
+				b = new Breadcrumb();
+				b.setUrl(prefix + "/" + fiscalYear + "/");
+				b.setValue("ทะเบียนปี " + fiscalYear);
+				stack.push(b);
+				
+				
 				
 				b = new Breadcrumb();
 				b.setUrl(prefix+ "/" );
 				b.setValue("ROOT");
 				stack.push(b);
 				
+				break;
+				
 			} else {
 				b.setUrl(prefix + "/" + + fiscalYear + "/" + current.getId() + "/");
-				Integer index=current.getIndex() +1;
-				b.setValue(current.getType().getName() + "ที่ "+ index + ". <br/>" + current.getName());
+				
+				b.setValue(current.getType().getName() + " " + code + ". <br/>" + current.getName());
 				stack.push(b);
 			}
 			
@@ -987,18 +1052,22 @@ public class EntityServiceJPA implements EntityService {
 		obj.setParentPath(parentPath);
 		obj.setFiscalYear(fiscalYear);
 		
-		Objective parent = objectiveRepository.findOne(parentId);
+		if(parentId != null) {
+			Objective parent = objectiveRepository.findOne(parentId);
+			obj.setParent(parent);
+			obj.setIndex(parent.getChildren().size());
+			
+			// now the parent will not be leaf node anymore
+			parent.setIsLeaf(false);
+			objectiveRepository.save(parent);
+		}
+		
 		ObjectiveType type = objectiveTypeRepository.findOne(typeId);
 		
-		obj.setParent(parent);
+		
 		obj.setType(type);
 		
 		obj.setIsLeaf(true);
-		obj.setIndex(parent.getChildren().size());
-		
-		// now the parent will not be leaf node anymore
-		parent.setIsLeaf(false);
-		objectiveRepository.save(parent);
 		
 		return objectiveRepository.save(obj);
 	}
@@ -1046,6 +1115,8 @@ public class EntityServiceJPA implements EntityService {
 		return proposalStrategyRepository.findAllByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, objectiveId);
 	}
 
+
+	
 	@Override
 	public ProposalStrategy updateProposalStrategy(Long id,
 			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException {
@@ -1682,8 +1753,28 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId) {
-		return objectiveRepository.findAllByFiscalYearAndType_id(fiscalYear, typeId);
+		List<Objective> objs = objectiveRepository.findAllByFiscalYearAndType_id(fiscalYear, typeId);
+		for(Objective obj : objs){
+			obj.getTargets().size();
+		}
+		
+		return objs;
 	}
+
+	@Override
+	public Objective updateObjectiveParent(Long id, Long parentId) {
+		Objective o = objectiveRepository.findOne(id);
+		Objective parent = objectiveRepository.findOne(parentId);
+		
+		if(o != null && parent != null) {
+			o.setParent(parent);
+			o.setParentPath("."+parent.getId()+parent.getParentPath());
+			objectiveRepository.save(o);
+			return o;
+		}
+		return null;
+	}
+
 
 	
 

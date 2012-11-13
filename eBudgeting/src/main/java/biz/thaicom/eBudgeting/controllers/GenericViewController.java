@@ -712,9 +712,8 @@ public class GenericViewController {
 	}
 
 	@RequestMapping("/page/m51f08/")
-	public String render_m51f08(
+	public String runder_m51f08(
 			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
@@ -727,12 +726,48 @@ public class GenericViewController {
 			Model model, @PathVariable Integer fiscalYear,
 			HttpServletRequest request) {
 
-				
+		List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m51f08", fiscalYear, null); 
+		
+		model.addAttribute("breadcrumb", breadcrumb.listIterator());
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 103);
 		return "m51f08";
 	}
+
+	
+	@RequestMapping("/page/m51f08/{fiscalYear}/{objectiveId}")
+	public String render_m51f08OfYear(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			Model model, HttpServletRequest request) {
+		
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
+		
+		// now find the one we're looking for
+		Objective objective = entityService.findOjectiveById(objectiveId);
+		if(objective != null ) {
+			logger.debug("Objective found!");
+			
+			model.addAttribute("objective", objective);
+			// now construct breadcrumb?
+			
+			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m51f08", fiscalYear, objective); 
+			
+			model.addAttribute("breadcrumb", breadcrumb.listIterator());
+			model.addAttribute("rootPage", false);
+			model.addAttribute("objective", objective);
+			
+		} else {
+			logger.debug("Objective NOT found! redirect to fiscal year selection");
+			// go to the root one!
+			return "redirect:/page/m51f08/";
+		}
+		
+		model.addAttribute("typeId", 103);
+		return "m51f08";
+	}
+	
 	
 	@RequestMapping("/page/m51f09/")
 	public String render_m51f09(
@@ -755,6 +790,30 @@ public class GenericViewController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		
 		return "m51f09";
+	}
+	
+	
+	@RequestMapping("/page/m51f10/")
+	public String render_m51f10(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		
+		return "m51f10";
+	}
+	
+	@RequestMapping("/page/m51f10/{fiscalYear}")
+	public String render_m51f10(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m51f10";
 	}
 	
 	@RequestMapping("/page/m52f01/")
@@ -893,6 +952,48 @@ public class GenericViewController {
 		model.addAttribute("typeId", 119);
 		return "m55f01";
 	}
+	
+	@RequestMapping("/page/m61f03/")
+	public String render_m63f03(
+			Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m61f03";
+	}
+	
+	@RequestMapping("/page/m61f03/{fiscalYear}/{objectiveId}")
+	public String render_m63f03OfYear(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			Model model, HttpServletRequest request,
+			@Activeuser ThaicomUserDetail currentUser) {
+		
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
+		
+		// now find the one we're looking for
+		Objective objective = entityService.findOjectiveById(objectiveId);
+		if(objective != null ) {
+			logger.debug("Objective found!");
+			
+			model.addAttribute("objective", objective);
+			// now construct breadcrumb?
+			
+			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m61f03", fiscalYear, objective); 
+			
+			model.addAttribute("breadcrumb", breadcrumb.listIterator());
+			model.addAttribute("rootPage", false);
+			model.addAttribute("objective", objective);
+			
+		} else {
+			logger.debug("Objective NOT found! redirect to fiscal year selection");
+			// go to the root one!
+			return "redirect:/page/m61f03/";
+		}
+		
+		return "m61f03";
+	}
+	
 
 }
 

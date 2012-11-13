@@ -23,5 +23,8 @@ public interface FormulaStrategyRepository extends
 
 	public List<FormulaStrategy> findAllByfiscalYearAndType_ParentPathLike(
 			Integer fiscalYear, String parentPath);
+
+	public List<FormulaStrategy> findAllByfiscalYearAndIsStandardItemAndType_ParentPathLike(
+			Integer fiscalYear, Boolean isStandardItem, String parentPath);
 	
 }

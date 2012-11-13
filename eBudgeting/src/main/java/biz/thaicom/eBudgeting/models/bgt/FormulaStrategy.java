@@ -55,6 +55,9 @@ public class FormulaStrategy  implements Serializable{
 	private Integer numberColumns;
 	
 	@Basic
+	private Boolean isStandardItem;
+	
+	@Basic
 	@Column(name="IDX")
 	private Integer index;
 
@@ -124,6 +127,14 @@ public class FormulaStrategy  implements Serializable{
 
 	public void setIndex(Integer index) {
 		this.index = index;
+	}
+
+	public Boolean getIsStandardItem() {
+		return isStandardItem;
+	}
+
+	public void setIsStandardItem(Boolean isStandardItem) {
+		this.isStandardItem = isStandardItem;
 	}
 
 	

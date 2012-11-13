@@ -66,6 +66,8 @@ public interface EntityService {
 	
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId);
+	public Objective updateObjectiveParent(Long id, Long parentId);
+	
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -78,11 +80,14 @@ public interface EntityService {
 	//FormulaStrategy
 	public List<FormulaStrategy> findFormulaStrategyByfiscalYearAndTypeId(
 			Integer fiscalYear, Long budgetTypeId);
-	public FormulaStrategy saveFormulaStrategy(FormulaStrategy strategy);
+	public FormulaStrategy saveFormulaStrategy(JsonNode strategy);
 	public void deleteFormulaStrategy(Long id);
 	public FormulaStrategy updateFormulaStrategy(JsonNode strategy);
 	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndBudgetType_ParentPathLike(
 			Integer fiscalYear, String parentPath);
+	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(
+			Integer fiscalYear, Boolean isStandardItem, String parentPath);
+
 
 	
 	
@@ -152,6 +157,7 @@ public interface EntityService {
 	//TargetValueAllocationRecord
 	public TargetValueAllocationRecord saveTargetValueAllocationRecord(JsonNode node,
 			Organization workAt);
+
 
 
 

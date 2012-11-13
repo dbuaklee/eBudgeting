@@ -108,7 +108,7 @@ public class BudgetTypeRestController {
 		
 	};
 	
-	@RequestMapping(value="/FormulaStrategy/search/{fiscalYear}/rootBudgetType/{budgetTypeId}")
+	@RequestMapping(value="/FormulaStrategy/searchAll/{fiscalYear}/rootBudgetType/{budgetTypeId}")
 	public @ResponseBody List<FormulaStrategy> getBudgetTypeFormulaStrategyFromRootBudgetType(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long budgetTypeId) {
@@ -126,6 +126,43 @@ public class BudgetTypeRestController {
 		
 	};
 	
+	@RequestMapping(value="/FormulaStrategy/searchIsStandardItem/{fiscalYear}/rootBudgetType/{budgetTypeId}")
+	public @ResponseBody List<FormulaStrategy> getBudgetTypeFormulaStrategyIsStandardFromRootBudgetType(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long budgetTypeId) {
+		
+		String parentPath = "%." + budgetTypeId.toString() + ".%";
+		
+		List<FormulaStrategy> strategy = entityService.findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(fiscalYear, true, parentPath);
+		
+		if(strategy == null) {
+			throw new EntityNotFoundException();
+			
+		}
+		
+		return strategy;
+		
+	};
+
+	@RequestMapping(value="/FormulaStrategy/searchIsNotStandardItem/{fiscalYear}/rootBudgetType/{budgetTypeId}")
+	public @ResponseBody List<FormulaStrategy> getBudgetTypeFormulaStrategyIsNotStandardFromRootBudgetType(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long budgetTypeId) {
+		
+		String parentPath = "%." + budgetTypeId.toString() + ".%";
+		
+		List<FormulaStrategy> strategy = entityService.findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(fiscalYear, false, parentPath);
+		
+		if(strategy == null) {
+			throw new EntityNotFoundException();
+			
+		}
+		
+		return strategy;
+		
+	};
+	
+	
 	@RequestMapping(value="/FormulaStrategy/{id}", method=RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String deleteBudgetTypeFormulaStrategy(
@@ -139,9 +176,9 @@ public class BudgetTypeRestController {
 	@RequestMapping(value="/FormulaStrategy", method=RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody FormulaStrategy createBudgetTypeFormulaStrategy(
-			@RequestBody FormulaStrategy strategy) {
+			@RequestBody JsonNode strategy) {
 		
-		logger.debug("id: " + strategy.getType().getId());
+		
 		
 		return entityService.saveFormulaStrategy(strategy);
 	}

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
+import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 
 public interface ProposalStrategyRepository extends
@@ -37,4 +38,6 @@ public interface ProposalStrategyRepository extends
 			"where proposal.forObjective.fiscalYear=?1 " +
 			"	and proposal.forObjective.id=?2 ")
 	public List<ProposalStrategy> findAllByObjectiveIdAndfiscalYearAndOwnerId(Integer fiscalYear, Long objectiveId);
+
+	
 }

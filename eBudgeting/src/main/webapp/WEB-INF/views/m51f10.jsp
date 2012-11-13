@@ -501,7 +501,7 @@ $(document).ready(function() {
 				var selectedType = BudgetType.findOrCreate(typeId);
 				
 				newObj.set('type', selectedType);
-				newObj.set('isStandardItem', false);
+				newObj.set('isStandardItem', true);
 				newObj.set('fiscalYear', fiscalYear);
 				
 				newObj.save(null, {success: _.bind(function(data){
@@ -620,7 +620,7 @@ $(document).ready(function() {
 			if(budgetTypeSelectedId != 0) {
 				this.mainTblView.collection.fetch({
 					//FormulaStrategy/search/{fiscalYear}/rootBudgetType/{budgetTypeId}
-					url: appUrl('/FormulaStrategy/searchIsNotStandardItem/' + fiscalYear + '/rootBudgetType/' + budgetTypeSelectedId),
+					url: appUrl('/FormulaStrategy/searchIsStandardItem/' + fiscalYear + '/rootBudgetType/' + budgetTypeSelectedId),
 					success: function() {
 						
 					}

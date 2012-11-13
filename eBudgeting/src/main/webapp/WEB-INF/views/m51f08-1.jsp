@@ -63,30 +63,20 @@
 	</tbody>
 </table>
 </script>
-<script id="menuLinkSltTemplate" type="text/x-handler-template">
-<select>
-	<option value="0">กรุณาเลือกแผนงาน</option>
-	{{#each this}}
-	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
-	{{/each}}
-</select>
-<button class="btn btn-mini updateLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
-<button class="btn btn-mini cancelUpdateLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
-</script>
+
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
 	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
 	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
-	<a href="#" class="btn btn-mini btn-success menuLink"><i class="icon icon-random icon-white"></i> การเชื่อมแผนงาน </a>
 </div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
 		<tr>
 			<td width="20"></td>
+			<td width="50">ลำดับที่</td>
 			<td width="50">รหัส</td>
 			<td>{{name}}</td>
-			<td class="menuLink">เชื่อมโยงแผนงาน</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -96,12 +86,9 @@
 
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
+	<td> {{indexHuman index}} </td>
 	<td> {{code}} </td>
 	<td> {{name}} </td>
-	<td class="menuLink">	{{#if this.parent}}
-			{{parent.name}}
-		{{/if}}
-	</td>
 </script>
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
@@ -115,7 +102,7 @@
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
-	<td> </td>
+	<td> {{indexHuman index}} </td>
 	<td colspan="2">
 		 <form class="form-inline">
 			<div class="control-group">
@@ -135,7 +122,6 @@
 		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
 		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</td>
-	<td></td>
 
 </script>
 
@@ -151,12 +137,8 @@ var pageUrl = "/page/m51f04/";
 
 var mainTblView;
 
-
-
 var e1;
 var objectiveCollection = new ObjectiveCollection();
-
-var parentObjectiveCollection;
 var objectiveType;
 
 $(document).ready(function() {
@@ -174,7 +156,6 @@ $(document).ready(function() {
 		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 		objectiveRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
-		menuLinkSltTemplate: Handlebars.compile($("#menuLinkSltTemplate").html()),
 		
 		render: function() {
 			// first render the control
@@ -203,72 +184,8 @@ $(document).ready(function() {
 			"click .menuDelete" : "deleteRow",
 			"click .menuEdit"	: "editRow",
 			"click .lineSave" : "saveLine",
-			"click .cancelLineSave" : "cancelSaveLine",
-			"click a.menuLink" : "menuLinkRow",
-			"click button.updateLink" : "updateLink",
-			"click button.cancelUpdateLink" : "cancelUpdateLink"
-			},
-			
-			menuLinkRow: function(e) {
-				if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
-					this.$el.find('a.btn').toggleClass('disabled');
-					var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-					var model = objectiveCollection.get(id);
-					this.currentSelectedModel = model;
-					if(parentObjectiveCollection != null) {
-						
-						var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.menuLink');
-						
-						var json = parentObjectiveCollection.toJSON();
-						
-						if(model.get('parent') != null) {
-						
-							for(var i=0; i< json.length; i++) {
-								if(json[i].id == model.get('parent').get('id')) {
-									json[i].selected = true;
-								}
-							}
-						}
-						
-						
-						var html = this.menuLinkSltTemplate(json);
-						tdEl.html(html);
-					}
-					
-				} else {
-					alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
-				}
-			},
-			
-			updateLink :function(e) {
-				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-				var o = Objective.findOrCreate(id);
-				var parentId = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
-				var parent = Objective.findOrCreate(parentId);
-				
-				if(parentId > 0) {
-					// we should go about update this parent
-					$.ajax({
-						type: 'PUT',
-						url: appUrl('/Objective/'+ id +'/updateToParent/' + parentId),
-						success: _.bind(function(data){
-							o.set('parent', parent);
-							this.renderObjective(o);
-						},this)
-					});
-				}
-				
-				this.$el.find('a.btn').toggleClass('disabled');
-				
-				
-			},
-			
-			cancelUpdateLink: function(e) {
-				this.$el.find('a.btn').toggleClass('disabled');
-				if(this.currentSelectedModel != null) {
-					this.renderObjective(this.currentSelectedModel);
-				}
-			},
+			"click .cancelLineSave" : "cancelSaveLine"
+		},
 		
 		newRow: function(e) {
 			if(! $(e.currentTarget).hasClass('disabled') ) {
@@ -404,12 +321,7 @@ $(document).ready(function() {
 		});
 	
 		
-		if(parentObjectiveCollection == null) {
-			parentObjectiveCollection = new ObjectiveCollection();
-			parentObjectiveCollection.fetch({
-				url: appUrl("/Objective/"+ fiscalYear +"/type/101")
-			});
-		}
+		
 		
 	}
 	
