@@ -97,3 +97,7 @@ ul.right-align li
 {
 	padding-right: .6em;
 }
+
+table.table thead td {
+	background-color: #F1F1F1;
+}
