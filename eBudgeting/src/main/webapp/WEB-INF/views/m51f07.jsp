@@ -34,11 +34,11 @@
 						</tr>
 					</thead>
 					<tbody>
+						<c:forEach items="${fiscalYears}" var="fiscalYear">
 						<tr>
-							<c:forEach items="${fiscalYears}" var="fiscalYear">
 								<td> <a href="./${fiscalYear.fiscalYear}/" class="nextChildrenLnk">${fiscalYear.fiscalYear}<i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-							</c:forEach>
 						</tr>
+						</c:forEach>
 					</tbody>
 				</table>			
 			</c:when>
@@ -49,59 +49,54 @@
 	</div>
 </div>
 
-<script id="rootMainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl">
-	<thead>
-		<tr>
-			<td>เลือกปีงบประมาณ</td>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>{{this}} <a href="./{{this}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-		</tr>
-	</tbody>
-</table>
-</script>
-<script id="menuLinkSltTemplate" type="text/x-handler-template">
-<select>
-	<option value="0">กรุณาเลือกแผนงาน</option>
-	{{#each this}}
-	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
-	{{/each}}
-</select>
-<button class="btn btn-mini updateLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
-<button class="btn btn-mini cancelUpdateLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
-</script>
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
 	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
-	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
-	<a href="#" class="btn btn-mini btn-success menuLink"><i class="icon icon-random icon-white"></i> การเชื่อมแผนงาน </a>
+	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
+	<a href="#" class="btn btn-mini btn-success menuUnitLink"><i class="icon icon-random icon-white"></i> เลือกหน่วยนับ</a>
+<a href="#" class="btn btn-mini btn-success menuParentLink"><i class="icon icon-random icon-white"></i>เชื่อมโยง{{parent.name}}</a>   
 </div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
 		<tr>
-			<td width="20"></td>
-			<td width="50">รหัส</td>
-			<td>{{name}}</td>
-			<td class="menuLink">เชื่อมโยงแผนงาน</td>
+			<td style="width:20px;"></td>
+			<td style="width:40px;">รหัส</td>
+			<td>ชื่อ{{name}}</td>
+			<td style="width:150px;">หน่วยนับ</td>
+			<td style="width:250px">เชื่อมโยง{{parent.name}}</td>
 		</tr>
 	</thead>
 	<tbody>
 	</tbody>
 </table>
 </script>
-
+<script id="unitLinkSltTemplate" type="text/x-handler-template">
+<select class="span2">
+	<option value="0">กรุณาเลือกหน่วยนับ</option>
+	{{#each this}}
+	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+	{{/each}}
+</select><br/>
+<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+</script>
+<script id="parentLinkSltTemplate" type="text/x-handler-template">
+<select>
+	<option value="0">กรุณาเลือก</option>
+	{{#each this}}
+	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.code}} {{this.name}}</option>
+	{{/each}}
+</select>
+<button class="btn btn-mini updateParentLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+</script>
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
-<td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
+<td><input type="radio" name="rowRdo" id="rdo_{{id}}" value="{id}}"/></td>
 	<td> {{code}} </td>
 	<td> {{name}} </td>
-	<td class="menuLink">	{{#if this.parent}}
-			{{parent.name}}
-		{{/if}}
-	</td>
+	<td class="unitLink"> <ul class="noBullet">{{#each units}}</li>{{name}}<li>{{/each}}</ul></td>
+	<td class="parentLink"> {{parent.code}} {{parent.name}} </td>
 </script>
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
@@ -115,15 +110,8 @@
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
-	<td> </td>
-	<td colspan="2">
+	<td colspan="3">
 		 <form class="form-inline">
-			<div class="control-group">
-				<label class="control-label" for="codeTxt"> <b>รหัส: </b> </label>
-				<div class="controls">
-					<input id="codeTxt" type='text' placeholder='...' class='span7' value="{{code}}"></input> <br/>
-				</div>
-			</div>
 			<div class="control-group">
 				<label class="control-label" for="nameTxt"> <b>ชื่อ:</b> </label>
 				<div class="controls">
@@ -135,7 +123,6 @@
 		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
 		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</td>
-	<td></td>
 
 </script>
 
@@ -151,13 +138,14 @@ var pageUrl = "/page/m51f04/";
 
 var mainTblView;
 
-
-
 var e1;
 var objectiveCollection = new ObjectiveCollection();
-
-var parentObjectiveCollection;
 var objectiveType;
+var listTargetUnits = new TargetUnitCollection();
+var parentObjectiveCollection = new ObjectiveCollection();
+listTargetUnits.fetch({
+	url: appUrl('/TargetUnit/')
+});
 
 $(document).ready(function() {
 
@@ -174,20 +162,22 @@ $(document).ready(function() {
 		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 		objectiveRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
-		menuLinkSltTemplate: Handlebars.compile($("#menuLinkSltTemplate").html()),
+		unitLinkSltTemplate: Handlebars.compile($("#unitLinkSltTemplate").html()),
+		parentLinkSltTemplate: Handlebars.compile($("#parentLinkSltTemplate").html()),
 		
 		render: function() {
 			// first render the control
-			
 			var html = this.mainCtrTemplate(objectiveType.toJSON());
 			
 			this.$el.html(html);
 			
-			// then the inside row
-			json=this.collection.toJSON();
-			
-			html = this.tbodyTemplate(json);
-			this.$el.find('tbody').html(html);
+			if(this.collection.length>0) {
+				// then the inside row
+				json=this.collection.toJSON();
+				
+				html = this.tbodyTemplate(json);
+				this.$el.find('tbody').html(html);
+			}
 
 			// bind all cell
 			this.collection.each(function(model){
@@ -199,82 +189,144 @@ $(document).ready(function() {
 		},
 		
 		events: {
-			"click .menuNew" : "newRow",
-			"click .menuDelete" : "deleteRow",
-			"click .menuEdit"	: "editRow",
-			"click .lineSave" : "saveLine",
-			"click .cancelLineSave" : "cancelSaveLine",
-			"click a.menuLink" : "menuLinkRow",
-			"click button.updateLink" : "updateLink",
-			"click button.cancelUpdateLink" : "cancelUpdateLink"
-			},
+			"click a.menuNew" : "newRow",
+			"click a.menuDelete" : "deleteRow",
+			"click a.menuEdit"	: "editRow",
+			"click button.lineSave" : "saveLine",
+			"click button.cancelLineSave" : "cancelSaveLine",
+			"click a.menuUnitLink" : "linkUnit",
+			"click button.updateUnitLink" : "updateUnitLink",
+			"click button.cancelLink" : "cancelLink",
 			
-			menuLinkRow: function(e) {
-				if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
-					this.$el.find('a.btn').toggleClass('disabled');
-					var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-					var model = objectiveCollection.get(id);
-					this.currentSelectedModel = model;
-					if(parentObjectiveCollection != null) {
-						
-						var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.menuLink');
-						
-						var json = parentObjectiveCollection.toJSON();
-						
-						if(model.get('parent') != null) {
-						
-							for(var i=0; i< json.length; i++) {
-								if(json[i].id == model.get('parent').get('id')) {
-									json[i].selected = true;
-								}
-							}
-						}
-						
-						
-						var html = this.menuLinkSltTemplate(json);
-						tdEl.html(html);
-					}
-					
-				} else {
-					alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
-				}
-			},
+			"click a.menuParentLink" : "linkParent",
+			"click button.updateParentLink" : "updateParentLink",
 			
-			updateLink :function(e) {
-				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-				var o = Objective.findOrCreate(id);
-				var parentId = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
-				var parent = Objective.findOrCreate(parentId);
-				
-				if(parentId > 0) {
-					// we should go about update this parent
-					$.ajax({
-						type: 'PUT',
-						url: appUrl('/Objective/'+ id +'/updateToParent/' + parentId),
-						success: _.bind(function(data){
-							o.set('parent', parent);
-							this.renderObjective(o);
-						},this)
-					});
-				}
-				
-				this.$el.find('a.btn').toggleClass('disabled');
-				
-				
-			},
-			
-			cancelUpdateLink: function(e) {
-				this.$el.find('a.btn').toggleClass('disabled');
-				if(this.currentSelectedModel != null) {
-					this.renderObjective(this.currentSelectedModel);
-				}
-			},
+		},
 		
 		newRow: function(e) {
 			if(! $(e.currentTarget).hasClass('disabled') ) {
 				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
 				this.$el.find('a.btn').toggleClass('disabled');
 			}
+		},
+		
+		linkParent: function(e) {
+			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
+				this.$el.find('a.btn').toggleClass('disabled');
+				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+				var model = objectiveCollection.get(id);
+				this.currentSelectedModel = model;
+				if(parentObjectiveCollection != null) {
+					
+					var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.parentLink');
+					
+					var json = parentObjectiveCollection.toJSON();
+					
+					if(model.get('parent') != null) {
+					
+						for(var i=0; i< json.length; i++) {
+							if(json[i].id == model.get('parent').get('id')) {
+								json[i].selected = true;
+							}
+						}
+					}
+					
+					
+					var html = this.parentLinkSltTemplate(json);
+					tdEl.html(html);
+				}
+				
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
+			}
+		},
+		
+		updateParentLink: function(e) {
+
+			
+			var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			var o = Objective.findOrCreate(id);
+			var parentId = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
+			var parent = Objective.findOrCreate(parentId);
+			
+			if(parentId > 0) {
+				// we should go about update this parent
+				
+				$.ajax({
+					type: 'PUT',
+					url: appUrl('/Objective/'+ id +'/updateToParent/' + parentId),
+					success: _.bind(function(data){
+						o.set('parent', parent);
+						this.renderObjective(o);
+					},this)
+				});
+			}
+			
+			this.$el.find('a.btn').toggleClass('disabled');
+		},
+		
+		linkUnit: function(e) {
+			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
+				this.$el.find('a.btn').toggleClass('disabled');
+				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+				var model = objectiveCollection.get(id);
+				this.currentSelectedModel = model;
+				if(listTargetUnits != null) {
+					
+					var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.unitLink');
+					
+					var json = listTargetUnits.toJSON();
+					
+					if(model.get('units') != null) {
+						
+						if(model.get('units').length > 0) {
+							for(var i=0; i< json.length; i++) {
+								console.log(json[i].id + " == " + model.get('units').at(0).get('id'));
+								
+								if(json[i].id == model.get('units').at(0).get('id')) {
+									json[i].selected = true;
+								}
+							}
+						}
+					}
+					
+					
+					var html = this.unitLinkSltTemplate(json);
+					tdEl.html(html);
+				}
+				
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
+			}
+			
+		},
+		
+		cancelLink: function(e) {
+			this.$el.find('a.btn').toggleClass('disabled');
+			if(this.currentSelectedModel != null) {
+				this.renderObjective(this.currentSelectedModel);
+			}
+		},
+		
+		updateUnitLink: function(e) {
+			var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			var o = Objective.findOrCreate(id);
+			var unitId = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
+			var unit = TargetUnit.findOrCreate(unitId);
+			
+			if(unitId > 0) {
+				// we should go about update this parent
+				$.ajax({
+					type: 'PUT',
+					url: appUrl('/Objective/'+ id +'/addReplaceUnit/' + unitId),
+					success: _.bind(function(data){
+						o.get('units').add(unit);
+						this.renderObjective(o);
+					},this)
+				});
+			}
+			
+			this.$el.find('a.btn').toggleClass('disabled');
 		},
 		
 		renderObjective: function(objective) {
@@ -297,15 +349,14 @@ $(document).ready(function() {
 		
 		saveLine: function(e) {
 
-			objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
+			var objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
 			
 			inputNameVal = this.$el.find('#nameTxt').val();
-			inputCodeVal = this.$el.find('#codeTxt').val();
 			indexRow = parseInt($(e.currentTarget).attr('indexHolder'));
 			
 			if(this.collection.get(objectiveId) == null) {
 				//var objType = pageObjective.get('type').get('children').at(0);
-				var newObj =  new Objective({name: inputNameVal, code: inputCodeVal, index: indexRow});
+				var newObj =  new Objective({name: inputNameVal});
 				
 				newObj.set('type', objectiveType);
 				newObj.set('fiscalYear', fiscalYear);
@@ -314,8 +365,6 @@ $(document).ready(function() {
 				newObj.save(null, {success: _.bind(function(data){
 					newObj.set('id', data.id);
 					newObj.set('index', this.collection.length);
-					
-					
 					
 					this.collection.add(newObj);
 					
@@ -327,14 +376,12 @@ $(document).ready(function() {
 			} else {
 				var model  = this.collection.get(objectiveId);
 				model.set('name', inputNameVal);
-				model.set('code', inputCodeVal);
 				
 				$.ajax({
 					type: 'POST',
 					url: appUrl('/Objective/'+objectiveId+'/updateFields/'),
 					data: {
 						name: inputNameVal,
-						code: inputCodeVal
 					},
 					success: _.bind(function(){
 						
@@ -398,21 +445,6 @@ $(document).ready(function() {
 	
 	mainTblView = new MainTblView({collection: objectiveCollection});
 
-	if(fiscalYear != null && fiscalYear.length > 0 ) {
-		objectiveCollection.fetch({
-			url: appUrl('/Objective/'+fiscalYear+'/type/'+typeId)
-		});
-	
-		
-		if(parentObjectiveCollection == null) {
-			parentObjectiveCollection = new ObjectiveCollection();
-			parentObjectiveCollection.fetch({
-				url: appUrl("/Objective/"+ fiscalYear +"/type/101")
-			});
-		}
-		
-	}
-	
 	objectiveType = new ObjectiveType({id: parseInt(typeId)});
 	objectiveType.fetch({
 		success: function(){
@@ -423,8 +455,32 @@ $(document).ready(function() {
 			}
 			headLineStr += '</h4>';
 			$('#headLine').html(headLineStr);
+		
+			if(fiscalYear != null && fiscalYear.length > 0 ) {
+				objectiveCollection.fetch({
+					url: appUrl('/Objective/'+fiscalYear+'/type/'+typeId)
+				});
+				
+				if( objectiveType.get('parent') != null ) {
+					parentObjectiveCollection = new ObjectiveCollection();
+					parentObjectiveCollection.fetch({
+						url: appUrl("/Objective/"+ fiscalYear +"/type/" +objectiveType.get('parent').get('id')), 
+						success: function() {
+							
+						}
+					});
+				} 
+			}
+			
+			
+			
+			
+			
 		}
 	});
+	
+	
+	
 
 
 

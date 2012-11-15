@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
+import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
 import biz.thaicom.security.models.ThaicomUserDetail;
@@ -71,7 +73,7 @@ public class ObjectiveRestController {
 		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId);
 	}
 	
-	
+		
 	@RequestMapping(value="/Objective/{id}/addTarget", method=RequestMethod.POST)
 	public @ResponseBody String addTargetToObjective(@PathVariable Long id,
 			@RequestParam Long targetId) {
@@ -110,6 +112,15 @@ public class ObjectiveRestController {
 		
 		return objectiveFromJpa;
 		
+	}
+	
+	@RequestMapping(value="/Objective/{id}/addReplaceUnit/{unitId}", method=RequestMethod.PUT)
+	public @ResponseBody Objective updateObjectiveUnit(@PathVariable Long id, @PathVariable Long unitId) {
+		// now we'll have to save this
+		Objective objectiveFromJpa = entityService.objectiveAddReplaceUnit(id, unitId);
+				
+				
+		return objectiveFromJpa;
 	}
 	
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.DELETE) 
@@ -232,6 +243,31 @@ public class ObjectiveRestController {
 		List<Objective> objectives = entityService.findChildrenObjectivewithBudgetProposal(fiscalYear, currentUser.getWorkAt().getId(), objectiveId, true);
 		
 		return objectives;
+		
+	}
+	
+	
+	@RequestMapping(value="/ObjectiveRelations/{fiscalYear}/relation/{parentTypeId}") 
+	public @ResponseBody List<ObjectiveRelationsRepository> getObjectiveByFiscalYearAndparentRelation(
+			@PathVariable Integer fiscalYear, @PathVariable Long parentTypeId){
+		return entityService.findObjectiveRelationsByFiscalYearAndChildTypeRelation(fiscalYear, parentTypeId);
+	}
+	
+	@RequestMapping(value="/ObjectiveRelations", method=RequestMethod.POST)
+	public @ResponseBody ObjectiveRelations saveObjectiveRelations( @RequestBody JsonNode relation) {
+		return entityService.saveObjectiveRelations(relation);
+	}
+	
+	@RequestMapping(value="/ObjectiveRelations/{id}", method=RequestMethod.PUT)
+	public @ResponseBody ObjectiveRelations updateObjectiveRelations(
+			@PathVariable Long id, @RequestBody JsonNode relation) {
+		return entityService.updateObjectiveRelations(id, relation);
+	}
+	
+	@RequestMapping(value="/Objective/initFiscalYear", method=RequestMethod.POST)
+	public @ResponseBody String initFiscalYear(
+			@RequestParam Integer fiscalYear){
+		return entityService.initFiscalYear(fiscalYear);
 		
 	}
 	

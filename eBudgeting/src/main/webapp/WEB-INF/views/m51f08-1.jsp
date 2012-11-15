@@ -34,11 +34,11 @@
 						</tr>
 					</thead>
 					<tbody>
+						<c:forEach items="${fiscalYears}" var="fiscalYear">
 						<tr>
-							<c:forEach items="${fiscalYears}" var="fiscalYear">
 								<td> <a href="./${fiscalYear.fiscalYear}/" class="nextChildrenLnk">${fiscalYear.fiscalYear}<i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-							</c:forEach>
 						</tr>
+						</c:forEach>
 					</tbody>
 				</table>			
 			</c:when>

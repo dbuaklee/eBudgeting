@@ -19,12 +19,14 @@ import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.models.pln.TargetValue;
 import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
+import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 
 public interface EntityService {
 	
@@ -67,7 +69,12 @@ public interface EntityService {
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId);
 	public Objective updateObjectiveParent(Long id, Long parentId);
+	public Objective objectiveAddReplaceUnit(Long id, Long unitId);
 	
+	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelation(
+			Integer fiscalYear, Long childTypeId);
+	
+	public String initFiscalYear(Integer fiscalYear);
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -157,6 +164,14 @@ public interface EntityService {
 	//TargetValueAllocationRecord
 	public TargetValueAllocationRecord saveTargetValueAllocationRecord(JsonNode node,
 			Organization workAt);
+	
+	//ObjectiveRelations
+	public ObjectiveRelations saveObjectiveRelations(JsonNode relation);
+	public ObjectiveRelations updateObjectiveRelations(Long id,
+			JsonNode relation);
+
+
+
 
 
 

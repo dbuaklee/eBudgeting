@@ -736,38 +736,7 @@ public class GenericViewController {
 	}
 
 	
-	@RequestMapping("/page/m51f08/{fiscalYear}/{objectiveId}")
-	public String render_m51f08OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
 		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m51f08", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m51f08/";
-		}
-		
-		model.addAttribute("typeId", 103);
-		return "m51f08";
-	}
-	
 	
 	@RequestMapping("/page/m51f09/")
 	public String render_m51f09(
@@ -776,6 +745,7 @@ public class GenericViewController {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
+		model.addAttribute("typeId", 104);
 		
 		return "m51f09";
 	}
@@ -788,6 +758,7 @@ public class GenericViewController {
 				
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("typeId", 104);
 		
 		return "m51f09";
 	}
@@ -800,7 +771,7 @@ public class GenericViewController {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
-		
+		model.addAttribute("typeId", 105);
 		return "m51f10";
 	}
 	
@@ -812,8 +783,92 @@ public class GenericViewController {
 				
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("typeId", 105);
 		return "m51f10";
+	}
+	@RequestMapping("/page/m51f11/")
+	public String render_m51f11(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		model.addAttribute("typeId", 106);
+		return "m51f11";
+	}
+	
+	@RequestMapping("/page/m51f11/{fiscalYear}")
+	public String render_m51f11(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("typeId", 106);
+		return "m51f11";
+	}
+	@RequestMapping("/page/m51f12/")
+	public String render_m51f12(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		model.addAttribute("typeId", 107);
+		return "m51f12";
+	}
+	
+	@RequestMapping("/page/m51f12/{fiscalYear}")
+	public String render_m51f12(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("typeId", 107);
+		return "m51f12";
+	}
+	@RequestMapping("/page/m51f13/")
+	public String render_m51f13(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m51f13";
+	}
+	
+	@RequestMapping("/page/m51f13/{fiscalYear}")
+	public String render_m51f13(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		return "m51f13";
+	}
+	@RequestMapping("/page/m51f14/")
+	public String render_m51f14(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m51f14";
+	}
+	
+	@RequestMapping("/page/m51f14/{fiscalYear}")
+	public String render_m51f14(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		return "m51f14";
 	}
 	
 	@RequestMapping("/page/m52f01/")
@@ -951,6 +1006,28 @@ public class GenericViewController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 119);
 		return "m55f01";
+	}
+	@RequestMapping("/page/m55f02/")
+	public String render_m55f02(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		model.addAttribute("typeId", 120);
+		return "m55f02";
+	}
+	
+	@RequestMapping("/page/m55f02/{fiscalYear}")
+	public String render_m55f02(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("typeId", 120);
+		return "m55f02";
 	}
 	
 	@RequestMapping("/page/m61f03/")

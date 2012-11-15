@@ -34,11 +34,11 @@
 						</tr>
 					</thead>
 					<tbody>
+						<c:forEach items="${fiscalYears}" var="fiscalYear">
 						<tr>
-							<c:forEach items="${fiscalYears}" var="fiscalYear">
 								<td> <a href="./${fiscalYear.fiscalYear}/" class="nextChildrenLnk">${fiscalYear.fiscalYear}<i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-							</c:forEach>
 						</tr>
+						</c:forEach>
 					</tbody>
 				</table>			
 			</c:when>
@@ -49,46 +49,67 @@
 	</div>
 </div>
 
-<script id="rootMainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl">
-	<thead>
-		<tr>
-			<td>เลือกปีงบประมาณ</td>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>{{this}} <a href="./{{this}}/" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-		</tr>
-	</tbody>
-</table>
-</script>
-
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
 	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
-	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
+	<a href="#" class="btn btn-mini btn-success menuUnitLink"><i class="icon icon-random icon-white"></i> เลือกหน่วยนับ</a>
+  	<a href="#" class="btn btn-mini btn-success menuLink110"><i class="icon icon-random icon-white"></i> เชื่อมโยงเป้าหมายเชิงยุทธศาสตร์</a>
+	<a href="#" class="btn btn-mini btn-success menuLink113"><i class="icon icon-random icon-white"></i> เชื่อมโยงเป้าประสงค์เชิงนโยบาย</a>
 </div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
 		<tr>
-			<td width="20"></td>
-			<td width="50">ลำดับที่</td>
-			<td width="50">รหัส</td>
-			<td>{{name}}</td>
+			<td style="width:20px;"></td>
+			<td style="width:40px;">รหัส</td>
+			<td>ชื่อ{{name}}</td>
+			<td style="width:150px;">หน่วยนับ</td>
+			<td style="width:250px;" type-id="110">เชื่อมโยงเป้าหมายเชิงยุทธศาสตร์</td>
+			<td style="width:250px;" type-id="113">เชื่อมโยงเป้าประสงค์เชิงนโยบาย</td>
 		</tr>
 	</thead>
 	<tbody>
 	</tbody>
 </table>
 </script>
-
+<script id="unitLinkSltTemplate" type="text/x-handler-template">
+<select class="span2">
+	<option value="0">กรุณาเลือกหน่วยนับ</option>
+	{{#each this}}
+	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+	{{/each}}
+</select><br/>
+<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+</script>
+<script id="link110SltTemplate" type="text/x-handler-template">
+<select class="span4">
+	<option value="0">กรุณาเลือก</option>
+	{{#each this}}
+	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+	{{/each}}
+</select><br/>
+<button class="btn btn-mini updateLink110"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+</script>
+<script id="link113SltTemplate" type="text/x-handler-template">
+<select class="span4">
+	<option value="0">กรุณาเลือก</option>
+	{{#each this}}
+	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+	{{/each}}
+</select><br/>
+<button class="btn btn-mini updateLink113"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+</script>
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
-<td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
-	<td> {{indexHuman index}} </td>
+<td><input type="radio" name="rowRdo" id="rdo_{{id}}" value="{id}}"/></td>
 	<td> {{code}} </td>
 	<td> {{name}} </td>
+	<td class="unitLink"> <ul class="noBullet">{{#each units}}</li>{{name}}<li>{{/each}}</ul></td>
+	<td class="link110" data-id="{{link110.id}}">{{link110.parent.name}}</td>
+	<td class="link113" data-id="{{link113.id}}">{{link113.parent.name}}</td>
 </script>
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
@@ -102,15 +123,8 @@
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
-	<td> {{indexHuman index}} </td>
-	<td colspan="2">
+	<td colspan="3">
 		 <form class="form-inline">
-			<div class="control-group">
-				<label class="control-label" for="codeTxt"> <b>รหัส: </b> </label>
-				<div class="controls">
-					<input id="codeTxt" type='text' placeholder='...' class='span7' value="{{code}}"></input> <br/>
-				</div>
-			</div>
 			<div class="control-group">
 				<label class="control-label" for="nameTxt"> <b>ชื่อ:</b> </label>
 				<div class="controls">
@@ -140,6 +154,14 @@ var mainTblView;
 var e1;
 var objectiveCollection = new ObjectiveCollection();
 var objectiveType;
+var listTargetUnits = new TargetUnitCollection();
+listTargetUnits.fetch({
+	url: appUrl('/TargetUnit/')
+});
+
+var listOBjective110 = new ObjectiveCollection();
+
+var listOBjective113 = new ObjectiveCollection();
 
 $(document).ready(function() {
 
@@ -156,7 +178,9 @@ $(document).ready(function() {
 		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 		objectiveRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
-		
+		unitLinkSltTemplate: Handlebars.compile($("#unitLinkSltTemplate").html()),
+		link110SltTemplate: Handlebars.compile($("#link110SltTemplate").html()),
+		link113SltTemplate: Handlebars.compile($("#link113SltTemplate").html()),
 		render: function() {
 			// first render the control
 			
@@ -164,11 +188,13 @@ $(document).ready(function() {
 			
 			this.$el.html(html);
 			
-			// then the inside row
-			json=this.collection.toJSON();
-			
-			html = this.tbodyTemplate(json);
-			this.$el.find('tbody').html(html);
+			if(this.collection.length>0) {
+				// then the inside row
+				json=this.collection.toJSON();
+				
+				html = this.tbodyTemplate(json);
+				this.$el.find('tbody').html(html);
+			}
 
 			// bind all cell
 			this.collection.each(function(model){
@@ -184,7 +210,16 @@ $(document).ready(function() {
 			"click .menuDelete" : "deleteRow",
 			"click .menuEdit"	: "editRow",
 			"click .lineSave" : "saveLine",
-			"click .cancelLineSave" : "cancelSaveLine"
+			"click .cancelLineSave" : "cancelSaveLine",
+			"click .menuUnitLink" : "linkUnit",
+			"click .updateUnitLink" : "updateUnitLink",
+			"click .cancelLink" : "cancelLink",
+			
+			"click a.menuLink110" : "link110",
+			"click button.updateLink110" : "updateLink110",
+				
+			"click a.menuLink113" : "link113",
+			"click button.updateLink113" : "updateLink113"
 		},
 		
 		newRow: function(e) {
@@ -192,6 +227,202 @@ $(document).ready(function() {
 				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
 				this.$el.find('a.btn').toggleClass('disabled');
 			}
+		},
+		link113: function(e) {
+			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
+				this.$el.find('a.btn').toggleClass('disabled');
+				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+				var model = objectiveCollection.get(id);
+				this.currentSelectedModel = model;
+				if(listOBjective113 != null) {
+					
+					var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.link113');
+					
+					var json = listOBjective113.toJSON();
+					
+					if(model.get('link113') != null) {
+						
+						
+							for(var i=0; i< json.length; i++) {
+								
+								if(json[i].id == model.get('link113').parent.id) {
+									json[i].selected = true;
+								}
+							}
+						
+					}
+					
+					
+					var html = this.link113SltTemplate(json);
+					tdEl.html(html);
+				}
+				
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
+			}
+		},
+		link110: function(e) {
+			
+			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
+				this.$el.find('a.btn').toggleClass('disabled');
+				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+				var model = objectiveCollection.get(id);
+				this.currentSelectedModel = model;
+				if(listOBjective110 != null) {
+					
+					var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.link110');
+					
+					var json = listOBjective110.toJSON();
+					
+					if(model.get('link110') != null) {
+						
+						
+							for(var i=0; i< json.length; i++) {
+								if(json[i].id == model.get('link110').parent.id) {
+									json[i].selected = true;
+								}
+							}
+						
+					}
+					
+					
+					var html = this.link110SltTemplate(json);
+					tdEl.html(html);
+				}
+				
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
+			}
+		},
+		
+		updateLink110: function(e) {
+			// now we do post on the objectiveRelations
+			var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			var o = Objective.findOrCreate(id);
+			var link110Id = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
+			var link110Objective = Objective.findOrCreate(link110Id);
+			var relationId = $('input[name=rowRdo]:checked').parents('tr').find('td.link110').attr('data-id');
+			var relation = ObjectiveRelations.findOrCreate(relationId);
+			
+			if(relation != null) {
+				// we should go about update this parent
+				relation.set('parent', link110Objective);
+				
+			} else {
+				relation = new ObjectiveRelations();
+				relation.set('objective', o);
+				relation.set('parent', link110Objective);
+				relation.set('parentType', link110Objective.get('tye'));
+				relation.set('childType', o.get('type'));
+				relation.set('fiscalYear', fiscalYear);
+				
+				
+			}
+			relation.save(null, {
+				success: function(){
+					o.set('link110', relation.toJSON());
+				}
+			});
+			
+			this.$el.find('a.btn').toggleClass('disabled');			
+			
+		},
+		
+		updateLink113: function(e) {
+			// now we do post on the objectiveRelations
+			var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			var o = Objective.findOrCreate(id);
+			var link113Id = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
+			var link113Objective = Objective.findOrCreate(link113Id);
+			var relationId = $('input[name=rowRdo]:checked').parents('tr').find('td.link113').attr('data-id');
+			var relation = ObjectiveRelations.findOrCreate(relationId);
+			
+			if(relation != null) {
+				// we should go about update this parent
+				relation.set('parent', link110Objective);
+				
+			} else {
+				relation = new ObjectiveRelations();
+				relation.set('objective', o);
+				relation.set('parent', link113Objective);
+				relation.set('parentType', link113Objective.get('type'));
+				relation.set('childType', o.get('type'));
+				relation.set('fiscalYear', fiscalYear);
+				
+				
+			}
+			relation.save(null, {
+				success: function(){
+					o.set('link113', relation.toJSON());
+				}
+			});
+			
+			this.$el.find('a.btn').toggleClass('disabled');			
+			
+		},
+		
+		linkUnit: function(e) {
+			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
+				this.$el.find('a.btn').toggleClass('disabled');
+				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+				var model = objectiveCollection.get(id);
+				this.currentSelectedModel = model;
+				if(listTargetUnits != null) {
+					
+					var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.unitLink');
+					
+					var json = listTargetUnits.toJSON();
+					
+					if(model.get('units') != null) {
+						
+						if(model.get('units').length > 0) {
+							for(var i=0; i< json.length; i++) {
+								console.log(json[i].id + " == " + model.get('units').at(0).get('id'));
+								
+								if(json[i].id == model.get('units').at(0).get('id')) {
+									json[i].selected = true;
+								}
+							}
+						}
+					}
+					
+					
+					var html = this.unitLinkSltTemplate(json);
+					tdEl.html(html);
+				}
+				
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
+			}
+			
+		},
+		
+		cancelLink: function(e) {
+			this.$el.find('a.btn').toggleClass('disabled');
+			if(this.currentSelectedModel != null) {
+				this.renderObjective(this.currentSelectedModel);
+			}
+		},
+		
+		updateUnitLink: function(e) {
+			var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			var o = Objective.findOrCreate(id);
+			var unitId = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
+			var unit = TargetUnit.findOrCreate(unitId);
+			
+			if(unitId > 0) {
+				// we should go about update this parent
+				$.ajax({
+					type: 'PUT',
+					url: appUrl('/Objective/'+ id +'/addReplaceUnit/' + unitId),
+					success: _.bind(function(data){
+						o.get('units').add(unit);
+						this.renderObjective(o);
+					},this)
+				});
+			}
+			
+			this.$el.find('a.btn').toggleClass('disabled');
 		},
 		
 		renderObjective: function(objective) {
@@ -214,15 +445,14 @@ $(document).ready(function() {
 		
 		saveLine: function(e) {
 
-			objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
+			var objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
 			
 			inputNameVal = this.$el.find('#nameTxt').val();
-			inputCodeVal = this.$el.find('#codeTxt').val();
 			indexRow = parseInt($(e.currentTarget).attr('indexHolder'));
 			
 			if(this.collection.get(objectiveId) == null) {
 				//var objType = pageObjective.get('type').get('children').at(0);
-				var newObj =  new Objective({name: inputNameVal, code: inputCodeVal, index: indexRow});
+				var newObj =  new Objective({name: inputNameVal});
 				
 				newObj.set('type', objectiveType);
 				newObj.set('fiscalYear', fiscalYear);
@@ -231,8 +461,6 @@ $(document).ready(function() {
 				newObj.save(null, {success: _.bind(function(data){
 					newObj.set('id', data.id);
 					newObj.set('index', this.collection.length);
-					
-					
 					
 					this.collection.add(newObj);
 					
@@ -244,14 +472,12 @@ $(document).ready(function() {
 			} else {
 				var model  = this.collection.get(objectiveId);
 				model.set('name', inputNameVal);
-				model.set('code', inputCodeVal);
 				
 				$.ajax({
 					type: 'POST',
 					url: appUrl('/Objective/'+objectiveId+'/updateFields/'),
 					data: {
 						name: inputNameVal,
-						code: inputCodeVal
 					},
 					success: _.bind(function(){
 						
@@ -315,16 +541,6 @@ $(document).ready(function() {
 	
 	mainTblView = new MainTblView({collection: objectiveCollection});
 
-	if(fiscalYear != null && fiscalYear.length > 0 ) {
-		objectiveCollection.fetch({
-			url: appUrl('/Objective/'+fiscalYear+'/type/'+typeId)
-		});
-	
-		
-		
-		
-	}
-	
 	objectiveType = new ObjectiveType({id: parseInt(typeId)});
 	objectiveType.fetch({
 		success: function(){
@@ -335,8 +551,41 @@ $(document).ready(function() {
 			}
 			headLineStr += '</h4>';
 			$('#headLine').html(headLineStr);
+			
+			if(fiscalYear != null && fiscalYear.length > 0 ) {
+				listOBjective110.fetch({
+					url: appUrl('/Objective/' + fiscalYear + '/type/110' )
+				});
+
+				listOBjective113.fetch({
+					url: appUrl('/Objective/' + fiscalYear + '/type/113' )
+				});
+
+				
+				
+				objectiveCollection.fetch({
+					url: appUrl('/Objective/'+fiscalYear+'/type/'+typeId),
+					success: function(){
+						// now fetch the needed relation
+						var relationsCollection = new ObjectiveRelationsCollection();
+						relationsCollection.fetch({
+							url: appUrl('/ObjectiveRelations/' + fiscalYear + '/relation/' + objectiveType.get('id') ),
+							success: function() {
+								relationsCollection.each(function(relation) {
+									var o = relation.get('objective');
+									var parentTypeId = relation.get('parentType').get('id');
+									o.set('link' + parentTypeId, relation.toJSON());
+								});
+							}
+						});
+					}
+				});
+			}
 		}
 	});
+	
+	
+	
 
 
 

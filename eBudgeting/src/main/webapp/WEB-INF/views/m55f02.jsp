@@ -54,8 +54,7 @@
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
 	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
 	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
-	<a href="#" class="btn btn-mini btn-success menuUnitLink"><i class="icon icon-random icon-white"></i> เลือกหน่วยนับ</a>
-<a href="#" class="btn btn-mini btn-success menuParentLink"><i class="icon icon-random icon-white"></i>เชื่อมโยง{{parent.name}}</a>   
+	
 </div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
@@ -63,8 +62,7 @@
 			<td style="width:20px;"></td>
 			<td style="width:40px;">รหัส</td>
 			<td>ชื่อ{{name}}</td>
-			<td style="width:150px;">หน่วยนับ</td>
-			<td style="width:250px">เชื่อมโยง{{parent.name}}</td>
+
 		</tr>
 	</thead>
 	<tbody>
@@ -81,22 +79,11 @@
 <button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
 <button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
 </script>
-<script id="parentLinkSltTemplate" type="text/x-handler-template">
-<select>
-	<option value="0">กรุณาเลือก</option>
-	{{#each this}}
-	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
-	{{/each}}
-</select>
-<button class="btn btn-mini updateParentLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
-<button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
-</script>
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{id}}" value="{id}}"/></td>
 	<td> {{code}} </td>
 	<td> {{name}} </td>
-	<td class="unitLink"> <ul class="noBullet">{{#each units}}</li>{{name}}<li>{{/each}}</ul></td>
-	<td class="parentLink">{{parent.code}} {{parent.name}} </td>
+
 </script>
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
@@ -142,7 +129,6 @@ var e1;
 var objectiveCollection = new ObjectiveCollection();
 var objectiveType;
 var listTargetUnits = new TargetUnitCollection();
-var parentObjectiveCollection = new ObjectiveCollection();
 listTargetUnits.fetch({
 	url: appUrl('/TargetUnit/')
 });
@@ -163,10 +149,10 @@ $(document).ready(function() {
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 		objectiveRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
 		unitLinkSltTemplate: Handlebars.compile($("#unitLinkSltTemplate").html()),
-		parentLinkSltTemplate: Handlebars.compile($("#parentLinkSltTemplate").html()),
 		
 		render: function() {
 			// first render the control
+			
 			var html = this.mainCtrTemplate(objectiveType.toJSON());
 			
 			this.$el.html(html);
@@ -189,18 +175,14 @@ $(document).ready(function() {
 		},
 		
 		events: {
-			"click a.menuNew" : "newRow",
-			"click a.menuDelete" : "deleteRow",
-			"click a.menuEdit"	: "editRow",
-			"click button.lineSave" : "saveLine",
-			"click button.cancelLineSave" : "cancelSaveLine",
-			"click a.menuUnitLink" : "linkUnit",
-			"click button.updateUnitLink" : "updateUnitLink",
-			"click button.cancelLink" : "cancelLink",
-			
-			"click a.menuParentLink" : "linkParent",
-			"click button.updateParentLink" : "updateParentLink",
-			
+			"click .menuNew" : "newRow",
+			"click .menuDelete" : "deleteRow",
+			"click .menuEdit"	: "editRow",
+			"click .lineSave" : "saveLine",
+			"click .cancelLineSave" : "cancelSaveLine",
+			"click .menuUnitLink" : "linkUnit",
+			"click .updateUnitLink" : "updateUnitLink",
+			"click .cancelLink" : "cancelLink"
 		},
 		
 		newRow: function(e) {
@@ -208,61 +190,6 @@ $(document).ready(function() {
 				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
 				this.$el.find('a.btn').toggleClass('disabled');
 			}
-		},
-		
-		linkParent: function(e) {
-			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
-				this.$el.find('a.btn').toggleClass('disabled');
-				var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-				var model = objectiveCollection.get(id);
-				this.currentSelectedModel = model;
-				if(parentObjectiveCollection != null) {
-					
-					var tdEl = $('input[name=rowRdo]:checked').parents('tr').find('td.parentLink');
-					
-					var json = parentObjectiveCollection.toJSON();
-					
-					if(model.get('parent') != null) {
-					
-						for(var i=0; i< json.length; i++) {
-							if(json[i].id == model.get('parent').get('id')) {
-								json[i].selected = true;
-							}
-						}
-					}
-					
-					
-					var html = this.parentLinkSltTemplate(json);
-					tdEl.html(html);
-				}
-				
-			} else {
-				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
-			}
-		},
-		
-		updateParentLink: function(e) {
-
-			
-			var id = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-			var o = Objective.findOrCreate(id);
-			var parentId = $('input[name=rowRdo]:checked').parents('tr').find('select').val();
-			var parent = Objective.findOrCreate(parentId);
-			
-			if(parentId > 0) {
-				// we should go about update this parent
-				
-				$.ajax({
-					type: 'PUT',
-					url: appUrl('/Objective/'+ id +'/updateToParent/' + parentId),
-					success: _.bind(function(data){
-						o.set('parent', parent);
-						this.renderObjective(o);
-					},this)
-				});
-			}
-			
-			this.$el.find('a.btn').toggleClass('disabled');
 		},
 		
 		linkUnit: function(e) {
@@ -455,27 +382,12 @@ $(document).ready(function() {
 			}
 			headLineStr += '</h4>';
 			$('#headLine').html(headLineStr);
-		
+			
 			if(fiscalYear != null && fiscalYear.length > 0 ) {
 				objectiveCollection.fetch({
 					url: appUrl('/Objective/'+fiscalYear+'/type/'+typeId)
 				});
-				
-				if( objectiveType.get('parent') != null ) {
-					parentObjectiveCollection = new ObjectiveCollection();
-					parentObjectiveCollection.fetch({
-						url: appUrl("/Objective/"+ fiscalYear +"/type/" +objectiveType.get('parent').get('id')), 
-						success: function() {
-							
-						}
-					});
-				} 
 			}
-			
-			
-			
-			
-			
 		}
 	});
 	

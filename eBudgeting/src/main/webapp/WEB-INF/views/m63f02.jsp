@@ -40,11 +40,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<c:forEach items="${fiscalYears}" var="fiscalYear">
+					<c:forEach items="${fiscalYears}" var="fiscalYear">
+						<tr>
+						
 							<td><a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk">${fiscalYear.fiscalYear} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-						</c:forEach>
-					</tr>
+						</tr>
+					</c:forEach>
 				</tbody>
 			</table>			
 		</c:when>
@@ -119,7 +120,7 @@
 </script>
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
-	<tr data-level="{{this.level}}" data-id="{{this.id}}">
+	<tr data-level="{{this.level}}" data-id="{{this.id}}"  class="type-{{type.id}}">
 		<td  style="width:400px;" class="{{#if this.children}}disable{{/if}}">
 			<span  style="padding-left:{{this.padding}}px;width:{{substract 409 this.padding}}px;">
 					{{#if this.children}}
@@ -129,7 +130,7 @@
 						<img width=8 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/> - 
 					{{/if}}
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
-					<label class="main" for="item_{{this.id}}"><b>{{this.type.name}}ที่ {{indexHuman this.index}}</b> [{{this.code}}] {{this.name}}</label>
+					<label class="main" for="item_{{this.id}}"><b>{{this.type.name}}</b> [{{this.code}}] {{this.name}}</label>
 					{{#unless this.children}}
 						<img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>
 						<ul>

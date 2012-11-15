@@ -70,6 +70,11 @@ Objective = Backbone.RelationalModel.extend({
 	    	key: 'targets',
 	    	relatedModel: 'ObjectiveTarget',
 	    	collectionType: 'ObjectiveTargetCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'units',
+	    	relatedModel: 'TargetUnit',
+	    	collectionType: 'TargetUnitCollection'
 	    },{
 	    	type: Backbone.HasMany,
 	    	key: 'targetValues',
@@ -120,18 +125,40 @@ Objective = Backbone.RelationalModel.extend({
 	}
 });
 
+ObjectiveRelations = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'objective',
+		relatedModel: 'Objective'
+	}, {
+		type: Backbone.HasOne,
+		key: 'parent',
+		relatedModel: 'Objective'
+	},{
+		type: Backbone.HasOne,
+		key: 'parentType',
+		relatedModel: 'ObjectiveType'
+	}, {
+		type: Backbone.HasOne,
+		key: 'childType',
+		relatedModel: 'ObjectiveType'
+	}],
+	urlRoot: appUrl('/ObjectiveRelations'),
+});
+
 ObjectiveType = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
 	relations: [
 	    {
+	    	type: Backbone.HasOne,
+	    	key: 'parent',
+	    	relatedModel: 'ObjectiveType'
+	    },{
 	    	type: Backbone.HasMany,
 	    	key: 'children',
 	    	relatedModel: 'ObjectiveType',
-	    	collectionType: 'ObjectiveTypeCollection',
-	    	reverseRelation: {
-	    		type: Backbone.HasOne,
-	    		key: 'parent'
-	    	}
+	    	collectionType: 'ObjectiveTypeCollection'
 	    }
 	],
 	urlRoot: appUrl('/ObjectiveType')
@@ -427,6 +454,9 @@ TargetUnitCollection = Backbone.Collection.extend({
 });
 TargetValueCollection = Backbone.Collection.extend({
 	model: TargetValue
+});
+ObjectiveRelationsCollection = Backbone.Collection.extend({
+	model: ObjectiveRelations
 });
 
 

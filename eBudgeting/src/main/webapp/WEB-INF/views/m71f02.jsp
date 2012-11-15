@@ -38,16 +38,14 @@
 								<td>เลือกปีงบประมาณ</td>
 							</tr>
 						</thead>
-						<tbody>
-							<tr>
-								<c:forEach items="${fiscalYears}" var="fiscalYear">
-									<td><a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/"
-										class="nextChildrenLnk">${fiscalYear.fiscalYear} <i
-											class="icon icon-chevron-right nextChildrenLnk"></i>
-									</a></td>
-								</c:forEach>
-							</tr>
-						</tbody>
+				<tbody>
+					<c:forEach items="${fiscalYears}" var="fiscalYear">
+						<tr>
+						
+							<td><a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk">${fiscalYear.fiscalYear} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
+						</tr>
+					</c:forEach>
+				</tbody>
 					</table>
 				</c:when>
 			</c:choose>
@@ -126,7 +124,7 @@
 </script>
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
-	<tr data-level="{{this.level}}" data-id="{{this.id}}">
+	<tr data-level="{{this.level}}" data-id="{{this.id}}"  class="type-{{type.id}}">
 		<td style="width:400px;" class="{{#if this.children}}disable{{/if}}">
 			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
 					{{#if this.children}}
@@ -138,7 +136,7 @@
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">
 						{{#unless this.children}}<a href="#" class="detail">{{/unless}}
-						<b>{{this.type.name}}ที่ {{indexHuman this.index}}</b> [{{this.id}}-{{this.code}}] {{this.name}}
+						<b>{{this.type.name}}</b> [{{this.id}}-{{this.code}}] {{this.name}}
 						{{#unless this.children}}</a>{{/unless}}
 					</label>
 					{{#unless this.children}}

@@ -107,6 +107,10 @@ public class Objective implements Serializable {
 	@JoinTable(name="PLN_JOIN_OBJECTIVE_TARGET")
 	private  List<ObjectiveTarget> targets;
 	
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name="PLN_JOIN_OBJECTIVE_UNIT")
+	private  List<TargetUnit> units;
+	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY) 
 	private List<TargetValue> targetValues;
 	
@@ -201,6 +205,19 @@ public class Objective implements Serializable {
 	public void setAllocationRecords(List<AllocationRecord> allocationRecords) {
 		this.allocationRecords = allocationRecords;
 	}
+	public List<TargetUnit> getUnits() {
+		return units;
+	}
+	public void setUnits(List<TargetUnit> units) {
+		this.units = units;
+	}
+	public void addUnit(TargetUnit unit) {
+		if(this.units == null) {
+			this.units = new ArrayList<TargetUnit>();
+		}
+		this.units.add(unit);
+	}
+	
 	// loading barebone information about the entity
 	public void doBasicLazyLoad() {
 		//now we get one parent and its type
@@ -488,6 +505,11 @@ public class Objective implements Serializable {
 	}
 	public void setTargetValues(List<TargetValue> targetValues) {
 		this.targetValues = targetValues;
+	}
+	public void addReplaceUnit(TargetUnit unit) {
+		this.units = new ArrayList<TargetUnit>();
+		this.units.add(unit);
+		
 	}
 	
 	

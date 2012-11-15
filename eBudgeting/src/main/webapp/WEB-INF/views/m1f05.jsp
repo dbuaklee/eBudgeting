@@ -42,31 +42,110 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<c:forEach items="${fiscalYears}" var="fiscalYear">
-							<td>${fiscalYear.fiscalYear} </td>
-						</c:forEach>
-					</tr>
+					
 				</tbody>
 			</table>			
 		</c:when>
 		</c:choose>
-		</div>
+		
 		
 		<form>
 		    <fieldset>
 			    <legend>ตั้งค่าปีงบประมาณใหม่</legend>
 			    <label>ระบุปีงบประมาณ</label>
-			    <input type="text" placeholder="…" id="fiscalYear">
+			    <input type="text" placeholder="…" id="fiscalYearTxt">
 			    <span class="help-block">เพิ่มค่าตั้งต้นของปีงบประมาณใหม่</span>
-			    <button type="submit" class="btn">Submit</button>
+			    <button class="btn" id="initFiscalYearBtn">ตกลง</button>
 		    </fieldset>
     	</form>
+    	</div>
 	</div>
 </div>
-	
+<script id="tbodyTemplate" type="text/x-handlebars-template">
+{{#each this}}
+<tr data-id="{{id}}">
+</tr>
+{{/each}}
+</script>
+<script id="rowTemplate" type="text/x-handelbars-template">
+<td>{{fiscalYear}}</td>
+</script>
 <script type="text/javascript">
+function initNewFiscalyear() {
+	return false;
+}
+var fiscalYearView;
+var rootObjective = new ObjectiveCollection();
 $(document).ready(function() {
+	
+	var FiscalYearView = Backbone.View.extend({
+		initialize: function() {
+			rootObjective.bind('reset', this.render, this);
+		},
+		el: "#mainCtr",
+		events: {
+			"click #initFiscalYearBtn" : "initFiscalYear"
+		},
+		rowTemplate: Handlebars.compile($("#rowTemplate").html()),
+		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
+		
+		initFiscalYear: function() {
+			$.ajax({
+				type: 'POST',
+				url: appUrl('/Objective/initFiscalYear'),
+				data: {
+					fiscalYear: $('#fiscalYearTxt').val()
+				},
+				
+				success: function() {
+					
+					var newRoot = new Objective();
+					newRoot.set('fiscalYear', $('#fiscalYearTxt').val());
+					
+					rootObjective.add(newRoot);
+					rootObjective.trigger('reset');
+				}
+			});
+		},
+		
+		render: function() {
+			
+			var json= rootObjective.toJSON();
+			var html= this.tbodyTemplate(json);
+				
+			this.$el.find('tbody').html(html);
+			
+			// bind all cell
+			rootObjective.each(function(model){
+				model.bind('change', this.renderObjective, this);
+				this.renderObjective(model);
+			}, this);
+
+			return this;
+		},
+		
+		renderObjective: function(objective) {
+
+			var objectiveEl = this.$el.find('tr[data-id='+ objective.get('id') +']');
+			
+			var json = objective.toJSON();
+			var html = this.rowTemplate(json);
+			
+			objectiveEl.html(html);
+			
+		}
+		
+		
+	});
+	
+	fiscalYearView = new FiscalYearView();
+	rootObjective.fetch({
+		url: appUrl('/Objective/root'),
+		success: function() {
+
+			
+		}
+	});
 	
 });
 </script>

@@ -217,8 +217,6 @@ $(document).ready(function() {
 			objectiveId = $(e.currentTarget).parents('tr').attr('data-id');
 			
 			inputNameVal = this.$el.find('#nameTxt').val();
-			inputCodeVal = this.$el.find('#codeTxt').val();
-			indexRow = parseInt($(e.currentTarget).attr('indexHolder'));
 			
 			if(this.collection.at(indexRow) == null) {
 				//var objType = pageObjective.get('type').get('children').at(0);
@@ -244,14 +242,12 @@ $(document).ready(function() {
 			} else {
 				var model  = this.collection.at(indexRow);
 				model.set('name', inputNameVal);
-				model.set('code', inputCodeVal);
-				
+					
 				$.ajax({
 					type: 'POST',
 					url: appUrl('/Objective/'+objectiveId+'/updateFields/'),
 					data: {
 						name: inputNameVal,
-						code: inputCodeVal
 					},
 					success: _.bind(function(){
 						

@@ -35,8 +35,10 @@ import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveTypeId;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.models.pln.TargetValue;
 import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
@@ -46,6 +48,7 @@ import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
+import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTargetRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
@@ -104,6 +107,8 @@ public class EntityServiceJPA implements EntityService {
 	private TargetValueAllocationRecordRepository targetValueAllocationRecordRepository;
 	
 	@Autowired
+	private ObjectiveRelationsRepository objectiveRelationsRepository;
+	@Autowired
 	private ObjectMapper mapper;
 	
 
@@ -111,6 +116,9 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
 		ObjectiveType type = objectiveTypeRepository.findOne(id);
+		if(type.getParent() !=null) {
+			type.getParent().getName();
+		}
 		type.getChildren().size();
 		return type;
 	}
@@ -1003,7 +1011,6 @@ public class EntityServiceJPA implements EntityService {
 		objective.setName(objectiveJsonNode.get("name").asText());
 		
 		objective.setFiscalYear(objectiveJsonNode.get("fiscalYear").asInt());
-		objective.setIndex(objectiveJsonNode.get("index").asInt());
 
 		if(objectiveJsonNode.get("type") != null) {
 			Long objectiveTypeId = objectiveJsonNode.get("type").get("id").asLong();
@@ -1026,17 +1033,32 @@ public class EntityServiceJPA implements EntityService {
 			} else {
 				objective.setParentPath("."+parentId+parent.getParentPath());
 			}
+		} else if(objective.getType().getId() == ObjectiveTypeId.แผนงาน.getValue()) {
+			// this parent  must be root!
+			Objective root = objectiveRepository.findRootOfFiscalYear(objective.getFiscalYear());
+			objective.setParent(root);
+			
+			objective.setParentPath("." + root.getId().toString() + ".");
 		}
 		
 		if(objectiveJsonNode.get("isLeaf") != null) {
 			objective.setIsLeaf(objectiveJsonNode.get("isLeaf").asBoolean());
 		}
 		
-		if(objectiveJsonNode.get("code") != null) {
-			objective.setCode(objectiveJsonNode.get("code").asText());
+		
+		//will have to find the maxone and put the increment here!
+		String maxCode = objectiveRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
+		Integer nextCode = 0;
+		if(maxCode == null) {
+			nextCode=10;
 		} else {
-			//will have to find the maxone and put the increment here!
+			nextCode = Integer.parseInt(maxCode) + 1;
 		}
+		
+		objective.setCode(nextCode.toString());
+		objective.setIndex(nextCode);
+			
+		
 		
 		// we have to assume to save only the parameter!
 		
@@ -1087,9 +1109,7 @@ public class EntityServiceJPA implements EntityService {
 			if(parent.getChildren() != null && parent.getChildren().size() == 0) {
 				parent.setIsLeaf(true);
 				objectiveRepository.save(parent);
-			} else {
-				objectiveRepository.reIndex(obj.getIndex(), parent);
-			}
+			} 
 		}
 		objectiveRepository.delete(obj);
 		
@@ -1756,6 +1776,9 @@ public class EntityServiceJPA implements EntityService {
 		List<Objective> objs = objectiveRepository.findAllByFiscalYearAndType_id(fiscalYear, typeId);
 		for(Objective obj : objs){
 			obj.getTargets().size();
+			if(obj.getType().getParent() != null) {
+				obj.getType().getParent().getName();
+			}
 		}
 		
 		return objs;
@@ -1764,6 +1787,8 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public Objective updateObjectiveParent(Long id, Long parentId) {
 		Objective o = objectiveRepository.findOne(id);
+		String oldParentPath = "." +  o.getId().toString() +  o.getParentPath();
+		
 		Objective parent = objectiveRepository.findOne(parentId);
 		
 		if(o != null && parent != null) {
@@ -1774,9 +1799,113 @@ public class EntityServiceJPA implements EntityService {
 				o.setParentPath("."+parent.getId()+parent.getParentPath());
 			}
 			objectiveRepository.save(o);
+			
+			
+			// now every child with old o parentpath will have to be updated
+			logger.debug(oldParentPath);
+			
+			List<Objective> children = objectiveRepository
+					.findAllByFiscalYearAndParentPathLike(o.getFiscalYear(), "%"+oldParentPath);
+			
+			for(Objective child : children) {
+				logger.debug("-------" + child.getId().toString() + " old ParentPath : " + child.getParentPath());
+				String oldString = child.getParentPath();
+				child.setParentPath(oldString.replace(oldParentPath, "." +  o.getId().toString() +o.getParentPath()));
+				logger.debug("-------" + child.getId().toString() + " new ParentPath : " + child.getParentPath());
+				objectiveRepository.save(child);
+			}
+			
+			
 			return o;
 		}
 		return null;
+	}
+
+	@Override
+	public Objective objectiveAddReplaceUnit(Long id, Long unitId) {
+		Objective o = objectiveRepository.findOne(id);
+		TargetUnit unit = targetUnitRepository.findOne(unitId);
+		
+		if(o != null && unit != null ) {
+			o.addReplaceUnit(unit);
+		}
+		objectiveRepository.save(o);
+		return o;
+	}
+
+	@Override
+	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelation(
+			Integer fiscalYear, Long childTypeId) {
+		
+		ObjectiveType childType = objectiveTypeRepository.findOne(childTypeId);
+		
+		return objectiveRelationsRepository.findAllByFiscalYearAndChildType(fiscalYear, childType);
+	}
+
+	@Override
+	public ObjectiveRelations saveObjectiveRelations(JsonNode relation) {
+		
+		Long objectiveId = relation.get("objective").get("id").asLong();
+		Long parentId = relation.get("parent").get("id").asLong();
+		Integer fiscalYear = relation.get("fiscalYear").asInt();
+		
+		Objective objective = objectiveRepository.findOne(objectiveId);
+		if(objective.getParent() != null) {
+			objective.getParent().getName();
+		}
+		Objective parent = objectiveRepository.findOne(parentId);
+		
+		ObjectiveRelations relationJpa = new ObjectiveRelations();
+		
+		relationJpa.setFiscalYear(fiscalYear);
+		relationJpa.setObjective(objective);
+		relationJpa.setChildType(objective.getType());
+		
+		relationJpa.setParent(parent);
+		relationJpa.setParentType(parent.getType());
+		relationJpa.getObjective().getUnits().size();
+		
+		objectiveRelationsRepository.save(relationJpa);
+		
+		return relationJpa;
+	}
+
+	@Override
+	public ObjectiveRelations updateObjectiveRelations(Long id,
+			JsonNode relation) {
+		ObjectiveRelations relationJpa = objectiveRelationsRepository.findOne(id);
+		Long parentId = relation.get("parent").get("id").asLong();
+		Objective parent = objectiveRepository.findOne(parentId);
+		
+		relationJpa.setParent(parent);
+		relationJpa.setParentType(parent.getType());
+		
+		relationJpa.getObjective().getParent();
+		
+		if(relationJpa.getObjective().getParent() != null) {
+			relationJpa.getObjective().getParent().getName();
+		}
+		
+		relationJpa.getObjective().getUnits().size();
+		
+		objectiveRelationsRepository.save(relationJpa);
+		
+		return relationJpa;
+	}
+
+	@Override
+	public String initFiscalYear(Integer fiscalYear) {
+		Objective obj = new Objective();
+		obj.setName("ROOT");
+		obj.setParent(null);
+		obj.setFiscalYear(fiscalYear);
+		
+		ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
+		obj.setType(rootType);
+		
+		objectiveRepository.save(obj);
+		
+		return "success";
 	}
 
 

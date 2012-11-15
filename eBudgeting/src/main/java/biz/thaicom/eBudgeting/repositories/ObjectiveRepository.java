@@ -10,6 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 
 public interface ObjectiveRepository extends PagingAndSortingRepository<Objective, Long>, JpaSpecificationExecutor<Objective>{
 	public List<Objective> findByTypeId(Long id);
@@ -103,11 +104,21 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"FROM Objective objective " +
 			"	INNER JOIN FETCH objective.type type " +
 			"	LEFT OUTER JOIN FETCH objective.parent parent " +
+			"	LEFT OUTER JOIN FETCH objective.units unit " +
 			"WHERE objective.fiscalYear=?1 " +
 			"	AND objective.type.id=?2 " +
 			"ORDER BY objective.index asc, objective.id asc ")
 	public List<Objective> findAllByFiscalYearAndType_id(Integer fiscalYear,
 			Long typeId);
+
+	@Query("" +
+			"SELECT max(o.code) " +
+			"FROM Objective o " +
+			"WHERE o.type=? AND o.fiscalYear=?2 ")
+	public String findMaxCodeOfTypeAndFiscalYear(ObjectiveType type,
+			Integer fiscalYear);
 	
+	
+	public List<Objective> findAllByFiscalYearAndParentPathLike(Integer fiscalYear, String parentPath);
 
 }
