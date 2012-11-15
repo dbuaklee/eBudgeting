@@ -248,6 +248,12 @@ public class EntityServiceJPA implements EntityService {
 		BudgetType b = budgetTypeRepository.findOne(id);
 		if(b!=null) {
 			b.doBasicLazyLoad();
+			
+			logger.debug("test- ----");
+			
+			logger.debug("-->" + b.getChildren().size());
+			
+			b.getChildren().size();
 		}
 		return b;
 	}
@@ -322,6 +328,11 @@ public class EntityServiceJPA implements EntityService {
 		List<FormulaStrategy> list = formulaStrategyRepository.findByfiscalYearAndType_idOrderByIndexAsc(fiscalYear, budgetTypeId);
 		for(FormulaStrategy strategy : list) {
 			strategy.getFormulaColumns().size();
+			logger.debug("-----" + strategy.getType().getName());
+			if(strategy.getType().getParent()!=null) {
+				strategy.getType().getParent().getName();
+			}
+			//logger.debug("-----" + strategy.getType().getParent().getName());
 		}
 		
 		return list;
@@ -341,8 +352,8 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Override
 	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(
-			Integer fiscalYear, Boolean isStandardItem, String parentPath) {
-		List<FormulaStrategy> list = formulaStrategyRepository.findAllByfiscalYearAndIsStandardItemAndType_ParentPathLike(fiscalYear, isStandardItem, parentPath);
+			Integer fiscalYear, Boolean isStandardItem, Long budgetTypeId, String parentPath) {
+		List<FormulaStrategy> list = formulaStrategyRepository.findAllByfiscalYearAndIsStandardItemAndType_ParentPathLike(fiscalYear, isStandardItem, budgetTypeId, parentPath);
 		for(FormulaStrategy strategy : list) {
 			strategy.getFormulaColumns().size();
 		}

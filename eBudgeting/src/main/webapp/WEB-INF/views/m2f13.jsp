@@ -435,6 +435,7 @@ $(document).ready(function() {
 			formulaStrategy.set('type', {id: this.budgetType.get('id')});
 			formulaStrategy.set('fiscalYear', fiscalYear);
 			formulaStrategy.set('numberColumns', 0);
+			formulaStrategy.set('isStandardItem', false);
 			formulaStrategy.set('index', this.budgetType.get('formulaStrategy').length);
 			
 			
@@ -478,6 +479,9 @@ $(document).ready(function() {
 		},
 		
 		renderChild: function(caller) {
+			
+			//console.log(caller.toJSON());
+			
 			var callerFormulaEl = "tr[data-id="+ caller.get('id') +"] .formulaDetail ol";
 			
 			var json = caller.get('formulaStrategy').toJSON();
@@ -608,9 +612,12 @@ $(document).ready(function() {
 	
 		budgetType = new BudgetType({id: budgetTypeId});
 		
-		mainCtrView = new MainCtrView({model: budgetType});
+		
 		
 		budgetType.fetch({success: function() {
+		
+			mainCtrView = new MainCtrView({model: budgetType});
+			
 			
 			budgetType.trigger('reset');
 			
@@ -620,7 +627,12 @@ $(document).ready(function() {
 				strategyCollection.fetch({
 					url: appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + child.get('id')),
 					success: function(data) {
+						
+						
+						
 						child.set('formulaStrategy',strategyCollection);
+						//console.log(child.toJSON());
+						
 						child.trigger('changeFormula', child);
 					}
 				});

@@ -93,7 +93,7 @@ public interface EntityService {
 	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndBudgetType_ParentPathLike(
 			Integer fiscalYear, String parentPath);
 	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(
-			Integer fiscalYear, Boolean isStandardItem, String parentPath);
+			Integer fiscalYear, Boolean isStandardItem, Long budgetTypeId, String parentPath);
 
 
 	

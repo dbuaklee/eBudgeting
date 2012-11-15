@@ -133,7 +133,8 @@ public class BudgetTypeRestController {
 		
 		String parentPath = "%." + budgetTypeId.toString() + ".%";
 		
-		List<FormulaStrategy> strategy = entityService.findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(fiscalYear, true, parentPath);
+		List<FormulaStrategy> strategy = entityService
+				.findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(fiscalYear, true, budgetTypeId, parentPath);
 		
 		if(strategy == null) {
 			throw new EntityNotFoundException();
@@ -151,7 +152,9 @@ public class BudgetTypeRestController {
 		
 		String parentPath = "%." + budgetTypeId.toString() + ".%";
 		
-		List<FormulaStrategy> strategy = entityService.findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(fiscalYear, false, parentPath);
+		logger.debug("======****" +  parentPath);
+		
+		List<FormulaStrategy> strategy = entityService.findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(fiscalYear, false, budgetTypeId, parentPath);
 		
 		if(strategy == null) {
 			throw new EntityNotFoundException();

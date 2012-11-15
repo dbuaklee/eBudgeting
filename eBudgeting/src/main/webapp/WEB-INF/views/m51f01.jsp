@@ -68,6 +68,12 @@
 	<tbody>
 	</tbody>
 </table>
+<div class="controls" style="margin-bottom: 15px;">
+	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
+	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
+	<a href="#" class="btn btn-mini btn-success menuUnitLink"><i class="icon icon-random icon-white"></i> เลือกหน่วยนับ</a>  
+</div>
 </script>
 <script id="unitLinkSltTemplate" type="text/x-handler-template">
 <select class="span2">
@@ -76,7 +82,7 @@
 	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
 </select><br/>
-<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> บันทึก</button>
 <button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
 </script>
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
@@ -243,6 +249,7 @@ $(document).ready(function() {
 			
 			if(unitId > 0) {
 				// we should go about update this parent
+				o.get('units').pop();
 				$.ajax({
 					type: 'PUT',
 					url: appUrl('/Objective/'+ id +'/addReplaceUnit/' + unitId),

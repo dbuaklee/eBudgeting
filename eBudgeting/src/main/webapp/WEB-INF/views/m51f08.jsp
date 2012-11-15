@@ -77,6 +77,17 @@
 	<tbody>
 	</tbody>
 </table>
+<div class="controls" style="margin-bottom: 15px;">
+	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
+	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
+	<a href="#" class="btn btn-mini btn-success menuUnitLink"><i class="icon icon-random icon-white"></i> เลือกหน่วยนับ</a>
+  	<a href="#" class="btn btn-mini btn-success menuParentLink" data-id="115"><i class="icon icon-random icon-white"></i> เชื่อมโยผลผลิต/โครงการ</a>
+	<a href="#" class="btn btn-mini btn-success menuLink" data-id="115"><i class="icon icon-random icon-white"></i> เชื่อมโยงยุทธศาสตร์หน่วยงาน</a>
+	<a href="#" class="btn btn-mini btn-success menuLink" data-id="116"><i class="icon icon-random icon-white"></i> เชื่อมโยงกลยุทธ์/วิธีการกรม</a>
+	<a href="#" class="btn btn-mini btn-success menuLink" data-id="118"><i class="icon icon-random icon-white"></i> เชื่อมโยงแนวทางการจัดสรรงบประมาณ</a>
+
+</div>
 </script>
 <script id="unitLinkSltTemplate" type="text/x-handler-template">
 <select class="span2">
@@ -85,7 +96,7 @@
 	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
 </select><br/>
-<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> บันทึก</button>
 <button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
 </script>
 <script id="linkSltTemplate" type="text/x-handler-template">
@@ -414,6 +425,7 @@ $(document).ready(function() {
 			
 			if(unitId > 0) {
 				// we should go about update this parent
+				o.get('units').pop();
 				$.ajax({
 					type: 'PUT',
 					url: appUrl('/Objective/'+ id +'/addReplaceUnit/' + unitId),

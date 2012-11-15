@@ -76,7 +76,7 @@
 	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
 </select><br/>
-<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> แก้ไข</button>
+<button class="btn btn-mini updateUnitLink"><i class="icon-ok" icon-white"/> บันทึก</button>
 <button class="btn btn-mini cancelLink"><i class="icon-remove" icon-white"/> ยกเลิก</button>
 </script>
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">
@@ -243,6 +243,7 @@ $(document).ready(function() {
 			
 			if(unitId > 0) {
 				// we should go about update this parent
+				o.get('units').pop();
 				$.ajax({
 					type: 'PUT',
 					url: appUrl('/Objective/'+ id +'/addReplaceUnit/' + unitId),
