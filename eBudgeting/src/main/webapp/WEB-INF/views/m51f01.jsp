@@ -315,7 +315,7 @@ $(document).ready(function() {
 					type: 'POST',
 					url: appUrl('/Objective/'+objectiveId+'/updateFields/'),
 					data: {
-						name: inputNameVal,
+						name: inputNameVal
 					},
 					success: _.bind(function(){
 						

@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -75,6 +79,10 @@ public interface EntityService {
 			Integer fiscalYear, Long childTypeId);
 	
 	public String initFiscalYear(Integer fiscalYear);
+	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId, Pageable pageable);
+	
+	
 	
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -169,6 +177,9 @@ public interface EntityService {
 	public ObjectiveRelations saveObjectiveRelations(JsonNode relation);
 	public ObjectiveRelations updateObjectiveRelations(Long id,
 			JsonNode relation);
+	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
+			Integer fiscalYear, Long parentTypeId, List<Long> ids);
+
 
 
 

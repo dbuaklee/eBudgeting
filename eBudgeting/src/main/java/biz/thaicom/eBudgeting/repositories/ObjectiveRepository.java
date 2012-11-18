@@ -2,6 +2,9 @@ package biz.thaicom.eBudgeting.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -110,7 +113,15 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"ORDER BY objective.index asc, objective.id asc ")
 	public List<Objective> findAllByFiscalYearAndType_id(Integer fiscalYear,
 			Long typeId);
-
+	
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"WHERE objective.fiscalYear=?1 " +
+			"	AND objective.type.id=?2 " )
+	public Page<Objective> findPageByFiscalYearAndType_id(Integer fiscalYear,
+			Long typeId, Pageable pageable);
+	
 	@Query("" +
 			"SELECT max(o.code) " +
 			"FROM Objective o " +
@@ -120,5 +131,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	
 	
 	public List<Objective> findAllByFiscalYearAndParentPathLike(Integer fiscalYear, String parentPath);
+
+
 
 }

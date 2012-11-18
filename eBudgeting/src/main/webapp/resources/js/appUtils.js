@@ -26,7 +26,7 @@ $.fn.slideTo = function(data, callBack, right) {
 	
 	if(right == true) {
 		next.css({
-			'left' : '0',
+			'left' : '0'
 		});
 		
 		current.css({

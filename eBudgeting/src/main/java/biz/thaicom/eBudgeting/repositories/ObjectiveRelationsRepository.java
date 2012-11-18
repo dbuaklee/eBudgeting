@@ -42,4 +42,13 @@ public interface ObjectiveRelationsRepository extends JpaSpecificationExecutor<O
 			"WHERE relation.fiscalYear=?1 AND relation.childType=?2 ")
 	public List<ObjectiveRelationsRepository> findAllByFiscalYearAndChildType(Integer fiscalYear, ObjectiveType childType);
 	
+	@Query("" +
+			"SELECT relation " +
+			"FROM ObjectiveRelations relation " +
+			"	INNER JOIN FETCH relation.objective objective " +
+			"	LEFT OUTER JOIN FETCH objective.parent parent " +
+			"	LEFT OUTER JOIN FETCH objective.units unit " +
+			"WHERE relation.fiscalYear=?1 AND relation.childType=?2 AND objective.id in (?3) ")
+	public List<ObjectiveRelationsRepository> findAllByFiscalYearAndChildTypeWithIds(Integer fiscalYear, ObjectiveType childType, List<Long> ids);
+	
 }

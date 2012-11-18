@@ -1,5 +1,6 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +33,8 @@ import biz.thaicom.security.models.ThaicomUserDetail;
 @Controller
 public class ObjectiveRestController {
 	private static final Logger logger = LoggerFactory.getLogger(ObjectiveRestController.class);
+	
+	private static final Integer PAGE_SIZE = 5;
 	
 	@Autowired
 	private EntityService entityService;
@@ -73,6 +79,17 @@ public class ObjectiveRestController {
 		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId);
 	}
 	
+	@RequestMapping(value="/Objective/{fiscalYear}/type/{typeId}/page/{pageNumber}") 
+	public @ResponseBody Page<Objective> getPagedObjectiveByFiscalYearAndType(
+			@PathVariable Integer fiscalYear, 
+			@PathVariable Long typeId,
+			@PathVariable Integer pageNumber) {
+		PageRequest pageRequest =
+	            new PageRequest(pageNumber - 1, PAGE_SIZE, Sort.Direction.ASC, "code");
+		
+		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId, pageRequest);
+	}
+	
 		
 	@RequestMapping(value="/Objective/{id}/addTarget", method=RequestMethod.POST)
 	public @ResponseBody String addTargetToObjective(@PathVariable Long id,
@@ -86,14 +103,17 @@ public class ObjectiveRestController {
 	}
 	
 	
+	@RequestMapping(value="/Objective", method=RequestMethod.POST) 
+	public @ResponseBody Objective saveObjective(@RequestBody JsonNode node) {
+		return entityService.saveObjective(node);
+	}
+	
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.PUT)
 	public @ResponseBody Objective updateObjective(@PathVariable Long id,
-			@RequestBody Objective objective) {
-		
-		
+			@RequestBody JsonNode node) {
 		
 		// now we'll have to save this
-		Objective objectiveFromJpa = entityService.updateObjective(objective);
+		Objective objectiveFromJpa = entityService.saveObjective(node);
 		
 		
 		return objectiveFromJpa;
@@ -129,10 +149,7 @@ public class ObjectiveRestController {
 		return entityService.deleteObjective(id);
 	}
 	
-	@RequestMapping(value="/Objective", method=RequestMethod.POST) 
-	public @ResponseBody Objective saveObjective(@RequestBody JsonNode objective) {
-		return entityService.saveObjective(objective);
-	}
+
 	
 	@RequestMapping(value="/Objective/newObjectiveWithParam", method=RequestMethod.POST) 
 	public @ResponseBody Objective saveObjectiveWithParam(
@@ -247,11 +264,31 @@ public class ObjectiveRestController {
 	}
 	
 	
-	@RequestMapping(value="/ObjectiveRelations/{fiscalYear}/relation/{parentTypeId}") 
+	@RequestMapping(value="/ObjectiveRelations/{fiscalYear}/relation/{parentTypeId}/all") 
 	public @ResponseBody List<ObjectiveRelationsRepository> getObjectiveByFiscalYearAndparentRelation(
 			@PathVariable Integer fiscalYear, @PathVariable Long parentTypeId){
 		return entityService.findObjectiveRelationsByFiscalYearAndChildTypeRelation(fiscalYear, parentTypeId);
 	}
+	
+	@RequestMapping(value="/ObjectiveRelations/{fiscalYear}/relation/{parentTypeId}", method=RequestMethod.GET) 
+	public @ResponseBody List<ObjectiveRelationsRepository> getObjectiveByFiscalYearAndparentRelationWithObjectiveIds(
+			@PathVariable Integer fiscalYear, @PathVariable Long parentTypeId,
+			@RequestParam(required=false, value="ids[]") String[] ids){
+		
+		if(ids==null || ids.length == 0) {
+			return null;
+		}
+		
+		List<Long> idList = new ArrayList<Long>();
+		
+		for(String id: ids) {
+			idList.add(Long.parseLong(id));
+		}
+		return entityService.findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds
+				(fiscalYear, parentTypeId, idList);
+	
+	}
+	
 	
 	@RequestMapping(value="/ObjectiveRelations", method=RequestMethod.POST)
 	public @ResponseBody ObjectiveRelations saveObjectiveRelations( @RequestBody JsonNode relation) {

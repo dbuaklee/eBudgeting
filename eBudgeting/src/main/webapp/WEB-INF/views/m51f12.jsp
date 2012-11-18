@@ -146,7 +146,7 @@ var pageUrl = "/page/m51f04/";
 var mainTblView;
 
 var e1;
-var objectiveCollection = new ObjectiveCollection();
+var objectiveCollection = new ObjectivePagableCollection([], {fiscalYear: fiscalYear, objectiveTypeId: typeId, targetPage: 1});
 var objectiveType;
 var listTargetUnits = new TargetUnitCollection();
 var parentObjectiveCollection = new ObjectiveCollection();
@@ -466,7 +466,7 @@ $(document).ready(function() {
 		
 			if(fiscalYear != null && fiscalYear.length > 0 ) {
 				objectiveCollection.fetch({
-					url: appUrl('/Objective/'+fiscalYear+'/type/'+typeId)
+					
 				});
 				
 				if( objectiveType.get('parent') != null ) {

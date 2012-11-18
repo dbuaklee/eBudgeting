@@ -12,9 +12,8 @@
 			</a> <a class="brand" href="<c:url value='/'/>">eBudgeting</a>
 			<div class="nav-collapse collapse">
 				<ul class="nav">
-					<li class="active"><a href="#">Home</a></li>
-					<li><a href="#about">About</a></li>
-					<li><a href="#contact">Contact</a></li>
+					<li class="active"><a  href="<c:url value='/'/>">กลับสู่หน้าหลัก</a>
+
 				</ul>
 				<p class="navbar-text pull-right">
 					Logged in as

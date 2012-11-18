@@ -105,6 +105,11 @@ Objective = Backbone.RelationalModel.extend({
 	    	key: 'targetValueAllocationRecordsR3',
 	    	relatedModel: 'TargetValueAllocationRecord',
 	    	collectionType: 'TargetValueAllocationRecordCollection'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'relations',
+	    	relatedModel: 'ObjectiveRelations',
+	    	collectionType: 'ObjectiveRelationsCollection'
 	    }
 	    
 	],
@@ -144,7 +149,7 @@ ObjectiveRelations = Backbone.RelationalModel.extend({
 		key: 'childType',
 		relatedModel: 'ObjectiveType'
 	}],
-	urlRoot: appUrl('/ObjectiveRelations'),
+	urlRoot: appUrl('/ObjectiveRelations')
 });
 
 ObjectiveType = Backbone.RelationalModel.extend({
@@ -377,7 +382,7 @@ TargetUnit = Backbone.RelationalModel.extend({
 	relations: [{
 		type: Backbone.HasMany,
 		key: 'targets',
-		relatedModel: 'ObjectiveTarget',
+		relatedModel: 'ObjectiveTarget'
 	}],
 	urlRoot: appUrl('/TargetUnit/')
 });
@@ -419,6 +424,67 @@ TargetValueAllocationRecord = Backbone.RelationalModel.extend({
 ObjectiveCollection = Backbone.Collection.extend({
 	model: Objective
 });
+
+ObjectivePagableCollection = Backbone.Collection.extend({
+	initialize: function(models, options) {
+	    this.fiscalYear = options.fiscalYear;
+	    this.objectiveTypeId = options.objectiveTypeId;
+	    this.targetPage = options.targetPage;
+	  },
+	
+	model: Objective,
+	
+	parse: function(response) {
+		this.pageSize = response.size;
+		this.pageNumber = response.number;
+		this.lastPage = response.lastPage;
+		this.firstPage = response.firstPage;
+		this.totalPages = response.totalPages;
+		this.numberOfElements = response.numberOfElements;
+		this.totalElements = response.totalElements;
+		
+		return response.content;
+	},
+	
+	url: function() {
+	    return appUrl('/Objective/'+ this.fiscalYear +'/type/'+this.objectiveTypeId+'/page/'+this.targetPage);
+	},
+	toPageJSON: function() {
+		return {
+			size: this.size,
+			number: this.number,
+			lastPage: this.lastPage,
+			firstPage: this.firstPage,
+			totalPages: this.totalPages,
+			numberOfElements: this.numberOfElements,
+			totalElements: this.totalElements,
+			contents: this.toJSON()
+		};
+	},
+	toPageParamsJSON: function() {
+		var json={};
+		json.hasPage=true;
+		json.totalElements=this.totalElements;
+		json.pageSize=this.pageSize;
+		json.page=[];
+		for(var i=0; i<this.totalPages; i++) {
+			var isActive = i+1 == this.targetPage;
+			json.page.push({pageNumber: i+1, isActive: isActive});
+		}
+		
+		return json;
+	},
+	getIds: function() {
+		return this.pluck("id");
+	},
+	setParams: function(fiscalYear, ObjectiveTypeId, targetPage) {
+		this.fiscalYear = fiscalYear;
+	    this.objectiveTypeId = objectiveTypeId;
+	    this.targetPage = targetPage;
+	}
+	
+});
+
 ObjectiveTypeCollection = Backbone.Collection.extend({
 	model: ObjectiveType
 });

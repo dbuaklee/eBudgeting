@@ -16,9 +16,13 @@ import oracle.net.aso.f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -1017,8 +1021,15 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public Objective saveObjective(JsonNode objectiveJsonNode) {
+		Objective objective;
 		
-		Objective objective = new Objective();
+		//first check objective id
+		if(objectiveJsonNode.get("id") == null) { 
+			objective = new Objective();
+		} else {
+			objective = objectiveRepository.findOne(objectiveJsonNode.get("id").asLong());
+		}
+		
 		objective.setName(objectiveJsonNode.get("name").asText());
 		
 		objective.setFiscalYear(objectiveJsonNode.get("fiscalYear").asInt());
@@ -1030,13 +1041,32 @@ public class EntityServiceJPA implements EntityService {
 			objective.setType(ot);
 		}
 		
+		//lastly the unit
+		if(objectiveJsonNode.get("units") != null ) {
+			objective.setUnits(new ArrayList<TargetUnit>());
+			
+			for(JsonNode unit : objectiveJsonNode.get("units")) {
+				TargetUnit unitJpa = targetUnitRepository.findOne(unit.get("id").asLong());
+				objective.addUnit(unitJpa);
+				
+			}
+		}
+		 
+		
 		logger.debug("1. {} " , objectiveJsonNode.get("parent"));
+		Objective oldParent = objective.getParent();
 		
 		if(objectiveJsonNode.get("parent") != null &&  objectiveJsonNode.get("parent").get("id") != null  ) {
 			Long parentId = objectiveJsonNode.get("parent").get("id").asLong();
 			Objective parent = objectiveRepository.findOne(parentId);
 			
+			
+			
 			objective.setParent(parent);
+
+			parent.setIsLeaf(false);
+			
+			objectiveRepository.save(parent);
 			
 			if(parent.getParentPath() == null || parent.getParentPath().length() == 0) {
 			
@@ -1050,30 +1080,97 @@ public class EntityServiceJPA implements EntityService {
 			objective.setParent(root);
 			
 			objective.setParentPath("." + root.getId().toString() + ".");
+		} else{
+			// parent is null 
+			objective.setParent(null);
 		}
 		
-		if(objectiveJsonNode.get("isLeaf") != null) {
-			objective.setIsLeaf(objectiveJsonNode.get("isLeaf").asBoolean());
+		// now reset the isLeaf on Old parent 
+		if(oldParent != null) {
+			if(oldParent.getChildren().size() == 0) {
+				oldParent.setIsLeaf(true);
+				objectiveRepository.save(oldParent);
+			}
 		}
+		// and on itself
+		if(objective.getChildren() != null) {
+			if(objective.getChildren().size() == 0) {
+				objective.setIsLeaf(true);
+			} else {
+				objective.setIsLeaf(false);
+			}
+		} else {
+			objective.setIsLeaf(true);
+		}
+		
 		
 		
 		//will have to find the maxone and put the increment here!
-		String maxCode = objectiveRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
-		Integer nextCode = 0;
-		if(maxCode == null) {
-			nextCode=10;
-		} else {
-			nextCode = Integer.parseInt(maxCode) + 1;
+		if(objective.getCode() == null || objective.getCode().length() == 0) {
+			String maxCode = objectiveRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
+			Integer nextCode = 0;
+			if(maxCode == null) {
+				nextCode=10;
+			} else {
+				nextCode = Integer.parseInt(maxCode) + 1;
+			}
+		
+		
+			objective.setCode(nextCode.toString());
+			objective.setIndex(nextCode);
+			
 		}
 		
-		objective.setCode(nextCode.toString());
-		objective.setIndex(nextCode);
-			
 		
+		
+		objectiveRepository.save(objective);
 		
 		// we have to assume to save only the parameter!
 		
-		return objectiveRepository.save(objective);
+		// now deal with changes in relations!
+		for(JsonNode relation : objectiveJsonNode.get("relations")) {
+			// if(relation.getId == null 
+			
+			if(relation.get("id") == null) {
+				if(relation.get("parent") != null) {
+					logger.debug("{} ", relation.get("parent"));
+					
+					if(relation.get("parent").get("id") != null) {
+						Long parentId = relation.get("parent").get("id").asLong();
+						Objective parent = objectiveRepository.findOne(parentId);
+						
+						ObjectiveRelations relationJpa = new ObjectiveRelations();
+						relationJpa.setObjective(objective);
+						relationJpa.setChildType(objective.getType());
+						relationJpa.setFiscalYear(objective.getFiscalYear());
+						relationJpa.setParent(parent);
+						relationJpa.setParentType(parent.getType());
+						
+						objectiveRelationsRepository.save(relationJpa);
+					}
+				}
+				
+			} else {
+				ObjectiveRelations relationJpa = objectiveRelationsRepository.findOne(relation.get("id").asLong());
+				if(relation.get("parent").get("id") != null) {
+					Long parentId = relation.get("parent").get("id").asLong();
+					Objective parent = objectiveRepository.findOne(parentId);
+					
+					relationJpa.setParent(parent);
+				//now this will have to only change parent!
+				} else {
+					logger.debug("*************************************parent is null");
+					relationJpa.setParent(null);
+				}
+				
+				objectiveRelationsRepository.save(relationJpa);
+			}
+			
+			
+		}
+		
+		
+		return objective;
 	}
 
 	@Override
@@ -1794,6 +1891,27 @@ public class EntityServiceJPA implements EntityService {
 		
 		return objs;
 	}
+	
+	@Override
+	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId, Pageable pageable) {
+		
+		Page<Objective> page = objectiveRepository.findPageByFiscalYearAndType_id(fiscalYear, typeId, pageable);
+		for(Objective obj : page.getContent()) {
+			obj.getTargets().size();
+			if(obj.getType().getParent() != null) {
+				obj.getType().getParent().getName();
+				if(obj.getParent() != null) {
+					obj.getParent().getName();
+					logger.debug(" +++++++++++++++++++++++++++++++++++++++++  {} ",obj.getParent().getName() );
+				}
+			}
+			obj.getUnits().size();
+		}
+		
+		return page;
+	}
+	
 
 	@Override
 	public Objective updateObjectiveParent(Long id, Long parentId) {
@@ -1853,6 +1971,14 @@ public class EntityServiceJPA implements EntityService {
 		return objectiveRelationsRepository.findAllByFiscalYearAndChildType(fiscalYear, childType);
 	}
 
+	@Override
+	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
+			Integer fiscalYear, Long childTypeId, List<Long> ids) {
+		
+		ObjectiveType childType = objectiveTypeRepository.findOne(childTypeId);
+		return objectiveRelationsRepository.findAllByFiscalYearAndChildTypeWithIds(fiscalYear, childType, ids);
+	}
+	
 	@Override
 	public ObjectiveRelations saveObjectiveRelations(JsonNode relation) {
 		
@@ -1918,6 +2044,10 @@ public class EntityServiceJPA implements EntityService {
 		
 		return "success";
 	}
+
+	
+
+
 
 
 	

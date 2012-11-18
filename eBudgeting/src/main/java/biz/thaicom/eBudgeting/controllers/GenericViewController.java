@@ -23,6 +23,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveTypeId;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.services.EntityService;
@@ -549,6 +550,7 @@ public class GenericViewController {
 
 
 
+	// --------------------------------------------------------------m51f01: ทะเบียนยุทธศาสตร์การจัดสรร
 	@RequestMapping("/page/m51f01/")
 	public String render_m51f01(
 			Model model, HttpServletRequest request) {
@@ -557,7 +559,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 109);
-		return "m51f01";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f01/{fiscalYear}")
@@ -569,9 +571,22 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 109);
-		return "m51f01";
+		
+		String relatedTypeString = "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", true);
+		
+		
+		return "objectiveRegister";
 	}
 	
+	// --------------------------------------------------------------m51f02: ทะเบียนประเด็นยุทธศาสตร์
 	@RequestMapping("/page/m51f02/")
 	public String render_m51f02(
 			Model model, HttpServletRequest request) {
@@ -580,7 +595,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 121);
-		return "m51f02";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f02/{fiscalYear}")
@@ -592,9 +607,24 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 121);
-		return "m51f02";
+		
+		String relatedTypeString = "" + ObjectiveTypeId.ยุทธศาสตร์การจัดสรรงบประมาณ.getValue() + "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "" +  ObjectiveTypeId.ยุทธศาสตร์การจัดสรรงบประมาณ.getName() + "" ;
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasUnit", true);
+		
+		model.addAttribute("hasParent", "");
+		model.addAttribute("parentTypeName", "");
+		model.addAttribute("parentTypeId", "");
+		
+		
+		return "objectiveRegister";
 	}
 	
+	// --------------------------------------------------------------m51f03: ทะเบียนเป้าหมายเชิงยุทธศาสตร์
 	@RequestMapping("/page/m51f03/")
 	public String render_m51f03(
 			Model model, HttpServletRequest request) {
@@ -603,7 +633,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 110);
-		return "m51f03";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f03/{fiscalYear}")
@@ -615,10 +645,21 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 110);
-		return "m51f03";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.ประเด็นยุทธศาสตร์.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.ประเด็นยุทธศาสตร์.getValue());
+		
+		return "objectiveRegister";
 	}
 	
 	
+	// --------------------------------------------------------------m51f04: ทะเบียนเป้าหมายบริการกระทรวง
 	@RequestMapping("/page/m51f04/")
 	public String render_m51f04(
 			Model model, HttpServletRequest request) {
@@ -627,7 +668,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 111);
-		return "m51f04";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f04/{fiscalYear}")
@@ -639,9 +680,26 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 111);
-		return "m51f04";
+		
+		model.addAttribute("hasUnit", true);
+		
+		model.addAttribute("hasParent", "");
+		model.addAttribute("parentTypeName", "");
+		model.addAttribute("parentTypeId", "");
+		
+		String relatedTypeString = "" + ObjectiveTypeId.เป้าหมายเชิงยุทธศาสตร์.getValue() + " " + 
+				ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getValue();
+				
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString ="" + ObjectiveTypeId.เป้าหมายเชิงยุทธศาสตร์.getName() + " " + 
+				ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getName();
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		return "objectiveRegister";
 	}
 	
+	// --------------------------------------------------------------m51f05: ทะเบียนเป้าหมายบริการหน่วยงาน
 	@RequestMapping("/page/m51f05/")
 	public String render_m51f05(
 			Model model, HttpServletRequest request) {
@@ -650,7 +708,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 112);
-		return "m51f05";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f05/{fiscalYear}")
@@ -662,9 +720,20 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 112);
-		return "m51f05";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.เป้าหมายบริการกระทรวง.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.เป้าหมายบริการกระทรวง.getValue());
+		
+		return "objectiveRegister";
 	}
 
+	// --------------------------------------------------------------m51f06: ทะเบียนแผนงาน
 	@RequestMapping("/page/m51f06/")
 	public String render_m51f06(
 			Model model, HttpServletRequest request) {
@@ -673,7 +742,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 101);
-		return "m51f06";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f06/{fiscalYear}")
@@ -685,9 +754,22 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 101);
-		return "m51f06";
+		
+		String relatedTypeString = "" + ObjectiveTypeId.ประเด็นยุทธศาสตร์.getValue() + "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "" + ObjectiveTypeId.ประเด็นยุทธศาสตร์.getName() + "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", true);
+		
+		return "objectiveRegister";
 	}
 	
+	
+	// --------------------------------------------------------------m51f07: ทะเบียนผลผลิต/โครงการ
 	@RequestMapping("/page/m51f07/")
 	public String render_m51f07(
 			Model model, HttpServletRequest request) {
@@ -696,7 +778,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 102);
-		return "m51f07";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f07/{fiscalYear}")
@@ -708,9 +790,20 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 102);
-		return "m51f07";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.แผนงาน.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.แผนงาน.getValue());
+		
+		return "objectiveRegister";
 	}
 
+	// --------------------------------------------------------------m51f08: ทะเบียนกิจกรรมหลัก
 	@RequestMapping("/page/m51f08/")
 	public String runder_m51f08(
 			Model model, HttpServletRequest request) {
@@ -718,7 +811,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 103);
-		return "m51f08";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f08/{fiscalYear}")
@@ -732,12 +825,29 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 103);
-		return "m51f08";
+		
+		String relatedTypeString = "" + ObjectiveTypeId.ยุทธศาสตร์หน่วยงาน.getValue() + " " +
+				ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getValue() + " " +
+				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getValue() + "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "" + ObjectiveTypeId.ยุทธศาสตร์หน่วยงาน.getName() + " " +
+				ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getName() + " " +
+				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getName() + "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.ผลผลิตโครงการ.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.ผลผลิตโครงการ.getValue());
+		
+		model.addAttribute("hasUnit", true);
+		
+		
+		return "objectiveRegister";
 	}
 
 	
-		
-	
+	// --------------------------------------------------------------m51f09: ทะเบียนกิจกรรมรอง
 	@RequestMapping("/page/m51f09/")
 	public String render_m51f09(
 			Model model, HttpServletRequest request) {
@@ -747,7 +857,7 @@ public class GenericViewController {
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 104);
 		
-		return "m51f09";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f09/{fiscalYear}")
@@ -760,10 +870,20 @@ public class GenericViewController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 104);
 		
-		return "m51f09";
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมหลัก.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมหลัก.getValue());
+		
+		return "objectiveRegister";
 	}
 	
 	
+	// --------------------------------------------------------------m51f10: ทะเบียนกิจกรรมย่อย
 	@RequestMapping("/page/m51f10/")
 	public String render_m51f10(
 			Model model, HttpServletRequest request) {
@@ -772,7 +892,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 105);
-		return "m51f10";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f10/{fiscalYear}")
@@ -784,8 +904,20 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 105);
-		return "m51f10";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมรอง.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมรอง.getValue());
+		
+		return "objectiveRegister";
 	}
+	
+	// --------------------------------------------------------------m51f11: ทะเบียนกิจกรรมเสริม
 	@RequestMapping("/page/m51f11/")
 	public String render_m51f11(
 			Model model, HttpServletRequest request) {
@@ -794,7 +926,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 106);
-		return "m51f11";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f11/{fiscalYear}")
@@ -806,8 +938,19 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 106);
-		return "m51f11";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมย่อย.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมย่อย.getValue());
+		return "objectiveRegister";
 	}
+	
+	// --------------------------------------------------------------m51f12: ทะเบียนกิจกรรมสนับสนุน
 	@RequestMapping("/page/m51f12/")
 	public String render_m51f12(
 			Model model, HttpServletRequest request) {
@@ -816,7 +959,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 107);
-		return "m51f12";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f12/{fiscalYear}")
@@ -828,8 +971,21 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 107);
-		return "m51f12";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมเสริม.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมเสริม.getValue());
+		
+		return "objectiveRegister";
 	}
+	
+	
+	// --------------------------------------------------------------m51f13: ทะเบียนกิจกรรมรายละเอียด
 	@RequestMapping("/page/m51f13/")
 	public String render_m51f13(
 			Model model, HttpServletRequest request) {
@@ -838,7 +994,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 108);
-		return "m51f13";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m51f13/{fiscalYear}")
@@ -850,8 +1006,20 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 108);
-		return "m51f13";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมสนับสนุน.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมสนับสนุน.getValue());
+		return "objectiveRegister";
 	}
+	
+	
+	// --------------------------------------------------------------m51f14: ทะเบียนรายการและระดับรายการ
 	@RequestMapping("/page/m51f14/")
 	public String render_m51f14(
 			Model model, HttpServletRequest request) {
@@ -872,6 +1040,8 @@ public class GenericViewController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		return "m51f14";
 	}
+	
+	// --------------------------------------------------------------m51f15: ทะเบียนรายการกลาง
 	@RequestMapping("/page/m51f15/")
 	public String render_m51f15(
 			Model model, HttpServletRequest request) {
@@ -881,6 +1051,8 @@ public class GenericViewController {
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m51f15";
 	}
+	
+	
 	
 	@RequestMapping("/page/m51f15/{fiscalYear}")
 	public String render_m51f15(
@@ -893,6 +1065,8 @@ public class GenericViewController {
 		return "m51f15";
 	}
 	
+	
+	// --------------------------------------------------------------m52f01: ทะเบียนเป้าประสงค์เชิงนโยบนาย
 	@RequestMapping("/page/m52f01/")
 	public String render_m52f01(
 			Model model, HttpServletRequest request) {
@@ -901,8 +1075,21 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 113);
-		return "m52f01";
+		
+		String relatedTypeString = "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", true);
+		
+		return "objectiveRegister";
 	}
+	
+	
 	
 	@RequestMapping("/page/m52f01/{fiscalYear}")
 	public String render_m52f01(
@@ -913,10 +1100,23 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 113);
-		return "m52f01";
+		
+		
+		String relatedTypeString = "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", true);
+		
+		return "objectiveRegister";
 	}
 	
 	
+	// --------------------------------------------------------------m53f01: ทะเบียนยุทธศาสตร์กระทรวง
 	@RequestMapping("/page/m53f01/")
 	public String render_m53f01(
 			Model model, HttpServletRequest request) {
@@ -925,7 +1125,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 114);
-		return "m53f01";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m53f01/{fiscalYear}")
@@ -937,9 +1137,21 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 114);
-		return "m53f01";
+		
+		String relatedTypeString = "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", true);
+		
+		return "objectiveRegister";
 	}
 	
+	// --------------------------------------------------------------m53f02: ทะเบียนยุทธศาสตร์หน่วยงาน
 	@RequestMapping("/page/m53f02/")
 	public String render_m53f02(
 			Model model, HttpServletRequest request) {
@@ -948,7 +1160,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 115);
-		return "m53f02";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m53f02/{fiscalYear}")
@@ -960,9 +1172,23 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 115);
-		return "m53f02";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getValue());
+		
+		
+		return "objectiveRegister";
+		
 	}
 	
+	
+	// --------------------------------------------------------------m53f03: ทะเบียนกลยุทธ์/วิธีการหน่วยงาน
 	@RequestMapping("/page/m53f03/")
 	public String render_m53f03(
 			Model model, HttpServletRequest request) {
@@ -971,7 +1197,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 116);
-		return "m53f03";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m53f03/{fiscalYear}")
@@ -983,8 +1209,20 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 116);
-		return "m53f03";
+		
+		model.addAttribute("hasUnit", true);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getValue());
+		
+		return "objectiveRegister";
 	}
+	
+	// --------------------------------------------------------------m54f01: ทะเบียนแนวทางการจัดสรรงบประมาณ
 	@RequestMapping("/page/m54f01/")
 	public String render_m54f01(
 			Model model, HttpServletRequest request) {
@@ -993,7 +1231,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 118);
-		return "m54f01";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m54f01/{fiscalYear}")
@@ -1005,8 +1243,21 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 118);
-		return "m54f01";
+		
+		String relatedTypeString = "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", true);
+		
+		return "objectiveRegister";
 	}
+	
+	// --------------------------------------------------------------m55f01: ทะเบียนวิสัยทัศน์หน่วยงาน
 	@RequestMapping("/page/m55f01/")
 	public String render_m55f01(
 			Model model, HttpServletRequest request) {
@@ -1015,7 +1266,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 119);
-		return "m55f01";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m55f01/{fiscalYear}")
@@ -1027,8 +1278,21 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 119);
-		return "m55f01";
+		
+		String relatedTypeString = "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", "");
+		
+		return "objectiveRegister";
 	}
+	
+	// --------------------------------------------------------------m55f02: ทะเบียนพันธกิจหน่วยงาน
 	@RequestMapping("/page/m55f02/")
 	public String render_m55f02(
 			Model model, HttpServletRequest request) {
@@ -1037,7 +1301,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 120);
-		return "m55f02";
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m55f02/{fiscalYear}")
@@ -1049,7 +1313,18 @@ public class GenericViewController {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 120);
-		return "m55f02";
+		
+		String relatedTypeString = "";
+		model.addAttribute("relatedTypeString", relatedTypeString);
+		
+		String relatedTypeNameString = "";
+		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
+		
+		model.addAttribute("hasParent", "");
+
+		model.addAttribute("hasUnit", false);
+		
+		return "objectiveRegister";
 	}
 	
 	@RequestMapping("/page/m61f03/")

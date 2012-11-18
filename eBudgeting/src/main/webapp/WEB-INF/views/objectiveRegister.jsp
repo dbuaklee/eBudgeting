@@ -109,10 +109,12 @@
 	{{#if hasParent}}
 	<td class="parentLink"> {{parent.code}} {{parent.name}} </td>
 	{{/if}}	
-
+	
+	{{#if hasRelatedType}}
 	{{#each relations}}
 		<td>{{#if parent}} [{{parent.code}}] {{parent.name}} {{/if}}</td>
 	{{/each}}
+	{{/if}}
 	
 </script>
 
@@ -149,6 +151,7 @@
 	</select>
 	{{/if}}
 
+	{{#if hasRelatedType}}
 	{{#each relations}}
 	<label>เชื่อมความสัมพันธ์{{relationInfo.name}}</label>
 	<select class="span5 relationSlt" parentId="{{relationInfo.parentId}}" id="relation-{{relationInfo.parentId}}">
@@ -158,6 +161,7 @@
 		{{/each}}
 		</select>
 	{{/each}}
+	{{/if}}
 
 </form>
 </script>
@@ -182,6 +186,9 @@ var hasParent = "${hasParent}";
 var hasUnit = "${hasUnit}";
 var relatedTypeString= "${relatedTypeString}";
 var relatedTypeList = relatedTypeString.split(' ');
+var hasRelatedType;
+hasRelatedType = relatedTypeString.length > 0;
+
 
 var relatedTypeNameString = "${relatedTypeNameString}";
 var relatedTypenameList = relatedTypeNameString.split(' ');
@@ -303,7 +310,8 @@ $(document).ready(function() {
 				
 				// loop through the parent
 				for(var i=0; i<json.unitSelectionList.length; i++) {
-					if(this.currentObjective.get('units') != null) {
+					if(this.currentObjective.get('units') != null && 
+							this.currentObjective.get('units').at(0) != null) {
 						if(json.unitSelectionList[i].id == this.currentObjective.get('units').at(0).get('id')) {
 							json.unitSelectionList[i].selected = "selected";
 						}
@@ -331,22 +339,26 @@ $(document).ready(function() {
 			
 			
 			// now associcate each listOfObjective
-			
-			for(var i=0; i< relatedTypeList.length; i++) {
-				
-				json.relations[i].selectionList = listObjective[relatedTypeList[i]].toJSON();
-				
-				for(var j=0; j<json.relations[i].selectionList.length; j++) {
-					if(json.relations[i].parent != null) {
-						if(json.relations[i].selectionList[j].id == json.relations[i].parent.id) {
-							json.relations[i].selectionList[j].selected = "selected";
+			if(hasRelatedType == true) {
+				json.hasRelatedType=true;
+				for(var i=0; i< relatedTypeList.length; i++) {
+					
+					json.relations[i].selectionList = listObjective[relatedTypeList[i]].toJSON();
+					
+					for(var j=0; j<json.relations[i].selectionList.length; j++) {
+						if(json.relations[i].parent != null) {
+							if(json.relations[i].selectionList[j].id == json.relations[i].parent.id) {
+								json.relations[i].selectionList[j].selected = "selected";
+							}
+								
 						}
-							
 					}
+					json.relations[i].relationInfo = {};
+					json.relations[i].relationInfo.name = relatedTypenameList[i];
+					json.relations[i].relationInfo.parentId = relatedTypeList[i];
 				}
-				json.relations[i].relationInfo = {};
-				json.relations[i].relationInfo.name = relatedTypenameList[i];
-				json.relations[i].relationInfo.parentId = relatedTypeList[i];
+			} else{
+				json.hasRelatedType=false;	
 			}
 			
 			var html = this.modalBodyTemplate(json);
@@ -392,8 +404,10 @@ $(document).ready(function() {
 			var json =  objectiveType.toJSON();
 			json.pageParams = this.collection.toPageParamsJSON();
 			
-
-			json.relatedTypenameList = relatedTypenameList;
+			if(hasRelatedType == true) {
+				json.relatedTypenameList = relatedTypenameList;
+				
+			}
 			
 			if(hasParent.length > 0) {
 				json.hasParent = true;
@@ -401,9 +415,11 @@ $(document).ready(function() {
 				json.parentTypeId = parentTypeId;
 			}
 			
-			if(hasParent.length > 0) {
+			if(hasUnit.length > 0) {
 				json.hasUnit = true;
 			}
+			
+
 			
 			var html = this.mainCtrTemplate(json);
 
@@ -476,6 +492,8 @@ $(document).ready(function() {
 				json.hasParent = true;
 			}
 			
+			json.hasRelatedType = hasRelatedType;
+				
 			objectiveEl.html(this.objectiveRowTemplate(json));
 			
 		},
@@ -527,42 +545,47 @@ $(document).ready(function() {
 				success: function(){
 					
 					
-					//initializae o.get('relations')
-					for(var i=0; i<objectiveCollection.length; i++) {
-						
-						var relationCollection = new ObjectiveRelationsCollection();
-						for(var j=0; j<relatedTypeList.length; j++ ) {
-							relationCollection.push(new ObjectiveRelations());
+					if(hasRelatedType == true) {
+						//initializae o.get('relations')
+						for(var i=0; i<objectiveCollection.length; i++) {
 							
-						}
-						objectiveCollection.at(i).set('relations', relationCollection);
-					}
-					
-					
-					// now fetch the needed relation
-					var relationsCollection = new ObjectiveRelationsCollection();
-					relationsCollection.fetch({
-						url: appUrl('/ObjectiveRelations/' + fiscalYear + '/relation/' + objectiveType.get('id') ),
-						data: {ids: objectiveCollection.getIds()},
-						success: function() {
-							for(var k=0 ; k < relationsCollection.length; k++) {
-								
-								var relation = relationsCollection.at(k);
-								
-								var o = relation.get('objective');
-								var parentTypeId = relation.get('parentType').get('id');
-								var index = relatedTypeList.indexOf(parentTypeId.toString());
-								var objRelations = o.get('relations');
-								
-								objRelations.remove(objRelations.at(index));
-								objRelations.add(relation, {at: index});
+							var relationCollection = new ObjectiveRelationsCollection();
+							for(var j=0; j<relatedTypeList.length; j++ ) {
+								relationCollection.push(new ObjectiveRelations());
 								
 							}
-							
-							objectiveCollection.trigger('reset');	
+							objectiveCollection.at(i).set('relations', relationCollection);
 						}
-						
-					});
+					
+					
+					
+						// now fetch the needed relation
+						var relationsCollection = new ObjectiveRelationsCollection();
+						relationsCollection.fetch({
+							url: appUrl('/ObjectiveRelations/' + fiscalYear + '/relation/' + objectiveType.get('id') ),
+							data: {ids: objectiveCollection.getIds()},
+							success: function() {
+								for(var k=0 ; k < relationsCollection.length; k++) {
+									
+									var relation = relationsCollection.at(k);
+									
+									var o = relation.get('objective');
+									var parentTypeId = relation.get('parentType').get('id');
+									var index = relatedTypeList.indexOf(parentTypeId.toString());
+									var objRelations = o.get('relations');
+									
+									objRelations.remove(objRelations.at(index));
+									objRelations.add(relation, {at: index});
+									
+								}
+								
+								objectiveCollection.trigger('reset');	
+							}
+						});
+					} else {
+						objectiveCollection.trigger('reset');
+					}	
+					
 					
 					
 				}
@@ -586,16 +609,18 @@ $(document).ready(function() {
 			
 			if(fiscalYear != null && fiscalYear.length > 0 ) {
 				listObjective = [];
-				_.each(relatedTypeList, function(typeId) {
-					listObjective[typeId] = new  ObjectiveCollection();
-					listObjective[typeId].fetch({
-						url: appUrl('/Objective/' + fiscalYear + '/type/'+typeId ),
-						success: function() {
-							
-						}
+				if(relatedTypeString.length > 0) {
+					_.each(relatedTypeList, function(typeId) {
+						listObjective[typeId] = new  ObjectiveCollection();
+						listObjective[typeId].fetch({
+							url: appUrl('/Objective/' + fiscalYear + '/type/'+typeId ),
+							success: function() {
+								
+							}
+						});
 					});
-				});
-
+				}
+				
 				if( parentTypeId.length > 0 ) {
 					parentObjectiveCollection = new ObjectiveCollection();
 					parentObjectiveCollection.fetch({
