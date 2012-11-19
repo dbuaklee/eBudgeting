@@ -288,6 +288,12 @@
 				</includes>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>src/main/resources/</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
 	    </resources>
 		<filters>
 	    	<filter>src/main/resources/config/${env}.properties</filter>
