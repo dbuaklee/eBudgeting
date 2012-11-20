@@ -82,7 +82,8 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	@Query("" +
 			"SELECT objective " +
 			"FROM Objective objective " +
-			"WHERE objective.id in (?1) ")
+			"WHERE objective.id in (?1) " +
+			"ORDER BY objective.parentPath DESC ")
 	public List<Objective> findAllObjectiveByIds(List<Long> ids);
 	
 	

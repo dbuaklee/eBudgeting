@@ -82,6 +82,8 @@ public interface EntityService {
 	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId, Pageable pageable);
 	
+	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
+	public String removeUnitFromObjective(Long objectiveId, Long targetId);
 	
 	
 	//BudgetType
@@ -179,6 +181,9 @@ public interface EntityService {
 			JsonNode relation);
 	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
 			Integer fiscalYear, Long parentTypeId, List<Long> ids);
+	public String mappedUnit();
+	
+
 
 
 

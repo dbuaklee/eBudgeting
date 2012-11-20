@@ -8,6 +8,19 @@
 <div class="row">
 	<div class="span12">
 
+		<div id="unitModal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn" id="closeBtn">กลับหน้าหลัก</a>
+			</div>
+		</div>
+
 		<div id="modal" class="modal hide fade">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -17,8 +30,8 @@
 				
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="closeBtn">ยกเลิก</a>
 				<a href="#" class="btn" id="saveBtn">บันทึกข้อมูล</a>  
+				<a href="#" class="btn" id="closeBtn">ยกเลิก</a>
 			</div>
 		</div>
 
@@ -52,7 +65,8 @@
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการ/ความเชื่อมโยง</a>
+	<a href="#" class="btn btn-mini btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> แก้ไขหน่วยนับ</a>
 	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
 
 	{{#if pageParams}}
@@ -92,7 +106,8 @@
 </table>
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการ/ความเชื่อมโยง</a>
+	<a href="#" class="btn btn-mini btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> แก้ไขหน่วยนับ</a>
 	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
 </div>
 </script>
@@ -103,7 +118,7 @@
 	<td> {{name}} </td>
 
 	{{#if hasUnit}}
-	<td class="unitLink"> <ul class="noBullet">{{#each units}}</li>{{name}}<li>{{/each}}</ul></td>
+	<td class="unitLink"> <ul class="noBullet">{{#each targets}}</li>{{unit.name}} ({{#if isSumable}}นับ{{else}}ไม่นับ{{/if}})<li>{{/each}}</ul></td>
 	{{/if}}
 
 	{{#if hasParent}}
@@ -124,25 +139,42 @@
 </tr>
 {{/each}}
 </script>
-
+<script id="unitModalBodyTemplate" type="text/x-handlebars-template">
+<div>
+<u>รายการหน่วยนับที่เลือกไว้แล้ว</u>
+	<div> 
+	<ul id="targetsLst">
+		{{#each targets}} 
+			<li data-id="{{id}}">
+				<span class="label label-important"><a href="#" class="removeUnit"><i class="icon icon-trash icon-white"></i></a></span>
+				{{unit.name}} ({{#if isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>
+		{{/each}}
+	</ul>
+</div>
+<hr/>
+<div>
+<u>เพิ่มรายการหน่วยนับ</u> : 
+<select class="span2" id="unitSlt">
+	<option value="0">กรุณาเลือก</option>
+	{{#each unitSelectionList}}
+		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+	{{/each}}
+</select>
+<select class="span1" id="isSumableSlt">
+	<option value="1">นับ</option>
+	<option value="0">ไม่นับ</option>
+</select>
+<button class="btn btn-mini addUnit"><i class="icon-ok" icon-white"/> เพิ่มหน่วยนับ</button>
+</div>
+</script>
 
 <script id="modalBodyTemplate" type="text/x-handlebars-template">
 <form>
 	<label>ระบุชื่อ{{type.name}}</label>
 	<textarea rows="2" class="span5" id="nameTxt">{{name}}</textarea>
 	
-	{{#if hasUnit}}
-	<label>ระบุหน่วยนับ</label>
-	<select class="span2" id="unitSlt">
-		<option value="0">กรุณาเลือก</option>
-		{{#each unitSelectionList}}
-			<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
-		{{/each}}
-	</select>
-	{{/if}}
-
 	{{#if hasParent}}
-	<label>เชื่อมความสัมพันธ์{{parentTypeName}}</label>
+	<label>เชื่อมโยง{{parentTypeName}}</label>
 	<select class="span5" id="parentSlt">
 		<option value="0">ยังไม่ระบุ</option>
 		{{#each parentSelectionList}}
@@ -153,7 +185,7 @@
 
 	{{#if hasRelatedType}}
 	{{#each relations}}
-	<label>เชื่อมความสัมพันธ์{{relationInfo.name}}</label>
+	<label>เชื่อมโยง{{relationInfo.name}}</label>
 	<select class="span5 relationSlt" parentId="{{relationInfo.parentId}}" id="relation-{{relationInfo.parentId}}">
 		<option value="0">ยังไม่ระบุ</option>
 		{{#each selectionList}}
@@ -210,6 +242,102 @@ var listObjective = new Array();
 
 
 $(document).ready(function() {
+	
+	var UnitModalView = Backbone.View.extend({
+		modalBodyTemplate: Handlebars.compile($("#unitModalBodyTemplate").html()),
+		
+		initialize: function(options) {
+			
+		},
+		
+		el: "#unitModal",
+		
+		events: {
+			"click #closeBtn" : "close",
+			"click .addUnit" : "addUnit",
+			"click .removeUnit" : "removeUnit"
+		},
+		
+		render: function() {
+			
+			this.$el.find('.modal-header span').html(objectiveType.get('name') + "<br/> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
+			
+			var json=this.currentObjective.toJSON();
+			
+			json.unitSelectionList = listTargetUnits.toJSON();
+			
+			var html = this.modalBodyTemplate(json);
+			this.$el.find('.modal-body').html(html);
+			
+			
+			this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+			return this;
+			
+		},
+		
+		renderWithObjective: function(objective) {
+			this.currentObjective = objective;
+			this.render();
+		},
+
+		removeUnit: function(e) {
+			var targetId = $(e.target).parents('li').attr('data-id');
+			var target = ObjectiveTarget.findOrCreate(targetId);
+			if(confirm("คุณต้องการลบหน่วยนับ " + target.get('unit').get('name'))) {
+				$.ajax({
+					type : 'POST',
+					url : appUrl('/Objective/' + this.currentObjective.get('id') + '/removeUnit'),
+					data : {
+						targetId : target.get('id')
+					},
+					dataType : "json",
+					success : _.bind(function(response) {
+						
+						this.currentObjective.get('targets').remove(target);
+						this.render();
+						
+					}, this)
+				});
+				
+			}
+		},
+		addUnit: function(e) {
+			var unitId = this.$el.find("#unitSlt").val();
+			
+			if(unitId == 0) {
+				alert('กรุณาเลือกหน่วยนับ');
+			} else {
+				var isSumable = this.$el.find("#isSumableSlt").val();
+				// we should be able to POST here
+				
+				console.log(isSumable);
+				$.ajax({
+					type : 'POST',
+					url : appUrl('/Objective/' + this.currentObjective.get('id') + '/addUnit'),
+					data : {
+						unitId : unitId,
+						isSumable : isSumable
+					},
+					dataType : "json",
+					success : _.bind(function(response) {
+						
+						var target = new ObjectiveTarget(response);
+						
+						this.currentObjective.get('targets').add(target);
+						this.render();
+						
+					}, this)
+				});
+			}
+			
+		},
+		close : function() {
+			objectiveCollection.trigger('reset');
+			this.$el.modal('hide');
+		}
+		
+	});
+	
 
 	var ModalView = Backbone.View.extend({
 		modalBodyTemplate: Handlebars.compile($("#modalBodyTemplate").html()),
@@ -232,20 +360,6 @@ $(document).ready(function() {
 			var newObj = this.currentObjective.get('id') == null;
 			// now collect data 
 			this.currentObjective.set('name', this.$el.find('#nameTxt').val());
-			
-			// now save unit
-			if(this.$el.find('#unitSlt').length > 0) {
-				var unit = TargetUnit.findOrCreate(this.$el.find('#unitSlt').val());
-				if(unit != null){
-					this.currentObjective.get('units').reset();
-					this.currentObjective.get('units').add(unit);
-					
-					
-				} else {
-					
-					this.currentObjective.set('units', null);
-				}
-			}
 			
 			// now save parent
 			if(this.$el.find('#parentSlt').length > 0) {
@@ -299,7 +413,7 @@ $(document).ready(function() {
 			
 				this.$el.find('.modal-header span').html("เพิ่มรายการทะเบียน" + objectiveType.get('name') + "ใหม่");
 			} else {
-				this.$el.find('.modal-header span').html(objectiveType.get('name') + " [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
+				this.$el.find('.modal-header span').html(objectiveType.get('name') + "<br/> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
 			}
 			
 			var json = this.currentObjective.toJSON();
@@ -396,6 +510,7 @@ $(document).ready(function() {
 		
 		
 		modalView : new ModalView(),
+		unitModalView : new UnitModalView(),
 		
 
 		
@@ -446,6 +561,7 @@ $(document).ready(function() {
 			"click .menuNew" : "newRow",
 			"click .menuDelete" : "deleteRow",
 			"click .menuEdit"	: "editRow",
+			"click .menuEditUnit"	: "editRowUnit",
 			
 			"click a.pageLink" : "gotoPage"
 		},
@@ -472,6 +588,18 @@ $(document).ready(function() {
 				var model = this.collection.get(objectiveId);
 					
 				this.modalView.renderWithObjective(model);
+			
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
+			}
+		},
+		editRowUnit: function(e) {
+			var objectiveId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			
+			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
+				var model = this.collection.get(objectiveId);
+					
+				this.unitModalView.renderWithObjective(model);
 			
 			} else {
 				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');

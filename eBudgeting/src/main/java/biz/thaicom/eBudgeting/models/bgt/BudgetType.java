@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -211,5 +213,31 @@ public class BudgetType implements Serializable {
 		return parentIds;
 	}
 	
+	
+	public String getTopParentName() {
+		if(this.parentPath == null) {
+			return "";
+		}
+		Pattern p = Pattern.compile(".*([0-9]+)\\.0\\.");
+		Matcher m = p.matcher(this.parentPath);
+		if (m.find()) {
+			String topParentId = m.group(1);
+			switch (Integer.parseInt(topParentId)) {
+			case 1:
+				return "งบบุคลากร";
+			case 2:
+				return "งบดำเนินงาน";
+			case 3:
+				return "งบลงทุน";
+			case 4:
+				return "งบอุดหนุน";
+			case 5:
+				return "งบรายจ่ายอื่น";
+			default:
+				return "unknown";
+			}
+		}
+		return "";
+	}
 	
 }

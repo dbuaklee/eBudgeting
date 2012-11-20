@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
@@ -90,7 +91,20 @@ public class ObjectiveRestController {
 		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId, pageRequest);
 	}
 	
-		
+	@RequestMapping(value="/Objective/{id}/addUnit", method=RequestMethod.POST) 
+	public @ResponseBody ObjectiveTarget addUnit(@PathVariable Long id,
+			@RequestParam Long unitId, @RequestParam Integer isSumable) {
+
+		return entityService.addUnitToObjective(id, unitId, isSumable);
+	}
+	
+	@RequestMapping(value="/Objective/{id}/removeUnit", method=RequestMethod.POST) 
+	public @ResponseBody String removeUnit(@PathVariable Long id,
+			@RequestParam Long targetId) {
+		return entityService.removeUnitFromObjective(id, targetId);
+	}
+	
+	
 	@RequestMapping(value="/Objective/{id}/addTarget", method=RequestMethod.POST)
 	public @ResponseBody String addTargetToObjective(@PathVariable Long id,
 			@RequestParam Long targetId) {
@@ -287,6 +301,11 @@ public class ObjectiveRestController {
 		return entityService.findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds
 				(fiscalYear, parentTypeId, idList);
 	
+	}
+	
+	@RequestMapping(value="/Objective/mappedUnit", method=RequestMethod.GET)
+	public @ResponseBody String mappedUnit() {
+		return entityService.mappedUnit();
 	}
 	
 	

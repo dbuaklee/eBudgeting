@@ -12,8 +12,7 @@
 			</div>
 			<div class="modal-body"></div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="cancelBtn">Close</a> 
-				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+				<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
 			</div>
 		</div>
 
@@ -24,8 +23,8 @@
 			</div>
 			<div class="modal-body"></div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="cancelBtn">Close</a> 
-				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+				<a href="#" class="btn" id="saveBtn">บันทึกข้อมูล</a>  
+				<a href="#" class="btn" id="cancelBtn">ยกเลิก</a>
 			</div>
 		</div>
 
@@ -96,10 +95,11 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:1150px; table-layout:fixed;">
+<table class="table table-bordered" id="headerTbl" style="margin-bottom:0px; width:1150px; table-layout:fixed;">
 	<thead>
 		<tr>
-			<th style="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:20px;">#</th>
+			<th style="width:390px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
 			<th style="width:60px;">เป้าหมาย</th>
 			<th style="width:60px;">หน่วยนับ</th>
 			<th style="width:120px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
@@ -110,7 +110,8 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td style="width:400px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
+			<td style="width:20px;"></td>
+			<td style="width:390px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
 			<td style="width:60px;"></td>
 			<td style="width:60px;"></td>
 			<td style="width:120px;"><strong>{{sumProposal allProposal}}</td>
@@ -166,6 +167,7 @@
 
 <script id="nodeRowTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}">
+		
 		<td style="width:400px;" class="{{#if this.children}}disable{{/if}}">
 			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
 					{{#if this.children}}
@@ -236,7 +238,8 @@
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}" class="type-{{type.id}}">
-		<td style="width:400px;" class="{{#if this.children}}disable{{/if}}">
+		<td style="width:20px;"></td>
+		<td style="width:390px;" class="{{#if this.children}}disable{{/if}}">
 			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
@@ -252,11 +255,7 @@
 					</label>
 					{{#unless this.children}}
 						<img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>
-						<ul>
-						{{#each this.filterProposals}}
-							 <li> {{budgetType.name}} - {{{formatNumber amountRequest}}} บาท</li>
-						{{/each}}
-						</ul>
+						{{{listProposals this.filterProposals}}}
 					{{/unless}}
 			</span> 
 		</td>
@@ -267,9 +266,9 @@
 				{{#if ../this.isLeaf}}</a>{{/if}}<br/>{{/each}}
 			</span>
 			</td>
-			<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+			<td  style="width:60px; text-align:center" class="{{#if this.children}}disable{{/if}}">
 			<span>
-				<ul>{{#each filterTargetValues}}<li style="list-style:none; padding: 0px;">{{target.unit.name}}</li>{{/each}}</ul>
+				<ul  style="list-style:none; margin: 0px;">{{#each filterTargetValues}}<li style="list-style:none; padding: 0px;">{{target.unit.name}} ({{#if target.isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>{{/each}}</ul>
 			</span>
 			</td>
 			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
@@ -309,7 +308,7 @@
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	{{#each filterProposals}}
 	<div> 
-	<u>{{budgetType.name}}</u>
+	<u>{{budgetType.topParentName}} {{budgetType.name}}</u>
 	<ul id="budgetProposeLst">
 		{{#each proposalStrategies}} 
 			<li data-id="{{id}}" proposal-id="{{../id}}">
@@ -329,7 +328,7 @@
 
 <script id="targetValueModalTemplate" type="text/x-handler-template">
 <form>
-	<label>ระบุเป้าหมาย</label>
+	<label>ระบุค่าเป้าหมาย</label>
 	<input type="text" value="{{value}}"/> {{target.unit.name}}
 </form>
 </script>
@@ -436,6 +435,32 @@
 	var l = null;
 	var e1;
 
+	Handlebars.registerHelper("listProposals", function(proposals) {
+		var retStr = "<ul>";
+	 	if(proposals != null && proposals.length > 0) {
+	 		var topParentName = proposals[0].budgetType.topParentName;
+	 		retStr = retStr + "<li><u>" + topParentName +"</u><ul>";
+	 		for(var i=0; i< proposals.length; i++) {
+	 				
+
+	 			
+	 			if(topParentName == proposals[i].budgetType.topParentName) {
+	 				retStr = retStr + "<li>" + proposals[i].budgetType.name + " - " + addCommas(proposals[i].amountRequest) + " บาท</li>";
+	 			} else {
+	 				retStr = retStr + "</ul></li><li><u>" + proposals[i].budgetType.topParentName + "</u><ul>";
+	 				retStr = retStr + "<li>" + proposals[i].budgetType.name + " - " + addCommas(proposals[i].amountRequest) + " บาท</li>";
+	 				
+	 				topParentName = proposals[i].budgetType.topParentName;
+	 			}
+	 		}
+	 		retStr = retStr + "</ul></li>";
+	 			
+	 	}
+	 	retStr += "</ul>";
+	 	
+	 	return retStr;
+	});
+	
 	Handlebars.registerHelper("sumProposal", function(proposals) {
 		var amount = 0;
 		for ( var i = 0; i < proposals.length; i++) {
@@ -476,7 +501,6 @@
 		if (strategy.formulaStrategy != null) {
 			var formulaColumns = strategy.formulaStrategy.formulaColumns;
 			for ( var i = 0; i < formulaColumns.length; i++) {
-
 				if (i > 0) {
 					s = s + " X ";
 				}
@@ -487,20 +511,16 @@
 					var j;
 					for (j = 0; j < strategy.requestColumns.length; j++) {
 						if (strategy.requestColumns[j].column.id == formulaColumns[i].id) {
-							s = s
-									+ "("
-									+ addCommas(strategy.requestColumns[j].amount)
-									+ formulaColumns[i].unitName
-									+ ")";
+							s = s + "(" + addCommas(strategy.requestColumns[j].amount)
+								+ formulaColumns[i].unitName
+								+ ")";
 						}
 					}
 
 				} else {
-					s = s
-							+ "("
-							+ addCommas(formulaColumns[i].value)
-							+ " " + formulaColumns[i].unitName
-							+ ")";
+					s = s + "(" + addCommas(formulaColumns[i].value)
+						+ " " + formulaColumns[i].unitName
+						+ ")";
 				}
 
 			}
@@ -872,71 +892,45 @@
 						id : json.budgetType.id
 					};
 	
-					$
-							.ajax({
+					$.ajax({
+						type : 'POST',
+						url : appUrl('/BudgetProposal'),
+						data : JSON.stringify(json),
+						contentType : 'application/json;charset=utf-8',
+						dataType : "json",
+						success : _.bind(function(data) {
+							budgetProposal.set('id',data.id);
+	
+							var json = proposalStrategy.toJSON();
+							json.formulaStrategy = null;
+							json.proposal = null;
+
+							var i;
+							for (i = 0; i < json.requestColumns.length; i++) {
+								json.requestColumns[i].column = {
+									id : json.requestColumns[i].column.id
+								};
+							}
+
+							$.ajax({
 								type : 'POST',
-								url : appUrl('/BudgetProposal'),
-								data : JSON.stringify(json),
+								url : appUrl('/ProposalStrategy/'
+										+ budgetProposal.get('id')
+										+ '/'
+										+ proposalStrategy.get('formulaStrategy').get('id')),
+								data : JSON
+										.stringify(json),
 								contentType : 'application/json;charset=utf-8',
 								dataType : "json",
-								success : _
-										.bind(
-												function(data) {
-	
-													budgetProposal.set(
-															'id',
-															data.id);
-	
-													var json = proposalStrategy
-															.toJSON();
-													json.formulaStrategy = null;
-													json.proposal = null;
-	
-													var i;
-													for (i = 0; i < json.requestColumns.length; i++) {
-														json.requestColumns[i].column = {
-															id : json.requestColumns[i].column.id
-														};
-													}
-	
-													$
-															.ajax({
-																type : 'POST',
-																url : appUrl('/ProposalStrategy/'
-																		+ budgetProposal
-																				.get('id')
-																		+ '/'
-																		+ proposalStrategy
-																				.get(
-																						'formulaStrategy')
-																				.get(
-																						'id')),
-																data : JSON
-																		.stringify(json),
-																contentType : 'application/json;charset=utf-8',
-																dataType : "json",
-																success : _
-																		.bind(
-																				function() {
-																					budgetProposal
-																							.get(
-																									'proposalStrategies')
-																							.push(
-																									proposalStrategy);
-																					console
-																							.log('budgetProposal: '
-																									+ budgetProposal
-																											.toJSON());
-																					e1 = budgetProposal;
-																					// rerender?
-																					this.parentModal
-																							.render();
-																				},
-																				this)
-															});
-	
-												}, this)
+								success : _.bind(function() {
+									budgetProposal.get('proposalStrategies').push(proposalStrategy);
+									this.parentModal.render();
+									
+								},this)
 							});
+
+					}, this)
+						});
 				} else {
 					var json = proposalStrategy.toJSON();
 					json.formulaStrategy = null;
@@ -1281,7 +1275,9 @@
 			render: function() {
 				
 				
-				this.$el.find('.modal-header span').html(this.objectiveTarget.get('name'));
+				
+				
+				this.$el.find('.modal-header span').html("ค่าเป้าหมาย" + this.objective.get('name') + " (" + this.objectiveTarget.get('unit').get('name') + ")");
 				
 				var html = this.targetValueModalTpl(this.targetValue.toJSON());
 				this.$el.find('.modal-body').html(html);
@@ -1428,6 +1424,13 @@
 				
 //				$(html).insertAfter(this.$el.find(parentEl));
 //			}
+
+		
+			// now we have to run the table row number
+			this.$el.find('#mainTbl tbody td:first-child', this).each(function(i){
+		        $(this).html((i+1) + ".");
+		    });
+
 			
 
 		},
@@ -1452,11 +1455,7 @@
 			rootCollection = new ObjectiveCollection();
 			
 
-			objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/"
-					+ fiscalYear
-					+ "/"
-					+ objectiveId
-					+ "/flatDescendants");
+			objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/" + fiscalYear+ "/" + objectiveId + "/flatDescendants");
 
 			mainTblView = new MainTblView({
 				collection : rootCollection

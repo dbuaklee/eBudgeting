@@ -817,6 +817,7 @@ public class EntityServiceJPA implements EntityService {
 			
 			o.addfilterProposal(proposal);
 			//logger.debug("proposal size is " + o.getProposals().size());
+			
 		}
 		
 		// get List of targetValue
@@ -849,9 +850,6 @@ public class EntityServiceJPA implements EntityService {
 			}
 						
 		}
-		
-		
-		
 		
 		return list;
 	}
@@ -1044,12 +1042,36 @@ public class EntityServiceJPA implements EntityService {
 		//lastly the unit
 		if(objectiveJsonNode.get("units") != null ) {
 			objective.setUnits(new ArrayList<TargetUnit>());
+			if(objective.getTargets() != null) {
+				List<ObjectiveTarget> tList = new ArrayList<ObjectiveTarget>();
+				for(ObjectiveTarget t : objective.getTargets()) {
+					tList.add(t);
+				}
+				
+				// now delete t here?
+				while(tList.isEmpty() == false) {
+					ObjectiveTarget t = tList.remove(0);
+					objective.getTargets().remove(t);
+					objectiveTargetRepository.delete(t);
+				}
+				
+			}
 			
 			for(JsonNode unit : objectiveJsonNode.get("units")) {
 				TargetUnit unitJpa = targetUnitRepository.findOne(unit.get("id").asLong());
 				objective.addUnit(unitJpa);
 				
+				ObjectiveTarget t = new ObjectiveTarget();
+				t.setFiscalYear(objective.getFiscalYear());
+				t.setUnit(unitJpa);
+				
+				objectiveTargetRepository.save(t);
+				
+				objective.addTarget(t);
+					
 			}
+			
+			
 		}
 		 
 		
@@ -1768,26 +1790,52 @@ public class EntityServiceJPA implements EntityService {
 		adjustedRequestedValue -= requestedValue;
 		targetValueRepository.save(tv);
 		
+		logger.debug("---------------------------------parents : " + obj.getParentIds());
 		
 		for(Objective parent : objectiveRepository.findAllObjectiveByIds(obj.getParentIds())) {
-			List<TargetValue> parentTvs = targetValueRepository.findAllByOnwerIdAndTargetIdAndObjectiveId(workAt.getId(), target.getId(), parent.getId());
+			//List<TargetValue> parentTvs = targetValueRepository.findAllByOnwerIdAndTargetIdAndObjectiveId(workAt.getId(), target.getId(), parent.getId());
 			
-			if(parentTvs.size() > 1 ) throw new Exception("parent has more target");
+			logger.debug("parent : {} " + parent.getId());
 			
-			TargetValue parentTv;
-			if(parentTvs.size() == 0) {
-				parentTv = new TargetValue();
-				parentTv.setOwner(workAt);
-				parentTv.setForObjective(parent);
-				parentTv.setTarget(target);
+			ObjectiveTarget matchingTarget = null;
+			// now find the matching unit
+			for(ObjectiveTarget t : parent.getTargets()) {
+				if(t.getUnit().getId() == target.getUnit().getId()) {
+					matchingTarget = t;
+				}
+			}
+						
+			
+			
+			if(matchingTarget!=null) {
+				logger.debug("matchingTarget");
 				
+				// now find matching targetValue
+				TargetValue matchingvalue = null;
+				for(TargetValue ptv: parent.getTargetValues()) {
+					if(ptv.getTarget().getId() == matchingTarget.getId()) {
+						matchingvalue = ptv;
+					} 
+				}
+				
+				if(matchingvalue == null) {
+					matchingvalue = new TargetValue();
+					matchingvalue.setForObjective(parent);
+					matchingvalue.setTarget(matchingTarget);
+				}
+				
+				matchingvalue.adjustRequestedValue(adjustedRequestedValue);
+				
+				targetValueRepository.save(matchingvalue);
+				
+				if(matchingTarget.getIsSumable() == false) {
+					break;
+				}
 			} else {
-				parentTv = parentTvs.get(0);
+				//we can skip the rest!
+				break;
 			}
 			
-			parentTv.adjustRequestedValue(adjustedRequestedValue);
-			
-			targetValueRepository.save(parentTv);			
 			
 		}
 		
@@ -1907,6 +1955,8 @@ public class EntityServiceJPA implements EntityService {
 				}
 			}
 			obj.getUnits().size();
+			logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + obj.getTargets().size());
+			obj.getTargets().size();
 		}
 		
 		return page;
@@ -2044,6 +2094,73 @@ public class EntityServiceJPA implements EntityService {
 		
 		return "success";
 	}
+
+	@Override
+	public String mappedUnit() {
+		Iterable<Objective> list = objectiveRepository.findAll();
+		for(Objective o : list) {
+			if(o.getUnits() != null) {
+				for(TargetUnit u : o.getUnits()) {
+					ObjectiveTarget t = new ObjectiveTarget();
+					t.setUnit(u);
+					t.setFiscalYear(o.getFiscalYear());
+					
+					objectiveTargetRepository.save(t);
+					
+					o.addTarget(t);
+					
+					objectiveRepository.save(o);
+				}
+				
+				
+			}
+		}
+		
+		return "success";
+	}
+
+	@Override
+	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId,
+			Integer isSumable) {
+		Objective o = objectiveRepository.findOne(objectiveId);
+		TargetUnit u = targetUnitRepository.findOne(unitId);
+		
+		ObjectiveTarget t = new ObjectiveTarget();
+		t.setUnit(u);
+		
+		if(isSumable == 1 ) {
+			t.setIsSumable(true);
+		} else { 
+			t.setIsSumable(false);
+		}
+		t.setFiscalYear(o.getFiscalYear());
+		
+		objectiveTargetRepository.save(t);
+		
+		// now save t
+		o.addTarget(t);
+		
+		objectiveRepository.save(o);
+		
+		
+		return t;
+	}
+
+	@Override
+	public String removeUnitFromObjective(Long objectiveId,
+			Long targetId) {
+		Objective o = objectiveRepository.findOne(objectiveId);
+		ObjectiveTarget t= objectiveTargetRepository.findOne(targetId);
+		
+		o.getTargets().remove(t);
+		
+		// now save both o and t
+		objectiveRepository.save(o);
+		objectiveTargetRepository.delete(t);
+		return "success";
+	}
+	
+	
 
 	
 
