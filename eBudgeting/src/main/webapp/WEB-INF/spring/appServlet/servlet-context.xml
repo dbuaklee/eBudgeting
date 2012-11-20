@@ -36,23 +36,30 @@
 	</beans:bean>
 	
 
-		
+	<beans:bean class="org.springframework.web.servlet.view.XmlViewResolver">
+	   <beans:property name="location" value="/WEB-INF/spring/spring-views.xml"/>
+	   <beans:property name="order" value="0"></beans:property>
+	</beans:bean>		
 
 	<beans:bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
 		<beans:property name="prefix" value="/" />
 		<beans:property name="suffix" value=".tiles" />
-		<beans:property name="order" value="0"/>
+		<beans:property name="order" value="1"/>
 	</beans:bean>
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
-		<beans:property name="order" value="1"/>
+		<beans:property name="order" value="2"/>
 	</beans:bean>
+
+
 	
 	<context:component-scan base-package="biz.thaicom.eBudgeting.controllers" />
 		<context:component-scan base-package="biz.thaicom.security.controllers" />
+
+
 	
 </beans:beans>

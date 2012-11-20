@@ -44,6 +44,17 @@ public interface TargetValueRepository extends JpaSpecificationExecutor<TargetVa
 			"SELECT distinct targetValue " +
 			"FROM TargetValue targetValue" +
 			"	INNER JOIN targetValue.target target " +
+			"	INNER JOIN target.unit unit " +
+			"	INNER JOIN targetValue.forObjective objective " +
+			"	INNER JOIN targetValue.owner owner " +
+			"WHERE owner.id =?1 and unit.id=?2 and objective.id = ?3 ")
+	public List<TargetValue> findAllByOnwerIdAndTargetUnitIdAndObjectiveId(
+			Long onwerId, Long targetUnitId, Long objectiveId);
+	
+	@Query("" +
+			"SELECT distinct targetValue " +
+			"FROM TargetValue targetValue" +
+			"	INNER JOIN targetValue.target target " +
 			"	INNER JOIN targetValue.forObjective objective " +
 			"WHERE target.id=?1 and objective.id = ?2 ")
 	public List<TargetValue> findAllByTargetIdAndObjectiveId(Long targetId, Long objectiveId);
@@ -56,6 +67,7 @@ public interface TargetValueRepository extends JpaSpecificationExecutor<TargetVa
 			"	INNER JOIN targetValue.owner owner " +
 			"WHERE owner.id =?1 and objective.id in (?3) and target.id = ?2 ")
 	public List<TargetValue> findAllByOnwerIdAndObjectiveIdIn(Long ownerId, Long targetId, List<Long> parentIds);
+
 
 	
 }

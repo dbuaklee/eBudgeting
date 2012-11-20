@@ -262,7 +262,7 @@
 			<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
 			<span>
 				{{#each filterTargetValues}}{{#if ../this.isLeaf}}<a href="#" data-id="{{id}}" target-id="{{target.id}}" class="targetValueModal">{{/if}}
-				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}เพิ่ม{{/if}}
+				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}{{#if ../../this.isLeaf}}เพิ่ม{{else}}-{{/if}}{{/if}}
 				{{#if ../this.isLeaf}}</a>{{/if}}<br/>{{/each}}
 			</span>
 			</td>

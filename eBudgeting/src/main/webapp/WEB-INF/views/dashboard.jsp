@@ -3,6 +3,10 @@
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <div class="row">
+	<img alt="" src="<c:url value="/resources/graphics/ldd.png"/>"/>
+</div>
+
+<div class="row">
 	<div class="span12" id="#menuDiv">
 		
 	</div>

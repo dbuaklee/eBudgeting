@@ -81,7 +81,7 @@
 	{{/if}}
 
 </div>
-<table class="table table-bordered" id="mainTbl">
+<table class="table table-bordered table-striped" id="mainTbl">
 	<thead>
 		<tr>
 			<td style="width:20px;"></td>
@@ -104,12 +104,6 @@
 	<tbody>
 	</tbody>
 </table>
-<div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการ/ความเชื่อมโยง</a>
-	<a href="#" class="btn btn-mini btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> แก้ไขหน่วยนับ</a>
-	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
-</div>
 </script>
 
 <script id="objectiveRowTemplate" type="text/x-handelbars-template">

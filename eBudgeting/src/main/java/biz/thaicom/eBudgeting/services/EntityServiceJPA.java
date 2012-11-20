@@ -360,6 +360,7 @@ public class EntityServiceJPA implements EntityService {
 		List<FormulaStrategy> list = formulaStrategyRepository.findAllByfiscalYearAndIsStandardItemAndType_ParentPathLike(fiscalYear, isStandardItem, budgetTypeId, parentPath);
 		for(FormulaStrategy strategy : list) {
 			strategy.getFormulaColumns().size();
+			strategy.getType().getParent().getName();
 		}
 		
 		return list;
@@ -1790,55 +1791,68 @@ public class EntityServiceJPA implements EntityService {
 		adjustedRequestedValue -= requestedValue;
 		targetValueRepository.save(tv);
 		
-		logger.debug("---------------------------------parents : " + obj.getParentIds());
+		if(target.getIsSumable() == true ) {
 		
-		for(Objective parent : objectiveRepository.findAllObjectiveByIds(obj.getParentIds())) {
-			//List<TargetValue> parentTvs = targetValueRepository.findAllByOnwerIdAndTargetIdAndObjectiveId(workAt.getId(), target.getId(), parent.getId());
+			logger.debug("---------------------------------parents : " + obj.getParentIds());
 			
-			logger.debug("parent : {} " + parent.getId());
-			
-			ObjectiveTarget matchingTarget = null;
-			// now find the matching unit
-			for(ObjectiveTarget t : parent.getTargets()) {
-				if(t.getUnit().getId() == target.getUnit().getId()) {
-					matchingTarget = t;
-				}
-			}
-						
-			
-			
-			if(matchingTarget!=null) {
-				logger.debug("matchingTarget");
+			// now loop for parent
+			Objective parent = obj.getParent();
+			while(parent!=null) {
 				
-				// now find matching targetValue
-				TargetValue matchingvalue = null;
-				for(TargetValue ptv: parent.getTargetValues()) {
-					if(ptv.getTarget().getId() == matchingTarget.getId()) {
-						matchingvalue = ptv;
-					} 
+				// now get the matching target
+				ObjectiveTarget matchingTarget = null;
+				// now find the matching unit
+				for(ObjectiveTarget t : parent.getTargets()) {
+					if(t.getUnit().getId() == target.getUnit().getId()) {
+						matchingTarget = t;
+					}
 				}
 				
-				if(matchingvalue == null) {
-					matchingvalue = new TargetValue();
-					matchingvalue.setForObjective(parent);
-					matchingvalue.setTarget(matchingTarget);
-				}
-				
-				matchingvalue.adjustRequestedValue(adjustedRequestedValue);
-				
-				targetValueRepository.save(matchingvalue);
-				
-				if(matchingTarget.getIsSumable() == false) {
+				if(matchingTarget == null) {
 					break;
 				}
-			} else {
-				//we can skip the rest!
-				break;
-			}
-			
-			
-		}
 		
+				
+				// now we'll find the matching value
+				List<TargetValue> tvs = targetValueRepository.findAllByOnwerIdAndTargetUnitIdAndObjectiveId(
+						workAt.getId(), matchingTarget.getUnit().getId(), parent.getId());
+				
+				if(tvs.size() == 0) {
+					//crate a new TargetValue
+					TargetValue newTv = new TargetValue();
+					newTv.setTarget(matchingTarget);
+					newTv.setForObjective(parent);
+					newTv.setOwner(workAt);
+					newTv.setRequestedValue(requestedValue);
+					
+					logger.debug("---------adding new tv with target.id: {}, requestedValue : {}",  matchingTarget.getId(), requestedValue);
+					targetValueRepository.save(newTv);
+					
+				} else if (tvs.size() == 1) {
+					TargetValue matchTv = tvs.get(0);
+					logger.debug("---------updating tv with adjustedReqeust : {}",  adjustedRequestedValue);
+					logger.debug("----------oldone is {}", matchTv.getRequestedValue());
+					matchTv.adjustRequestedValue(adjustedRequestedValue);
+					logger.debug("----------newone is {}", matchTv.getRequestedValue());
+					
+					targetValueRepository.save(matchTv);
+				}
+				
+				logger.debug("-------------------------------parents: " + parent.getId());
+				
+				logger.debug("matchingTarget == null {} ", matchingTarget == null);
+				
+				logger.debug("matchingTarget.getIsSumable == null {} ", matchingTarget.getIsSumable() == null);
+				logger.debug("matchingTarget.getIsSumable {} ", matchingTarget.getIsSumable());
+				
+				
+				if(matchingTarget == null || matchingTarget.getIsSumable() == null || matchingTarget.getIsSumable() == false) {
+					logger.debug("******not found");
+					break;
+				}
+				parent = parent.getParent();
+			}
+		}
 		return tv;
 	}
 
@@ -2156,6 +2170,9 @@ public class EntityServiceJPA implements EntityService {
 		
 		// now save both o and t
 		objectiveRepository.save(o);
+		
+		logger.debug(" ++++++++ t.getId() {}" ,t.getId());
+		
 		objectiveTargetRepository.delete(t);
 		return "success";
 	}

@@ -51,6 +51,7 @@
 </div>
 
 <script id="budgetSltTemplate" type="text/x-handler-template">
+<b>หมวดรายจ่ายหลัก</b>
 <select id="budgetTypeSlt">
 	<option value="0">กรุณาเลือกหมวดงบประมาณ</option>
 	{{#each this}}
@@ -112,9 +113,12 @@
 <table class="table table-bordered" id="mainTbl">
 	<thead>
 		<tr>
-			<td width="20"></td>
-			<td width="100">ระดับรายการ</td>
-			<td>ชื่อรายการย่อย</td>
+			<td style="width:20px;"></td>
+			<td style="width:120px;">หมวดย่อย</td>
+			<td style="width:120px;">รายการหลัก</td>
+			<td>รายการ</td>
+			<td style="width:60px;">หน่วยนับ</td>
+			<td style="width:60px;">รายการกลาง</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -124,8 +128,11 @@
 
 <script id="formulaStrategyRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
+	<td> {{type.parent.name}}</td>
 	<td> {{{parentBudgetType type}}} </td>
 	<td> {{name}} = {{{formulaLine formulaColumns false}}} </td>
+	<td></td>
+	<td></td>
 </script>
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
