@@ -67,17 +67,23 @@
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการ/ความเชื่อมโยง</a>
-	<a href="#" class="btn btn-mini btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> แก้ไขหน่วยนับ</a>
-	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
+	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขความเชื่อมโยง</a>
+	<a href="#" class="btn btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> จัดการหน่วยนับ</a>
+	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
 
 	{{#if pageParams}}
 	{{#with pageParams}}
     <div class="pagination">
         <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <ul>
 		{{#each page}}
-	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">{{pageNumber}}</a></li>
+	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">
+				{{#if isPrev}}&laquo;{{/if}} 
+				{{#if isNext}}&raquo;{{/if}}
+				{{#if showPageNumber}} {{pageNumber}} {{/if}}
+
+			</a>
+		</li>
 	    {{/each}}
     </div>
 	{{/with}}
@@ -150,14 +156,15 @@
 </div>
 <hr/>
 <div>
-<u>เพิ่มรายการหน่วยนับ</u> : 
+<u>เพิ่มทะเบียนหน่วยนับ</u> :<br/> 
 <select class="span2" id="unitSlt">
 	<option value="0">กรุณาเลือก</option>
 	{{#each unitSelectionList}}
 		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
 </select>
-<select class="span1" id="isSumableSlt">
+<select class="span2" id="isSumableSlt">
+	<option value="-1">กรุณาเลือก</option>
 	<option value="1">นับ</option>
 	<option value="0">ไม่นับ</option>
 </select>

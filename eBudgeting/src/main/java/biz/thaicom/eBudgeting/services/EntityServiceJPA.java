@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
+import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
@@ -48,6 +49,7 @@ import biz.thaicom.eBudgeting.models.pln.TargetValue;
 import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
+import biz.thaicom.eBudgeting.repositories.BudgetCommonTypeRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
@@ -112,6 +114,10 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private ObjectiveRelationsRepository objectiveRelationsRepository;
+	
+	@Autowired
+	private BudgetCommonTypeRepository budgetCommonTypeRepository;
+	
 	@Autowired
 	private ObjectMapper mapper;
 	
@@ -361,6 +367,12 @@ public class EntityServiceJPA implements EntityService {
 		for(FormulaStrategy strategy : list) {
 			strategy.getFormulaColumns().size();
 			strategy.getType().getParent().getName();
+			if(strategy.getCommonType() !=null) {
+				strategy.getCommonType().getName();
+			}
+			if(strategy.getUnit() !=null) {
+				strategy.getUnit().getName();
+			}
 		}
 		
 		return list;
@@ -374,6 +386,7 @@ public class EntityServiceJPA implements EntityService {
 			fs=new FormulaStrategy();
 		} else {
 			fs = formulaStrategyRepository.findOne(strategy.get("id").asLong());
+			
 		}
 		
 		fs.setName(strategy.get("name").asText());
@@ -391,10 +404,60 @@ public class EntityServiceJPA implements EntityService {
 			fs.setType(budgetType);
 		}
 		
+		fs.getType().getParent().getChildren().size();
+		
+		
+		// now save the commonType
+		if(strategy.get("commonType") != null) {
+			Long cid = strategy.get("commonType").get("id").asLong();
+			BudgetCommonType bct = budgetCommonTypeRepository.findOne(cid);
+			fs.setCommonType(bct);
+		}
+		
+		if(strategy.get("unit") != null) {
+			Long unitId = strategy.get("unit").get("id").asLong();
+			TargetUnit unit = targetUnitRepository.findOne(unitId);
+			fs.setUnit(unit);
+		}
+		
 		return formulaStrategyRepository.save(fs);
 		
 	}
 
+	@Override
+	public FormulaStrategy updateFormulaStrategy(JsonNode strategy) {
+		Long formulaStrategyId=strategy.get("id").asLong();
+		
+		FormulaStrategy formulaStrategy = formulaStrategyRepository.findOne(formulaStrategyId);
+		
+		if(formulaStrategy != null) {
+			String name = strategy.get("name").asText();
+			formulaStrategy.setName(name);
+			
+			
+		}
+		
+		formulaStrategy.getType().getParent().getChildren().size();
+		
+		
+		// now save the commonType
+		if(strategy.get("commonType") != null) {
+			Long cid = strategy.get("commonType").get("id").asLong();
+			BudgetCommonType bct = budgetCommonTypeRepository.findOne(cid);
+			formulaStrategy.setCommonType(bct);
+		}
+		
+		if(strategy.get("unit") != null) {
+			Long unitId = strategy.get("unit").get("id").asLong();
+			TargetUnit unit = targetUnitRepository.findOne(unitId);
+			formulaStrategy.setUnit(unit);
+		}
+		
+		formulaStrategyRepository.save(formulaStrategy);
+		return formulaStrategy;
+	}
+
+	
 	@Override
 	public void deleteFormulaStrategy(Long id) {
 		// we'll have to update the rest of index !
@@ -800,6 +863,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		return list;
 	}
+	
 	
 	@Override
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
@@ -1356,21 +1420,6 @@ public class EntityServiceJPA implements EntityService {
 		
 	}
 
-	@Override
-	public FormulaStrategy updateFormulaStrategy(JsonNode strategy) {
-		Long formulaStrategyId=strategy.get("id").asLong();
-		
-		FormulaStrategy formulaStrategy = formulaStrategyRepository.findOne(formulaStrategyId);
-		
-		if(formulaStrategy != null) {
-			String name = strategy.get("name").asText();
-			formulaStrategy.setName(name);
-			
-			formulaStrategyRepository.save(formulaStrategy);
-		}
-		
-		return formulaStrategy;
-	}
 
 	@Override
 	public AllocationRecord updateAllocationRecord(Long id, JsonNode data) {
@@ -2176,7 +2225,67 @@ public class EntityServiceJPA implements EntityService {
 		objectiveTargetRepository.delete(t);
 		return "success";
 	}
-	
+
+	@Override
+	public List<BudgetCommonType> findAllBudgetCommonTypes(Integer fiscalYear) {
+		
+		return budgetCommonTypeRepository.findAllByFiscalYear(fiscalYear);
+	}
+
+	@Override
+	public BudgetCommonType findOneBudgetCommonType(Long id) {
+
+		return budgetCommonTypeRepository.findOne(id);
+	}
+
+	@Override
+	public BudgetCommonType updateBudgetCommonType(JsonNode node) {
+		Long id = null;
+		if(node.get("id") == null) {
+			return null;
+		}
+		
+		id = node.get("id").asLong();
+		BudgetCommonType bct = budgetCommonTypeRepository.findOne(id);
+		
+		bct.setName(node.get("name").asText());
+		
+		return budgetCommonTypeRepository.save(bct);
+	}
+
+	@Override
+	public BudgetCommonType saveBudgetCommonType(JsonNode node) {
+		BudgetCommonType bct = new BudgetCommonType();
+		
+		// now set 
+		if(node.get("code") != null)  {
+			bct.setCode(node.get("code").asText());
+		}
+		bct.setFiscalYear(node.get("fiscalYear").asInt());
+		bct.setName(node.get("name").asText());
+		
+		budgetCommonTypeRepository.save(bct);
+		
+		bct.setCode(bct.getId().toString());
+		
+		budgetCommonTypeRepository.save(bct);
+		
+		return bct;
+		
+	}
+
+	@Override
+	public BudgetCommonType deleteBudgetCommonType(Long id) {
+		BudgetCommonType bct = budgetCommonTypeRepository.findOne(id);
+		
+		if(bct != null) {
+			budgetCommonTypeRepository.delete(bct);
+		}
+		
+		return bct;
+	}
+
+
 	
 
 	

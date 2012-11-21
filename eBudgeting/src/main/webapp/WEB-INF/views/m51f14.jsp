@@ -1,15 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<div class="hero-unit white">
 <div id="headLine">
-	
+	<h4>ทะเบียนรายการและระดับรายการ</h4>	
 </div>
 
 <div id="budgetRootSlt">
 </div>
 
 <div class="row">
-	<div class="span12">
+	<div class="span11">
 
 		<div id="formulaLineModal" class="modal hide fade">
 			<div class="modal-header">
@@ -49,10 +50,11 @@
 
 	</div>
 </div>
+</div>
 
 <script id="budgetSltTemplate" type="text/x-handler-template">
 <b>หมวดรายจ่ายหลัก</b>
-<select id="budgetTypeSlt">
+<select id="budgetTypeSlt" class="type">
 	<option value="0">กรุณาเลือกหมวดงบประมาณ</option>
 	{{#each this}}
 	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
@@ -131,8 +133,8 @@
 	<td> {{type.parent.name}}</td>
 	<td> {{{parentBudgetType type}}} </td>
 	<td> {{name}} = {{{formulaLine formulaColumns false}}} </td>
-	<td></td>
-	<td></td>
+	<td> {{unit.name}} </td>
+	<td> {{commonType.name}} </td>
 </script>
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
@@ -146,7 +148,7 @@
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
 <td></td>
-	<td colspan="2">
+	<td colspan="5">
 		 <form class="form-inline">
 			<div class="control-group">
 				<div class="controls  budgetTypeSlt">
@@ -157,6 +159,30 @@
 				<label class="control-label" for="nameTxt"> <b>ชื่อรายการ:</b> </label>
 				<div class="controls">
 					<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}"></input> <br/>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label" for="unit"> <b>หน่วยนับ:</b> </label>
+				<div class="controls">
+					<select id="unitSlt">
+						<option value="0">กรุณาเลือก</option>
+						{{#each unitList}}
+							<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label" for="unit"> <b>รายการกลาง:</b> </label>
+				<div class="controls">
+					<select id="commonTypeSlt">
+						<option value="0">กรุณาเลือก</option>
+						{{#each commonTypeList}}
+							<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+						{{/each}}
+					</select>
 				</div>
 			</div>
 		</form>
@@ -232,6 +258,18 @@ var e1;
 
 var formulaStrategyCollection = new FormulaStrategyCollection();
 var budgetTypeRootCollection = new BudgetTypeCollection();
+
+
+
+var listTargetUnits = new TargetUnitCollection();
+listTargetUnits.fetch({
+	url: appUrl('/TargetUnit/')
+});
+
+var listBudgetCommonType = new BudgetCommonTypeCollection();
+listBudgetCommonType.fetch({
+	url: appUrl('/BudgetCommonType/fiscalYear/'+fiscalYear + "/")
+});
 
 $(document).ready(function() {
 
@@ -466,7 +504,15 @@ $(document).ready(function() {
 		
 		newRow: function(e) {
 			if(! $(e.currentTarget).hasClass('disabled') ) {
-				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
+				var json = {};
+				json.index = this.collection.length;
+				
+				json.unitList = listTargetUnits.toJSON();
+				
+				json.commonTypeList = listBudgetCommonType.toJSON();
+				
+				
+				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate(json)+'</tr>');
 				var currentBudgetTypeId = $('select#budgetTypeSlt').val();
 				
 				//now populate the budgetTypeSlt
@@ -496,15 +542,17 @@ $(document).ready(function() {
 		
 		saveLine: function(e) {
 
-			formulaStrategyId = $(e.currentTarget).parents('tr').attr('data-id');
+			var formulaStrategyId = $(e.currentTarget).parents('tr').attr('data-id');
 			
-			inputNameVal = this.$el.find('#nameTxt').val();
+			var inputNameVal = this.$el.find('#nameTxt').val();
+			var unitId = this.$el.find('select#unitSlt').val();
+			var commonTypeId = this.$el.find('select#commonTypeSlt').val();
 			
 			if(this.collection.get(formulaStrategyId) == null) {
 				//var objType = pageObjective.get('type').get('children').at(0);
 				var newObj =  new FormulaStrategy({name: inputNameVal});
 				
-				var typeId = this.$el.find('select:last').val();
+				var typeId = this.$el.find('select.type:last').val();
 				
 				console.log(typeId);
 				var selectedType = BudgetType.findOrCreate(typeId);
@@ -512,6 +560,8 @@ $(document).ready(function() {
 				newObj.set('type', selectedType);
 				newObj.set('isStandardItem', false);
 				newObj.set('fiscalYear', fiscalYear);
+				newObj.set('unit', TargetUnit.findOrCreate(unitId));
+				newObj.set('commonType', BudgetCommonType.findOrCreate(commonTypeId));
 				
 				newObj.save(null, {success: _.bind(function(data){
 					newObj.set('id', data.id);
@@ -524,6 +574,8 @@ $(document).ready(function() {
 				
 			} else {
 				var fs = this.collection.get(formulaStrategyId);
+				fs.set('unit', TargetUnit.findOrCreate(unitId));
+				fs.set('commonType', BudgetCommonType.findOrCreate(commonTypeId));
 				fs.save({
 					name: inputNameVal
 				}, {
@@ -573,8 +625,29 @@ $(document).ready(function() {
 			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
 				this.$el.find('a.btn').toggleClass('disabled');
 				var model = this.collection.get(fsId);
-	
-				var html = this.newRowTemplate(model.toJSON());
+				
+				var json = model.toJSON();
+					
+				json.unitList = listTargetUnits.toJSON();
+				if(model.get('unit') != null) {
+					for(var i=0; i<json.unitList.length; i++) {
+						if(json.unitList[i].id == model.get('unit').get('id')) {}
+						json.unitList[i].selected = 'selected';
+					}
+				}
+				
+				
+				json.commonTypeList = listBudgetCommonType.toJSON();
+				if(model.get('commonType') != null) {
+					for(var i=0; i<json.commonTypeList.length; i++) {
+						if(json.commonTypeList[i].id == model.get('commonType').get('id')) {}
+						json.commonTypeList[i].selected = 'selected';
+					}
+				}
+				
+				e1=json;
+				
+				var html = this.newRowTemplate(json);
 				$('input[name=rowRdo]:checked').parents('tr').html(html);
 			} else {
 				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');

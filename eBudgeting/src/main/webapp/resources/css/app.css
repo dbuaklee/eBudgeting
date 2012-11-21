@@ -129,16 +129,21 @@ table.table thead td {
 	background-color:#4C6E9C;
 	color: #ffffff;
 	text-align: center;
+	font-weight: bold;
 }
 
 table.table tbody tr.type-101 td {
-	background-color: #ff9900;
+	background-color: #ffd700;
 }
 
 table.table tbody tr.type-102 td {
-	background-color: #ffcc00;
+	background-color: #ffff00;
 }
 
 table.table tbody tr.type-103 td {
-	background-color: #ffff00;
+	background-color: #eedd82;
+}
+
+.modal .modal-header {
+	background-color:#afeeee;
 }

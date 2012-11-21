@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
+import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
@@ -58,6 +59,8 @@ public interface EntityService {
 	public List<Objective> findChildrenObjectivewithBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal);
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
 			Integer fiscalYear, Long ownerId, Long objectiveId);
+
+	
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
 			Integer fiscalYear, Long objectiveId);
 
@@ -182,6 +185,14 @@ public interface EntityService {
 	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
 			Integer fiscalYear, Long parentTypeId, List<Long> ids);
 	public String mappedUnit();
+	
+	//BudgetCommonType
+	public List<BudgetCommonType> findAllBudgetCommonTypes(Integer fiscalYear);
+	public BudgetCommonType findOneBudgetCommonType(Long id);
+	public BudgetCommonType updateBudgetCommonType(JsonNode node);
+	public BudgetCommonType saveBudgetCommonType(JsonNode node);
+	public BudgetCommonType deleteBudgetCommonType(Long id);
+
 	
 
 

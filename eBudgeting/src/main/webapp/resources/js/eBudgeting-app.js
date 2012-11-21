@@ -169,6 +169,11 @@ ObjectiveType = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/ObjectiveType')
 });
 
+BudgetCommonType = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	urlRoot: appUrl('/BudgetCommonType/')
+});
+
 BudgetType = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
 	relations: [
@@ -243,7 +248,15 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 	    	key: 'type',
 	    	relatedModel: 'BudgetType',
 	    	collectionType: 'BudgetTypeCollection'
-	    },
+	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'commonType',
+	    	relatedModel: 'BudgetCommonType'
+	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'unit',
+	    	relatedModel: 'TargetUnit'
+	    }
 	],
 	urlRoot: appUrl('/FormulaStrategy')
 
@@ -467,9 +480,35 @@ ObjectivePagableCollection = Backbone.Collection.extend({
 		json.totalElements=this.totalElements;
 		json.pageSize=this.pageSize;
 		json.page=[];
-		for(var i=0; i<this.totalPages; i++) {
+		
+		this.targetPage = parseInt(this.targetPage);
+		
+		var rem = this.targetPage % 10;
+		
+		var first = this.targetPage - rem;
+		
+		if(first > 0) {
+			json.page.push({pageNumber: this.targetPage-10+1, isActive: false, isPrev: true});
+		}
+		
+		var last = this.targetPage + (10-rem);
+		if(last > this.totalPages) {
+			last = this.totalPages;
+		}
+		
+		for(var i=first; i<last; i++) {
 			var isActive = i+1 == this.targetPage;
-			json.page.push({pageNumber: i+1, isActive: isActive});
+			json.page.push({pageNumber: i+1, isActive: isActive, showPageNumber: true});
+		}
+		
+		if(last < this.totalPages) {
+			
+			var number=this.targetPage +10;
+			if(number > this.totalPages) {
+				number = this.totalPages;
+			}
+			
+			json.page.push({pageNumber: number + 10+1, isActive: false, isNext: true});
 		}
 		
 		return json;
@@ -490,6 +529,9 @@ ObjectiveTypeCollection = Backbone.Collection.extend({
 });
 BudgetTypeCollection = Backbone.Collection.extend({
 	model: BudgetType
+});
+BudgetCommonTypeCollection = Backbone.Collection.extend({
+	model: BudgetCommonType
 });
 BudgetProposalCollection = Backbone.Collection.extend({
 	model: BudgetProposal
