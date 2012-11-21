@@ -1,8 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+
+<div class="hero-unit white">
+<div id="headLine">
+	<h4>เพิ่มข้อมูลปีงบประมาณ</h4> 
+</div>
 <div class="row">
-	<div class="span12">
+	<div class="span11">
 		<c:if test="${rootPage == false}">
 		    <ul class="breadcrumb" id="headNav">
 		    	<c:forEach items="${breadcrumb}" var="link" varStatus="status">
@@ -60,6 +65,8 @@
     	</form>
     	</div>
 	</div>
+</div>
+
 </div>
 <script id="tbodyTemplate" type="text/x-handlebars-template">
 {{#each this}}

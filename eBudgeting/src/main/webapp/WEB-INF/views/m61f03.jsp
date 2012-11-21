@@ -2,8 +2,13 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<div class="hero-unit white">
+<div id="headLine">
+	<h4>บันทึกข้อมูลคำขอตั้งงบประมาณ</h4> 
+</div>
+
 <div class="row">
-	<div class="span12">
+	<div class="span11">
 		
 		<div id="modal" class="modal hide fade">
 			<div class="modal-header">
@@ -56,6 +61,7 @@
 
 	</div>
 </div>
+</div>
 
 <script id="loadingTemplate" type="text/x-handler-template">
 	<div>Loading <img src="/eBudgeting/resources/graphics/spinner_bar.gif"/></div>
@@ -95,11 +101,11 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="headerTbl" style="margin-bottom:0px; width:1150px; table-layout:fixed;">
+<table class="table table-bordered" id="headerTbl" style="margin-bottom:0px; width:960px; table-layout:fixed;">
 	<thead>
 		<tr>
 			<th style="width:20px;">#</th>
-			<th style="width:390px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:290px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
 			<th style="width:60px;">เป้าหมาย</th>
 			<th style="width:60px;">หน่วยนับ</th>
 			<th style="width:120px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
@@ -111,7 +117,7 @@
 	<tbody>
 		<tr>
 			<td style="width:20px;"></td>
-			<td style="width:390px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
+			<td style="width:290px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
 			<td style="width:60px;"></td>
 			<td style="width:60px;"></td>
 			<td style="width:120px;"><strong>{{sumProposal allProposal}}</td>
@@ -121,8 +127,8 @@
 		</tr>
 	</tbody>
 </table>
-<div style="height: 400px; overflow: auto; width:1170px">
-<table class="table table-bordered" id="mainTbl" style="width:1150px; table-layout:fixed;">
+<div style="height: 600px; overflow: auto; width:1065px">
+<table class="table table-bordered" id="mainTbl" style="width:960px; table-layout:fixed;">
 	<tbody>
 		
 			{{{childrenNodeTpl this 0}}}
@@ -239,7 +245,7 @@
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}" class="type-{{type.id}}">
 		<td style="width:20px;"></td>
-		<td style="width:390px;" class="{{#if this.children}}disable{{/if}}">
+		<td style="width:290px;" class="{{#if this.children}}disable{{/if}}">
 			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>

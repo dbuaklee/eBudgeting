@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<div class="hero-unit white">
 <div id="headLine">
 	
 </div>
 
 <div class="row">
-	<div class="span12">
+	<div class="span11">
 
 		<div id="unitModal" class="modal hide fade">
 			<div class="modal-header">
@@ -60,6 +61,8 @@
 
 
 	</div>
+</div>
+
 </div>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">

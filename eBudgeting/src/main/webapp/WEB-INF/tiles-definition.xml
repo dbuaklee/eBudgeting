@@ -4,6 +4,16 @@
 
 <tiles-definitions>
 
+    <definition name=".loginLayout" template="/WEB-INF/views/common/loginLayout.jsp">
+        <put-attribute name="title"  expression="${title}" />
+ 		<put-attribute name="header" value="/WEB-INF/views/common/header.jsp"/>
+ 		<put-attribute name="header-admin" value="/WEB-INF/views/common/header-admin.jsp"/>        
+        <put-attribute name="navigation"   value="/WEB-INF/views/common/navigation.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/common/footer.jsp" />
+        <put-attribute name="body"   value="The Page Body" />
+    </definition>
+
+
 	<!-- Common Main Layout -->
     <definition name=".mainLayout" template="/WEB-INF/views/common/mainLayout.jsp">
         <put-attribute name="title"  expression="${title}" />
@@ -16,7 +26,7 @@
     
     
     <!-- special for login page -->
-    <definition name="/login.tiles" extends=".mainLayout">
+    <definition name="/login.tiles" extends=".loginLayout">
     	<put-attribute name="header" value="/WEB-INF/views/common/login-header.jsp"/>
         <put-attribute name="navigation"   value="/WEB-INF/views/common/navigation.jsp" />
         <put-attribute name="body" value="/WEB-INF/views/common/login.jsp"/>

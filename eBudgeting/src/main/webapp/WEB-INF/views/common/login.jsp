@@ -3,8 +3,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
-<div class="hero-unit">
+<div class="hero-unit" style="margin-top: 60px;">
 	<div class="page-header">
+		<img src="<c:url value="/resources/graphics/header1.gif"/>"/> 
 		<h3>Login</h3>
 	</div>
 

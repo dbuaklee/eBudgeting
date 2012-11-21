@@ -1,8 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<div class="hero-unit white">
+<div id="headLine">
+	<h4>ทะเบียนหน่วยนับ</h4> 
+</div>
+
 <div class="row">
-	<div class="span12">
+	<div class="span11">
 		
 		<div id="modal" class="modal hide fade">
 			<div class="modal-header">
@@ -25,6 +30,7 @@
 		
 	</div>
 </div>
+</div>
 
 <script id="modalTemplate" type="text/x-handler-template">
 <form>
@@ -34,7 +40,6 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<label class="control-label" for="mainTbl">ข้อมูลพื้นฐานหน่วยนับ</label>
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
 	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>

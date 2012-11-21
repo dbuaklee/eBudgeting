@@ -2,20 +2,26 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
-<div class="row">
-	<img alt="" src="<c:url value="/resources/graphics/ldd.png"/>"/>
+<div class="hero-unit white">
+
+<div id="headLine" style=" text-align: center;">
+	<h3>เมนูการทำคำขอตั้งงบประมาณ</h3>
 </div>
 
+
 <div class="row">
-	<div class="span12" id="#menuDiv">
+	<div class="span3 menu" id="main1" data-id="1">
+		
+	</div>
+	
+	<div class="span3 menu" id="main2" data-id="2">
+		
+	</div>
+	
+	<div class="span4 menu" id="main3" data-id="3">
 		
 	</div>
 </div>
-
-<div class="row">
-	<div class="span12">
-		<div id="menuDiv"></div>
-	</div>
 </div>
 
 <script id="menuTemplate" type="text/x-handlebars-template">
@@ -43,6 +49,22 @@
 {{/each}}
 </script>
 
+<script id="subMenuTemplate" type="text/x-handlebars-template">
+{{#each this}}
+<ul style="padding-top:0px;">
+		<li>
+					{{#if disabled}} 
+						{{name}}
+					{{else}}
+						<a {{#if link}}href="{{link}}"{{else}}href="#"{{/if}}>{{name}}</a>
+					{{/if}}
+
+			</li>
+		
+	</ul>	
+{{/each}}
+</script>
+
 <sec:authorize access="hasRole('ROLE_USER_PLAN')">
 <script type="text/javascript">
 var ROLE_USER_PLAN = true;
@@ -53,9 +75,7 @@ var ROLE_USER_PLAN = true;
 <script type="text/javascript">
 var menuJson = [{
 	name: "ข้อมูลพื้นฐานหน่วยงาน (m1)",
-	menus: [{name: "m1f01: โครงสร้างหมวดงบประมาณ", link:"jsp/m1f01", disabled: "disabled"},
-	        {name: "m1f02: หน่วยงานภายใน", link: "jsp/m1f02", disabled: "disabled"},
-	        {name: "ข้อมูลพื้นฐานงบประมาณ(m1)", menus: [
+	menus: [{name: "ข้อมูลพื้นฐานงบประมาณ(m1)", menus: [
 	        	{name: "m1f03: ข้อมูลหน่วยนับเป้าหมาย", link: "page/m1f03/"},
 	        	{name: "m1f05: เพิ่มข้อมูลเริ่มต้นปีงบประมาณ", link: "page/m1f05/"}]}
 	        	]
@@ -118,12 +138,12 @@ var menuJson = [{
 		     {name: "m63f02: การบันทึกงบประมาณระดับรายการ", link: "page/m63f02/"},  
 		     {name: "m61f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)", menus: 
-		    [{name: "m3f04: การประมวลผลก่อนการปรับลดรอบที่ 2", link: "page/m3f05/"},
+		    [{name: "m3f05: การประมวลผลก่อนการปรับลดรอบที่ 2", link: "page/m3f05/"},
 		     {name: "m64f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
 		     {name: "m64f02: การบันทึกงบประมาณระดับรายการ", link: "page/m64f02/"},
 		     {name: "m64f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "การอนุมัติงบประมาณ ตาม พ.ร.บ. (m65)", menus: 
-		    [{name: "m3f04: การประมวลผลก่อนการปรับลดรอบที่ 3", link: "page/m3f06/"},
+		    [{name: "m3f06: การประมวลผลก่อนการปรับลดรอบที่ 3", link: "page/m3f06/"},
 		     {name: "m65f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
 		     {name: "m65f02: การบันทึกงบประมาณระดับรายการ", link: "page/m65f02/"},
 		     {name: "m65f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/", disabled: "disabled"}]}
@@ -145,29 +165,29 @@ var menuJson = [{
 	name: "ระบบรายงาน (m8)",
 	menus: [
 		 {name: "รายงานทะเบียน (m81)", menus: 
-		    [{name: "m81f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/"},
-		     {name: "m81f02: การบันทึกงบประมาณระดับรายการ", link: "page/m2f14/"},  
-		     {name: "m81f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/"}]},
+		    [{name: "m81f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m81f02: การบันทึกงบประมาณระดับรายการ", link: "page/m2f14/", disabled: "disabled"},  
+		     {name: "m81f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "รายงานการตรวจสอบ (m82)", menus: 
-		    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/"},
-		     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/"},
-		     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/"}]},
+		    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/", disabled: "disabled"}]},
 	     {name: "รายงานตามแบบแผนปฏิบัติราชการ] (m83)", menus: 
-			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/"},
-			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/"},
-			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/"}]},
+			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/", disabled: "disabled"}]},
 	     {name: "รายงานตามแบบคำของบประมาณ (m84)", menus: 
-			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/"},
-			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/"},
-			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/"}]},
+			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/", disabled: "disabled"}]},
 	     {name: "รายงานตามแบบตารางขวาง] (m85)", menus: 
-			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/"},
-			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/"},
-			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/"}]},
+			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/", disabled: "disabled"}]},
 	     {name: "รายงานตามแผนปฏิบัติการและงบประมษณ (m86)", menus: 
-			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/"},
-			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/"},
-			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/"}]}
+			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
+			     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/", disabled: "disabled"}]}
 	    ]
 }];
 
@@ -221,20 +241,84 @@ var menuUserJson = [{
 	name: "ระบบรายงาน (m8)",
 	menus: [
 		 {name: "รายงานทะเบียน (m81)", menus: 
-		    [{name: "m81f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/"},
-		     {name: "m81f02: การบันทึกงบประมาณระดับรายการ", link: "page/m2f14/"},  
-		     {name: "m81f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/"}]}]
+		    [{name: "m81f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m81f02: การบันทึกงบประมาณระดับรายการ", link: "page/m2f14/", disabled: "disabled"},  
+		     {name: "m81f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", disabled: "disabled"}]}]
 }];
 
 var menuTemplate = Handlebars.compile($("#menuTemplate").html());
 
+var mainview;
+var e1;
 
 $(document).ready(function() {
+	
+	
+	var MainView = Backbone.View.extend({
+		initialize: function(options){
+	    	
+		},
+		subMenuTemplate: Handlebars.compile($("#subMenuTemplate").html()),
+		el: "body",
+		render: function() {
+			$("#main1").html(this.subMenuTemplate(this.menu));
+		},
+		
+		renderWith: function(m) {
+			this.menu = m;
+			this.render();
+		},
+		events: {
+			"click a" : "menuClick"
+		},
+		
+		menuClick: function(e) {
+			e1 = e;
+			
+			var parentDiv = $(e.target).parents('div.menu');
+			var li = $(e.target).parent();
+			
+			//e1=parentDiv;
+			var level = parentDiv.attr('data-id');
+			
+			if(level == 1) {
+				// get this index
+				var i = parentDiv.find('li').index(li);
+				
+				this.currentFirstLevelIndex  = i;
+				$("#main3").empty();
+				
+				$("#main2").html(this.subMenuTemplate(this.menu[i].menus));
+				
+				
+			} else if (level==2) {
+				
+				
+				// get this index
+				var i = parentDiv.find('li').index(li);
+				
+				console.log(this.currentFirstLevelIndex + " " + i);
+				
+				$("#main3").html(this.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
+				
+			} else if (level==3) {
+				
+			}
+		}
+	});
+	
+	mainView = new MainView();
+	
 	if (typeof ROLE_USER_PLAN != "undefined"){
-	 	$("#menuDiv").html(menuTemplate(menuJson));
+		mainView.renderWith(menuJson);
+	 	//$("#menuDiv").html(menuTemplate(menuJson));
 	} else {
-		$("#menuDiv").html(menuTemplate(menuUserJson));
+		mainView.renderWith(menuUserJson);
+		//$("#menuDiv").html(menuTemplate(menuUserJson));
 	}
+	
+	
+	
 });
 
 </script>

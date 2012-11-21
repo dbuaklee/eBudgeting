@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<div class="hero-unit white">
+<div id="headLine">
+	<h4>การประมวลผลก่อนการปรับลดรอบที่ 2</h4> 
+</div>
 <div class="row">
-	<div class="span12">
+	<div class="span11">
 		<c:if test="${rootPage == false}">
 		    <ul class="breadcrumb" id="headNav">
 		    	<c:forEach items="${breadcrumb}" var="link" varStatus="status">
@@ -42,11 +46,13 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<c:forEach items="${fiscalYears}" var="fiscalYear">
+					
+					<c:forEach items="${fiscalYears}" var="fiscalYear">
+						<tr>
 							<td><a href="#" onClick="doBeginBudgetCutR1(${fiscalYear.fiscalYear})">${fiscalYear.fiscalYear}</a></td>
-						</c:forEach>
-					</tr>
+						</tr>
+					</c:forEach>
+					
 				</tbody>
 			</table>			
 		</c:when>
@@ -55,6 +61,7 @@
 		
 		
 	</div>
+</div>
 </div>
 	
 <script type="text/javascript">
