@@ -4,7 +4,18 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <div class="row">
-	<div class="span12"><img src="<c:url value="/resources/graphics/header1.gif"/>"/> 
+	<div class="span12" id="pageHeader">
+		 
+		 	<div class="container">
+		 		<div class="nav-collapse collapse">
+				<p class="navbar-text pull-right">
+					Logged in as
+						<sec:authentication property="principal.username"/> @ <sec:authentication property="principal.workAtAbbr"/> | <a class="navbar-link" href="<c:url value='/logout'/>">Logout</a>
+				</p>
+				</div>
+			
+		 	</div>
+		 
 	</div>
 </div>
 
@@ -15,12 +26,6 @@
 				data-target=".nav-collapse"> <span class="icon-bar"></span> <span
 				class="icon-bar"></span> <span class="icon-bar"></span>
 			</a> <a class="brand" href="<c:url value='/'/>">หน้าหลัก</a>
-			<div class="nav-collapse collapse">
-				<p class="navbar-text pull-right">
-					Logged in as
-						<sec:authentication property="principal.username"/> @ <sec:authentication property="principal.workAtAbbr"/> | <a class="navbar-link" href="<c:url value='/logout'/>">Logout</a>
-				</p>
-			</div>
 			
 			<!--/.nav-collapse -->
 		</div>

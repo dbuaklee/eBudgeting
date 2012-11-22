@@ -28,6 +28,11 @@ div.navbar {
   padding-top: 20px;
 }
 
+div#pageHeader {
+	background-image: url("../graphics/header1.gif");
+	height: 120px;
+}
+
 .footer div.span12 {
 	padding-top: 10px;
 	float: left;
