@@ -20,6 +20,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -56,6 +58,14 @@ public class FormulaStrategy  implements Serializable{
 	
 	@Basic
 	private Boolean isStandardItem;
+	
+	@ManyToOne
+	@JoinColumn(name="COMMONTYPE_BGT_ID")
+	private BudgetCommonType commonType;
+	
+	@ManyToOne
+	@JoinColumn(name="UNIT_ID")
+	private TargetUnit unit;
 	
 	@Basic
 	@Column(name="IDX")
@@ -136,6 +146,24 @@ public class FormulaStrategy  implements Serializable{
 	public void setIsStandardItem(Boolean isStandardItem) {
 		this.isStandardItem = isStandardItem;
 	}
+
+	public BudgetCommonType getCommonType() {
+		return commonType;
+	}
+
+	public void setCommonType(BudgetCommonType commonType) {
+		this.commonType = commonType;
+	}
+
+	public TargetUnit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(TargetUnit unit) {
+		this.unit = unit;
+	}
+	
+	
 
 	
 	

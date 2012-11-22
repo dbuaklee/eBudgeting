@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<div class="hero-unit white">
 <div id="headLine">
-	
+	<h4>ทะเบียนรายการกลาง</h4>	
 </div>
 
 <div id="budgetRootSlt">
@@ -48,6 +49,7 @@
 
 
 	</div>
+</div>
 </div>
 
 <script id="budgetSltTemplate" type="text/x-handler-template">

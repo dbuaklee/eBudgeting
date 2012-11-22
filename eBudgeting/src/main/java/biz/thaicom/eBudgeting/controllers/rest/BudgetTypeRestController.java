@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +22,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+
 import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
@@ -61,6 +62,39 @@ public class BudgetTypeRestController {
 		return entityService.findRootBudgetType();
 	
 	}
+	
+	
+	@RequestMapping(value="/BudgetCommonType/fiscalYear/{fiscalYear}/", method=RequestMethod.GET)
+	public @ResponseBody List<BudgetCommonType> findAllBudgetCommonType(
+			@PathVariable Integer fiscalYear) {
+		return entityService.findAllBudgetCommonTypes(fiscalYear);
+	}
+	
+	@RequestMapping(value="/BudgetCommonType/{id}", method=RequestMethod.GET)
+	public @ResponseBody BudgetCommonType findOneBudgetCommonType(
+			@PathVariable Long id) {
+		return entityService.findOneBudgetCommonType(id);
+	}
+	
+	@RequestMapping(value="/BudgetCommonType/{id}", method=RequestMethod.PUT)
+	public @ResponseBody BudgetCommonType updateBudgetCommonType(
+			@PathVariable Long id,
+			@RequestBody JsonNode node) {
+		return entityService.updateBudgetCommonType(node);
+	}
+	
+	@RequestMapping(value="/BudgetCommonType/", method=RequestMethod.POST)
+	public @ResponseBody BudgetCommonType saveBudgetCommonType(
+			@RequestBody JsonNode node) {
+		return entityService.saveBudgetCommonType(node);
+	}
+	
+	@RequestMapping(value="/BudgetCommonType/{id}", method=RequestMethod.DELETE)
+	public @ResponseBody BudgetCommonType deleteBudgetCommonType(
+			@PathVariable Long id) {
+		return entityService.deleteBudgetCommonType(id);
+	}
+	
 	
 	//FormulaColumn
 	@RequestMapping(value="/FormulaColumn", method=RequestMethod.POST)

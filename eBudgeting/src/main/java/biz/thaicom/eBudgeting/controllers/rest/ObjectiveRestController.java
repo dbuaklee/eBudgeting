@@ -35,7 +35,7 @@ import biz.thaicom.security.models.ThaicomUserDetail;
 public class ObjectiveRestController {
 	private static final Logger logger = LoggerFactory.getLogger(ObjectiveRestController.class);
 	
-	private static final Integer PAGE_SIZE = 5;
+	private static final Integer PAGE_SIZE = 10;
 	
 	@Autowired
 	private EntityService entityService;
@@ -237,7 +237,6 @@ public class ObjectiveRestController {
 		return objectives;
 		
 	}
-	
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposalAndAllocation/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithBudgetPorposalAndAllocation(
