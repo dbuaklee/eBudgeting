@@ -1053,7 +1053,7 @@ public class GenericViewController {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
-		return "m51f15_1";
+		return "m51f15";
 	}
 	
 	
@@ -1066,7 +1066,31 @@ public class GenericViewController {
 				
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
-		return "m51f15_1";
+		return "m51f15";
+	}
+	
+	// --------------------------------------------------------------	m51f16: ทะเบียนรายการหลักสำหรับบันทึกงบประมาณกิจกรรม
+	@RequestMapping("/page/m51f16/")
+	public String render_m51f16(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m51f16";
+	}
+	
+	
+	
+	@RequestMapping("/page/m51f16/{fiscalYear}/")
+	public String render_m51f16_fiscal(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		return "m51f16";
 	}
 	
 	
@@ -1331,7 +1355,7 @@ public class GenericViewController {
 		return "objectiveRegister";
 	}
 	
-	// --------------------------------------------------------------m61f03: การบันทึกงบประมาณ ระดับกิจกรรม
+	// --------------------------------------------------------------m61f03: การบันทึกงบประมาณ ระดับกิจกรรมหลัก
 	@RequestMapping("/page/m61f03/")
 	public String render_m63f03(
 			Model model, HttpServletRequest request) {
@@ -1371,6 +1395,48 @@ public class GenericViewController {
 		}
 		
 		return "m61f03";
+	}
+	
+	// --------------------------------------------------------------m61f04: การบันทึกงบประมาณ ระดับรายการ
+	@RequestMapping("/page/m61f04/")
+	public String render_m63f04(
+			Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m61f04";
+	}
+	
+	@RequestMapping("/page/m61f04/{fiscalYear}/{objectiveId}")
+	public String render_m63f04OfYear(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			Model model, HttpServletRequest request,
+			@Activeuser ThaicomUserDetail currentUser) {
+		
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
+		
+		// now find the one we're looking for
+		Objective objective = entityService.findOjectiveById(objectiveId);
+		if(objective != null ) {
+			logger.debug("Objective found!");
+			
+			model.addAttribute("objective", objective);
+			// now construct breadcrumb?
+			
+			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m61f04", fiscalYear, objective); 
+			
+			model.addAttribute("breadcrumb", breadcrumb.listIterator());
+			model.addAttribute("rootPage", false);
+			model.addAttribute("objective", objective);
+			
+		} else {
+			logger.debug("Objective NOT found! redirect to fiscal year selection");
+			// go to the root one!
+			return "redirect:/page/m61f04/";
+		}
+		
+		return "m61f04";
 	}
 	
 	// --------------------------------------------------------------m62f01: การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม 
@@ -1416,6 +1482,15 @@ public class GenericViewController {
 	}
 	
 	
+	// --------------------------------------------------------------m62f02: การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม 
+	@RequestMapping("/page/m62f02/")
+	public String render_m62f02(
+			Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m62f01";
+	}
 	
 	@RequestMapping("/page/m63f02/")
 	public String runder_m63f02(

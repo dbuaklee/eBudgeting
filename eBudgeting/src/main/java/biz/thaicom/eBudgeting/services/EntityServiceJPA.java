@@ -33,8 +33,10 @@ import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
@@ -51,9 +53,11 @@ import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetCommonTypeRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
+import biz.thaicom.eBudgeting.repositories.FiscalBudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
+import biz.thaicom.eBudgeting.repositories.ObjectiveBudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTargetRepository;
@@ -117,6 +121,12 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private BudgetCommonTypeRepository budgetCommonTypeRepository;
+	
+	@Autowired
+	private ObjectiveBudgetProposalRepository objectiveBudgetProposalRepository; 
+	
+	@Autowired
+	private FiscalBudgetTypeRepository fiscalBudgetTypeRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -281,12 +291,46 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
+	public List<BudgetType> findAllMainBudgetTypeByFiscalYear(Integer fiscalYear) {
+		return fiscalBudgetTypeRepository.findAllMainBudgetTypeByFiscalYear(fiscalYear);
+	}
+
+	
+	@Override
 	public List<Integer> findFiscalYearBudgetType() {
 		List<Integer> fiscalYears = budgetTypeRepository.findFiscalYears();
 		
 		return fiscalYears;
 	}
 
+	@Override
+	public void initFiscalBudgetType(Integer fiscalYear) {
+		Iterable<BudgetType> types = budgetTypeRepository.findAll();
+		
+		for(BudgetType type : types) {
+			// check first if we already have this one
+			FiscalBudgetType fbt = fiscalBudgetTypeRepository.findOneByBudgetTypeAndFiscalYear(type, fiscalYear); 
+			if(fbt == null) {
+				// we have to add this one
+				FiscalBudgetType newFbt = new FiscalBudgetType();
+				newFbt.setFiscalYear(fiscalYear);
+				newFbt.setBudgetType(type);
+				
+				// set the main type to be the same as last year!?
+				FiscalBudgetType lastYearFbt = fiscalBudgetTypeRepository.findOneByBudgetTypeAndFiscalYear(type, fiscalYear-1);
+				if(lastYearFbt == null) {
+					newFbt.setIsMainType(false);
+				} else {
+					newFbt.setIsMainType(lastYearFbt.getIsMainType());
+				}
+				
+				//now save!?
+				fiscalBudgetTypeRepository.save(newFbt);
+			}
+		}
+		
+	}
+	
 	@Override
 	@Transactional (propagation = Propagation.REQUIRED, readOnly = true)
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
@@ -1158,8 +1202,10 @@ public class EntityServiceJPA implements EntityService {
 			if(parent.getParentPath() == null || parent.getParentPath().length() == 0) {
 			
 				objective.setParentPath("."+parentId+".");
+				objective.setLevel(parent.getLevel()+1);
 			} else {
 				objective.setParentPath("."+parentId+parent.getParentPath());
+				objective.setLevel(parent.getLevel()+1);
 			}
 		} else if(objective.getType().getId() == ObjectiveTypeId.แผนงาน.getValue()) {
 			// this parent  must be root!
@@ -1170,6 +1216,8 @@ public class EntityServiceJPA implements EntityService {
 		} else{
 			// parent is null 
 			objective.setParent(null);
+			objective.setParentPath(".");
+			objective.setLevel(1);
 		}
 		
 		// now reset the isLeaf on Old parent 
@@ -2145,15 +2193,26 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public String initFiscalYear(Integer fiscalYear) {
-		Objective obj = new Objective();
-		obj.setName("ROOT");
-		obj.setParent(null);
-		obj.setFiscalYear(fiscalYear);
 		
-		ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
-		obj.setType(rootType);
 		
-		objectiveRepository.save(obj);
+		Objective obj = objectiveRepository.findRootOfFiscalYear(fiscalYear);
+		if(obj == null) { 
+			obj = new Objective();
+			obj.setName("ROOT");
+			obj.setParent(null);
+			obj.setParentPath(".");
+			obj.setLevel(1);
+			obj.setFiscalYear(fiscalYear);
+			
+			ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
+			obj.setType(rootType);
+			
+			objectiveRepository.save(obj);
+			
+		}
+		
+		// now init fiscalBudgetType
+		initFiscalBudgetType(fiscalYear);
 		
 		return "success";
 	}
@@ -2284,6 +2343,33 @@ public class EntityServiceJPA implements EntityService {
 		
 		return bct;
 	}
+
+	@Override
+	public List<ObjectiveBudgetProposal> findObjectiveBudgetproposalByObjectiveIdAndOwnerId(
+			Long objectiveId, Long ownerId) {
+		
+		return objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(objectiveId, ownerId);
+	}
+
+	@Override
+	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
+			Integer fiscalYear) {
+		return fiscalBudgetTypeRepository.findAllByFiscalYear(fiscalYear);
+	}
+
+	@Override
+	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList) {
+		fiscalBudgetTypeRepository.setALLIsMainBudgetToFALSE(fiscalYear);
+		
+		if(idList.size() > 0) {
+			fiscalBudgetTypeRepository.setIsMainBudget(fiscalYear, idList);
+		}
+		
+		return "success";
+	}
+	
+	
+
 
 
 	

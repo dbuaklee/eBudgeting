@@ -222,6 +222,14 @@ BudgetType = Backbone.RelationalModel.extend({
 		
 	}
 });
+FiscalBudgetType =  Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+    	key: 'budgetType',
+    	relatedModel: 'BudgetType'
+	}]
+});
 
 
 
@@ -566,7 +574,9 @@ TargetValueCollection = Backbone.Collection.extend({
 ObjectiveRelationsCollection = Backbone.Collection.extend({
 	model: ObjectiveRelations
 });
-
+FiscalBudgetTypeCollection = Backbone.Collection.extend({
+	model: FiscalBudgetType
+});
 
 //Handlebars Utils
 

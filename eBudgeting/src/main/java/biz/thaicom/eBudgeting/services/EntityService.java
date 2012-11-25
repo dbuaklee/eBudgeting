@@ -17,8 +17,10 @@ import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalDTO;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
@@ -96,6 +98,10 @@ public interface EntityService {
 	public List<Integer> findFiscalYearBudgetType();
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
 			Integer fiscalYear, BudgetType budgetType);
+	public List<BudgetType> findAllMainBudgetTypeByFiscalYear(Integer fiscalYear);
+	
+	//FiscalBudgetType
+	public void initFiscalBudgetType(Integer fiscalYear);
 	
 	//FormulaStrategy
 	public List<FormulaStrategy> findFormulaStrategyByfiscalYearAndTypeId(
@@ -192,6 +198,17 @@ public interface EntityService {
 	public BudgetCommonType updateBudgetCommonType(JsonNode node);
 	public BudgetCommonType saveBudgetCommonType(JsonNode node);
 	public BudgetCommonType deleteBudgetCommonType(Long id);
+	
+	
+	//ObjectiveBudgetProposal
+	public List<ObjectiveBudgetProposal> findObjectiveBudgetproposalByObjectiveIdAndOwnerId(
+			Long objectiveId, Long id);
+	
+	//FiscalBudgetType
+	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
+			Integer fiscalYear);
+	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+	
 
 	
 

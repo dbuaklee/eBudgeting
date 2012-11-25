@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
@@ -61,6 +62,16 @@ public class BudgetProposalRestController {
 			@PathVariable Long budgetTypeId){
 		return entityService.findBudgetProposalByObjectiveIdAndBudgetTypeId(objectiveId, budgetTypeId);
 	}
+	
+	
+	@RequestMapping(value="/ObjectiveBudgetProposal/{fiscalYear}/{objectiveId}", method=RequestMethod.GET) 
+	public @ResponseBody List<ObjectiveBudgetProposal> findObjecitveProposal(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser) {
+		return entityService.findObjectiveBudgetproposalByObjectiveIdAndOwnerId(objectiveId, currentUser.getWorkAt().getId());
+	}
+	
 	
 	@RequestMapping(value="/ProposalStrategy/find/{fiscalYear}/{objectiveId}", method=RequestMethod.GET)
 	public @ResponseBody List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(

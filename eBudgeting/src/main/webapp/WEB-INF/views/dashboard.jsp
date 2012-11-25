@@ -99,7 +99,8 @@ var menuJson = [{
 		         {name: "m51f12: (9) ทะเบียนกิจกรรมสนับสนุน", link: "page/m51f12/"},
 		         {name: "m51f13: (10) ทะเบียนกิจกรรมรายละเอียด", link: "page/m51f13/"},
 		         {name: "m51f14: ทะเบียนรายการและระดับรายการ", link: "page/m51f14/"},
-		         {name: "m51f15: ทะเบียนรายการกลาง", link: "page/m51f15/"}
+		         {name: "m51f15: ทะเบียนรายการกลาง", link: "page/m51f15/"},
+		         {name: "m51f16: ทะเบียนรายการหลักสำหรับบันทึกงบประมาณกิจกรรม", link: "page/m51f16/"}
 		         ]},
 		         
 	         {name: "ทะเบียนตามแผนปฏิบัติราชการ (m52)", menus: 
@@ -125,7 +126,8 @@ var menuJson = [{
 		name: "การจัดทำคำของบประมาณ  (m61)", menus: 
        	 	[{name: "m61f01: การโยกข้อมูลงบประมาณและ MTEF จากปีงบประมาณก่อนหน้า (ระดับกิจกรรม)", link: "page/m2f14/", disabled: "disabled"},
 	         {name: "m61f02: การโยกข้อมูลงบประมาณและ MTEF จากปีงบประมาณก่อนหน้า (ระดับรายการ)", link: "page/m2f14/", disabled: "disabled"},
-	         {name: "m61f03: การบันทึกงบประมาณ ระดับกิจกรรม", link: "page/m61f03/"},
+	         {name: "m61f03: การบันทึกงบประมาณ ระดับกิจกรรมหลัก", link: "page/m61f03/"},
+	         {name: "m61f04: การบันทึกงบประมาณ ระดับรายการ", link: "page/m61f04/"},
 	         {name: "m61f05: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/" , disabled: "disabled"}
 	        ]},
 	         
@@ -137,7 +139,7 @@ var menuJson = [{
 		    [{name: "m3f04: การประมวลผลก่อนการปรับลดรอบที่ 1", link: "page/m3f04/"},
 		     {name: "m63f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
 		     {name: "m63f02: การบันทึกงบประมาณระดับรายการ", link: "page/m63f02/"},  
-		     {name: "m61f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/", disabled: "disabled"}]},
+		     {name: "m63f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)", menus: 
 		    [{name: "m3f05: การประมวลผลก่อนการปรับลดรอบที่ 2", link: "page/m3f05/"},
 		     {name: "m64f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},

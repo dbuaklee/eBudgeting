@@ -70,6 +70,9 @@ public class Objective implements Serializable {
 	private Boolean isLeaf;
 	
 	@Basic
+	private Integer parentLevel;
+	
+	@Basic
 	@Column(name="IDX")
 	private Integer index;
 	
@@ -174,7 +177,14 @@ public class Objective implements Serializable {
 		this.parent = parent;
 	}
 	
+	
 
+	public Integer getLevel() {
+		return parentLevel;
+	}
+	public void setLevel(Integer level) {
+		this.parentLevel = level;
+	}
 	public List<BudgetType> getBudgetTypes() {
 		return budgetTypes;
 	}

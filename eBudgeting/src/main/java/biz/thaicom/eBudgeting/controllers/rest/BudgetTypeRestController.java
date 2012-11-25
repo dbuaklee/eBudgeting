@@ -1,5 +1,6 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 
@@ -94,6 +96,38 @@ public class BudgetTypeRestController {
 			@PathVariable Long id) {
 		return entityService.deleteBudgetCommonType(id);
 	}
+	
+	
+	@RequestMapping(value="/BudgetType/fiscalYear/{fiscalYear}/mainType", method=RequestMethod.GET)
+	public @ResponseBody List<BudgetType> findAllMainBudgetTypeByFiscalYear(
+			@PathVariable Integer fiscalYear) {
+		return entityService.findAllMainBudgetTypeByFiscalYear(fiscalYear);
+		
+	}
+	
+	@RequestMapping(value="/FiscalBudgetType/fiscalYear/{fiscalYear}", method=RequestMethod.GET)
+	public @ResponseBody List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
+			@PathVariable Integer fiscalYear) {
+		return entityService.findAllFiscalBudgetTypeByFiscalYear(fiscalYear);
+	}
+	
+	@RequestMapping(value="/FiscalBudgetType/setMainBudget/{fiscalYear}", method=RequestMethod.POST)
+	public @ResponseBody String setFiscalBudgetTypeMainBudget(
+			@PathVariable Integer fiscalYear,
+			@RequestParam(required=false, value="ids[]") String[] ids) {
+		
+		List<Long> idList = new ArrayList<Long>();
+		
+		if(ids!=null) {
+		
+			for(String id: ids) {
+				idList.add(Long.parseLong(id));
+			}
+		}
+		
+		return entityService.updateFiscalBudgetTypeIsMainBudget(fiscalYear, idList);
+	}
+	
 	
 	
 	//FormulaColumn

@@ -3,16 +3,13 @@
 
 <div class="hero-unit white">
 <div id="headLine">
-	<h4>ทะเบียนรายการกลาง</h4>	
-</div>
-
-<div id="budgetRootSlt">
+	<h4>ทะเบียนรายการกลาง</h4> 
 </div>
 
 <div class="row">
-	<div class="span12">
-
-		<div id="formulaLineModal" class="modal hide fade">
+	<div class="span11">
+		
+		<div id="modal" class="modal hide fade">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<span style="font-weight: bold;"></span>
@@ -21,10 +18,11 @@
 				
 			</div>
 			<div class="modal-footer">
-				<a href="#"	class="btn btn-primary" id="backBtn">กลับหน้าหลัก</a>
+				<a href="#" class="btn" id="cancelBtn">Close</a> 
+				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
 			</div>
 		</div>
-
+	
 		<div class="control-group" id="mainCtr">
 			
 			<c:choose>
@@ -47,62 +45,17 @@
 			</c:choose>	
 		</div>
 
-
+		
+		
 	</div>
 </div>
 </div>
 
-<script id="budgetSltTemplate" type="text/x-handler-template">
-<select id="budgetTypeSlt">
-	<option value="0">กรุณาเลือกหมวดงบประมาณ</option>
-	{{#each this}}
-	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
-	{{/each}}
-</select>
-<div></div>
-</script>
-<script id="formulaLineModalTemplate" type="text/x-handlebars-template">
-<div><b>การคำนวณ</b>
-</div>
-<div id="formulaBox">
-	{{this.name}} = <span id="formulaLine"></span>
-</div>
-<div id="formulaColumnFormCtr"></div>
-</script>
-
-<script id="formulaColumnFormTemplate"
-	type="text/x-handlebars-template">
-<form id="addFormulaForm" {{#unless columnName}}newForm="true"{{/unless}}
-	{{#if id}}data-id="{{id}}"{{/if}}>
-		<label>ชื่อรายการ</label>
-		<input type="text" name="columnName" value="{{columnName}}"/>
-		<label class="checkbox">หน่วยขอตั้งเป็นผู้ระบุจำนวน/งบประมาณ
-		<input type="checkbox" name="isFixed" {{#if isFixed}}checked="checked"{{/if}}/></label>
-		<input type="text" name="value" {{#if isFixed}}disabled="disabled"{{/if}} value="{{value}}"/>
-		<label>หน่วยนับ</label>
-		<input type="text" name="unitName" value="{{unitName}}"/>
-		<br/>
-		<button class="btn btn-mini cancelFormulaColumnBtn">ยกเลิก</button>
-		{{#if columnName}}<button class="btn btn-mini deleteFormulaColumnBtn">ลบรายการ</button>{{/if}}
-		<button class="btn btn-mini btn-primary addFormulaColumnBtn">{{#if columnName}}แก้ไขรายการ{{else}}เพิ่มรายการ{{/if}}</button>
+<script id="modalTemplate" type="text/x-handler-template">
+<form>
+	<label>ชื่อรายการกลาง</label>
+	<input type="text" id="nameTxt" value="{{name}}">
 </form>
-</script>
-
-<script id="formulaLineTemplate" type="text/x-handlebars-template">
-{{{formulaLine this true}}} 
-</script>
-<script id="formulaInLinEditTemplate" type="text/x-handlebars-template">
-	<div style="margin-top:4px; margin-bottom:4px;">
-		<input type="text" data-id="{{id}}" value="{{name}}"/> 
-		<button class="btn btn-mini updateFormulaStrategy"><i class="icon-ok" icon-white"/> แก้ไข</button>
-		<button class="btn btn-mini cancelUpdateFormulaStrategy"><i class="icon-remove" icon-white"/> ยกเลิก</button>
-	</div>
-</script>
-<script id="formulaTemplate" type="text/x-handlebars-template">
-{{#each this}}
-	<li data-id={{id}} style="list-style-type: none; padding: 0;"> <input type="radio" data-id="{{../id}}" name="formulaSlt-{{../id}}" id="formulaSlt-{{../id}}" value="{{id}}"> {{name}} = {{{formulaLine formulaColumns false}}} </input> 
-	</li>
-{{/each}}
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
@@ -115,8 +68,7 @@
 	<thead>
 		<tr>
 			<td width="20"></td>
-			<td width="100">ระดับรายการ</td>
-			<td>ชื่อรายการย่อย</td>
+			<td>ชื่อรายการกลาง</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -124,584 +76,195 @@
 </table>
 </script>
 
-<script id="formulaStrategyRowTemplate" type="text/x-handelbars-template">
-<td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
-	<td> {{{parentBudgetType type}}} </td>
-	<td> {{name}} = {{{formulaLine formulaColumns false}}} </td>
-</script>
-
-<script id="tbodyTemplate" type="text/x-handlebars-template">
-{{#each this}}
-<tr data-id="{{id}}" budgetType-id="{{type.id}}">
-</tr>
-{{/each}}
-</script>
-
-
-
 <script id="newRowTemplate" type="text/x-handlebars-template">
-<td></td>
-	<td colspan="2">
+	<td>  </td>
+	<td>
 		 <form class="form-inline">
 			<div class="control-group">
-				<div class="controls  budgetTypeSlt">
-				</div>
-			</div>
-
-			<div class="control-group">
-				<label class="control-label" for="nameTxt"> <b>ชื่อรายการ:</b> </label>
+				<label class="control-label" for="nameTxt"> <b>ชื่อรายการกลาง: </b> </label>
 				<div class="controls">
-					<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}"></input> <br/>
+					<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}" ></input> <br/>
 				</div>
 			</div>
 		</form>
 
-		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
-		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
+		<button class='btn btn-mini btn-info lineSave'>บันทึก</button>
+		<button class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</td>
 
 </script>
-
-
-
+<script id="rowTemplate" type="text/x-handler-template">
+{{#each this}}
+<tr data-id={{id}}>
+	<td><input type="radio" name="rowRdo" id="rdo_{{id}}" value="{{id}}"/></td>
+	<td>{{name}}</td>
+</tr>
+{{/each}}
+</script>
+	
 <script type="text/javascript">
-Handlebars.registerHelper("parentBudgetType", function(type){
-	return type.name;
-});
-
-Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
-	var s = "";
-	if(editForm == false) {
-		s = s+ "<a class='editSpan editFormulaLineBtn' href='#'>";
-		
-		if(formulaColumns == null || formulaColumns.length == 0) {
-			s =	s+"เพิ่มรายการคำนวณ";
-		}
-	}
-	
-	if(formulaColumns != null) {
-		for(var i=0; i < formulaColumns.length; i++) {
-			
-			if(i>0) { 
-				s = s + " X "; 
-			}
-			
-			if(editForm == true) {
-				s = s + "<a class='editSpan' href='#' data-id="+ formulaColumns[i].id +">"; 
-			}
-			s = s + formulaColumns[i].columnName;
-			if(formulaColumns[i].isFixed) {
-				s = s + "(??? " + formulaColumns[i].unitName  + ")";
-			} else {
-				s = s + "("+ addCommas(formulaColumns[i].value) + " " + formulaColumns[i].unitName  + ")";
-			}
-			if(editForm == true) {
-				s = s + "</a>";
-			}
-		}
-	} 
-	if(editForm == true) {
-		if(formulaColumns.length > 0) {
-			s = s + " X ";
-		}
-		s = s + "<a href='#' class='editSpan'>New</a>";
-	}else {
-		s += "</a>";	
-	}
-	
-	
-	return s;
-});
-
-<!--
+var budgetCommonTypeCollection = new BudgetCommonTypeCollection();
 var fiscalYear = "${fiscalYear}";
-var typeId;
 
-var pageUrl = "/page/m51f09/";
-
-var mainTblView;
-var budgetTypeSltView;
-var rootBudgetType = new BudgetType({id: 0});
-
-var e1;
-
-var formulaStrategyCollection = new FormulaStrategyCollection();
-var budgetTypeRootCollection = new BudgetTypeCollection();
 
 $(document).ready(function() {
-
-	var FormularLineModalView = Backbone.View.extend({
-		initialize: function() {
-			_.bindAll(this,'back');
-			_.bindAll(this,'isFixedChanged');
-			_.bindAll(this,'addFormulaColumn');
-			_.bindAll(this,'editFormulaColumn');
-			_.bindAll(this,'deleteFormulaColumn');
-			_.bindAll(this,'renderFormulaLineWith');
-			
-			
+	
+	var ModalView = Backbone.View.extend({
+		initialize: function(){
+		    
 		},
-		el: "#formulaLineModal",
-		model: null,
-		modalTemplate: Handlebars.compile($("#formulaLineModalTemplate").html()),
-		formulaLineTemplate: Handlebars.compile($("#formulaLineTemplate").html()),
-		formulaColumnFormTemplate: Handlebars.compile($("#formulaColumnFormTemplate").html()),
-		
-		collection: new FormulaColumnCollection(),
+		el: "#modal",
+		budgetCommonType : null,
+		modalTemplate: Handlebars.compile($("#modalTemplate").html()),
 		
 		events: {
-			
-			"click #backBtn" : "back",
-			"change input[name=isFixed]" : "isFixedChanged",
-			"click .addFormulaColumnBtn" : "addFormulaColumn",
-			"click .cancelFormulaColumnBtn" : "cancelFormulaColumn",
-			"click .deleteFormulaColumnBtn" : "deleteFormulaColumn",
-			"click .editSpan" : "editFormulaColumn"
+			"click #cancelBtn" : "close",
+			"click #saveBtn" : "save"
 		},
 		
 		render: function() {
-			this.$el.find('.modal-header span').html(this.currentStrategy.get('name'));
-			
-			var html = this.modalTemplate(this.currentStrategy.toJSON());
-			var formularLinehtml = this.formulaLineTemplate(this.collection.toJSON());
-			this.$el.find('.modal-body').html(html);
-			this.$el.find('.modal-body #formulaLine').html(formularLinehtml);
-			this.$el.modal({show: true, backdrop: 'static', keyboard: false});
-		},
-		
-		renderFormulaLineWith: function(formulaStrategy, budgetType){
-			if(formulaStrategy != null) {
-				this.currentStrategy = formulaStrategy;
-				this.currentBudgetType = budgetType;
-				if(this.currentStrategy.get('formulaColumns') != null) {
-					this.collection = this.currentStrategy.get('formulaColumns');
-				};
+			if(this.currentBudgetCommonType != null) {
 				
-				this.collection.bind('add', this.addNewFormulaColumn, this);
-				this.render();
-			}
+				this.$el.find('.modal-header span').html("เพิ่มรายการ");
+				
+				var html = this.modalTemplate(this.currentBudgetCommonType.toJSON());
+				this.$el.find('.modal-body').html(html);
+	
+				
+				this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+				return this;
+			}	
 		},
 		
-		back: function(e) {
-			if(this.currentStrategy.get('formulaColumns') == null) {
-				this.currentStrategy.set('formulaColumns', this.collection);
+		renderWith: function(BudgetCommonType) {
+			this.currentBudgetCommonType = BudgetCommonType;
+			this.render();
+		},
+		
+		save: function(e) {
+			// ok
+			var newModel=false;
+			if(this.currentBudgetCommonType.get('id') == null) {
+				newModel = true;
+				this.currentBudgetCommonType.set('fiscalYear', fiscalYear);
 			}
-			
-			
-			this.currentStrategy.trigger('changeFormula', this.currentStrategy);
-			
-			// nothing to recover just hide!
+			this.currentBudgetCommonType.save({
+				name: this.$el.find('input[id=nameTxt]').val()
+				
+			},{
+				success : _.bind(function(model) {
+					
+					if(newModel) {
+						budgetCommonTypeCollection.add(model);
+					}
+					budgetCommonTypeCollection.trigger('reset');
+					this.$el.modal('hide');
+				},this)
+			});
+		},
+		
+		close: function() {
 			this.$el.modal('hide');
-		},
-		
-		isFixedChanged: function(e) {
-			var inputValue = this.$el.find('input[name=value]');
-			if($(e.target).attr('checked') == 'checked') {
-				inputValue.attr('disabled', 'disabled');
-			} else {
-				inputValue.removeAttr('disabled');
-			}
-			
-		},
-		
-		deleteFormulaColumn: function(e) {
-			var form = this.$el.find('form');
-			var formulaColumnId = form.attr('data-id');
-			var formulaColumn = this.collection.get(formulaColumnId);
-			
-			
-			//now we'll go to destroy it!
-			this.collection.remove(formulaColumn);
-			formulaColumn.destroy();
-			
-			this.render();
-			// reindexing!?
-			return false;
-		},
-		
-		addFormulaColumn : function(e) {
-			// add this new Formula into formulaStrategy
-			var form = this.$el.find('form');
-			var newForm = form.attr("newForm");
-			if(newForm) {
-				var formulaColumn = new FormulaColumn({
-					columnName: form.find('input[name=columnName]').val(),
-					isFixed: form.find('input[name=isFixed]').attr('checked')=='checked'?true:false,
-					value: form.find('input[name=value]').val(),
-					unitName: form.find('input[name=unitName]').val()
-				});
-				
-				//formulaColumn.set('cid', formulaColumn.cid);
-				// now try to add this to the database
-				formulaColumn.set('index', this.collection.length);
-				formulaColumn.set('strategy', {id: this.currentStrategy.get('id')});
-				
-				formulaColumn.save(null, {
-					success: _.bind(function(model, response) {
-						this.collection.add(model);
-						
-						this.render();
-						
-					},this)
-				});
-			} else {
-				var formulaColumnId = form.attr('data-id');
-				var formulaColumn = this.collection.get(formulaColumnId);
-				
-				formulaColumn.set('columnName', form.find('input[name=columnName]').val());
-				formulaColumn.set('isFixed', form.find('input[name=isFixed]').attr('checked')=='checked'?true:false);
-				formulaColumn.set('value', form.find('input[name=value]').val());
-				formulaColumn.set('unitName',form.find('input[name=unitName]').val());
-				
-				//temporarily fixed the relation isuue
-				// no need to set formulaStrategy?
-				formulaColumn.set('strategy', null);
-				//formulaColumn.set('strategy', this.currentStrategy.toJSON());
-				
-				formulaColumn.save(null, {
-					success: _.bind(function(model, response) {
-						
-						//put back strategy 
-						formulaColumn.set('strategy', this.currentStrategy.get('id'));
-						
-						this.render();
-					},this)
-				});
-			}
-			return false;
-			
-		},
-		addNewFormulaColumn: function(options) {
-			this.render();
-		},
-		
-		cancelFormulaColumn : function(e) {
-			this.render();
-		},
-		
-		editFormulaColumn : function(e) {
-			var formulaColumnId = $(e.target).attr('data-id');
-			if(formulaColumnId == null) {
-				//new Column!
-				var formHtml = this.formulaColumnFormTemplate(new FormulaColumn());
-				this.$el.find('#formulaColumnFormCtr').html(formHtml);
-			} else {
-				// now find the model 
-				var formulaColumn = this.collection.get(formulaColumnId);
-				
-				// now we should have formulColumn to be update!
-				var formHtml = this.formulaColumnFormTemplate(formulaColumn.toJSON());
-				this.$el.find('#formulaColumnFormCtr').html(formHtml);
-				
-			}
-			
 		}
 		
 	});
 	
-	var MainTblView = Backbone.View.extend({
-		initialize: function(options){
-		    this.collection.bind('reset', this.render, this);
+	var MainCtrView = Backbone.View.extend({
+		initialize: function() {
+			this.collection.bind('reset', this.render, this);
 		},
-	
-		el: "#mainCtr",
-		selectedObjective: null,
-		currentLineVal: null,
-		
-		newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
-		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
-		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
-		formulaStrategyRowTemplate: Handlebars.compile($("#formulaStrategyRowTemplate").html()),
-		
-		formulaInLineEditTpl : Handlebars.compile($("#formulaInLinEditTemplate").html()),
-		formularLineModalView : new FormularLineModalView(),
-		
-		render: function() {
-			// first render the control
-			
-			var html = this.mainCtrTemplate();
-			
-			this.$el.html(html);
-			
-			// then the inside row
-			json=this.collection.toJSON();
-			
-			html = this.tbodyTemplate(json);
-			this.$el.find('tbody').html(html);
-
-			// bind all cell
-			this.collection.each(function(model){
-
-				model.bind('change', this.renderObjective, this);
-				model.bind('changeFormula', this.renderChild, this);
-				this.renderFormulaStrategy(model);
-			}, this);
-
-			return this;
-		},
-		
 		events: {
-			"click .menuNew" : "newRow",
-			"click .menuDelete" : "deleteRow",
-			"click .menuEdit"	: "editRow",
+			"click .menuNew" : "newBudgetCommonType",
+			"click .menuEdit" : "editBudgetCommonType",
+			"click .menuDelete" : "deleteBudgetCommonType",
 			"click .lineSave" : "saveLine",
-			"click .editFormulaLineBtn" : "editFormulaLine",
 			"click .cancelLineSave" : "cancelSaveLine"
 		},
+		mainCtrTpl: Handlebars.compile($("#mainCtrTemplate").html()),
+		newRowTpl : Handlebars.compile($('#newRowTemplate').html()),
+		rowTpl : Handlebars.compile($("#rowTemplate").html()),
+		el: '#mainCtr',
+		collection : budgetCommonTypeCollection,
 		
-		editFormulaLine : function(e) {
-			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('budgetType-id');
-			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
-			
-			var currentFormulaId = $(e.currentTarget).parents('tr').attr('data-id');
-			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
-
-			this.formularLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
+		modalView : new ModalView(),
+		
+		render: function() {
+			this.$el.html(this.mainCtrTpl());
+			this.$el.find('tbody').html(this.rowTpl(this.collection.toJSON()));
 		},
 		
-		newRow: function(e) {
+		newBudgetCommonType: function(e) {
 			if(! $(e.currentTarget).hasClass('disabled') ) {
-				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate({index:this.collection.length})+'</tr>');
-				var currentBudgetTypeId = $('select#budgetTypeSlt').val();
 				
-				//now populate the budgetTypeSlt
-			    var budgetTypeSlt = BudgetType.findOrCreate({id: currentBudgetTypeId});
-			    budgetTypeSlt.fetch({success: _.bind(function(){
-			    	if(budgetTypeSlt.get('children').length > 0) {
-			    		this.budgetTypeSelection = new BudgetTypeSelectionView({
-			    			model: budgetTypeSlt, el:'.budgetTypeSlt', mainTblView: this});
-			    		this.budgetTypeSelection.render();
-			    	}
-		    	},this)});
+				var html = this.newRowTpl({name:null});
+				
+				$('#mainCtr tbody').append('<tr>'+html+'</tr>');
 				
 				
 				this.$el.find('a.btn').toggleClass('disabled');
+				
+				this.currentBudgetCommonType = new BudgetCommonType();
 			}
-		},
-		
-		
-		cancelSaveLine: function(e) {
-			//now put back the value
-			// well do nothing just reset the collection
-			
-			this.$el.find('a.btn').toggleClass('disabled');
-			this.collection.trigger("reset");
-			
 		},
 		
 		saveLine: function(e) {
-
-			formulaStrategyId = $(e.currentTarget).parents('tr').attr('data-id');
-			
-			inputNameVal = this.$el.find('#nameTxt').val();
-			
-			if(this.collection.get(formulaStrategyId) == null) {
-				//var objType = pageObjective.get('type').get('children').at(0);
-				var newObj =  new FormulaStrategy({name: inputNameVal});
-				
-				var typeId = this.$el.find('select:last').val();
-				var selectedType = BudgetType.findOrCreate(typeId);
-				
-				newObj.set('type', selectedType);
-				newObj.set('isStandardItem', true);
-				newObj.set('fiscalYear', fiscalYear);
-				
-				newObj.save(null, {success: _.bind(function(data){
-					newObj.set('id', data.id);
+			// ok
+			var newModel=false;
+			if(this.currentBudgetCommonType.get('id') == null) {
+				newModel = true;
+			}
+			this.currentBudgetCommonType.save({
+				name: this.$el.find('input[id=nameTxt]').val(),
+				fiscalYear: fiscalYear
+			},{
+				success : _.bind(function(model) {
 					
-					this.collection.add(newObj);
-					
-					this.collection.trigger('reset');
-				},this)});
-				
-				
-			} else {
-				var fs = this.collection.get(formulaStrategyId);
-				fs.save({
-					name: inputNameVal
-				}, {
-					success: function() {
-						fs.trigger('changeFormula', fs);
+					if(newModel) {
+						budgetCommonTypeCollection.add(model);
 					}
-				});
-				
-			}
+					budgetCommonTypeCollection.trigger('reset');
+				},this)
+			});
+		},
+		
+		cancelSaveLine: function(e) {
+			this.collection.trigger('reset');
+		},
+		
+		editBudgetCommonType: function(e) {
+			var tuId = this.$el.find('input[name=rowRdo]:checked').val();
+			var budgetCommonType = BudgetCommonType.findOrCreate(tuId);
 			
-			this.$el.find('a.btn').toggleClass('disabled');
-			this.collection.trigger("reset");
-		
+			this.currentBudgetCommonType=budgetCommonType;
+			var html = this.newRowTpl(budgetCommonType.toJSON());
+			console.log(html);
+			this.$el.find('tr[data-id='+ tuId + ']').html(html);
 		},
 		
-		deleteRow: function(e) {
-			var fsId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+		deleteBudgetCommonType: function(e) {
+			var tuId = this.$el.find('input[name=rowRdo]:checked').val();
+			var budgetCommonType = BudgetCommonType.findOrCreate(tuId);
 			
-			if( (! $(e.currentTarget).hasClass('disabled')) && $('input[name=rowRdo]:checked').length == 1 ) {
-				
-				var modelToDelete = this.collection.get(fsId);
-				
-				
-					if(confirm("คุณต้องการลบรายการ " + modelToDelete.get('name'))) {
-					
-						modelToDelete.destroy({
-							success: _.bind(function() {					
-								this.collection.remove(modelToDelete);
-							
-								this.collection.trigger('reset');
-							},this)
-						});
-					
-					
-					this.collection.trigger('reset');
-				} else{
-					alert('คุณต้องเข้าไปลบรายการจากรายการย่อยสุดเท่านั้น');
-				}
-			} else {
-				alert('กรุณาเลือกรายการที่ต้องการลบ');
-			}
-		},
-		
-		editRow: function(e) {
-			var fsId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-			
-			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
-				this.$el.find('a.btn').toggleClass('disabled');
-				var model = this.collection.get(fsId);
-	
-				var html = this.newRowTemplate(model.toJSON());
-				$('input[name=rowRdo]:checked').parents('tr').html(html);
-			} else {
-				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
-			}
-		},
-		
-		renderFormulaStrategy: function(formulaStrategy) {
-			var formulaStrategyEl = this.$el.find('tr[data-id='+ formulaStrategy.get('id') +']');
-			
-			var json = formulaStrategy.toJSON();
-			
-			formulaStrategyEl.html(this.formulaStrategyRowTemplate(json));
-			
-		},
-		
-		renderChild: function(caller) {
-			console.log('hey');
-			this.renderFormulaStrategy(caller);
-		},
-		
-		
-	});
-	
-	var BudgetSltView = Backbone.View.extend({
-		budgetSltTemplate :  Handlebars.compile($("#budgetSltTemplate").html()),
-		mainTblView: new MainTblView({collection: formulaStrategyCollection}),
-		initialize: function(options){
-			
-		    this.collection.bind('reset', this.render, this);
-		    this.render();
-		},
-		
-		events: {
-			"change #budgetTypeSlt" : "changeSlt"
-		},
-	
-		el: "#budgetRootSlt",
-		selectedBudget: null,
-		render: function() {
-			if(this.collection != null) {
-				
-				var json = this.collection.toJSON();
-				var html = this.budgetSltTemplate(json);
-				
-				this.$el.html(html);
-				
-			}
-		},
-		
-		changeSlt: function(e) {
-			var budgetTypeSelectedId = $('select#budgetTypeSlt').val();
-			if(budgetTypeSelectedId != 0) {
-				this.mainTblView.collection.fetch({
-					//FormulaStrategy/search/{fiscalYear}/rootBudgetType/{budgetTypeId}
-					url: appUrl('/FormulaStrategy/searchIsStandardItem/' + fiscalYear + '/rootBudgetType/' + budgetTypeSelectedId),
+			if(confirm('คุณต้องการลบรายการกลาง \"'+ budgetCommonType.get('name') + '\"')==true) {
+				budgetCommonType.destroy({
 					success: function() {
-						
+						budgetCommonTypeCollection.trigger('reset');
 					}
 				});
 			}
-		}
-		
-		
-		
-	});
-
-
-	var BudgetTypeSelectionView = Backbone.View.extend({
-		initialize: function(options){
-			if(options != null) {
-				this.el = options.el;
-				this.model = options.model;
-
-			} 
-			
-		},
-		el: "#budgetSelectionCtr",
-		selectionTpl : Handlebars.compile($("#budgetSltTemplate").html()),
-		
-		render: function(){
-			// first clear the siblings select
-			this.$el.nextAll('div').remove();
-			this.$el.empty();
-			this.$el.html(this.selectionTpl(this.model.get('children').toJSON()));
-		},
-		
-		events: {
-			"change select:first" : "selectionChange" // only the first one
-		},
-		
-		selectionChange: function(e) {
-			var selectedBudgetTypeId = $(e.target).val();
-			// now try to get this model
-			var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
-			e1 = budgetType;
-			budgetType.fetch({success: _.bind(function(model, response){
-				var fetchedBudgetType = response;
-				if(fetchedBudgetType.children != null && fetchedBudgetType.children.length > 0) {
-					
-					var nextEl = this.$el.selector + " select + div";
-					this.nextBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType, el: nextEl, mainTblView: this.mainTblView});
-					this.nextBudgetTypeSelectionView.render();
-					
-				} else {
-					
-					 
-				}
-
-			}, this)});
-			
-			// ok we'll have to set back to this!?
 			
 		}
 	});
-
 	
+	mainCtrView = new MainCtrView();
 	
-	var headLineStr = '<h4> ทะเบียนรายการงบประมาณ ';
-	if(fiscalYear!= null && fiscalYear.length > 0 ) {
-		headLineStr += 	' ปีงบประมาณ ' + fiscalYear;
+	budgetCommonTypeCollection.fetch({
+		url: appUrl('/BudgetCommonType/fiscalYear/' + fiscalYear + '/'),
+		success: function() {
+			
+			budgetCommonTypeCollection.trigger('reset');
+		}
+	});
 	
-		rootBudgetType.fetch({
-			success: function() {
-				budgetTypeRootCollection = rootBudgetType.get('children');
-				budgetTypeSltView = new BudgetSltView({collection: budgetTypeRootCollection});
-			}
-		});
-	
-	}
-	
-	$('#headLine').html(headLineStr);
-	headLineStr += '</h4>';
-
 });
-
-//-->
 </script>

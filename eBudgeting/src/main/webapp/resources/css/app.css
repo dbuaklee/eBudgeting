@@ -152,3 +152,7 @@ table.table tbody tr.type-103 td {
 .modal .modal-header {
 	background-color:#afeeee;
 }
+
+div#headLine {
+	margin-bottom: 24px;
+}
