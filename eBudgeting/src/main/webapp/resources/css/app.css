@@ -137,6 +137,17 @@ table.table thead td {
 	font-weight: bold;
 }
 
+table tr.sumRow td {
+	background-color:#4C6E9C;
+	color: #ffffff;
+	text-align: center;
+	font-weight: bold;
+}
+
+table.table tbody tr.selected td {
+	background-color: #FFFFCC;
+}
+
 table.table tbody tr.type-101 td {
 	background-color: #ffd700;
 }
@@ -155,4 +166,8 @@ table.table tbody tr.type-103 td {
 
 div#headLine {
 	margin-bottom: 24px;
+}
+
+span.label.mini {
+	font-size: 10.5px;
 }

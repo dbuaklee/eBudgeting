@@ -222,6 +222,31 @@ public class EntityServiceJPA implements EntityService {
 		}
 		return list;
 	}
+	
+	@Override
+	public Objective findOneRootObjectiveByFiscalyear(Integer fiscalYear) {
+		return objectiveRepository.findRootOfFiscalYear(fiscalYear);
+	}
+
+	@Override
+	public List<Objective> findAvailableObjectiveChildrenByObjectiveId(Long id) {
+		Objective o = objectiveRepository.findOne(id);
+		Set<ObjectiveType> childrenSet = o.getType().getChildren();
+		
+		logger.debug("++++++++++++++++++++++++++++" + o.getType().getId());
+		
+		
+		if(childrenSet != null && childrenSet.size() >0 ) {
+			for(ObjectiveType ot : childrenSet) {
+				logger.debug(ot.getName());
+			}
+			
+			return objectiveRepository.findAvailableChildrenOfObjectiveType(childrenSet);
+		} else {
+			return null;
+		}
+		
+	}
 
 	@Override
 	public List<Objective> findRootFiscalYear() {
@@ -1202,10 +1227,10 @@ public class EntityServiceJPA implements EntityService {
 			if(parent.getParentPath() == null || parent.getParentPath().length() == 0) {
 			
 				objective.setParentPath("."+parentId+".");
-				objective.setLevel(parent.getLevel()+1);
+				objective.setParentLevel(parent.getParentLevel()+1);
 			} else {
 				objective.setParentPath("."+parentId+parent.getParentPath());
-				objective.setLevel(parent.getLevel()+1);
+				objective.setParentLevel(parent.getParentLevel()+1);
 			}
 		} else if(objective.getType().getId() == ObjectiveTypeId.แผนงาน.getValue()) {
 			// this parent  must be root!
@@ -1217,7 +1242,7 @@ public class EntityServiceJPA implements EntityService {
 			// parent is null 
 			objective.setParent(null);
 			objective.setParentPath(".");
-			objective.setLevel(1);
+			objective.setParentLevel(1);
 		}
 		
 		// now reset the isLeaf on Old parent 
@@ -2201,7 +2226,7 @@ public class EntityServiceJPA implements EntityService {
 			obj.setName("ROOT");
 			obj.setParent(null);
 			obj.setParentPath(".");
-			obj.setLevel(1);
+			obj.setParentLevel(1);
 			obj.setFiscalYear(fiscalYear);
 			
 			ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
@@ -2366,6 +2391,130 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		return "success";
+	}
+
+	@Override
+	public ObjectiveBudgetProposal saveObjectiveBudgetProposal(
+			Organization workAt, JsonNode node) {
+		ObjectiveBudgetProposal obp = new ObjectiveBudgetProposal();
+		obp.setOwner(workAt);
+		
+		BudgetType type = null;
+		
+		if(node.get("budgetType") !=null ) {
+			if(node.get("budgetType").get("id") != null) {
+				logger.debug("xxxxx");
+				type = budgetTypeRepository.findOne(node.get("budgetType").get("id").asLong());
+			}
+		}
+		
+		Objective objective= null;
+		if(node.get("forObjective") !=null ) {
+			if(node.get("forObjective").get("id") != null) {
+				logger.debug("xxxxx");
+				objective = objectiveRepository.findOne(node.get("forObjective").get("id").asLong());
+			}
+		}
+		
+		if(type == null) {
+			return null;
+		}
+		
+		if(objective == null) {
+			return null;
+		}
+		
+		obp.setBudgetType(type);
+		obp.setForObjective(objective);
+		
+		if(node.get("amountRequest")!=null ) {
+			obp.setAmountRequest(node.get("amountRequest").asLong());
+		}
+		
+		if(node.get("amountRequestNext1Year")!=null ) {
+			obp.setAmountRequestNext1Year(node.get("amountRequestNext1Year").asLong());
+		}
+		
+		if(node.get("amountRequestNext2Year")!=null ) {
+			obp.setAmountRequestNext2Year(node.get("amountRequestNext2Year").asLong());
+		}
+		
+		if(node.get("amountRequestNext3Year")!=null ) {
+			obp.setAmountRequestNext3Year(node.get("amountRequestNext3Year").asLong());
+		}
+		
+		objectiveBudgetProposalRepository.save(obp);
+		
+		return obp;
+	}
+
+	@Override
+	public ObjectiveBudgetProposal updateObjectiveBudgetProposal(JsonNode node) {
+		Long obpId=node.get("id").asLong();
+		
+		ObjectiveBudgetProposal obp = objectiveBudgetProposalRepository.findOne(obpId);
+		if(obp == null) {
+			return null;
+		}
+
+		if(node.get("amountRequest")!=null ) {
+			obp.setAmountRequest(node.get("amountRequest").asLong());
+		}
+		
+		if(node.get("amountRequestNext1Year")!=null ) {
+			obp.setAmountRequestNext1Year(node.get("amountRequestNext1Year").asLong());
+		}
+		
+		if(node.get("amountRequestNext2Year")!=null ) {
+			obp.setAmountRequestNext2Year(node.get("amountRequestNext2Year").asLong());
+		}
+		
+		if(node.get("amountRequestNext3Year")!=null ) {
+			obp.setAmountRequestNext3Year(node.get("amountRequestNext3Year").asLong());
+		}
+	
+		objectiveBudgetProposalRepository.save(obp);
+		
+		obp.getBudgetType().getName();
+		obp.getForObjective().getName();
+		
+		return obp;
+	}
+
+	@Override
+	public ObjectiveBudgetProposal deleteObjectiveBudgetProposal(Long id) {
+		
+		ObjectiveBudgetProposal obp = objectiveBudgetProposalRepository.findOne(id);
+		if(obp == null) {
+			return null;
+		}
+
+		objectiveBudgetProposalRepository.delete(obp);
+		
+		return obp;
+		
+	}
+
+	@Override
+	public String findObjectiveTypeChildrenNameOf(Long id) {
+		ObjectiveType t = objectiveTypeRepository.findOne(id);
+		if(t.getChildren() != null && t.getChildren().size() > 0 ) {
+			return t.getChildren().iterator().next().getName();
+		} else {
+			return "";
+		}
+		
+	}
+
+	@Override
+	public String findObjectiveChildrenTypeName(Long id) {
+		Objective o = objectiveRepository.findOne(id);
+		if(o.getType() != null ) {
+			if(o.getType().getChildren() != null && o.getType().getChildren().size() > 0 ) {
+				return o.getType().getChildren().iterator().next().getName();
+			}
+		}
+		return null;
 	}
 	
 	

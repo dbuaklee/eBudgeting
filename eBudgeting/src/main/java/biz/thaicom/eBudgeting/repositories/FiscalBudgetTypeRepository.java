@@ -17,7 +17,8 @@ public interface FiscalBudgetTypeRepository extends
 	@Query("" +
 			"SELECT fbt.budgetType " +
 			"FROM FiscalBudgetType fbt " +
-			"WHERE fbt.fiscalYear = ?1 AND fbt.isMainType = true ")
+			"WHERE fbt.fiscalYear = ?1 AND fbt.isMainType = true " +
+			"ORDER BY fbt.budgetType.lineNumber")
 	public List<BudgetType> findAllMainBudgetTypeByFiscalYear(Integer fiscalYear);
 
 	

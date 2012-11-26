@@ -43,6 +43,11 @@ public class ObjectiveTypeRestController {
 		return entityService.findObjectiveTypeById(id);
 	}
 	
+	@RequestMapping(value="/ObjectiveType/{id}/childrenName", method=RequestMethod.GET)
+	public @ResponseBody String getObjectiveTypeChildrenName(@PathVariable Long id) {
+		return entityService.findObjectiveTypeChildrenNameOf(id);
+	}
+	
 	
 	@ExceptionHandler(value=Exception.class)
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {

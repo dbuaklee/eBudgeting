@@ -179,11 +179,11 @@ public class Objective implements Serializable {
 	
 	
 
-	public Integer getLevel() {
+	public Integer getParentLevel() {
 		return parentLevel;
 	}
-	public void setLevel(Integer level) {
-		this.parentLevel = level;
+	public void setParentLevel(Integer parentLevel) {
+		this.parentLevel = parentLevel;
 	}
 	public List<BudgetType> getBudgetTypes() {
 		return budgetTypes;

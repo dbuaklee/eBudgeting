@@ -334,6 +334,19 @@ BudgetProposal = Backbone.RelationalModel.extend({
 	}],
 	urlRoot: appUrl('/BudgetProposal')
 });
+ObjectiveBudgetProposal = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type:Backbone.HasOne,
+		key: 'forObjective',
+		relatedModel: 'Objective'
+	},{
+		type:Backbone.HasOne,
+		key: 'budgetType',
+		relatedModel: 'BudgetType'
+	}],
+	urlRoot: appUrl('/ObjectiveBudgetProposal/')
+});
 
 ReservedBudget = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
@@ -577,6 +590,9 @@ ObjectiveRelationsCollection = Backbone.Collection.extend({
 FiscalBudgetTypeCollection = Backbone.Collection.extend({
 	model: FiscalBudgetType
 });
+ObjectiveBudgetProposalCollection = Backbone.Collection.extend({
+	model: ObjectiveBudgetProposal
+}); 
 
 //Handlebars Utils
 

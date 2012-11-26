@@ -43,6 +43,9 @@ public interface EntityService {
 	public ObjectiveType findParentObjectiveType(ObjectiveType type);
 	public List<Integer> findObjectiveTypeRootFiscalYear();
 	public List<ObjectiveType> findObjectiveTypeByFiscalYearEager(Integer fiscalYear, Long parentId);
+	public String findObjectiveTypeChildrenNameOf(Long id);
+	
+	public String findObjectiveChildrenTypeName(Long id);
 
 	
 	//Objective
@@ -51,7 +54,11 @@ public interface EntityService {
 	public Objective findParentObjective(Objective objective);
 	public Objective findOjectiveById(Long id);
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id);
+	public List<Objective> findAvailableObjectiveChildrenByObjectiveId(Long id);
+	
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad);
+	public Objective findOneRootObjectiveByFiscalyear(Integer fiscalYear);
+	
 	public List<Objective> findRootFiscalYear();
 	public List<Breadcrumb> createBreadCrumbObjective(String string,
 			Integer fiscalYear, Objective objective);
@@ -89,6 +96,8 @@ public interface EntityService {
 	
 	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);
+	
+	
 	
 	
 	//BudgetType
@@ -203,11 +212,21 @@ public interface EntityService {
 	//ObjectiveBudgetProposal
 	public List<ObjectiveBudgetProposal> findObjectiveBudgetproposalByObjectiveIdAndOwnerId(
 			Long objectiveId, Long id);
+	public ObjectiveBudgetProposal saveObjectiveBudgetProposal(
+			Organization workAt, JsonNode node);
+	public ObjectiveBudgetProposal updateObjectiveBudgetProposal(JsonNode node);
+	public ObjectiveBudgetProposal deleteObjectiveBudgetProposal(Long id);
+	
 	
 	//FiscalBudgetType
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+
+
+
+
+
 	
 
 	

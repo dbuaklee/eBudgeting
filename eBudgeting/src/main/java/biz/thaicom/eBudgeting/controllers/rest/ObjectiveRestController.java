@@ -52,6 +52,14 @@ public class ObjectiveRestController {
 		return entityService.findRootObjectiveByFiscalyear(fiscalYear, false);
 	};
 	
+	@RequestMapping(value="/Objective/ROOT/{fiscalYear}", method=RequestMethod.GET)
+	public @ResponseBody Objective getOneROOTObjectiveByFiscalYear(
+			@PathVariable Integer fiscalYear) {
+		
+		return entityService.findOneRootObjectiveByFiscalyear(fiscalYear);
+	};
+	
+	
 	@RequestMapping(value="/Objective/rootEager/{fiscalYear}", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getRootEagerObjectiveByFiscalYear(
 			@PathVariable Integer fiscalYear) {
@@ -67,11 +75,27 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/Objective/{id}/children", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getOChildrenObjectiveById(@PathVariable Long id) {
+	public @ResponseBody List<Objective> getChildrenObjectiveById(@PathVariable Long id) {
 		logger.debug("id: " + id);
 		List<Objective> list =entityService.findObjectiveChildrenByObjectiveId(id);
 
 		return  list;
+	}
+	
+	@RequestMapping(value="/Objective/{id}/availableChildren", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getAvailableChildrenObjectiveById(@PathVariable Long id) {
+		logger.debug("id: " + id);
+		List<Objective> list =entityService.findAvailableObjectiveChildrenByObjectiveId(id);
+
+		return  list;
+	}
+	
+	@RequestMapping(value="/Objective/{id}/childrenTypeName", method=RequestMethod.GET)
+	public @ResponseBody String getChildrenTypeName(@PathVariable Long id) {
+		logger.debug("id: " + id);
+		String s = entityService.findObjectiveChildrenTypeName(id);
+
+		return  s;
 	}
 	
 	@RequestMapping(value="/Objective/{fiscalYear}/type/{typeId}") 

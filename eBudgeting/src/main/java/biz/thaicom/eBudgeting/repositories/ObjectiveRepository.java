@@ -1,6 +1,7 @@
 package biz.thaicom.eBudgeting.repositories;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -132,6 +133,13 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	
 	
 	public List<Objective> findAllByFiscalYearAndParentPathLike(Integer fiscalYear, String parentPath);
+
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"WHERE objective.type in (?1) and objective.parent is null ")
+		public List<Objective> findAvailableChildrenOfObjectiveType(
+			Set<ObjectiveType> childrenSet);
 
 
 

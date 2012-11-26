@@ -1094,6 +1094,31 @@ public class GenericViewController {
 	}
 	
 	
+	// --------------------------------------------------------------	m51f17: การเชื่อมโยงกิจกรรม
+	@RequestMapping("/page/m51f17/")
+	public String render_m51f17(
+			Model model, HttpServletRequest request) {
+		model.addAttribute("rootPage", true);
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m51f17";
+	}
+	
+	
+	
+	@RequestMapping("/page/m51f17/{fiscalYear}/")
+	public String render_m51f17_fiscal(
+			Model model, @PathVariable Integer fiscalYear,
+			HttpServletRequest request) {
+
+				
+		model.addAttribute("rootPage", false);
+		model.addAttribute("fiscalYear", fiscalYear);
+		return "m51f17";
+	}
+	
+	
 	// --------------------------------------------------------------m52f01: ทะเบียนเป้าประสงค์เชิงนโยบนาย
 	@RequestMapping("/page/m52f01/")
 	public String render_m52f01(

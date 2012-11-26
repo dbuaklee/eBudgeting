@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
+import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
@@ -70,6 +71,28 @@ public class BudgetProposalRestController {
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser) {
 		return entityService.findObjectiveBudgetproposalByObjectiveIdAndOwnerId(objectiveId, currentUser.getWorkAt().getId());
+	}
+	
+	@RequestMapping(value="/ObjectiveBudgetProposal/{id}", method=RequestMethod.PUT)
+	public @ResponseBody ObjectiveBudgetProposal updateObjectiveBudgetProposal(
+			@PathVariable Long id,
+			@RequestBody JsonNode node,
+			@Activeuser ThaicomUserDetail currentUser) {
+		return entityService.updateObjectiveBudgetProposal(node);
+	}
+	
+	@RequestMapping(value="/ObjectiveBudgetProposal", method=RequestMethod.POST)
+	public @ResponseBody ObjectiveBudgetProposal saveObjectiveBudgetProposal(
+			@RequestBody JsonNode node,
+			@Activeuser ThaicomUserDetail currentUser) {
+		return entityService.saveObjectiveBudgetProposal(currentUser.getWorkAt(), node);
+	}
+	
+	@RequestMapping(value="/ObjectiveBudgetProposal/{id}", method=RequestMethod.DELETE)
+	public @ResponseBody ObjectiveBudgetProposal deleteObjectiveBudgetProposal(
+			@PathVariable Long id,
+			@Activeuser ThaicomUserDetail currentUser) {
+		return entityService.deleteObjectiveBudgetProposal(id);
 	}
 	
 	
