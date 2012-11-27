@@ -581,6 +581,81 @@ ObjectiveTargetCollection = Backbone.Collection.extend({
 TargetUnitCollection = Backbone.Collection.extend({
 	model: TargetUnit
 });
+TargetUnitPagableCollection = Backbone.Collection.extend({
+	initialize: function(models, options) {
+	    this.targetPage = options.targetPage;
+	},
+	
+	model: TargetUnit,
+	
+	parse: function(response) {
+		this.pageSize = response.size;
+		this.pageNumber = response.number;
+		this.lastPage = response.lastPage;
+		this.firstPage = response.firstPage;
+		this.totalPages = response.totalPages;
+		this.numberOfElements = response.numberOfElements;
+		this.totalElements = response.totalElements;
+		
+		return response.content;
+	},
+	
+	url: function() {
+	    return appUrl('/TargetUnit/page/'+this.targetPage);
+	},
+	toPageJSON: function() {
+		return {
+			size: this.size,
+			number: this.number,
+			lastPage: this.lastPage,
+			firstPage: this.firstPage,
+			totalPages: this.totalPages,
+			numberOfElements: this.numberOfElements,
+			totalElements: this.totalElements,
+			contents: this.toJSON()
+		};
+	},
+	toPageParamsJSON: function() {
+		var json={};
+		json.hasPage=true;
+		json.totalElements=this.totalElements;
+		json.pageSize=this.pageSize;
+		json.page=[];
+		
+		this.targetPage = parseInt(this.targetPage);
+		
+		var rem = this.targetPage % 10;
+		
+		var first = this.targetPage - rem;
+		
+		if(first > 0) {
+			json.page.push({pageNumber: this.targetPage-10+1, isActive: false, isPrev: true});
+		}
+		
+		var last = this.targetPage + (10-rem);
+		if(last > this.totalPages) {
+			last = this.totalPages;
+		}
+		
+		for(var i=first; i<last; i++) {
+			var isActive = i+1 == this.targetPage;
+			json.page.push({pageNumber: i+1, isActive: isActive, showPageNumber: true});
+		}
+		
+		if(last < this.totalPages) {
+			
+			var number=this.targetPage +10;
+			if(number > this.totalPages) {
+				number = this.totalPages;
+			}
+			
+			json.page.push({pageNumber: number + 10+1, isActive: false, isNext: true});
+		}
+		
+		return json;
+	}
+});
+
 TargetValueCollection = Backbone.Collection.extend({
 	model: TargetValue
 });

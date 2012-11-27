@@ -1670,7 +1670,10 @@ public class EntityServiceJPA implements EntityService {
 		return (List<TargetUnit>) targetUnitRepository.findAll();
 	}
 
-
+	@Override
+	public Page<TargetUnit> findAllTargetUnits(PageRequest pageRequest) {
+		return (Page<TargetUnit>) targetUnitRepository.findAll(pageRequest);
+	}
 
 	@Override
 	public List<ObjectiveTarget> findAllObjectiveTargets() {

@@ -73,8 +73,16 @@ public class Objective implements Serializable {
 	private Integer parentLevel;
 	
 	@Basic
+	private Integer lineNumber;
+	
+	@Basic
 	@Column(name="IDX")
 	private Integer index;
+
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="NAME_PLN_OBJECTIVENAME_ID", nullable=false)
+	private ObjectiveName objectiveName;
+	
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="TYPE_PLN_OBJECTIVETYPE_ID", nullable=false)
@@ -177,8 +185,6 @@ public class Objective implements Serializable {
 		this.parent = parent;
 	}
 	
-	
-
 	public Integer getParentLevel() {
 		return parentLevel;
 	}
@@ -214,6 +220,18 @@ public class Objective implements Serializable {
 	}
 	public void setAllocationRecords(List<AllocationRecord> allocationRecords) {
 		this.allocationRecords = allocationRecords;
+	}
+	public Integer getLineNumber() {
+		return lineNumber;
+	}
+	public void setLineNumber(Integer lineNumber) {
+		this.lineNumber = lineNumber;
+	}
+	public ObjectiveName getObjectiveName() {
+		return objectiveName;
+	}
+	public void setObjectiveName(ObjectiveName objectiveName) {
+		this.objectiveName = objectiveName;
 	}
 	public List<TargetUnit> getUnits() {
 		return units;

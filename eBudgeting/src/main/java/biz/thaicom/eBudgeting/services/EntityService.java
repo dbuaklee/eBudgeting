@@ -177,6 +177,7 @@ public interface EntityService {
 
 	//TargetUnit
 	public List<TargetUnit> findAllTargetUnits();
+	public Page<TargetUnit> findAllTargetUnits(PageRequest pageRequest);
 	public TargetUnit saveTargetUnits(TargetUnit targetUnit);
 	public TargetUnit updateTargetUnit(TargetUnit targetUnit);
 	public TargetUnit deleteTargetUnit(TargetUnit targetUnit);
@@ -222,6 +223,7 @@ public interface EntityService {
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+	
 
 
 

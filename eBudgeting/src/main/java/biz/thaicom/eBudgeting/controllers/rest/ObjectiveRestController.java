@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
+import biz.thaicom.eBudgeting.models.webui.PageUI;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
@@ -34,8 +35,6 @@ import biz.thaicom.security.models.ThaicomUserDetail;
 @Controller
 public class ObjectiveRestController {
 	private static final Logger logger = LoggerFactory.getLogger(ObjectiveRestController.class);
-	
-	private static final Integer PAGE_SIZE = 10;
 	
 	@Autowired
 	private EntityService entityService;
@@ -110,7 +109,7 @@ public class ObjectiveRestController {
 			@PathVariable Long typeId,
 			@PathVariable Integer pageNumber) {
 		PageRequest pageRequest =
-	            new PageRequest(pageNumber - 1, PAGE_SIZE, Sort.Direction.ASC, "code");
+	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "code");
 		
 		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId, pageRequest);
 	}

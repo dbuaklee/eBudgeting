@@ -5,7 +5,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 	
-	<http use-expressions="true">
+	<beans:bean id="authenticationEntryPoint"
+  		class="biz.thaicom.security.controllers.AjaxAwareAuthenticationEntryPoint">
+    	<beans:constructor-arg name="loginFormUrl" value="/login"/>
+	</beans:bean>
+	
+	<http use-expressions="true"
+		entry-point-ref="authenticationEntryPoint">
 		<intercept-url pattern="/login" access="permitAll"/>
 		<intercept-url pattern="/resources/**" access="permitAll"/>
 		<intercept-url pattern="/admin/**" access="permitAll"/>

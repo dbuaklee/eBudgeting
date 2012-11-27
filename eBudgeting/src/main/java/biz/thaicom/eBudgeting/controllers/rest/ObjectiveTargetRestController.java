@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +24,7 @@ import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.models.pln.TargetValue;
 import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
+import biz.thaicom.eBudgeting.models.webui.PageUI;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
 import biz.thaicom.security.models.ThaicomUserDetail;
@@ -69,6 +73,15 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectiveTargetRest
 	@RequestMapping(value="/TargetUnit/", method=RequestMethod.GET)
 	public @ResponseBody List<TargetUnit> findAllTargetUnit() {
 		return entityService.findAllTargetUnits();
+	}
+	
+	@RequestMapping(value="/TargetUnit/page/{targetPage}", method=RequestMethod.GET)
+	public @ResponseBody Page<TargetUnit> findAllTargetUnit(@PathVariable Integer targetPage) {
+		
+		PageRequest pageRequest =
+	            new PageRequest(targetPage - 1, PageUI.PAGE_SIZE , Sort.Direction.ASC, "name");
+		
+		return entityService.findAllTargetUnits(pageRequest);
 	}
 	
 	@RequestMapping(value="/TargetUnit/{id}", method=RequestMethod.GET)

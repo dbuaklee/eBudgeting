@@ -45,6 +45,24 @@
 	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
 	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
 </div>
+
+	{{#if pageParams}}
+	{{#with pageParams}}
+    <div class="pagination">
+        <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <ul>
+		{{#each page}}
+	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">
+				{{#if isPrev}}&laquo;{{/if}} 
+				{{#if isNext}}&raquo;{{/if}}
+				{{#if showPageNumber}} {{pageNumber}} {{/if}}
+
+			</a>
+		</li>
+	    {{/each}}
+    </div>
+	{{/with}}
+	{{/if}}
+
 <table class="table table-bordered" id="mainTbl">
 	<thead>
 		<tr>
@@ -84,7 +102,9 @@
 </script>
 	
 <script type="text/javascript">
-var targetUnits = new TargetUnitCollection();
+var targetUnits = new TargetUnitPagableCollection([], {
+	 targetPage: 1
+});
 
 $(document).ready(function() {
 	
@@ -155,7 +175,8 @@ $(document).ready(function() {
 			"click .menuEdit" : "editTargetUnit",
 			"click .menuDelete" : "deleteTargetUnit",
 			"click .lineSave" : "saveLine",
-			"click .cancelLineSave" : "cancelSaveLine"
+			"click .cancelLineSave" : "cancelSaveLine",
+			"click a.pageLink" : "gotoPage"
 		},
 		mainCtrTpl: Handlebars.compile($("#mainCtrTemplate").html()),
 		newRowTpl : Handlebars.compile($('#newRowTemplate').html()),
@@ -166,21 +187,31 @@ $(document).ready(function() {
 		modalView : new ModalView(),
 		
 		render: function() {
-			this.$el.html(this.mainCtrTpl());
+			var json = {};
+			json.pageParams = this.collection.toPageParamsJSON();
+			
+			this.$el.html(this.mainCtrTpl(json));
 			this.$el.find('tbody').html(this.rowTpl(this.collection.toJSON()));
+		},
+		
+		gotoPage: function(e) {
+			var pageNumber = $(e.target).attr('data-id');
+			this.renderTargetPage(pageNumber);
+		},
+		
+		renderTargetPage: function(pageNumber) {
+			this.collection.targetPage = pageNumber;
+			this.collection.fetch({
+				success: function() {
+					targetUnits.trigger('reset');
+				}
+			});
 		},
 		
 		newTargetUnit: function(e) {
 			if(! $(e.currentTarget).hasClass('disabled') ) {
 				
-				var html = this.newRowTpl({name:null});
-				
-				$('#mainCtr tbody').append('<tr>'+html+'</tr>');
-				
-				
-				this.$el.find('a.btn').toggleClass('disabled');
-				
-				this.currentTargetUnit = new TargetUnit();
+				this.modalView.renderWith(new TargetUnit());
 			}
 		},
 		
@@ -212,9 +243,7 @@ $(document).ready(function() {
 			var targetUnit = TargetUnit.findOrCreate(tuId);
 			
 			this.currentTargetUnit=targetUnit;
-			var html = this.newRowTpl(targetUnit.toJSON());
-			console.log(html);
-			this.$el.find('tr[data-id='+ tuId + ']').html(html);
+			this.modalView.renderWith(this.currentTargetUnit);
 		},
 		
 		deleteTargetUnit: function(e) {
@@ -235,9 +264,7 @@ $(document).ready(function() {
 	mainCtrView = new MainCtrView();
 	
 	targetUnits.fetch({
-		url: appUrl('/TargetUnit/'),
 		success: function() {
-			
 			targetUnits.trigger('reset');
 		}
 	});

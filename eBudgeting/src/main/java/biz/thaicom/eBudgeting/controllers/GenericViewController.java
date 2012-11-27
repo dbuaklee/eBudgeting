@@ -516,14 +516,7 @@ public class GenericViewController {
 		return "m4f02";
 	}
 	
-	@RequestMapping("/page/m1f03/")
-	public String render_m1f03(
-			Model model, HttpServletRequest request) {
-		List<TargetUnit> targetUnits = entityService.findAllTargetUnits();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("targetUnits", targetUnits);
-		return "m1f03";
-	}
+
 	
 	@RequestMapping("/page/m2f14/")
 	public String render_m2f14(
@@ -1118,6 +1111,16 @@ public class GenericViewController {
 		return "m51f17";
 	}
 	
+	
+	// --------------------------------------------------- m51f18: ข้อมูลหน่วยนับเป้าหมาย
+	@RequestMapping("/page/m51f18/")
+	public String render_m51f18(
+			Model model, HttpServletRequest request) {
+		List<TargetUnit> targetUnits = entityService.findAllTargetUnits();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("targetUnits", targetUnits);
+		return "m51f18";
+	}
 	
 	// --------------------------------------------------------------m52f01: ทะเบียนเป้าประสงค์เชิงนโยบนาย
 	@RequestMapping("/page/m52f01/")
