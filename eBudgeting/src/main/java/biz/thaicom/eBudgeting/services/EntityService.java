@@ -26,6 +26,7 @@ import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
@@ -97,9 +98,7 @@ public interface EntityService {
 	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);
 	
-	
-	
-	
+		
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
 	public BudgetType findBudgetTypeById(Long id);
@@ -163,6 +162,15 @@ public interface EntityService {
 	public Boolean updateBudgetProposalAndReservedBudget(JsonNode data);
 	
 	
+	//ObjectiveName
+	public ObjectiveName saveObjectiveName(JsonNode node);
+	public ObjectiveName updateObjectiveName(JsonNode node);
+	Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
+			Integer fiscalYear, Long typeId, PageRequest pageRequest);
+	public ObjectiveName findOneObjectiveName(Long id);
+	public ObjectiveName deleteObjectiveName(Long id);
+	
+	
 	
 	//ObjectiveTarget
 	public List<ObjectiveTarget> findAllObjectiveTargets();
@@ -223,6 +231,7 @@ public interface EntityService {
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+
 	
 
 

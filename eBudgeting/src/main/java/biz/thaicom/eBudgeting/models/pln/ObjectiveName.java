@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -37,6 +38,16 @@ public class ObjectiveName implements Serializable{
 	@Basic
 	private String name;
 	
+	@Basic
+	private String code;
+	
+	@Basic 
+	private Integer fiscalYear;
+	
+	@Basic
+	@Column(name="IDX")
+	private Integer index;
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="TYPE_PLN_OBJECTIVETYPE_ID", nullable=false)
 	private ObjectiveType type;
@@ -52,7 +63,7 @@ public class ObjectiveName implements Serializable{
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -61,12 +72,36 @@ public class ObjectiveName implements Serializable{
 		this.name = name;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
 	public ObjectiveType getType() {
 		return type;
 	}
 
 	public void setType(ObjectiveType type) {
 		this.type = type;
+	}
+
+	public Integer getFiscalYear() {
+		return fiscalYear;
+	}
+
+	public void setFiscalYear(Integer fiscalYear) {
+		this.fiscalYear = fiscalYear;
 	}
 
 	public List<ObjectiveTarget> getTargets() {

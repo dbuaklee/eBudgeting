@@ -207,7 +207,7 @@
 var objectiveId = "${objective.id}";
 var fiscalYear = "${fiscalYear}";
 var typeId = "${typeId}";
-var objectiveCollection = new ObjectivePagableCollection([], {
+var objectiveCollection = new ObjectiveNamePagableCollection([], {
 	fiscalYear: fiscalYear, objectiveTypeId: typeId, targetPage: 1
 });
 
@@ -572,7 +572,7 @@ $(document).ready(function() {
 		
 		newRow: function(e) {
 			
-			var newObj = new Objective();
+			var newObj = new ObjectiveName();
 			// and we'll have to do
 			var relationCollection = new ObjectiveRelationsCollection();
 			for(var j=0; j<relatedTypeList.length; j++ ) {

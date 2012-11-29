@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.databind.JsonNode;
 
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.webui.PageUI;
@@ -348,6 +350,44 @@ public class ObjectiveRestController {
 		return entityService.initFiscalYear(fiscalYear);
 		
 	}
+	
+	@RequestMapping(value="/ObjectiveName/fiscalYear/{fiscalYear}/type/{typeId}/page/{pageNumber}", method=RequestMethod.GET)
+	public @ResponseBody Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
+			@PathVariable Integer fiscalYear, 
+			@PathVariable Long typeId,
+			@PathVariable Integer pageNumber) {
+		
+		PageRequest pageRequest =
+	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "index");
+		return entityService.findAllObjectiveNameByFiscalYearAndTypeId(fiscalYear, typeId, pageRequest);
+		
+	}
+	
+	@RequestMapping(value="/ObjectiveName/{id}", method=RequestMethod.GET)
+	public @ResponseBody ObjectiveName findOneObjectiveName(
+			@PathVariable Long id) {
+		return entityService.findOneObjectiveName(id);
+	}
+	
+	@RequestMapping(value="/ObjectiveName/{id}", method=RequestMethod.PUT)
+	public @ResponseBody ObjectiveName updateObjectiveName(
+			@PathVariable Long id,
+			@RequestBody JsonNode node) {
+		return entityService.updateObjectiveName(node);
+	}
+	
+	@RequestMapping(value="/ObjectiveName/", method=RequestMethod.POST)
+	public @ResponseBody ObjectiveName saveObjectiveName(
+			@RequestBody JsonNode node) {
+		return entityService.saveObjectiveName(node);
+	}
+	
+	@RequestMapping(value="/ObjectiveName/{id}", method=RequestMethod.DELETE)
+	public @ResponseBody ObjectiveName deleteObjectiveName(
+			@PathVariable Long id) {
+		return entityService.deleteObjectiveName(id);
+	}
+	
 	
 	@ExceptionHandler(value=Exception.class)
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {

@@ -26,8 +26,7 @@
 		<div id="mainCtr">
 
 		</div>
-		
-		
+	
 	</div>
 </div>
 </div>

@@ -42,6 +42,7 @@ import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
@@ -58,6 +59,7 @@ import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveBudgetProposalRepository;
+import biz.thaicom.eBudgeting.repositories.ObjectiveNameRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTargetRepository;
@@ -127,6 +129,9 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private FiscalBudgetTypeRepository fiscalBudgetTypeRepository;
+	
+	@Autowired
+	private ObjectiveNameRepository objectiveNameRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -2224,18 +2229,28 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 		Objective obj = objectiveRepository.findRootOfFiscalYear(fiscalYear);
-		if(obj == null) { 
+		if(obj == null) {
+			ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
+			
+			ObjectiveName objName = new ObjectiveName();
+			objName.setName("ROOT");
+			objName.setFiscalYear(fiscalYear);
+			objName.setType(rootType);
+			
 			obj = new Objective();
 			obj.setName("ROOT");
 			obj.setParent(null);
 			obj.setParentPath(".");
 			obj.setParentLevel(1);
 			obj.setFiscalYear(fiscalYear);
+			obj.setObjectiveName(objName);
 			
-			ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
+			
 			obj.setType(rootType);
 			
+			objectiveNameRepository.save(objName);
 			objectiveRepository.save(obj);
+			
 			
 		}
 		
@@ -2518,6 +2533,83 @@ public class EntityServiceJPA implements EntityService {
 			}
 		}
 		return null;
+	}
+
+	
+	
+	@Override
+	public ObjectiveName saveObjectiveName(JsonNode node) {
+		ObjectiveName on = new ObjectiveName();
+		
+		if(node.get("name") != null) {
+			on.setName(node.get("name").asText());
+		}
+		
+		if(node.get("type") != null) {
+			ObjectiveType type = objectiveTypeRepository.findOne(
+					node.get("type").get("id").asLong());
+			on.setType(type);
+		}
+		
+		if(node.get("fiscalYear") != null ) {
+			on.setFiscalYear(node.get("fiscalYear").asInt());
+		}
+		
+		// now find the maximum number in this type
+		Integer maxIndex = objectiveNameRepository.findMaxIndexOfTypeAndFiscalYear(
+				on.getType(), on.getFiscalYear());
+		
+		if(maxIndex == null) {
+			on.setIndex(11);
+		} else {
+			on.setIndex(maxIndex+1);
+		}
+		on.setCode(on.getIndex().toString());
+		
+		objectiveNameRepository.save(on);
+		return on;
+	}
+
+	@Override
+	public ObjectiveName updateObjectiveName(JsonNode node) {
+		ObjectiveName on = objectiveNameRepository.findOne(node.get("id").asLong());
+		
+		if(node.get("name") != null) {
+			on.setName(node.get("name").asText());
+		}
+		
+		if(node.get("type") != null) {
+			ObjectiveType type = objectiveTypeRepository.findOne(
+					node.get("type").get("id").asLong());
+			on.setType(type);
+		}
+		
+		if(node.get("fiscalYear") != null ) {
+			on.setFiscalYear(node.get("fiscalYear").asInt());
+		}
+		
+		objectiveNameRepository.save(on);
+		return on;
+	}
+
+	@Override
+	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
+			Integer fiscalYear, Long typeId, PageRequest pageRequest) {
+		return objectiveNameRepository.findAllObjectiveNameByFiscalYearAndTypeId(fiscalYear, typeId, pageRequest);
+	}
+
+	@Override
+	public ObjectiveName findOneObjectiveName(Long id) {
+		return objectiveNameRepository.findOne(id);
+	}
+
+	@Override
+	public ObjectiveName deleteObjectiveName(Long id) {
+		ObjectiveName on = objectiveNameRepository.findOne(id);
+		if(on!=null) {
+			objectiveNameRepository.delete(on);
+		}
+		return on;
 	}
 	
 	
