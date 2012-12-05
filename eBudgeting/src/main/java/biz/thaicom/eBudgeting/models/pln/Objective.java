@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 
 import javax.crypto.spec.PSource;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,11 +19,14 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +83,9 @@ public class Objective implements Serializable {
 	@Column(name="IDX")
 	private Integer index;
 
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER, cascade= { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name="NAME_PLN_OBJECTIVENAME_ID", nullable=false)
+	@Fetch(FetchMode.JOIN)
 	private ObjectiveName objectiveName;
 	
 	
@@ -95,7 +100,7 @@ public class Objective implements Serializable {
 
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
-	@OrderColumn(name="IDX")
+	@OrderBy
 	private List<Objective> children;
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)

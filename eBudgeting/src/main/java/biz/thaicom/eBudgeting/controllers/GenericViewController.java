@@ -854,7 +854,7 @@ public class GenericViewController {
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 104);
 		
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	@RequestMapping("/page/m51f09/{fiscalYear}")
@@ -872,11 +872,9 @@ public class GenericViewController {
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
-		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมหลัก.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมหลัก.getValue());
+		model.addAttribute("hasParent", "");
 		
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	
@@ -889,7 +887,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 105);
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	@RequestMapping("/page/m51f10/{fiscalYear}")
@@ -907,11 +905,9 @@ public class GenericViewController {
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
-		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมรอง.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมรอง.getValue());
+		model.addAttribute("hasParent", "");
 		
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	// --------------------------------------------------------------m51f11: ทะเบียนกิจกรรมเสริม
@@ -923,7 +919,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 106);
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	@RequestMapping("/page/m51f11/{fiscalYear}")
@@ -941,10 +937,8 @@ public class GenericViewController {
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
-		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมย่อย.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมย่อย.getValue());
-		return "objectiveRegister";
+		model.addAttribute("hasParent", "");
+		return "objectiveNameRegister";
 	}
 	
 	// --------------------------------------------------------------m51f12: ทะเบียนกิจกรรมสนับสนุน
@@ -956,7 +950,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 107);
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	@RequestMapping("/page/m51f12/{fiscalYear}")
@@ -974,11 +968,9 @@ public class GenericViewController {
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
-		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมเสริม.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมเสริม.getValue());
+		model.addAttribute("hasParent", "");
 		
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	
@@ -991,7 +983,7 @@ public class GenericViewController {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		model.addAttribute("typeId", 108);
-		return "objectiveRegister";
+		return "objectiveNameRegister";
 	}
 	
 	@RequestMapping("/page/m51f13/{fiscalYear}")
@@ -1009,10 +1001,8 @@ public class GenericViewController {
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
-		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.กิจกรรมสนับสนุน.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.กิจกรรมสนับสนุน.getValue());
-		return "objectiveRegister";
+		model.addAttribute("hasParent", "");
+		return "objectiveNameRegister";
 	}
 	
 	

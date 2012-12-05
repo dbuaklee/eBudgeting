@@ -207,7 +207,7 @@
 var objectiveId = "${objective.id}";
 var fiscalYear = "${fiscalYear}";
 var typeId = "${typeId}";
-var objectiveCollection = new ObjectivePagableCollection([], {
+var objectiveCollection = new ObjectiveNamePagableCollection([], {
 	fiscalYear: fiscalYear, objectiveTypeId: typeId, targetPage: 1
 });
 
@@ -363,11 +363,7 @@ $(document).ready(function() {
 		save : function(e) {
 			var newObj = this.currentObjective.get('id') == null;
 			// now collect data 
-			var nameTxt = this.$el.find('#nameTxt').val();
-			
-			this.currentObjective.set('name', nameTxt);
-			
-			this.currentObjective.set('objectiveName', new ObjectiveName({name: nameTxt}));
+			this.currentObjective.set('name', this.$el.find('#nameTxt').val());
 			
 			// now save parent
 			if(this.$el.find('#parentSlt').length > 0) {
@@ -576,7 +572,7 @@ $(document).ready(function() {
 		
 		newRow: function(e) {
 			
-			var newObj = new Objective();
+			var newObj = new ObjectiveName();
 			// and we'll have to do
 			var relationCollection = new ObjectiveRelationsCollection();
 			for(var j=0; j<relatedTypeList.length; j++ ) {
@@ -643,8 +639,6 @@ $(document).ready(function() {
 				
 				if(modelToDelete.get('isLeaf') == true) {
 					if(confirm("คุณต้องการลบรายการ " + modelToDelete.get('name'))) {
-						
-						var objectiveNameToDelete = modelToDelete.get('objectiveName');
 					
 						modelToDelete.destroy({
 							success: _.bind(function() {					
@@ -655,14 +649,7 @@ $(document).ready(function() {
 									model.set('index', index);
 								});
 								
-								// we should be able to delete name here
-								objectiveNameToDelete.destroy({
-									success: _.bind(function() {
-										this.collection.trigger('reset');
-									},this)
-								});
-								
-								
+								this.collection.trigger('reset');
 							},this)
 						});
 					}

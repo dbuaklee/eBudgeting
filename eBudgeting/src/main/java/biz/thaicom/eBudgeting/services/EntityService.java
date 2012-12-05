@@ -80,7 +80,7 @@ public interface EntityService {
 	public Objective saveObjective(JsonNode objective);
 	public Objective newObjectiveWithParam(String name, String code, Long parentId,
 			Long typeId, String parentPath, Integer fiscalYear);
-	public Objective deleteObjective(Long id);
+	public Objective deleteObjective(Long id, Boolean nameCascade);
 	public void addTargetToObjective(Long id, Long targetId);
 	
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(

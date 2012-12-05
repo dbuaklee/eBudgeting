@@ -185,7 +185,10 @@ public class ObjectiveRestController {
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.DELETE) 
 	public @ResponseBody Objective deleteObjective(
 			@PathVariable Long id) {
-		return entityService.deleteObjective(id);
+
+		Boolean cascadeNameDelete = false;
+		
+		return entityService.deleteObjective(id, cascadeNameDelete);
 	}
 	
 

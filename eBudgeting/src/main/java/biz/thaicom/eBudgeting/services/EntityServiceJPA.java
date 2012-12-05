@@ -1163,19 +1163,34 @@ public class EntityServiceJPA implements EntityService {
 		//first check objective id
 		if(objectiveJsonNode.get("id") == null) { 
 			objective = new Objective();
+			objective.setObjectiveName(new ObjectiveName());
 		} else {
 			objective = objectiveRepository.findOne(objectiveJsonNode.get("id").asLong());
+			
+			logger.debug("objective.getChildren().si" + objective.getChildren().size());
 		}
 		
 		objective.setName(objectiveJsonNode.get("name").asText());
 		
+		// doing away with name?
+		if(objectiveJsonNode.get("objectiveName") != null) {
+			String nameTxt = objectiveJsonNode.get("objectiveName").get("name").asText();
+			objective.getObjectiveName().setName(nameTxt);
+			
+		}
+		
+		
+		
 		objective.setFiscalYear(objectiveJsonNode.get("fiscalYear").asInt());
+		objective.getObjectiveName().setFiscalYear(objectiveJsonNode.get("fiscalYear").asInt());
 
 		if(objectiveJsonNode.get("type") != null) {
 			Long objectiveTypeId = objectiveJsonNode.get("type").get("id").asLong();
 			ObjectiveType ot = objectiveTypeRepository.findOne(objectiveTypeId);
 			
 			objective.setType(ot);
+			objective.getObjectiveName().setType(ot);
+			
 		}
 		
 		//lastly the unit
@@ -1216,38 +1231,84 @@ public class EntityServiceJPA implements EntityService {
 		
 		logger.debug("1. {} " , objectiveJsonNode.get("parent"));
 		Objective oldParent = objective.getParent();
+		String parentPathLikeString = "." + objective.getId() + ".";
+		List<Objective> allDescendant = objectiveRepository.findAllDescendantOf(parentPathLikeString);
 		
 		if(objectiveJsonNode.get("parent") != null &&  objectiveJsonNode.get("parent").get("id") != null  ) {
 			Long parentId = objectiveJsonNode.get("parent").get("id").asLong();
+			
+			logger.debug("fetching parent : " + parentId);
 			Objective parent = objectiveRepository.findOne(parentId);
-			
-			
-			
-			objective.setParent(parent);
-
-			parent.setIsLeaf(false);
-			
-			objectiveRepository.save(parent);
+			logger.debug("111111......parent.getChildren.size() = " + parent.getChildren().size());
 			
 			if(parent.getParentPath() == null || parent.getParentPath().length() == 0) {
 			
 				objective.setParentPath("."+parentId+".");
 				objective.setParentLevel(parent.getParentLevel()+1);
+				
 			} else {
 				objective.setParentPath("."+parentId+parent.getParentPath());
 				objective.setParentLevel(parent.getParentLevel()+1);
+				
+			} 
+			
+			if(parent.getLineNumber() != null) {
+				
+				if(objective.getLineNumber() != null) {
+					objectiveRepository.removeFiscalyearLineNumberAt(objective.getFiscalYear(), objective.getLineNumber(), allDescendant.size()+1);
+				}
+				
+				Integer maxLineNumber = null;
+				
+				if(parent.getChildren().size() == 0) {
+					logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>parent LineNumber Before: " + parent.getLineNumber());
+					parent = objectiveRepository.findOne(parentId);
+					logger.debug("parent LineNumber After: " + parent.getLineNumber());
+					maxLineNumber = parent.getLineNumber();
+				} else {
+					maxLineNumber = objectiveRepository.findMaxLineNumberChildrenOf(parent);
+					logger.debug("++++ objectiveRepository.findMaxLineNumberChildrenOf: " + maxLineNumber);
+				}
+				
+				objectiveRepository.insertFiscalyearLineNumberAt(objective.getFiscalYear(), maxLineNumber+1);
+				objective.setLineNumber(maxLineNumber+1);
+				
 			}
+			
+			
+			objective.setParent(parent);
+			parent.setIsLeaf(false);
+			objectiveRepository.save(parent);
+			
 		} else if(objective.getType().getId() == ObjectiveTypeId.แผนงาน.getValue()) {
 			// this parent  must be root!
 			Objective root = objectiveRepository.findRootOfFiscalYear(objective.getFiscalYear());
 			objective.setParent(root);
 			
+			objective.setParentLevel(2);
 			objective.setParentPath("." + root.getId().toString() + ".");
+			if(objective.getLineNumber() == null) {
+				// we'll have to find out this line number  
+				Integer maxLineNumber = objectiveRepository.findMaxLineNumberFiscalYear(objective.getFiscalYear());
+				if(maxLineNumber != null) {
+					objective.setLineNumber(maxLineNumber+1);
+				} else {
+					objective.setLineNumber(1);
+				}
+			}
+			
 		} else{
 			// parent is null 
 			objective.setParent(null);
 			objective.setParentPath(".");
 			objective.setParentLevel(1);
+
+			if(objective.getLineNumber() != null) {
+				objectiveRepository.removeFiscalyearLineNumberAt(objective.getFiscalYear(), objective.getLineNumber(), allDescendant.size()+1);
+				objective.setLineNumber(null);
+			}
+			
+			
 		}
 		
 		// now reset the isLeaf on Old parent 
@@ -1272,7 +1333,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		//will have to find the maxone and put the increment here!
 		if(objective.getCode() == null || objective.getCode().length() == 0) {
-			String maxCode = objectiveRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
+			String maxCode = objectiveNameRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
+			
 			Integer nextCode = 0;
 			if(maxCode == null) {
 				nextCode=10;
@@ -1282,6 +1344,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 			objective.setCode(nextCode.toString());
+			objective.getObjectiveName().setCode(nextCode.toString());
 			objective.setIndex(nextCode);
 			
 		}
@@ -1368,7 +1431,7 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public Objective deleteObjective(Long id) {
+	public Objective deleteObjective(Long id, Boolean nameCascade) {
 		// ok we'll have to get this one first
 		Objective obj = objectiveRepository.findOne(id);
 		
@@ -1384,6 +1447,13 @@ public class EntityServiceJPA implements EntityService {
 				objectiveRepository.save(parent);
 			} 
 		}
+		
+		if(nameCascade == true) {
+			ObjectiveName name= obj.getObjectiveName();
+			obj.setObjectiveName(null);
+			objectiveNameRepository.delete(name);
+		}
+		
 		objectiveRepository.delete(obj);
 		
 		return obj;

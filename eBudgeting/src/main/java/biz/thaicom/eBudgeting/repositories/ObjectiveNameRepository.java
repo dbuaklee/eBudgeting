@@ -28,4 +28,12 @@ public interface ObjectiveNameRepository extends JpaSpecificationExecutor<Object
 	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
 			Integer fiscalYear, Long typeId, Pageable pageable);
 
+	
+	@Query("" +
+			"SELECT max(o.code) " +
+			"FROM Objective o " +
+			"WHERE o.type=? AND o.fiscalYear=?2 ")
+	public String findMaxCodeOfTypeAndFiscalYear(ObjectiveType type,
+			Integer fiscalYear);
+
 }

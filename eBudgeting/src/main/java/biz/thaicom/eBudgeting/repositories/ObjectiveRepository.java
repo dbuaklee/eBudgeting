@@ -79,6 +79,12 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	
 	@Query("" +
 			"SELECT objective " +
+			"FROM Objectvie objective " +
+			"WHERE objective.parentPath like ?1")
+	public List<Objective> findAllDescendantOf(String parentPathLikeString);
+	
+	@Query("" +
+			"SELECT objective " +
 			"FROM Objective objective " +
 			"WHERE objective.id in (?1) " +
 			"ORDER BY objective.parentPath DESC ")
@@ -127,6 +133,31 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"WHERE o.type=? AND o.fiscalYear=?2 ")
 	public String findMaxCodeOfTypeAndFiscalYear(ObjectiveType type,
 			Integer fiscalYear);
+	
+	@Query("" +
+			"SELECT max(o.lineNumber) " +
+			"FROM Objective o " +
+			"WHERE o.fiscalYear=?1 ")
+	public Integer findMaxLineNumberFiscalYear(Integer fiscalYear);
+	
+	@Modifying
+	@Query("update Objective objective " +
+			"set lineNumber = lineNumber + 1  " +
+			"where fiscalYear =?1 AND lineNumber >= ?2 ")
+	public Integer insertFiscalyearLineNumberAt(Integer fiscalYear, Integer lineNumer);
+
+	@Modifying
+	@Query("update Objective objective " +
+			"set lineNumber = lineNumber - ?3  " +
+			"where fiscalYear =?1 AND lineNumber > ?2 ")
+	public Integer removeFiscalyearLineNumberAt(Integer fiscalYear, Integer lineNumer, Integer amount);
+	
+	@Query("" +
+			"SELECT max(o.lineNumber) " +
+			"FROM Objective o " +
+			"WHERE o.parent = ?1  ")
+	public Integer findMaxLineNumberChildrenOf(Objective parent);
+	
 	
 	
 	public List<Objective> findAllByFiscalYearAndParentPathLike(Integer fiscalYear, String parentPath);

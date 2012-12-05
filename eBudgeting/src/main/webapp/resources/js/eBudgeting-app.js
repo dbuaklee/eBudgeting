@@ -3,6 +3,7 @@ function appUrl(url) {
 	return myApiUrl  + url; 
 }
 
+
 // Model
 Objective = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
@@ -110,6 +111,10 @@ Objective = Backbone.RelationalModel.extend({
 	    	key: 'relations',
 	    	relatedModel: 'ObjectiveRelations',
 	    	collectionType: 'ObjectiveRelationsCollection'
+	    }, {
+	    	type: Backbone.HasOne,
+	    	key: 'objectiveName', 
+	    	relatedModel: 'ObjectiveName'
 	    }
 	    
 	],
@@ -468,21 +473,8 @@ TargetValueAllocationRecord = Backbone.RelationalModel.extend({
 });
 
 
-
-// Collection
-
-ObjectiveCollection = Backbone.Collection.extend({
-	model: Objective
-});
-
-ObjectiveNamePagableCollection = Backbone.Collection.extend({
-	initialize: function(models, options) {
-	    this.fiscalYear = options.fiscalYear;
-	    this.objectiveTypeId = options.objectiveTypeId;
-	    this.targetPage = options.targetPage;
-	  },
-	
-	model: ObjectiveName,
+// PagableCollection
+PagableCollection = Backbone.Collection.extend({
 	
 	parse: function(response) {
 		this.pageSize = response.size;
@@ -496,9 +488,6 @@ ObjectiveNamePagableCollection = Backbone.Collection.extend({
 		return response.content;
 	},
 	
-	url: function() {
-	    return appUrl('/ObjectiveName/fiscalYear/'+ this.fiscalYear +'/type/'+this.objectiveTypeId+'/page/'+this.targetPage);
-	},
 	toPageJSON: function() {
 		return {
 			size: this.size,
@@ -511,6 +500,7 @@ ObjectiveNamePagableCollection = Backbone.Collection.extend({
 			contents: this.toJSON()
 		};
 	},
+	
 	toPageParamsJSON: function() {
 		var json={};
 		json.hasPage=true;
@@ -549,7 +539,29 @@ ObjectiveNamePagableCollection = Backbone.Collection.extend({
 		}
 		
 		return json;
+	}
+});
+
+
+// Collection
+
+ObjectiveCollection = Backbone.Collection.extend({
+	model: Objective
+});
+
+ObjectiveNamePagableCollection = PagableCollection.extend({
+	initialize: function(models, options) {
+	    this.fiscalYear = options.fiscalYear;
+	    this.objectiveTypeId = options.objectiveTypeId;
+	    this.targetPage = options.targetPage;
+	  },
+	
+	model: ObjectiveName,
+	
+	url: function() {
+	    return appUrl('/ObjectiveName/fiscalYear/'+ this.fiscalYear +'/type/'+this.objectiveTypeId+'/page/'+this.targetPage);
 	},
+	
 	getIds: function() {
 		return this.pluck("id");
 	},
@@ -561,7 +573,7 @@ ObjectiveNamePagableCollection = Backbone.Collection.extend({
 	
 });
 
-ObjectivePagableCollection = Backbone.Collection.extend({
+ObjectivePagableCollection = PagableCollection.extend({
 	initialize: function(models, options) {
 	    this.fiscalYear = options.fiscalYear;
 	    this.objectiveTypeId = options.objectiveTypeId;
@@ -570,71 +582,8 @@ ObjectivePagableCollection = Backbone.Collection.extend({
 	
 	model: Objective,
 	
-	parse: function(response) {
-		this.pageSize = response.size;
-		this.pageNumber = response.number;
-		this.lastPage = response.lastPage;
-		this.firstPage = response.firstPage;
-		this.totalPages = response.totalPages;
-		this.numberOfElements = response.numberOfElements;
-		this.totalElements = response.totalElements;
-		
-		return response.content;
-	},
-	
 	url: function() {
 	    return appUrl('/Objective/'+ this.fiscalYear +'/type/'+this.objectiveTypeId+'/page/'+this.targetPage);
-	},
-	toPageJSON: function() {
-		return {
-			size: this.size,
-			number: this.number,
-			lastPage: this.lastPage,
-			firstPage: this.firstPage,
-			totalPages: this.totalPages,
-			numberOfElements: this.numberOfElements,
-			totalElements: this.totalElements,
-			contents: this.toJSON()
-		};
-	},
-	toPageParamsJSON: function() {
-		var json={};
-		json.hasPage=true;
-		json.totalElements=this.totalElements;
-		json.pageSize=this.pageSize;
-		json.page=[];
-		
-		this.targetPage = parseInt(this.targetPage);
-		
-		var rem = this.targetPage % 10;
-		
-		var first = this.targetPage - rem;
-		
-		if(first > 0) {
-			json.page.push({pageNumber: this.targetPage-10+1, isActive: false, isPrev: true});
-		}
-		
-		var last = this.targetPage + (10-rem);
-		if(last > this.totalPages) {
-			last = this.totalPages;
-		}
-		
-		for(var i=first; i<last; i++) {
-			var isActive = i+1 == this.targetPage;
-			json.page.push({pageNumber: i+1, isActive: isActive, showPageNumber: true});
-		}
-		
-		if(last < this.totalPages) {
-			
-			var number=this.targetPage +10;
-			if(number > this.totalPages) {
-				number = this.totalPages;
-			}
-			
-			json.page.push({pageNumber: number + 10+1, isActive: false, isNext: true});
-		}
-		
-		return json;
 	},
 	getIds: function() {
 		return this.pluck("id");
@@ -683,78 +632,15 @@ ObjectiveTargetCollection = Backbone.Collection.extend({
 TargetUnitCollection = Backbone.Collection.extend({
 	model: TargetUnit
 });
-TargetUnitPagableCollection = Backbone.Collection.extend({
+TargetUnitPagableCollection = PagableCollection.extend({
 	initialize: function(models, options) {
 	    this.targetPage = options.targetPage;
 	},
 	
 	model: TargetUnit,
 	
-	parse: function(response) {
-		this.pageSize = response.size;
-		this.pageNumber = response.number;
-		this.lastPage = response.lastPage;
-		this.firstPage = response.firstPage;
-		this.totalPages = response.totalPages;
-		this.numberOfElements = response.numberOfElements;
-		this.totalElements = response.totalElements;
-		
-		return response.content;
-	},
-	
 	url: function() {
 	    return appUrl('/TargetUnit/page/'+this.targetPage);
-	},
-	toPageJSON: function() {
-		return {
-			size: this.size,
-			number: this.number,
-			lastPage: this.lastPage,
-			firstPage: this.firstPage,
-			totalPages: this.totalPages,
-			numberOfElements: this.numberOfElements,
-			totalElements: this.totalElements,
-			contents: this.toJSON()
-		};
-	},
-	toPageParamsJSON: function() {
-		var json={};
-		json.hasPage=true;
-		json.totalElements=this.totalElements;
-		json.pageSize=this.pageSize;
-		json.page=[];
-		
-		this.targetPage = parseInt(this.targetPage);
-		
-		var rem = this.targetPage % 10;
-		
-		var first = this.targetPage - rem;
-		
-		if(first > 0) {
-			json.page.push({pageNumber: this.targetPage-10+1, isActive: false, isPrev: true});
-		}
-		
-		var last = this.targetPage + (10-rem);
-		if(last > this.totalPages) {
-			last = this.totalPages;
-		}
-		
-		for(var i=first; i<last; i++) {
-			var isActive = i+1 == this.targetPage;
-			json.page.push({pageNumber: i+1, isActive: isActive, showPageNumber: true});
-		}
-		
-		if(last < this.totalPages) {
-			
-			var number=this.targetPage +10;
-			if(number > this.totalPages) {
-				number = this.totalPages;
-			}
-			
-			json.page.push({pageNumber: number + 10+1, isActive: false, isNext: true});
-		}
-		
-		return json;
 	}
 });
 
