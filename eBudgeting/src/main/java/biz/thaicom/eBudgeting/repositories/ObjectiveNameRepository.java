@@ -2,6 +2,8 @@ package biz.thaicom.eBudgeting.repositories;
 
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -26,8 +28,16 @@ public interface ObjectiveNameRepository extends JpaSpecificationExecutor<Object
 			"FROM ObjectiveName o " +
 			"WHERE o.fiscalYear=?1 AND o.type.id = ?2 ")
 	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
-			Integer fiscalYear, Long typeId, Pageable pageable);
+			Integer fiscalYear, Long typeId,  Pageable pageable);
 
+	@Query("" +
+			"SELECT o " +
+			"FROM ObjectiveName o " +
+			"	INNER JOIN FETCH o.type type " +
+			"WHERE o.fiscalYear=?1 AND o.type.parent.id = ?2 ")
+	public List<ObjectiveName> findAllChildrenTypeObjectiveNameByFiscalYearAndTypeId(
+			Integer fiscalYear, Long typeId);
+	
 	
 	@Query("" +
 			"SELECT max(o.code) " +

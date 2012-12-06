@@ -57,6 +57,8 @@ public interface EntityService {
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id);
 	public List<Objective> findAvailableObjectiveChildrenByObjectiveId(Long id);
 	
+	
+	
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad);
 	public Objective findOneRootObjectiveByFiscalyear(Integer fiscalYear);
 	
@@ -97,6 +99,7 @@ public interface EntityService {
 	
 	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);
+	public Objective objectiveAddChildObjectiveName(Long parentId, Long nameId);
 	
 		
 	//BudgetType
@@ -170,7 +173,7 @@ public interface EntityService {
 	public ObjectiveName findOneObjectiveName(Long id);
 	public ObjectiveName deleteObjectiveName(Long id);
 	
-	
+	public List<ObjectiveName> findAvailableObjectiveNameChildrenByObejective(Long id);
 	
 	//ObjectiveTarget
 	public List<ObjectiveTarget> findAllObjectiveTargets();
@@ -231,6 +234,7 @@ public interface EntityService {
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+
 
 	
 

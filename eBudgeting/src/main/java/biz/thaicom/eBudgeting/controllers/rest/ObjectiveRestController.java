@@ -91,6 +91,15 @@ public class ObjectiveRestController {
 		return  list;
 	}
 	
+	
+	@RequestMapping(value="/Objective/{id}/availableChildrenName", method=RequestMethod.GET)
+	public @ResponseBody List<ObjectiveName> getAvailableChildrenObjectiveNameById(@PathVariable Long id) {
+		logger.debug("id: " + id);
+		List<ObjectiveName> list =entityService.findAvailableObjectiveNameChildrenByObejective(id);
+
+		return  list;
+	}
+
 	@RequestMapping(value="/Objective/{id}/childrenTypeName", method=RequestMethod.GET)
 	public @ResponseBody String getChildrenTypeName(@PathVariable Long id) {
 		logger.debug("id: " + id);
@@ -354,6 +363,13 @@ public class ObjectiveRestController {
 		
 	}
 	
+	@RequestMapping(value="/Objective/{parentId}/addChildObjectiveName/{nameId}", method=RequestMethod.GET)
+	public @ResponseBody Objective addChildObjectiveName( 
+			@PathVariable Long parentId, @PathVariable Long nameId) {
+		return entityService.objectiveAddChildObjectiveName(parentId, nameId);
+	}
+	
+	
 	@RequestMapping(value="/ObjectiveName/fiscalYear/{fiscalYear}/type/{typeId}/page/{pageNumber}", method=RequestMethod.GET)
 	public @ResponseBody Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
 			@PathVariable Integer fiscalYear, 
@@ -389,6 +405,12 @@ public class ObjectiveRestController {
 	public @ResponseBody ObjectiveName deleteObjectiveName(
 			@PathVariable Long id) {
 		return entityService.deleteObjectiveName(id);
+	}
+	
+	@RequestMapping(value="/ObjectiveName/findChildrenNameOfObjective/{id}") 
+	public @ResponseBody List<ObjectiveName> findChildrenNameOfObjective (
+			@PathVariable Long id ) {
+		return entityService.findAvailableObjectiveNameChildrenByObejective(id);
 	}
 	
 	

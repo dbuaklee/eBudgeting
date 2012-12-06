@@ -1166,8 +1166,6 @@ public class EntityServiceJPA implements EntityService {
 			objective.setObjectiveName(new ObjectiveName());
 		} else {
 			objective = objectiveRepository.findOne(objectiveJsonNode.get("id").asLong());
-			
-			logger.debug("objective.getChildren().si" + objective.getChildren().size());
 		}
 		
 		objective.setName(objectiveJsonNode.get("name").asText());
@@ -1178,8 +1176,6 @@ public class EntityServiceJPA implements EntityService {
 			objective.getObjectiveName().setName(nameTxt);
 			
 		}
-		
-		
 		
 		objective.setFiscalYear(objectiveJsonNode.get("fiscalYear").asInt());
 		objective.getObjectiveName().setFiscalYear(objectiveJsonNode.get("fiscalYear").asInt());
@@ -1270,8 +1266,16 @@ public class EntityServiceJPA implements EntityService {
 					logger.debug("++++ objectiveRepository.findMaxLineNumberChildrenOf: " + maxLineNumber);
 				}
 				
-				objectiveRepository.insertFiscalyearLineNumberAt(objective.getFiscalYear(), maxLineNumber+1);
+				objectiveRepository.insertFiscalyearLineNumberAt(objective.getFiscalYear(), maxLineNumber+allDescendant.size()+1, maxLineNumber+allDescendant.size()+1);
 				objective.setLineNumber(maxLineNumber+1);
+				
+				// now we should set the Line number of all descendant
+				objective.calculateAndSetLineNumberForChildren();
+				
+				// now save all descendant 
+				for(Objective descendant : allDescendant) {
+					objectiveRepository.save(descendant);
+				}
 				
 			}
 			
@@ -1306,6 +1310,12 @@ public class EntityServiceJPA implements EntityService {
 			if(objective.getLineNumber() != null) {
 				objectiveRepository.removeFiscalyearLineNumberAt(objective.getFiscalYear(), objective.getLineNumber(), allDescendant.size()+1);
 				objective.setLineNumber(null);
+			}
+			
+			// now save all descendant 
+			for(Objective descendant : allDescendant) {
+				descendant.setLineNumber(null);
+				objectiveRepository.save(descendant);
 			}
 			
 			
@@ -2681,18 +2691,44 @@ public class EntityServiceJPA implements EntityService {
 		}
 		return on;
 	}
+
+	@Override
+	public List<ObjectiveName> findAvailableObjectiveNameChildrenByObejective(Long id) {
+		Objective objective = objectiveRepository.findOne(id);
+		
+		return objectiveNameRepository.findAllChildrenTypeObjectiveNameByFiscalYearAndTypeId(objective.getFiscalYear(), objective.getType().getId()) ;
+	}
+
+	@Override
+	public Objective objectiveAddChildObjectiveName(Long parentId, Long nameId) {
+		ObjectiveName oName = objectiveNameRepository.findOne(nameId);
+		
+		Objective o = new Objective();
+		o.setName(oName.getName());
+		o.setCode(oName.getCode());
+		o.setFiscalYear(oName.getFiscalYear());
+		o.setType(oName.getType());
+		
+		o.getType().getName();
+		
+		o.setIndex(Integer.parseInt(oName.getCode()));
+		o.setIsLeaf(true);
+		o.setObjectiveName(oName);
+		
+		Objective parent = objectiveRepository.findOne(parentId);
+		parent.getType().getName();
+		
+		o.setParent(parent);
+		o.setParentLevel(parent.getParentLevel()+1);
+		o.setParentPath("." + parentId + parent.getParentPath());
+		
+		// now save O
+		objectiveRepository.save(o);
+		
+		return o;
+	}
 	
 	
 
-
-
-	
-
-	
-
-
-
-
-	
 
 }

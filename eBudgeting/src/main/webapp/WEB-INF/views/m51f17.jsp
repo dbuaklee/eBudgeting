@@ -54,6 +54,8 @@
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="row">
+	<div id="mainSelection" class="span11"></div>
+
 	<div id="mainTree" class="span7">
 		<div class="content">
 			
@@ -68,7 +70,8 @@
 <script id="treeRootTemplate" type="text/x-handler-template">
 	<table class="table table-bordered">
 		<tr data-id={{id}}>
-			<td><a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> ปี {{fiscalYear}}</a></td>
+			<td><span class="label label-info mini">{{type.name}}</span><br/>
+				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i>{{name}}</a></td>
 		</tr>
 	</table>
 </script>
@@ -79,12 +82,17 @@
 <script id="treeTRTemplate" type="text/x-handler-template">
 	<tr data-id={{id}}>
 			<td  style="padding-left: {{paddingLevel parentLevel}}px;"><span class="label label-info mini">{{type.name}}</span><br/>
-				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> {{name}}</a> <button type="button" class="btn unlink">UnLink</button></td>
+				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> {{name}}</a> 
+				{{#if type.unlinkable}}
+					<button type="button" class="btn unlink">UnLink</button>
+				{{/if}}
+				</td>
+
 	</tr>
 </script>
 
 <script  id=childrenSltTemplate type="text/x-handler-template">
-<div style="padding: 12px;margin-top: {{topPadding}}px; background-color: #F5F5F5;">
+<div style="padding: 12px;margin-top: {{topPadding}}px; background-color: #FFFFCC; border: 1px solid #DDDDDD;">
 	<div class="control">
 		<form class="form-search">
 			<div class="input-append">
@@ -116,17 +124,36 @@
 </script>
 
 
+<script id="mainSelectionTemplate" type="text/x-handler-template">
+<form>
+	แผนงาน : 
+	<select id="type101Slt">
+		<option>กรุณาเลือก...</option>
+		{{#each this}}<option value={{id}}>[{{code}}] {{name}}</option>{{/each}}
+	</select>
+	<div id="type102Div"></div>
+	<div id="type103Div"></div>
+</form>
+</script>
+
+<script id="selectionTemplate" type="text/x-handler-template">
+	{{type.name}} :
+	<select id="type{{type.id}}Slt">
+		<option>กรุณาเลือก...</option>
+		{{#each this}}<option value={{id}}>[{{code}}] {{name}}</option>{{/each}}
+	</select> 
+</script>
+
 <script type="text/javascript">
 
 var fiscalYear = "${fiscalYear}";
 var e1;
 
 Handlebars.registerHelper("paddingLevel", function(level) {
-	var step = level-1;
+	var step = level-4;
 	return (step*50) + 8;
 
 });
-
 
 $(document).ready(function() {
 	
@@ -149,10 +176,49 @@ $(document).ready(function() {
 				this.$el.html(html);
 			}, 
 			events : {
-				"click a.nextChildrenLnk"  : "loadChildren" 
+				"click a.nextChildrenLnk"  : "loadChildren" ,
+				"click .unlink" : "unlinkBtnClick"
 			},
+			
+			renderNewRow : function(parentObjective, newObjective) {
+				// find tr of this parentObjective
+				var parentTrEl = this.$el.find('tr[data-id='+ parentObjective.get('id') +']');
+				var json = newObjective.toJSON();
+				
+				if(json.type.id > 103 && json.type.id < 109) {
+					json.type.unlinkable = true;
+				} else {
+					json.type.unlinkable = false;
+				}
+				
+				e1=json;
+				var html = this.treeTRTemplate(json);
+				$(parentTrEl).after(html);
+				
+				
+			},
+			
+			unlinkBtnClick : function(e) {
+				var clickunLinkObjectiveId = $(e.target).parents("tr").attr("data-id");
+				var clickunLinkObjective = Objective.findOrCreate(clickunLinkObjectiveId);
+				
+				if(clickunLinkObjective != null) {
+					clickunLinkObjective.url = appUrl('/Objective/'+ clickunLinkObjectiveId);
+					
+					clickunLinkObjective.destroy({
+						success: function() {
+							$(e.target).parents("tr").remove();
+						}	
+					});
+
+				}
+				
+				
+			
+			},
+			
 			loadChildren: function(e) {
-				e1 = e;
+				
 				
 				// now remove anyone who might have this class
 				this.$el.find('tr.selected').each(function(index, el) {
@@ -189,8 +255,19 @@ $(document).ready(function() {
 								   this.$el.find('.loading').remove();
 							  }, this));
 							
-							for(var i=0; i<children.length; i++) {
-								var html = this.treeTRTemplate(children.at(i).toJSON());
+							console.log("children.length : " + children.length);
+							for(var i=children.length-1; i>=0; i--) {
+								console.log(i);
+								var json = children.at(i).toJSON();
+								
+								if(json.type.id > 103 && json.type.id < 109) {
+									json.type.unlinkable = true;
+								} else {
+									json.type.unlinkable = false;
+								}
+								
+								
+								var html = this.treeTRTemplate(json);
 								$(trEl).after(html);
 								trEl = $(trEl).after();
 							}
@@ -205,17 +282,24 @@ $(document).ready(function() {
 					height += $(el).height();
 				});
 				
-				$.ajax({
-					type: 'GET',
-					url: appUrl('/Objective/' + selectedObjective.get('id') + '/childrenTypeName'),
-					success: function(response) {
-						mainCtrView.childrenSltView.renderWith({
-							topPadding: height, 
-							objective: selectedObjective, 
-							typeName: response
-						});		
-					}
-				});
+				if( selectedObjective.get('type') != null && selectedObjective.get('type').get('id') >= 103  ) {
+				
+					$.ajax({
+						type: 'GET',
+						url: appUrl('/Objective/' + selectedObjective.get('id') + '/childrenTypeName'),
+						success: function(response) {
+							mainCtrView.childrenSltView.renderWith({
+								topPadding: height, 
+								objective: selectedObjective, 
+								typeName: response,
+								trEl : $(trEl)
+							});		
+						}
+					});
+					
+				} else {
+					mainCtrView.childrenSltView.clear();
+				}
 				
 				
 				
@@ -243,6 +327,32 @@ $(document).ready(function() {
 				this.$el.html(html);
 			},
 			
+			events: {
+				"click .link" : "linkBtnClick"
+			},
+			clear: function(e) {
+				this.$el.empty();
+			},
+			linkBtnClick : function(e) {
+				var objectiveNameId = $(e.target).parents('tr').attr('data-id');
+				var newObjective = new Objective();
+				newObjective.url = appUrl('/Objective/'+this.objective.get('id') + '/addChildObjectiveName/' + objectiveNameId);
+				
+				// now we link this.objective.id with objectiveNameId
+				newObjective.fetch({
+					success: _.bind(function(response) {
+				
+						// now add this to current parent
+						this.objective.get('children').add(newObjective);
+						
+						mainCtrView.mainTreeView.renderNewRow(this.objective, newObjective);
+						
+					}, this)
+				});
+				// then rerender? 
+				
+			},
+			
 			renderWith: function(options) {
 				this.topPadding = options.topPadding;
 				this.objective = options.objective;
@@ -250,9 +360,9 @@ $(document).ready(function() {
 				
 				this.render();
 				
-				this.availableChildren = new ObjectiveCollection();
+				this.availableChildren = new ObjectiveNameCollection();
 				this.availableChildren.fetch({
-					url: appUrl('/Objective/' + this.objective.get('id') + '/availableChildren' ),
+					url: appUrl('/ObjectiveName/findChildrenNameOfObjective/' + this.objective.get('id') ),
 					success: _.bind(function() {
 						this.renderAvailableChildren();
 					}, this)
@@ -268,9 +378,128 @@ $(document).ready(function() {
 			}
 		});
 		
-		var MainCtrView = Backbone.View.extend({
+		var MainSelectionView = Backbone.View.extend({
+			mainSelectionTemplate : Handlebars.compile($("#mainSelectionTemplate").html()),
+			selectionTemplate : Handlebars.compile($("#selectionTemplate").html()),
 			initialize: function() {
 				
+				this.type102Collection = new ObjectiveCollection();
+				this.type103Collection = new ObjectiveCollection();
+				
+				_.bindAll(this, 'renderInitialWith');
+				_.bindAll(this, 'renderType102');
+				_.bindAll(this, 'renderType103');
+				this.type102Collection.bind('reset', this.renderType102);
+				this.type103Collection.bind('reset', this.renderType103);
+			},
+			events: {
+				"change select#type101Slt" : "type101SltChange",
+				"change select#type102Slt" : "type102SltChange",
+				"change select#type103Slt" : "type103SltChange"
+			},
+			type101SltChange : function(e) {
+				var type101Id = $(e.target).val();
+				if(type101Id != 0) {
+					this.type102Collection.fetch({
+						url: appUrl('/Objective/' + type101Id + '/children'),
+						success: _.bind(function() {
+							this.type102Collection.trigger('reset');
+						}, this)
+					});
+				}
+				
+				this.$el.find('#type102Div').empty();
+				this.$el.find('#type103Div').empty();
+				
+				mainCtrView.emptyTreeView();
+				
+			},
+			type102SltChange : function(e) {
+				var type102Id = $(e.target).val();
+				if(type102Id != 0) {
+					this.type103Collection.fetch({
+						url: appUrl('/Objective/' + type102Id + '/children'),
+						success: _.bind(function() {
+							this.type103Collection.trigger('reset');
+						}, this)
+					});
+				}
+				
+				this.$el.find('#type103Div').empty();
+				mainCtrView.emptyTreeView();
+			},
+			
+			type103SltChange : function(e) {
+				var type103Id = $(e.target).val();
+				if(type103Id != 0) {
+					mainCtrView.mainTreeView.rootObjective = Objective.findOrCreate(type103Id);
+					mainCtrView.mainTreeView.render();
+				} else {
+					mainCtrView.emptyTreeView();
+				}
+			
+			},
+			
+			renderType102: function(e) {
+				var json = this.type102Collection.toJSON();
+				json.type =  {};
+				json.type.name = "ผลผลิต/โครงการ";
+				json.type.id = "102";
+				var html = this.selectionTemplate(json);
+				
+				// now render 
+				this.$el.find('#type102Div').empty();
+				this.$el.find('#type102Div').html(html);
+				
+				this.$el.find('#type103Div').empty();
+			},
+			
+			renderType103: function(e) {
+				var json = this.type103Collection.toJSON();
+				json.type =  {};
+				json.type.name = "กิจกรรมหลัก";
+				json.type.id = "103";
+				var html = this.selectionTemplate(json);
+				
+				// now render 
+				this.$el.find('#type103Div').empty();
+				this.$el.find('#type103Div').html(html);
+			},
+			
+			render: function() {
+				
+				if(this.rootChildrenObjectiveCollection != null) {
+					var json = this.rootChildrenObjectiveCollection.toJSON();
+					
+					var html = this.mainSelectionTemplate(json);
+					this.$el.html(html);
+				}
+			}, 
+			renderInitialWith: function(objective) {
+				
+				e1=this;
+				
+				this.rootObjective = objective;
+				
+				// now get this rootObjective Children
+				this.rootChildrenObjectiveCollection = new ObjectiveCollection();
+				
+				this.rootChildrenObjectiveCollection.fetch({
+					url: appUrl('/Objective/' + this.rootObjective.get('id') + '/children'),
+					success : _.bind(function() {
+						
+						this.render();
+					},this)
+				});
+				
+			}
+			
+		});
+		
+		
+		var MainCtrView = Backbone.View.extend({
+			initialize: function() {
+				_.bindAll(this, 'render');
 			},
 			el: "#mainCtr",
 			events: {
@@ -280,21 +509,28 @@ $(document).ready(function() {
 			
 			render: function() {
 				this.$el.html(this.mainCtrTemplate());
+				this.mainSelectionView = new MainSelectionView({el: "#mainCtr #mainSelection"});
+				
 				this.mainTreeView = new MainTreeView({el: "#mainCtr #mainTree div.content"});
 				this.childrenSltView = new ChildrenSltView({el: "#mainCtr #childrenSlt"});
 				
 				
-				this.mainTreeView.rootObjective.fetch({
+				this.rootObjective = new Objective(); 
+				this.rootObjective.fetch({
 					url: appUrl('/Objective/ROOT/'+fiscalYear),
-			
 					success : _.bind(function() {
-						this.mainTreeView.rootObjective.trigger('reset');
+						this.mainSelectionView.renderInitialWith(this.rootObjective);
 					},this)
 				});
 			},
 			
 			events: {
 
+			},
+			
+			emptyTreeView: function() {
+				this.mainTreeView.$el.empty();
+				this.childrenSltView.$el.empty();
 			}
 			
 			

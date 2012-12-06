@@ -79,7 +79,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	
 	@Query("" +
 			"SELECT objective " +
-			"FROM Objectvie objective " +
+			"FROM Objective objective " +
 			"WHERE objective.parentPath like ?1")
 	public List<Objective> findAllDescendantOf(String parentPathLikeString);
 	
@@ -97,7 +97,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"	INNER JOIN FETCH objective.type type " +
 			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
 			"WHERE objective.parent.id = ?1  " +
-			"ORDER BY objective.index asc ")
+			"ORDER BY objective.id asc ")
 	public List<Objective> findChildrenWithParentAndTypeAndBudgetType(
 			Long id);
 
@@ -142,9 +142,9 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	
 	@Modifying
 	@Query("update Objective objective " +
-			"set lineNumber = lineNumber + 1  " +
+			"set lineNumber = lineNumber + ?3  " +
 			"where fiscalYear =?1 AND lineNumber >= ?2 ")
-	public Integer insertFiscalyearLineNumberAt(Integer fiscalYear, Integer lineNumer);
+	public Integer insertFiscalyearLineNumberAt(Integer fiscalYear, Integer lineNumer, Integer amount);
 
 	@Modifying
 	@Query("update Objective objective " +

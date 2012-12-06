@@ -549,6 +549,10 @@ ObjectiveCollection = Backbone.Collection.extend({
 	model: Objective
 });
 
+ObjectiveNameCollection = Backbone.Collection.extend({
+	model: ObjectiveName
+});
+
 ObjectiveNamePagableCollection = PagableCollection.extend({
 	initialize: function(models, options) {
 	    this.fiscalYear = options.fiscalYear;

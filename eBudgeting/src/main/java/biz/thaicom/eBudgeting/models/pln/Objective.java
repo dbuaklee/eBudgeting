@@ -544,6 +544,21 @@ public class Objective implements Serializable {
 		this.units.add(unit);
 		
 	}
+	public Integer calculateAndSetLineNumberForChildren() {
+		Integer nextLineNumber = this.lineNumber+1;
+		
+		if(this.getChildren() == null || this.getChildren().size() == 0) {
+			return nextLineNumber;
+		}
+		
+		for(Objective child : this.children) {
+			child.setLineNumber(nextLineNumber);
+			nextLineNumber = child.calculateAndSetLineNumberForChildren();
+		}
+		
+		return nextLineNumber;
+		
+	}
 	
 	
 
