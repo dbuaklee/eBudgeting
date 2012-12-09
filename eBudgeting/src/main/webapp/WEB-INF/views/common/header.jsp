@@ -6,9 +6,9 @@
 <div class="row">
 	<div class="span12" id="pageHeader">
 		 
-		 	<div class="container">
+		 	<div class="container" style="margin-top: 85px;">
 		 		<div class="nav-collapse collapse">
-				<p class="navbar-text pull-right">
+				<p class="navbar-text pull-right" style="color: #FFFFFF;">
 					Logged in as
 						<sec:authentication property="principal.username"/> @ <sec:authentication property="principal.workAtAbbr"/> | <a class="navbar-link" href="<c:url value='/logout'/>">Logout</a>
 				</p>

@@ -11,12 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
-
-import biz.thaicom.eBudgeting.controllers.rest.BudgetTypeRestController;
 import biz.thaicom.eBudgeting.repositories.UserRepository;
-import biz.thaicom.security.models.User;
 
 public class ThaicomAuthenticationProvider implements AuthenticationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(ThaicomAuthenticationProvider.class);

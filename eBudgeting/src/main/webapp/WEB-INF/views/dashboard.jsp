@@ -4,11 +4,6 @@
 
 <div class="hero-unit white">
 
-<div id="headLine" style=" text-align: center;">
-	<h3>การทำคำขอตั้งงบประมาณ</h3>
-</div>
-
-
 <div class="row">
 	<div class="span3 menu" id="main1" data-id="1">
 		

@@ -15,8 +15,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
-import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 

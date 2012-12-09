@@ -171,3 +171,11 @@ div#headLine {
 span.label.mini {
 	font-size: 10.5px;
 }
+
+.hero-unit {
+	font-size: 14px;
+}
+
+.hero-unit li {
+	line-height: 14pt;
+}

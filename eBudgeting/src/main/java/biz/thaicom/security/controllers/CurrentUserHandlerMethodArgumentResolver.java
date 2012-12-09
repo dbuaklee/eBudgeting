@@ -17,7 +17,6 @@ public class CurrentUserHandlerMethodArgumentResolver implements HandlerMethodAr
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		// TODO Auto-generated method stub
 		return parameter.hasParameterAnnotation(Activeuser.class);
 	}
 
