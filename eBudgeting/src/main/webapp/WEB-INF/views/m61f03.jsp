@@ -5,7 +5,7 @@
 
 <div class="hero-unit white">
 <div id="headLine">
-	<h4>การบันทึกงบประมาณ ระดับกิจกรรมหลัก <c:if test="${not empty fiscalYear}">ปีงบประมาณ ${fiscalYear}</c:if></h4> 
+	<h4>การบันทึกงบประมาณ ระดับกิจกรรม <c:if test="${not empty fiscalYear}">ปีงบประมาณ ${fiscalYear}</c:if></h4> 
 	<h4>หน่วยงาน: <sec:authentication property="principal.workAt.name"/></h4>
 </div>
 
@@ -71,62 +71,11 @@
 </script>
 
 <script id="mainCtrBodyTemplate" type="text/x-handler-template">
-<div id="form">
-	<form id="objectiveSltFrm">
-		<label>กรุณาเลือกกิจกรรมหลัก </label>
-		<select class="span4 objectiveSlt">
-			<option value="0">กรุณาเลือก ... </option>
-			{{#each this}}
-			<option value="{{id}}">[{{code}}] {{name}}</option>
-			{{/each}}
-		</select>
-	</form>
-</div>
-<div id="resultTable">
-</div>
+<table id="dogsList"></table>
+<div id="dogsListPager"></div>
 </script>
 
 
-<script id="resultTableTemplate" type="text/x-handler-template">
-<table class="table table-bordered">
-	<thead>
-	<tr>
-		<td style="width:400px;">รายการหลัก</td>
-		<td>งบประมาณขอตั้ง ปี {{fiscalYear}}</td>
-		<td>งบประมาณขอตั้ง ปี {{next1Year}}</td>
-		<td>งบประมาณขอตั้ง ปี {{next2Year}}</td>
-		<td>งบประมาณขอตั้ง ปี {{next3Year}}</td>
-	</tr>
-	</thead>
-	<tbody>
-	{{#each this}}
-		<tr data-id="{{objectiveBudgetId}}">
-			<td>{{name}}</td>
-			<td data-id="{{id}}">{{#if amountRequest}}<a href="#" class="editBudget">{{formatNumber amountRequest}} บาท</a>{{else}}<a class="editBudget" href="#">เพิ่มงบประมาณ</a>{{/if}}</td>
-			<td>{{#if amountRequestNext1Year}}{{formatNumber amountRequestNext1Year}} บาท{{else}} - {{/if}}</td>
-			<td>{{#if amountRequestNext2Year}}{{formatNumber amountRequestNext2Year}} บาท{{else}} - {{/if}}</td>
-			<td>{{#if amountRequestNext3Year}}{{formatNumber amountRequestNext3Year}} บาท{{else}} - {{/if}}</td>
-		</tr>
-	{{/each}}
-	<tr class="sumRow">
-		<td> รวมทั้งสิ้น </td>
-		<td>{{formatNumber sumAmountRequest}} บาท</td>
-		<td>{{formatNumber sumAmountRequestNext1Year}} บาท</td>
-		<td>{{formatNumber sumAmountRequestNext2Year}} บาท</td>
-		<td>{{formatNumber sumAmountRequestNext3Year}} บาท</td>
-	</tr> 
-	</tbody>
-</table>
-</script>
-
-<script id="modalBodyTemplate" type="text/x-handlebars-template">
-<form>
-	ปี {{fiscalYear}} : <input type="text" id="amountRequest" value="{{amountRequest}}"/> บาท <br/>
-	ประมาณการปี {{next1Year}}: <input type="text" id="amountRequestNext1Year" value="{{amountRequestNext1Year}}"/> บาท <br/>
-	ประมาณการปี {{next2Year}}: <input type="text" id="amountRequestNext2Year" value="{{amountRequestNext2Year}}"/> บาท <br/>
-	ประมาณการปี {{next3Year}}: <input type="text" id="amountRequestNext3Year" value="{{amountRequestNext3Year}}"/> บาท <br/>
-</form>
-</script>
 
 <script type="text/javascript">
 	var objectiveId = "${objective.id}";
@@ -137,8 +86,6 @@
 	var objectiveCollection = new ObjectiveCollection();
 	
 	var mainBudgetType = new BudgetTypeCollection();
-
-	
 	
 	var l = null;
 	var e1;
@@ -221,104 +168,59 @@
 		el : "#mainCtr",
 		
 		render: function() {
-			var json=objectiveCollection.toJSON();
+			this.$el.html(this.mainCtrBodyTemplate());
 			
-			var html = this.mainCtrBodyTemplate(json);
-			this.$el.html(html); 
-			
-		},
-		
-		events : {
-			"change .objectiveSlt" : "changeObjective",
-			"click .editBudget" : "clickEditBudget"
-		},
-		
-		clickEditBudget: function(e) {
-			var objectiveBudgetId = $(e.target).parents('tr').attr('data-id');
-			var budgetTypeId = $(e.target).parents('td').attr('data-id');
-			
-			this.modal.budgetType = BudgetType.findOrCreate(budgetTypeId);
-			this.modal.objective = this.objective;
-			
-			var obp = null;
-			if(objectiveBudgetId.length > 0) {
-				obp = ObjectiveBudgetProposal.findOrCreate(objectiveBudgetId);
-				this.modal.objectiveBudgetProposal = obp;
-			} else {
-				this.modal.objectiveBudgetProposal = null;
-			}
-			
-			this.modal.render();
-			
-		},
-		
-		changeObjective: function(e) {
-			var targetObjectiveId = $(e.target).val();
-			if(targetObjectiveId == 0) {
-				return alert("กรุณาเลือกกิจกรรมหลักให้ถูกต้อง");
-			}
-			
-			this.objective = Objective.findOrCreate(targetObjectiveId);
-			
-			
-			// now we should load the table of this objective 
-			this.objectiveBudgetProposalCollection = new ObjectiveBudgetProposalCollection();
-			this.objectiveBudgetProposalCollection.fetch({
-				url: appUrl('/ObjectiveBudgetProposal/'+fiscalYear+'/'+targetObjectiveId),
-				success: _.bind(function() {
-					
-					
-					this.renderResultTable();
-				}, this)
+			// Create the table
+			var dogsTable = $("#dogsList").jqGrid({
+				datatype: 'json',
+			    width:'820',
+			    height: '400',
+			    treeGrid: true,
+			    treeGridModel: 'adjacency',
+			    ExpandColumn : 'name',
+			    url: appUrl('/Objective/63'), 
+			    mtype: "GET",
+			    caption: 'Grid 2',
+			    colNames:['code', 'name'],
+			    colModel:[{
+			    	name:'code',
+			    	align:'left', 
+			    	cellattr: function (rowId, tv, rawObject, cm, rdata) {
+			            return 'style="white-space: normal; line-height: normal; padding: 5px 5px 5px 5px; vertical-align: top;';
+			    	}
+			    }, {
+			    	name:'name', 
+			    	align:'left',
+			    	cellattr: function (rowId, tv, rawObject, cm, rdata) {
+			            return 'style="white-space: normal; line-height: normal; padding: 5px 5px 5px 5px; vertical-align: top;';
+			    	}
+			    }],
+			    loadComplete : function(data) {
+			        //alert('grid loading completed ' + data);
+			    },
+			    loadError : function(xhr, status, error) {
+			        alert('grid loading error' + error);
+			    },
+			    pager: '#dogsListPager'
+			    
 			});
-			
-		},
-		
-		renderResultTable : function() {
-			var json = mainBudgetType.toJSON();
-			
-			var sumAmountRequest = 0;
-			var sumAmountRequestNext1Year = 0;
-			var sumAmountRequestNext2Year = 0;
-			var sumAmountRequestNext3Year = 0;
-			
-			for(var i=0; i<this.objectiveBudgetProposalCollection.length; i++) {
-				var amountRequest = this.objectiveBudgetProposalCollection.at(i).get('amountRequest');
-				var budgetType = this.objectiveBudgetProposalCollection.at(i).get('budgetType');
-				
-				
-				var index = mainBudgetType.indexOf(budgetType);
-				
-				json[index].amountRequest = amountRequest;
-				sumAmountRequest += amountRequest;
-				
-				json[index].amountRequestNext1Year = this.objectiveBudgetProposalCollection.at(i).get('amountRequestNext1Year');
-				sumAmountRequestNext1Year += this.objectiveBudgetProposalCollection.at(i).get('amountRequestNext1Year');
-				
-				json[index].amountRequestNext2Year = this.objectiveBudgetProposalCollection.at(i).get('amountRequestNext2Year');
-				sumAmountRequestNext2Year += this.objectiveBudgetProposalCollection.at(i).get('amountRequestNext2Year');
-				
-				json[index].amountRequestNext3Year = this.objectiveBudgetProposalCollection.at(i).get('amountRequestNext3Year');
-				sumAmountRequestNext3Year += this.objectiveBudgetProposalCollection.at(i).get('amountRequestNext3Year');
-				
-				json[index].objectiveBudgetId =  this.objectiveBudgetProposalCollection.at(i).get('id');
-				
-			}
-			
-			json.fiscalYear = fiscalYear;
-			json.next1Year = parseInt(fiscalYear)+1;
-			json.next2Year = parseInt(fiscalYear)+2;
-			json.next3Year = parseInt(fiscalYear)+3;
-			
-			json.sumAmountRequest = sumAmountRequest;
-			json.sumAmountRequestNext1Year = sumAmountRequestNext1Year;
-			json.sumAmountRequestNext2Year = sumAmountRequestNext2Year;
-			json.sumAmountRequestNext3Year = sumAmountRequestNext3Year;
-			
-			var html = this.resultTableTemplate(json);
-			this.$el.find('#resultTable').html(html);
-			
 
+			// Create the collection
+			var Collection = Backbone.Collection.extend();
+
+			// Init the collection
+			var dogs = new Collection([
+			    {name:"เจน",breed:"Great Dane"},
+			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
+			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
+			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
+			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
+			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
+			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
+			    {name:"Jim",breed:"Lab"}
+			]);
+
+						
 		}
 		
 		

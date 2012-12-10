@@ -16,13 +16,16 @@
       <script src="<c:url value='/resources/jslibs/html5shiv.js'/>"></script>
       <script src="<c:url value='/resources/jslibs/html5shiv-printshiv.js'/>"></script>
     <![endif]-->	
-	
+
+	<link href="<c:url value='/resources/jslibs/jqueryui-1.9.2/css/redmond/jquery-ui-1.9.2.custom.css'/>" rel="stylesheet">
+	<link href="<c:url value='/resources/jslibs/jqGrid-4.4.1/css/ui.jqgrid.css'/>" rel="stylesheet">	
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.2.2/css/bootstrap.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/bootstrap-editable-1.1.4/css/bootstrap-editable.css'/>" rel="stylesheet">
-	<link href="<c:url value='/resources/jslibs/jqGrid-4.4.1/css/ui.jqgrid.css'/>" rel="stylesheet">
+
 	
 	<link href="<c:url value='/resources/css/app.css'/>" rel="stylesheet">
-	<script src="<c:url value='/resources/jslibs/jquery-dev-1.8.1.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-1.8.3.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-ui-1.9.2.custom.min.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.2.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.2.2/js/bootstrap.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-editable-1.1.4/js/bootstrap-editable.min.js'/>"></script>

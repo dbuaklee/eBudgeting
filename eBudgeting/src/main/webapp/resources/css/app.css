@@ -176,6 +176,6 @@ span.label.mini {
 	font-size: 14px;
 }
 
-.hero-unit li {
-	line-height: 14pt;
+.hero-unit {
+	line-height: 1.2;
 }
