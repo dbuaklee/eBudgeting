@@ -178,7 +178,7 @@
 			    treeGrid: true,
 			    treeGridModel: 'adjacency',
 			    ExpandColumn : 'name',
-			    url: appUrl('/Objective/63'), 
+			    url: appUrl('/ObjectiveWithBudgetProposal/2556/61/flatDescendants'), 
 			    mtype: "GET",
 			    caption: 'Grid 2',
 			    colNames:['code', 'name'],
@@ -196,12 +196,22 @@
 			    	}
 			    }],
 			    loadComplete : function(data) {
-			        //alert('grid loading completed ' + data);
+			    	
+			       
 			    },
 			    loadError : function(xhr, status, error) {
 			        alert('grid loading error' + error);
 			    },
-			    pager: '#dogsListPager'
+			    pager: '#dogsListPager',
+			    jsonReader: {
+			        repeatitems: false,
+			        id: "0",
+			        cell: "",
+			        root: function (obj) { return obj; },
+			        page: function (obj) { return 1; },
+			        total: function (obj) { return 1; },
+			        records: function (obj) { return obj.length; }
+			    }
 			    
 			});
 
