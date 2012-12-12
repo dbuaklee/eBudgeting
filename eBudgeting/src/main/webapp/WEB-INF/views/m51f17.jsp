@@ -109,7 +109,7 @@
 
 
 <script  id=availableChildrenTemplate type="text/x-handler-template">
-เลือก{{typeName}}ที่ยังไม่ได้เชื่อมโยง
+เลือก{{typeName}}เพื่อเชื่อมโยง
 <table class="table table-bordered">	
 	<thead>
 	</thead>

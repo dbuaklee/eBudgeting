@@ -71,8 +71,8 @@
 </script>
 
 <script id="mainCtrBodyTemplate" type="text/x-handler-template">
-<table id="dogsList"></table>
-<div id="dogsListPager"></div>
+<table id="budgetList"></table>
+<div id="budgetListPager"></div>
 </script>
 
 
@@ -84,6 +84,7 @@
 	var pageUrl = "/page/m61f03/";
 	var mainTblView = null;
 	var objectiveCollection = new ObjectiveCollection();
+	var rootObjective = new Objective();
 	
 	var mainBudgetType = new BudgetTypeCollection();
 	
@@ -171,25 +172,26 @@
 			this.$el.html(this.mainCtrBodyTemplate());
 			
 			// Create the table
-			var dogsTable = $("#dogsList").jqGrid({
+			var dogsTable = $("#budgetList").jqGrid({
 				datatype: 'json',
 			    width:'820',
 			    height: '400',
 			    treeGrid: true,
 			    treeGridModel: 'adjacency',
-			    ExpandColumn : 'name',
-			    url: appUrl('/ObjectiveWithBudgetProposal/2556/61/flatDescendants'), 
+			    url: appUrl('/ObjectiveWithBudgetProposal/2556/1/flatDescendants'), 
 			    mtype: "GET",
-			    caption: 'Grid 2',
-			    colNames:['code', 'name'],
+			    caption: 'รายละเอียดงบประมาณ',
+			    colNames:['id', 'รหัส', 'ชื่อกิจกรรม'],
 			    colModel:[{
-			    	name:'code',
+			    	name:'id',index:'id', width:1,hidden:true,key:true
+			    },{
+			    	name:'code', index: 'รหัส', width:50,
 			    	align:'left', 
 			    	cellattr: function (rowId, tv, rawObject, cm, rdata) {
 			            return 'style="white-space: normal; line-height: normal; padding: 5px 5px 5px 5px; vertical-align: top;';
 			    	}
 			    }, {
-			    	name:'name', 
+			    	name:'name',  index: 'ชื่อกิจกรรม', width:50,
 			    	align:'left',
 			    	cellattr: function (rowId, tv, rawObject, cm, rdata) {
 			            return 'style="white-space: normal; line-height: normal; padding: 5px 5px 5px 5px; vertical-align: top;';
@@ -202,35 +204,26 @@
 			    loadError : function(xhr, status, error) {
 			        alert('grid loading error' + error);
 			    },
-			    pager: '#dogsListPager',
+			    pager: '#budgetListPager',
 			    jsonReader: {
 			        repeatitems: false,
 			        id: "0",
 			        cell: "",
-			        root: function (obj) { return obj; },
+			        root: function (obj) { 
+						objectiveCollection = new ObjectiveCollection(obj);
+						return objectiveCollection.toJSON(); 
+					},
 			        page: function (obj) { return 1; },
 			        total: function (obj) { return 1; },
 			        records: function (obj) { return obj.length; }
-			    }
+			    },
+			    treeReader : {
+	    		   level_field: "parentLevel",
+	    		   parent_id_field: "parent", 
+	    		   leaf_field: "isLeaf"
+	    		}
 			    
 			});
-
-			// Create the collection
-			var Collection = Backbone.Collection.extend();
-
-			// Init the collection
-			var dogs = new Collection([
-			    {name:"เจน",breed:"Great Dane"},
-			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
-			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
-			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
-			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
-			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
-			    {name:"ร็อคกี้ความต้องการที่สูงเกินกว่าจะทำความเข้าใจได้",breed:"golden Retriver"},
-			    {name:"Jim",breed:"Lab"}
-			]);
-
-						
 		}
 		
 		
@@ -244,6 +237,7 @@
 				url: appUrl('/BudgetType/fiscalYear/' +fiscalYear+ '/mainType')
 			});
 			
+/*
 			objectiveCollection.fetch({
 				url: appUrl('/Objective/' + fiscalYear + '/type/' + 103),
 				success: function() {
@@ -251,6 +245,11 @@
 					mainTblView.render();
 				}
 			});
+ */			
+			
+			mainTblView = new MainTblView();
+			mainTblView.render();
+			
 
 		}
 

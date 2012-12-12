@@ -18,8 +18,9 @@
 				
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="cancelBtn">Close</a> 
-				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+				
+				<a href="#"	class="btn btn-primary" id="saveBtn">บันทึกข้อมูล</a>
+				<a href="#" class="btn" id="cancelBtn">ยกเลิก</a> 
 			</div>
 		</div>
 	
@@ -40,9 +41,9 @@
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
-	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มทะเบียน</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
 </div>
 
 	{{#if pageParams}}
@@ -66,7 +67,7 @@
 	<thead>
 		<tr>
 			<td width="20"></td>
-			<td>ชื่อหน่วยนับ</td>
+			<td>ชื่อทะเบียนหน่วยนับ</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -123,7 +124,7 @@ $(document).ready(function() {
 		render: function() {
 			if(this.currentTargetUnit != null) {
 				
-				this.$el.find('.modal-header span').html("เพิ่มรายการ");
+				this.$el.find('.modal-header span').html("เพิ่มทะเบียน");
 				
 				var html = this.modalTemplate(this.currentTargetUnit.toJSON());
 				this.$el.find('.modal-body').html(html);

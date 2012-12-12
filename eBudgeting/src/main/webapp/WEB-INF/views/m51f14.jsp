@@ -85,7 +85,7 @@
 		<br/>
 		<button class="btn btn-mini cancelFormulaColumnBtn">ยกเลิก</button>
 		{{#if columnName}}<button class="btn btn-mini deleteFormulaColumnBtn">ลบรายการ</button>{{/if}}
-		<button class="btn btn-mini btn-primary addFormulaColumnBtn">{{#if columnName}}แก้ไขรายการ{{else}}เพิ่มรายการ{{/if}}</button>
+		<button class="btn btn-mini btn-primary addFormulaColumnBtn">{{#if columnName}}แก้ไขรายการ{{else}}เพิ่มชื่อทะเบียน{{/if}}</button>
 </form>
 </script>
 
@@ -108,9 +108,9 @@
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
-	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
 </div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
@@ -187,7 +187,7 @@
 			</div>
 		</form>
 
-		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึก</button>
+		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึกข้อมูล</button>
 		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</td>
 
@@ -765,7 +765,7 @@ $(document).ready(function() {
 
 	
 	
-	var headLineStr = '<h4> ทะเบียนรายการงบประมาณ ';
+	var headLineStr = '<h4> ทะเบียนรายการ';
 	if(fiscalYear!= null && fiscalYear.length > 0 ) {
 		headLineStr += 	' ปีงบประมาณ ' + fiscalYear;
 	

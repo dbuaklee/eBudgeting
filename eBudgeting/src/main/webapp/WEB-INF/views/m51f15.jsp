@@ -60,9 +60,9 @@
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-mini btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-mini btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
-	<a href="#" class="btn btn-mini btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มทะเบียน</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
 </div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
@@ -88,7 +88,7 @@
 			</div>
 		</form>
 
-		<button class='btn btn-mini btn-info lineSave'>บันทึก</button>
+		<button class='btn btn-mini btn-info lineSave'>บันทึกข้อมูล</button>
 		<button class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</td>
 

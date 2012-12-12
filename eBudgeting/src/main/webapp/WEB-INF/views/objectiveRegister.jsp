@@ -68,14 +68,16 @@
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
-	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขความเชื่อมโยง</a>
-	<a href="#" class="btn btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> จัดการหน่วยนับ</a>
+	<a href="#" class="btn btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> จัดการหน่วยนับ</a>	
+	
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขทะเบียน{{#if relatedTypenameList}}และความเชื่อมโยง{{else}}{{#if hasParent}}และความเชื่อมโยง{{/if}} {{/if}}</a>
+	
 	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a>
 
 	{{#if pageParams}}
 	{{#with pageParams}}
     <div class="pagination">
-        <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <ul>
+        <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <b>หน้า : </b> <ul>
 		{{#each page}}
 	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">
 				{{#if isPrev}}&laquo;{{/if}} 
@@ -85,6 +87,7 @@
 			</a>
 		</li>
 	    {{/each}}
+
     </div>
 	{{/with}}
 	{{/if}}
@@ -144,7 +147,7 @@
 </script>
 <script id="unitModalBodyTemplate" type="text/x-handlebars-template">
 <div>
-<u>รายการหน่วยนับที่เลือกไว้แล้ว</u>
+<u>หน่วยนับที่กำหนดไว้แล้ว</u>
 	<div> 
 	<ul id="targetsLst">
 		{{#each targets}} 
@@ -155,20 +158,34 @@
 	</ul>
 </div>
 <hr/>
-<div>
-<u>เพิ่มทะเบียนหน่วยนับ</u> :<br/> 
-<select class="span2" id="unitSlt">
-	<option value="0">กรุณาเลือก</option>
-	{{#each unitSelectionList}}
-		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
-	{{/each}}
-</select>
-<select class="span2" id="isSumableSlt">
-	<option value="-1">กรุณาเลือก</option>
-	<option value="1">นับ</option>
-	<option value="0">ไม่นับ</option>
-</select>
-<button class="btn btn-mini addUnit"><i class="icon-ok" icon-white"/> เพิ่มหน่วยนับ</button>
+
+<div class="row">
+	<div class="span2">
+		<u>เพิ่มทะเบียนหน่วยนับ</u> :
+	</div>
+	<div class="span2"> 
+		<u>ระบุ "นับ" หรือ "ไม่นับ"</u>:
+	</div>
+</div>
+<div class="row">
+	<div class="span2">
+		<select class="span2" id="unitSlt">
+		<option value="0">กรุณาเลือก</option>
+		{{#each unitSelectionList}}
+			<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+		{{/each}}
+	 	</select>
+	</div>
+	<div class="span2">
+		<select class="span2" id="isSumableSlt">
+			<option value="-1">กรุณาเลือก</option>
+			<option value="1">นับ</option>
+			<option value="0">ไม่นับ</option>
+		</select>
+	</div>
+	<div class="span2">
+		<button class="btn btn-mini addUnit"><i class="icon-ok" icon-white"/> บันทึกข้อมูล</button>
+	</div>
 </div>
 </script>
 
@@ -419,7 +436,7 @@ $(document).ready(function() {
 		render: function() {
 			if(this.currentObjective.get('name') == null) {
 			
-				this.$el.find('.modal-header span').html("เพิ่มรายการทะเบียน" + objectiveType.get('name') + "ใหม่");
+				this.$el.find('.modal-header span').html("เพิ่มทะเบียน" + objectiveType.get('name'));
 			} else {
 				this.$el.find('.modal-header span').html(objectiveType.get('name') + "<br/> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
 			}

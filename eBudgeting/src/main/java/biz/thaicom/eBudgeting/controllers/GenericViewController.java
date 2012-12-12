@@ -634,8 +634,8 @@ public class GenericViewController {
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
 		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.ประเด็นยุทธศาสตร์.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.ประเด็นยุทธศาสตร์.getValue());
+		model.addAttribute("parentTypeName", ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getValue());
 		
 		return "objectiveRegister";
 	}
@@ -669,13 +669,11 @@ public class GenericViewController {
 		model.addAttribute("parentTypeName", "");
 		model.addAttribute("parentTypeId", "");
 		
-		String relatedTypeString = "" + ObjectiveTypeId.เป้าหมายเชิงยุทธศาสตร์.getValue() + " " + 
-				ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getValue();
+		String relatedTypeString = "" + ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getValue();
 				
 		model.addAttribute("relatedTypeString", relatedTypeString);
 		
-		String relatedTypeNameString ="" + ObjectiveTypeId.เป้าหมายเชิงยุทธศาสตร์.getName() + " " + 
-				ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getName();
+		String relatedTypeNameString ="" +	ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getName();
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
 		return "objectiveRegister";
@@ -812,12 +810,12 @@ public class GenericViewController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("typeId", 103);
 		
-		String relatedTypeString = "" + ObjectiveTypeId.ยุทธศาสตร์หน่วยงาน.getValue() + " " +
+		String relatedTypeString = "" + ObjectiveTypeId.กลยุทธ์หน่วยงาน.getValue() + " " +
 				ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getValue() + " " +
 				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getValue() + "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
 		
-		String relatedTypeNameString = "" + ObjectiveTypeId.ยุทธศาสตร์หน่วยงาน.getName() + " " +
+		String relatedTypeNameString = "" + ObjectiveTypeId.กลยุทธ์หน่วยงาน.getName() + " " +
 				ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getName() + " " +
 				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getName() + "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
