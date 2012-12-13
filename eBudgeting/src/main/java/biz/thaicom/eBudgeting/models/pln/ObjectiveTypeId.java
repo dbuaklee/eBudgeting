@@ -61,7 +61,7 @@ public enum ObjectiveTypeId {
 		} else if(id==117) {
 			return "";
 		} else if(id==118) {
-			return "แนวทางการจัดสรรงบประมาณ (กลยุทธ์หลัก)";
+			return "แนวทางการจัดสรรงบประมาณ(กลยุทธ์หลัก)";
 		} else if(id==119) {
 			return "วิสัยทัศน์";
 		} else if(id==120) {
