@@ -21,6 +21,16 @@
 
 <div class="navbar">
 		<div class="container">
+		 	<form class="navbar-form pull-left">
+		 		<span style="margin-left: 5px;">
+			 		<select id="fySlt" class="span2" ${fySltEnable ? '' : 'disabled' } onchange="changeCurrentRootFY(this)">
+			 			<c:forEach items="${rootFY}" var="root">
+			 				<option value="${root.fiscalYear}" ${root.fiscalYear == currentRootFY.fiscalYear ? 'selected' : ''}>ปีงปม. ${root.fiscalYear}</option>
+			 			</c:forEach>
+			 			
+			 		</select>
+		 		</span>
+		 	</form>  
 		 	
 			<a class="btn btn-navbar" data-toggle="collapse"
 				data-target=".nav-collapse"> <span class="icon-bar"></span> <span
@@ -28,6 +38,9 @@
 			</a> <a class="brand" href="<c:url value='/'/>">หน้าหลัก</a>
 			
 			<!--/.nav-collapse -->
+			<ul id="navbarBreadcrumb" class="breadcrumb" style="margin: 0px; padding: 11px 0px 0px 0px;">
+    			
+    		</ul>
 		</div>
 
 </div>
