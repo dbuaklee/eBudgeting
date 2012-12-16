@@ -92,3 +92,20 @@ function addCommas(nStr)
 	}
 	return x1 + x2;
 }
+
+function changeCurrentRootFY(sel) {
+	var value = sel.options[sel.selectedIndex].value;
+	
+	$.ajax({
+		type: 'GET',
+		url: appUrl('/Session/changeCurrentRootFY'),
+		data: {
+			newFiscalYear: value
+		},
+		success: function(response) {
+			alert("success!");
+		}
+	
+	});
+	
+}

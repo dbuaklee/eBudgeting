@@ -2,6 +2,7 @@ package biz.thaicom.eBudgeting.controllers;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -535,23 +536,15 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f01: ทะเบียนยุทธศาสตร์การจัดสรร
 	@RequestMapping("/page/m51f01/")
 	public String render_m51f01(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 109);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f01/{fiscalYear}")
-	public String render_m51f01(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
-
-				
+			Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		
+		if(session.getAttribute("currentRootFY") != null) {
+			Objective rootFy = (Objective) session.getAttribute("currentRootFY");
+			logger.debug("rootFy: " + rootFy.getFiscalYear());
+			model.addAttribute("fiscalYear", rootFy.getFiscalYear());
+		}
+		
 		model.addAttribute("typeId", 109);
 		
 		String relatedTypeString = "";
