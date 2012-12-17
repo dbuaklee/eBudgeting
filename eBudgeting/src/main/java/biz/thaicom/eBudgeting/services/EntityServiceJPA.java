@@ -2685,10 +2685,17 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public List<ObjectiveName> findAvailableObjectiveNameChildrenByObejective(Long id) {
+	public List<ObjectiveName> findAvailableObjectiveNameChildrenByObejective(Long id, String searchQuery) {
 		Objective objective = objectiveRepository.findOne(id);
 		
-		return objectiveNameRepository.findAllChildrenTypeObjectiveNameByFiscalYearAndTypeId(objective.getFiscalYear(), objective.getType().getId()) ;
+		logger.debug(searchQuery);
+		
+		if(searchQuery == null || searchQuery.length() == 0) {
+		
+			return objectiveNameRepository.findAllChildrenTypeObjectiveNameByFiscalYearAndTypeId(objective.getFiscalYear(), objective.getType().getId()) ;
+		} else {
+			return objectiveNameRepository.findAllChildrenTypeObjectiveNameByFiscalYearAndTypeId(objective.getFiscalYear(), objective.getType().getId(), "%"+searchQuery+"%") ;
+		}
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,13 +93,13 @@ public class ObjectiveRestController {
 	}
 	
 	
-	@RequestMapping(value="/Objective/{id}/availableChildrenName", method=RequestMethod.GET)
-	public @ResponseBody List<ObjectiveName> getAvailableChildrenObjectiveNameById(@PathVariable Long id) {
-		logger.debug("id: " + id);
-		List<ObjectiveName> list =entityService.findAvailableObjectiveNameChildrenByObejective(id);
-
-		return  list;
-	}
+//	@RequestMapping(value="/Objective/{id}/availableChildrenName", method=RequestMethod.GET)
+//	public @ResponseBody List<ObjectiveName> getAvailableChildrenObjectiveNameById(@PathVariable Long id) {
+//		logger.debug("id: " + id);
+//		List<ObjectiveName> list =entityService.findAvailableObjectiveNameChildrenByObejective(id);
+//
+//		return  list;
+//	}
 
 	@RequestMapping(value="/Objective/{id}/childrenTypeName", method=RequestMethod.GET)
 	public @ResponseBody String getChildrenTypeName(@PathVariable Long id) {
@@ -408,8 +410,12 @@ public class ObjectiveRestController {
 	
 	@RequestMapping(value="/ObjectiveName/findChildrenNameOfObjective/{id}") 
 	public @ResponseBody List<ObjectiveName> findChildrenNameOfObjective (
-			@PathVariable Long id ) {
-		return entityService.findAvailableObjectiveNameChildrenByObejective(id);
+			@PathVariable Long id, @RequestParam(required=false) String searchQuery ) throws UnsupportedEncodingException {
+		if(searchQuery != null) {
+			searchQuery = URLDecoder.decode(searchQuery, "UTF-8");
+		}
+		
+		return entityService.findAvailableObjectiveNameChildrenByObejective(id, searchQuery );
 	}
 	
 	

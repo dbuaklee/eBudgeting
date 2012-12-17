@@ -170,7 +170,7 @@ public interface EntityService {
 	public ObjectiveName findOneObjectiveName(Long id);
 	public ObjectiveName deleteObjectiveName(Long id);
 	
-	public List<ObjectiveName> findAvailableObjectiveNameChildrenByObejective(Long id);
+	public List<ObjectiveName> findAvailableObjectiveNameChildrenByObejective(Long id, String searchQuery);
 	
 	//ObjectiveTarget
 	public List<ObjectiveTarget> findAllObjectiveTargets();

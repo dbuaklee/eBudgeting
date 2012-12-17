@@ -97,7 +97,7 @@
 		<form class="form-search">
 			<div class="input-append">
 				<input type="text" id="availableChildrenSearch" class="span2 search-query">
-				<button type="submit" class="btn">Search</button>
+				<button type="submit" id="search" class="btn">Search</button>
 			</div>
 		</form>
 	</div>
@@ -110,6 +110,7 @@
 
 <script  id=availableChildrenTemplate type="text/x-handler-template">
 เลือก{{typeName}}เพื่อเชื่อมโยง
+<div style="height: 250px;overflow:auto;">
 <table class="table table-bordered">	
 	<thead>
 	</thead>
@@ -121,27 +122,36 @@
 	{{/each}}
 	</tbody>	
 </table>
+<div>
 </script>
 
 
 <script id="mainSelectionTemplate" type="text/x-handler-template">
-<form>
-	แผนงาน : 
-	<select id="type101Slt">
-		<option>กรุณาเลือก...</option>
-		{{#each this}}<option value={{id}}>[{{code}}] {{name}}</option>{{/each}}
-	</select>
+<form class="form-horizontal">
+<div class="control-group">
+	<label class="control-label">แผนงาน :</label> 
+	<div class="controls">
+		<select id="type101Slt" class="span5">
+			<option>กรุณาเลือก...</option>
+			{{#each this}}<option value={{id}}>[{{code}}] {{name}}</option>{{/each}}
+		</select>
+	</div>
+</div>
 	<div id="type102Div"></div>
 	<div id="type103Div"></div>
 </form>
 </script>
 
 <script id="selectionTemplate" type="text/x-handler-template">
-	{{type.name}} :
-	<select id="type{{type.id}}Slt">
-		<option>กรุณาเลือก...</option>
-		{{#each this}}<option value={{id}}>[{{code}}] {{name}}</option>{{/each}}
-	</select> 
+<div class="control-group">
+	<label class="control-label">{{type.name}} :</label>
+	<div class="controls">
+		<select id="type{{type.id}}Slt" class="span5">
+			<option>กรุณาเลือก...</option>
+			{{#each this}}<option value={{id}}>[{{code}}] {{name}}</option>{{/each}}
+		</select>
+	</div> 
+</div>
 </script>
 
 <script type="text/javascript">
@@ -255,9 +265,9 @@ $(document).ready(function() {
 								   this.$el.find('.loading').remove();
 							  }, this));
 							
-							console.log("children.length : " + children.length);
+							// console.log("children.length : " + children.length);
 							for(var i=children.length-1; i>=0; i--) {
-								console.log(i);
+								// console.log(i);
 								var json = children.at(i).toJSON();
 								
 								if(json.type.id > 103 && json.type.id < 109) {
@@ -328,10 +338,25 @@ $(document).ready(function() {
 			},
 			
 			events: {
-				"click .link" : "linkBtnClick"
+				"click .link" : "linkBtnClick",
+				"click button#search" : "searchBtnClick"
 			},
 			clear: function(e) {
 				this.$el.empty();
+			},
+			searchBtnClick: function(e) {
+				searchTxt = this.$el.find('#availableChildrenSearch').val();
+				this.availableChildren = new ObjectiveNameCollection();
+				this.availableChildren.fetch({
+					url: appUrl('/ObjectiveName/findChildrenNameOfObjective/' + this.objective.get('id') ),
+					data: {
+						searchQuery: encodeURI(searchTxt)
+					},
+					success: _.bind(function() {
+						this.renderAvailableChildren();
+					}, this)
+				});
+				return false;
 			},
 			linkBtnClick : function(e) {
 				var objectiveNameId = $(e.target).parents('tr').attr('data-id');
@@ -354,10 +379,11 @@ $(document).ready(function() {
 			},
 			
 			renderWith: function(options) {
-				this.topPadding = options.topPadding;
-				this.objective = options.objective;
-				this.typeName = options.typeName;
-				
+				if(options != null) {
+					this.topPadding = options.topPadding;
+					this.objective = options.objective;
+					this.typeName = options.typeName;
+				}
 				this.render();
 				
 				this.availableChildren = new ObjectiveNameCollection();
