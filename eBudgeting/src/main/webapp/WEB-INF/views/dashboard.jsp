@@ -68,6 +68,9 @@ var ROLE_USER_PLAN = true;
 
 
 <script type="text/javascript">
+var menuCode='${menuCode}';
+var menuLevel='${menuLevel}';
+
 var menuJson = [{
 	name: "ข้อมูลพื้นฐานหน่วยงาน (m1)",
 	code: "m1",
@@ -294,6 +297,17 @@ $(document).ready(function() {
 				$("#navbarBreadcrumb").empty();
 				$("#navbarBreadcrumb").html("<li><a href='#'>" + $(e.target).html() +"</a></li>");
 				
+				$.ajax({
+					type: 'POST',
+					data: {
+						level: 0,
+						value: this.menu[i].name,
+						code: this.menu[i].code
+					},
+					url: appUrl('/Session/updateNavbarBreadcrumb')
+				});
+				
+				
 			} else if (level==2) {
 				// get this index
 				var i = parentDiv.find('li').index(li);
@@ -307,6 +321,16 @@ $(document).ready(function() {
 				$("#navbarBreadcrumb").html("<li><a href='#'>" + this.menu[this.currentFirstLevelIndex].name +"</a> <span class='divider'>/</span></li>");
 				$("#navbarBreadcrumb").append("<li><a href='#'>" + $(e.target).html() +"</a></li>");
 				
+				$.ajax({
+					type: 'POST',
+					data: {
+						level: 1,
+						value: this.menu[this.currentFirstLevelIndex].menus[i].name,
+						code: this.menu[this.currentFirstLevelIndex].menus[i].code
+					},
+					url: appUrl('/Session/updateNavbarBreadcrumb')
+				});
+				
 			} else if (level==3) {
 				
 			}
@@ -318,9 +342,25 @@ $(document).ready(function() {
 	if (typeof ROLE_USER_PLAN != "undefined"){
 		mainView.renderWith(menuJson);
 	 	//$("#menuDiv").html(menuTemplate(menuJson));
+	 	
+	 	if(menuLevel == '0') {
+	 		var firstMenu = _.where(menuJson, {code: menuCode})[0];
+	 		console.log(firstMenu);
+	 		$("#main2").html(mainView.subMenuTemplate(firstMenu.menus));
+	 		mainView.currentFirstLevelIndex = _.indexOf(menuJson, firstMenu);
+	 	} else if(menuLevel == '1') {
+	 		var firstMenu = _.find(menuJson, function(menu) { return _.where(menu.menus, {code: menuCode}).length > 0; });
+			mainView.currentFirstLevelIndex = _.indexOf(menuJson, firstMenu);
+			$("#main2").html(mainView.subMenuTemplate(firstMenu.menus));
+			
+			var secondMenu = _.where(firstMenu.menus, {code: menuCode})[0];
+			$("#main3").html(mainView.subMenuTemplate(secondMenu.menus));
+	 	}
+	 	
 	} else {
 		mainView.renderWith(menuUserJson);
 		//$("#menuDiv").html(menuTemplate(menuUserJson));
+		
 	}
 	
 	

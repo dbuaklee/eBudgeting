@@ -47,9 +47,9 @@ public class SessionController {
 	}
 	
 	
-	@RequestMapping(value="/Session/updateNavbarBreadcrumb", method = RequestMethod.GET)
+	@RequestMapping(value="/Session/updateNavbarBreadcrumb", method = RequestMethod.POST)
 	public @ResponseBody String updateNavbarBreadcrumb (
-			@RequestParam Integer level, @RequestParam String value, HttpSession session) {
+			@RequestParam Integer level, @RequestParam String value, @RequestParam String code, HttpSession session) {
 		@SuppressWarnings("unchecked")
 		List<Breadcrumb> navbarBreadcrumb  = (List<Breadcrumb>) session.getAttribute("navbarBreadcrumb");
 		
@@ -62,9 +62,17 @@ public class SessionController {
 			navbarBreadcrumb.add(b1);
 		}
 		
+		if(level == 0) {
+			navbarBreadcrumb.get(1).setValue(null);
+			navbarBreadcrumb.get(1).setUrl(null);
+		}
+		
 		if(navbarBreadcrumb.get(level) != null) {
 			navbarBreadcrumb.get(level).setValue(value);
+			navbarBreadcrumb.get(level).setUrl(code);
 		}
+		
+		session.setAttribute("navbarBreadcrumb", navbarBreadcrumb);
 		
 		return "success";
 		

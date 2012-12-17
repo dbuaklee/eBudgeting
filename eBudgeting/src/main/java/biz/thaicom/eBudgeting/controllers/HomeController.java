@@ -14,8 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.services.EntityService;
 
 /**
@@ -36,7 +38,7 @@ public class HomeController {
 	 * Simply selects the home view to render by returning its name.
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model, HttpSession session ) {
+	public String home(Locale locale, Model model, HttpSession session, @RequestParam(required=false) String menuCode,  @RequestParam(required=false) Integer menuLevel  ) {
 		
 		List<Objective> root = entityService.findRootFiscalYear();
 		
@@ -60,6 +62,34 @@ public class HomeController {
 					break;
 				}
 			}
+		}
+		
+		if(session.getAttribute("navbarBreadcrumb")!= null) {
+			@SuppressWarnings("unchecked")
+			List<Breadcrumb> navbarBreadcrumb = (List<Breadcrumb>) session.getAttribute("navbarBreadcrumb");
+			
+			if(menuLevel == null) {
+				//empty all session variable
+				for(Breadcrumb b : navbarBreadcrumb) {
+					b.setUrl(null);
+					b.setValue(null);
+				}
+			} else if(menuLevel == 0) {
+				//empty the last Breadcrumb
+				navbarBreadcrumb.get(1).setUrl(null);
+				navbarBreadcrumb.get(1).setValue(null);
+				
+				model.addAttribute("menuLevel", menuLevel);
+				model.addAttribute("menuCode", menuCode);
+				
+			} else {
+				model.addAttribute("menuLevel", menuLevel);
+				model.addAttribute("menuCode", menuCode);
+				
+			}
+			
+			
+			session.setAttribute("navbarBreadcrumb", navbarBreadcrumb);
 		}
 		
 		model.addAttribute("fySltEnable", true);

@@ -39,7 +39,9 @@
 			
 			<!--/.nav-collapse -->
 			<ul id="navbarBreadcrumb" class="breadcrumb" style="margin: 0px; padding: 11px 0px 0px 0px;">
-    			
+    			<c:forEach items="${navbarBreadcrumb}" var="breadcrumb" varStatus="index">
+    				<c:if test="${not empty breadcrumb.value}"> <li> <a href="<c:url value='/?menuLevel=${index.index}&menuCode=${breadcrumb.url}'/>">${breadcrumb.value}</a> <span class='divider'>/</span></li></c:if>
+    			</c:forEach>
     		</ul>
 		</div>
 

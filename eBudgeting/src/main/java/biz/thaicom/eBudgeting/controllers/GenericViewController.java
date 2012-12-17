@@ -529,6 +529,12 @@ public class GenericViewController {
 	}
 	
 	
+	private void setFiscalYearFromSession(Model model, HttpSession session) {
+		if(session.getAttribute("currentRootFY") != null) {
+			Objective rootFy = (Objective) session.getAttribute("currentRootFY");
+			model.addAttribute("fiscalYear", rootFy.getFiscalYear());
+		}
+	}
 
 
 
@@ -538,12 +544,7 @@ public class GenericViewController {
 	public String render_m51f01(
 			Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("rootPage", false);
-		
-		if(session.getAttribute("currentRootFY") != null) {
-			Objective rootFy = (Objective) session.getAttribute("currentRootFY");
-			logger.debug("rootFy: " + rootFy.getFiscalYear());
-			model.addAttribute("fiscalYear", rootFy.getFiscalYear());
-		}
+		setFiscalYearFromSession(model, session);
 		
 		model.addAttribute("typeId", 109);
 		
@@ -562,25 +563,18 @@ public class GenericViewController {
 	}
 	
 	// --------------------------------------------------------------m51f02: ทะเบียนประเด็นยุทธศาสตร์
+	
 	@RequestMapping("/page/m51f02/")
 	public String render_m51f02(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 121);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f02/{fiscalYear}")
-	public String render_m51f02(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		
+		setFiscalYearFromSession(model, session);
+		
+		
 		model.addAttribute("typeId", 121);
 		
 		String relatedTypeString = "" + ObjectiveTypeId.ยุทธศาสตร์การจัดสรรงบประมาณ.getValue() + "";
@@ -602,23 +596,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f03: ทะเบียนเป้าหมายเชิงยุทธศาสตร์
 	@RequestMapping("/page/m51f03/")
 	public String render_m51f03(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 110);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f03/{fiscalYear}")
-	public String render_m51f03(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 110);
 		
 		model.addAttribute("hasUnit", true);
@@ -637,23 +620,13 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f04: ทะเบียนเป้าหมายบริการกระทรวง
 	@RequestMapping("/page/m51f04/")
 	public String render_m51f04(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 111);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f04/{fiscalYear}")
-	public String render_m51f04(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
+		
 		model.addAttribute("typeId", 111);
 		
 		model.addAttribute("hasUnit", true);
@@ -675,23 +648,13 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f05: ทะเบียนเป้าหมายบริการหน่วยงาน
 	@RequestMapping("/page/m51f05/")
 	public String render_m51f05(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 112);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f05/{fiscalYear}")
-	public String render_m51f05(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
+		
 		model.addAttribute("typeId", 112);
 		
 		model.addAttribute("hasUnit", true);
@@ -709,23 +672,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f06: ทะเบียนแผนงาน
 	@RequestMapping("/page/m51f06/")
 	public String render_m51f06(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 101);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f06/{fiscalYear}")
-	public String render_m51f06(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 101);
 		
 		String relatedTypeString = "" + ObjectiveTypeId.ประเด็นยุทธศาสตร์.getValue() + "";
@@ -745,23 +697,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f07: ทะเบียนผลผลิต/โครงการ
 	@RequestMapping("/page/m51f07/")
 	public String render_m51f07(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 102);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f07/{fiscalYear}")
-	public String render_m51f07(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 102);
 		
 		model.addAttribute("hasUnit", true);
@@ -782,25 +723,13 @@ public class GenericViewController {
 
 	// --------------------------------------------------------------m51f08: ทะเบียนกิจกรรมหลัก
 	@RequestMapping("/page/m51f08/")
-	public String runder_m51f08(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 103);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m51f08/{fiscalYear}")
 	public String render_m51f08(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
-		List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m51f08", fiscalYear, null); 
 		
-		model.addAttribute("breadcrumb", breadcrumb.listIterator());
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 103);
 		
 		String relatedTypeString = "" + ObjectiveTypeId.กลยุทธ์หน่วยงาน.getValue() + " " +
@@ -827,24 +756,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f09: ทะเบียนกิจกรรมรอง
 	@RequestMapping("/page/m51f09/")
 	public String render_m51f09(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 104);
-		
-		return "objectiveNameRegister";
-	}
-	
-	@RequestMapping("/page/m51f09/{fiscalYear}")
-	public String render_m51f09(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 104);
 		
 		model.addAttribute("hasUnit", true);
@@ -861,23 +778,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f10: ทะเบียนกิจกรรมย่อย
 	@RequestMapping("/page/m51f10/")
 	public String render_m51f10(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 105);
-		return "objectiveNameRegister";
-	}
-	
-	@RequestMapping("/page/m51f10/{fiscalYear}")
-	public String render_m51f10(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 105);
 		
 		model.addAttribute("hasUnit", true);
@@ -893,23 +799,13 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f11: ทะเบียนกิจกรรมเสริม
 	@RequestMapping("/page/m51f11/")
 	public String render_m51f11(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 106);
-		return "objectiveNameRegister";
-	}
-	
-	@RequestMapping("/page/m51f11/{fiscalYear}")
-	public String render_m51f11(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
+		
 		model.addAttribute("typeId", 106);
 		
 		model.addAttribute("hasUnit", true);
@@ -924,23 +820,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f12: ทะเบียนกิจกรรมสนับสนุน
 	@RequestMapping("/page/m51f12/")
 	public String render_m51f12(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 107);
-		return "objectiveNameRegister";
-	}
-	
-	@RequestMapping("/page/m51f12/{fiscalYear}")
-	public String render_m51f12(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 107);
 		
 		model.addAttribute("hasUnit", true);
@@ -957,23 +842,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f13: ทะเบียนกิจกรรมรายละเอียด
 	@RequestMapping("/page/m51f13/")
 	public String render_m51f13(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 108);
-		return "objectiveNameRegister";
-	}
-	
-	@RequestMapping("/page/m51f13/{fiscalYear}")
-	public String render_m51f13(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 108);
 		
 		model.addAttribute("hasUnit", true);
@@ -989,95 +863,50 @@ public class GenericViewController {
 	// --------------------------------------------------------------m51f14: ทะเบียนรายการและระดับรายการ
 	@RequestMapping("/page/m51f14/")
 	public String render_m51f14(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m51f14";
-	}
-	
-	@RequestMapping("/page/m51f14/{fiscalYear}")
-	public String render_m51f14(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		return "m51f14";
 	}
 	
 	// --------------------------------------------------------------m51f15: ทะเบียนรายการกลาง
 	@RequestMapping("/page/m51f15/")
-	public String render_m51f15(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m51f15";
-	}
-	
-	
-	
-	@RequestMapping("/page/m51f15/{fiscalYear}/")
 	public String render_m51f15_fiscal(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
+		
 		return "m51f15";
 	}
 	
 	// --------------------------------------------------------------	m51f16: ทะเบียนรายการหลักสำหรับบันทึกงบประมาณกิจกรรม
 	@RequestMapping("/page/m51f16/")
-	public String render_m51f16(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m51f16";
-	}
-	
-	
-	
-	@RequestMapping("/page/m51f16/{fiscalYear}/")
 	public String render_m51f16_fiscal(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		return "m51f16";
 	}
 	
 	
 	// --------------------------------------------------------------	m51f17: การเชื่อมโยงกิจกรรม
 	@RequestMapping("/page/m51f17/")
-	public String render_m51f17(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m51f17";
-	}
-	
-	
-	
-	@RequestMapping("/page/m51f17/{fiscalYear}/")
 	public String render_m51f17_fiscal(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		return "m51f17";
 	}
 	
@@ -1085,7 +914,7 @@ public class GenericViewController {
 	// --------------------------------------------------- m51f18: ข้อมูลหน่วยนับเป้าหมาย
 	@RequestMapping("/page/m51f18/")
 	public String render_m51f18(
-			Model model, HttpServletRequest request) {
+			Model model, HttpServletRequest request, HttpSession session) {
 		List<TargetUnit> targetUnits = entityService.findAllTargetUnits();		
 		model.addAttribute("rootPage", true);
 		model.addAttribute("targetUnits", targetUnits);
@@ -1095,36 +924,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m52f01: ทะเบียนเป้าประสงค์เชิงนโยบนาย
 	@RequestMapping("/page/m52f01/")
 	public String render_m52f01(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 113);
-		
-		String relatedTypeString = "";
-		model.addAttribute("relatedTypeString", relatedTypeString);
-		
-		String relatedTypeNameString = "";
-		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
-		model.addAttribute("hasParent", "");
-
-		model.addAttribute("hasUnit", true);
-		
-		return "objectiveRegister";
-	}
-	
-	
-	
-	@RequestMapping("/page/m52f01/{fiscalYear}")
-	public String render_m52f01(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 113);
 		
 		
@@ -1145,23 +950,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m53f01: ทะเบียนยุทธศาสตร์กระทรวง
 	@RequestMapping("/page/m53f01/")
 	public String render_m53f01(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 114);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m53f01/{fiscalYear}")
-	public String render_m53f01(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 114);
 		
 		String relatedTypeString = "";
@@ -1178,25 +972,14 @@ public class GenericViewController {
 	}
 	
 	// --------------------------------------------------------------m53f02: ทะเบียนยุทธศาสตร์หน่วยงาน
-	@RequestMapping("/page/m53f02/")
+	@RequestMapping("/page/m53f02/") 
 	public String render_m53f02(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 115);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m53f02/{fiscalYear}")
-	public String render_m53f02(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 115);
 		
 		model.addAttribute("hasUnit", true);
@@ -1217,23 +1000,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m53f03: ทะเบียนกลยุทธ์/วิธีการหน่วยงาน
 	@RequestMapping("/page/m53f03/")
 	public String render_m53f03(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 116);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m53f03/{fiscalYear}")
-	public String render_m53f03(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 116);
 		
 		model.addAttribute("hasUnit", true);
@@ -1251,23 +1023,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m54f01: ทะเบียนแนวทางการจัดสรรงบประมาณ
 	@RequestMapping("/page/m54f01/")
 	public String render_m54f01(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 118);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m54f01/{fiscalYear}")
-	public String render_m54f01(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 118);
 		
 		String relatedTypeString = "";
@@ -1286,23 +1047,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m55f01: ทะเบียนวิสัยทัศน์หน่วยงาน
 	@RequestMapping("/page/m55f01/")
 	public String render_m55f01(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 119);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m55f01/{fiscalYear}")
-	public String render_m55f01(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 119);
 		
 		String relatedTypeString = "";
@@ -1321,23 +1071,12 @@ public class GenericViewController {
 	// --------------------------------------------------------------m55f02: ทะเบียนพันธกิจหน่วยงาน
 	@RequestMapping("/page/m55f02/")
 	public String render_m55f02(
-			Model model, HttpServletRequest request) {
-		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		model.addAttribute("typeId", 120);
-		return "objectiveRegister";
-	}
-	
-	@RequestMapping("/page/m55f02/{fiscalYear}")
-	public String render_m55f02(
-			Model model, @PathVariable Integer fiscalYear,
-			HttpServletRequest request) {
+			Model model,
+			HttpServletRequest request, HttpSession session) {
 
 				
 		model.addAttribute("rootPage", false);
-		model.addAttribute("fiscalYear", fiscalYear);
+		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 120);
 		
 		String relatedTypeString = "";
