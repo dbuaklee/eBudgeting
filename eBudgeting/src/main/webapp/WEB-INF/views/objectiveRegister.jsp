@@ -68,7 +68,7 @@
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
-	<a href="#" class="btn btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> จัดการหน่วยนับ</a>	
+	{{#if hasUnit}}<a href="#" class="btn btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> จัดการหน่วยนับ</a>{{/if}}	
 	
 	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขทะเบียน{{#if relatedTypenameList}}และความเชื่อมโยง{{else}}{{#if hasParent}}และความเชื่อมโยง{{/if}} {{/if}}</a>
 	
@@ -250,8 +250,6 @@ var hasParent = "${hasParent}";
 var parentTypeName = "${parentTypeName}";
 var parentTypeId = "${parentTypeId}";
 
-var hasunit = "${hasUnit}";
-
 
 var listTargetUnits = new TargetUnitCollection();
 listTargetUnits.fetch({
@@ -281,7 +279,11 @@ $(document).ready(function() {
 		
 		render: function() {
 			
-			this.$el.find('.modal-header span').html(objectiveType.get('name') + "<br/> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
+			this.$el.find('.modal-header span').html(
+					objectiveType.get('name') +
+					"<br/> <span style='font-weight: normal;'>[" +
+					this.currentObjective.get('code') + "]"+ 
+					this.currentObjective.get('name') + "</span>");
 			
 			var json=this.currentObjective.toJSON();
 			
@@ -438,12 +440,16 @@ $(document).ready(function() {
 			
 				this.$el.find('.modal-header span').html("เพิ่มทะเบียน" + objectiveType.get('name'));
 			} else {
-				this.$el.find('.modal-header span').html(objectiveType.get('name') + "<br/> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
+				this.$el.find('.modal-header span').html(
+						objectiveType.get('name') +
+						"<br/> <span style='font-weight: normal;'>[" +
+						this.currentObjective.get('code') + "]"+ 
+						this.currentObjective.get('name') + "</span>");
 			}
 			
 			var json = this.currentObjective.toJSON();
 			
-			if( hasUnit.length > 0 ) {
+			if( hasUnit != "false" && hasUnit.length > 0 ) {
 				json.hasUnit = true;
 				json.unitSelectionList = listTargetUnits.toJSON();
 				
@@ -555,8 +561,10 @@ $(document).ready(function() {
 				json.parentTypeId = parentTypeId;
 			}
 			
-			if(hasUnit.length > 0) {
+			if(hasUnit != "false" && hasUnit.length > 0) {
 				json.hasUnit = true;
+			} else {
+				json.hasUnit = false;
 			}
 			
 
@@ -637,7 +645,7 @@ $(document).ready(function() {
 			
 			var json = objective.toJSON();
 			
-			if(hasUnit.length > 0 ) {
+			if(hasUnit != "false" && hasUnit.length > 0 ) {
 				json.hasUnit = true;
 			}
 			

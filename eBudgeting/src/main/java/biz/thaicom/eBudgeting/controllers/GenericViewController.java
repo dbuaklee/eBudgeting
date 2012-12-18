@@ -1014,8 +1014,8 @@ public class GenericViewController {
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
 		
 		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getValue());
+		model.addAttribute("parentTypeName", ObjectiveTypeId.กลยุทธ์หน่วยงาน.getName());
+		model.addAttribute("parentTypeId", ObjectiveTypeId.กลยุทธ์หน่วยงาน.getValue());
 		
 		return "objectiveRegister";
 	}
@@ -1063,7 +1063,7 @@ public class GenericViewController {
 		
 		model.addAttribute("hasParent", "");
 
-		model.addAttribute("hasUnit", "");
+		model.addAttribute("hasUnit", false);
 		
 		return "objectiveRegister";
 	}

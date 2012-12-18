@@ -72,6 +72,7 @@
 		<tr data-id={{id}}>
 			<td><span class="label label-info mini">{{type.name}}</span><br/>
 				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i>{{name}}</a></td>
+			<td style="width:40px;"> </td>
 		</tr>
 	</table>
 </script>
@@ -82,7 +83,9 @@
 <script id="treeTRTemplate" type="text/x-handler-template">
 	<tr data-id={{id}}>
 			<td  style="padding-left: {{paddingLevel parentLevel}}px;"><span class="label label-info mini">{{type.name}}</span><br/>
-				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> {{name}}</a> 
+				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> [{{code}}] {{name}}</a> 
+			</td>
+				<td>
 				{{#if type.unlinkable}}
 					<button type="button" class="btn unlink">UnLink</button>
 				{{/if}}
@@ -251,7 +254,7 @@ $(document).ready(function() {
 				if(selectedObjective.get('children').length == 0) {
 				
 					// then we're appearing to be loading
-					$(trEl).find('td').append(this.loadingTRTemplate());
+					$(trEl).find('td:first').append(this.loadingTRTemplate());
 					var children = new ObjectiveCollection();
 					children.fetch({
 						url: appUrl('/Objective/' + selectedObjective.get('id') + '/children'),
