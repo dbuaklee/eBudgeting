@@ -116,9 +116,11 @@
 	<thead>
 		<tr>
 			<td style="width:20px;"></td>
-			<td style="width:120px;">หมวดย่อย</td>
+
 			<td style="width:120px;">รายการหลัก</td>
+			<td style="width:120px;">รายการย่อย</td>
 			<td>รายการ</td>
+
 			<td style="width:60px;">หน่วยนับ</td>
 			<td style="width:60px;">รายการกลาง</td>
 		</tr>
@@ -131,6 +133,7 @@
 <script id="formulaStrategyRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
 	<td> {{type.parent.name}}</td>
+
 	<td> {{{parentBudgetType type}}} </td>
 	<td> {{name}} = {{{formulaLine formulaColumns false}}} </td>
 	<td> {{unit.name}} </td>

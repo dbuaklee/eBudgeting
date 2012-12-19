@@ -145,7 +145,7 @@
 </script>
 <script id="unitModalBodyTemplate" type="text/x-handlebars-template">
 <div>
-<u>รายการหน่วยนับที่เลือกไว้แล้ว</u>
+<u>หน่วยนับที่กำหนดไว้แล้ว</u>
 	<div> 
 	<ul id="targetsLst">
 		{{#each targets}} 
@@ -156,21 +156,33 @@
 	</ul>
 </div>
 <hr/>
-<div>
-<u>เพิ่มทะเบียนหน่วยนับ</u> :<br/> 
-<select class="span2" id="unitSlt">
-	<option value="0">กรุณาเลือก</option>
-	{{#each unitSelectionList}}
-		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
-	{{/each}}
-</select>
-<select class="span2" id="isSumableSlt">
-	<option value="-1">กรุณาเลือก</option>
-	<option value="1">นับ</option>
-	<option value="0">ไม่นับ</option>
-</select>
-<button class="btn btn-mini addUnit"><i class="icon-ok" icon-white"/> เพิ่มหน่วยนับ</button>
+<div class="row">
+	<div class="span2">
+		<u>เพิ่มทะเบียนหน่วยนับ</u> :
+	</div>
+	<div class="span2"> 
+		<u>ระบุ "นับ" หรือ "ไม่นับ"</u>:
+	</div>
 </div>
+<div class="row">
+	<div class="span2">
+		<select class="span2" id="unitSlt">
+		<option value="0">กรุณาเลือก</option>
+		{{#each unitSelectionList}}
+			<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+		{{/each}}
+	 	</select>
+	</div>
+	<div class="span2">
+		<select class="span2" id="isSumableSlt">
+			<option value="-1">กรุณาเลือก</option>
+			<option value="1">นับ</option>
+			<option value="0">ไม่นับ</option>
+		</select>
+	</div>
+	<div class="span2">
+		<button class="btn btn-mini addUnit"><i class="icon-ok" icon-white"/> บันทึกข้อมูล</button>
+	</d
 </script>
 
 <script id="modalBodyTemplate" type="text/x-handlebars-template">
@@ -418,7 +430,8 @@ $(document).ready(function() {
 			
 				this.$el.find('.modal-header span').html("เพิ่มรายการทะเบียน" + objectiveType.get('name') + "ใหม่");
 			} else {
-				this.$el.find('.modal-header span').html(objectiveType.get('name') + "<br/> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
+				this.$el.find('.modal-header span').html(objectiveType.get('name') + 
+						"<br/> <span style='font-weight: normal;'> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name') + "</span>");
 			}
 			
 			var json = this.currentObjective.toJSON();
