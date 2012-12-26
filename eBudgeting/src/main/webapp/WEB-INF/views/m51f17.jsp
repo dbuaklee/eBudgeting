@@ -140,8 +140,27 @@
 		</select>
 	</div>
 </div>
-	<div id="type102Div"></div>
-	<div id="type103Div"></div>
+	<div id="type102Div">
+		<div class="control-group">
+			<label class="control-label">ผลผลิต/โครงการ :</label>
+			<div class="controls">
+				<select class="span5" disabled="disabled">
+					<option>กรุณาเลือก...</option>
+				</select>
+			</div> 
+		</div>	
+	</div>
+	<div id="type103Div">
+		<div class="control-group">
+			<label class="control-label">กิจกรรมหลัก :</label>
+			<div class="controls">
+				<select class="span5" disabled="disabled">
+					<option>กรุณาเลือก...</option>
+				</select>
+			</div> 
+		</div>
+
+	</div>
 </form>
 </script>
 
@@ -156,6 +175,30 @@
 	</div> 
 </div>
 </script>
+
+<script id="type102DisabledSelection" type="text/x-handler-template">
+		<div class="control-group">
+			<label class="control-label">ผลผลิต/โครงการ :</label>
+			<div class="controls">
+				<select class="span5" disabled="disabled">
+					<option>กรุณาเลือก...</option>
+				</select>
+			</div> 
+		</div>
+</script>
+
+
+<script id="type103DisabledSelection" type="text/x-handler-template">
+		<div class="control-group">
+			<label class="control-label">กิจกรรมหลัก :</label>
+			<div class="controls">
+				<select class="span5" disabled="disabled">
+					<option>กรุณาเลือก...</option>
+				</select>
+			</div> 
+		</div>
+</script>
+
 
 <script type="text/javascript">
 
@@ -410,6 +453,9 @@ $(document).ready(function() {
 		var MainSelectionView = Backbone.View.extend({
 			mainSelectionTemplate : Handlebars.compile($("#mainSelectionTemplate").html()),
 			selectionTemplate : Handlebars.compile($("#selectionTemplate").html()),
+			type102DisabledSelectionTemplate : Handlebars.compile($("#type102DisabledSelection").html()),
+			type103DisabledSelectionTemplate : Handlebars.compile($("#type103DisabledSelection").html()),
+			
 			initialize: function() {
 				
 				this.type102Collection = new ObjectiveCollection();
@@ -437,9 +483,6 @@ $(document).ready(function() {
 					});
 				}
 				
-				this.$el.find('#type102Div').empty();
-				this.$el.find('#type103Div').empty();
-				
 				mainCtrView.emptyTreeView();
 				
 			},
@@ -455,6 +498,8 @@ $(document).ready(function() {
 				}
 				
 				this.$el.find('#type103Div').empty();
+				this.$el.find('#type103Div').html(this.type103DisabledSelectionTemplate());
+				
 				mainCtrView.emptyTreeView();
 			},
 			
@@ -481,6 +526,7 @@ $(document).ready(function() {
 				this.$el.find('#type102Div').html(html);
 				
 				this.$el.find('#type103Div').empty();
+				this.$el.find('#type103Div').html(this.type103DisabledSelectionTemplate());
 			},
 			
 			renderType103: function(e) {

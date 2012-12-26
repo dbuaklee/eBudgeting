@@ -26,6 +26,7 @@ public interface ObjectiveNameRepository extends JpaSpecificationExecutor<Object
 	@Query("" +
 			"SELECT o " +
 			"FROM ObjectiveName o " +
+			" 	INNER JOIN o.type type " +
 			"WHERE o.fiscalYear=?1 AND o.type.id = ?2 ")
 	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
 			Integer fiscalYear, Long typeId,  Pageable pageable);

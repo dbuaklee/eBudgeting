@@ -75,7 +75,7 @@
 
 	{{#if pageParams}}
 	{{#with pageParams}}
-    <div class="pagination">
+    <div class="pagination pagination-small">
         <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <b>หน้า : </b> <ul>
 		{{#each page}}
 	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">
@@ -277,7 +277,12 @@ $(document).ready(function() {
 		
 		render: function() {
 			
-			this.$el.find('.modal-header span').html(objectiveType.get('name') + "<br/> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name'));
+			this.$el.find('.modal-header span').html(
+					objectiveType.get('name') +
+					"<br/> <span style='font-weight: normal;'>[" +
+					this.currentObjective.get('code') + "]"+ 
+					this.currentObjective.get('name') + "</span>");
+
 			
 			var json=this.currentObjective.toJSON();
 			
@@ -428,13 +433,15 @@ $(document).ready(function() {
 		render: function() {
 			if(this.currentObjective.get('name') == null) {
 			
-				this.$el.find('.modal-header span').html("เพิ่มรายการทะเบียน" + objectiveType.get('name') + "ใหม่");
+				this.$el.find('.modal-header span').html("เพิ่มทะเบียน" + objectiveType.get('name'));
 			} else {
 				this.$el.find('.modal-header span').html(objectiveType.get('name') + 
 						"<br/> <span style='font-weight: normal;'> [" + this.currentObjective.get('code') + "]"+ this.currentObjective.get('name') + "</span>");
 			}
 			
 			var json = this.currentObjective.toJSON();
+			
+		 	e1=this.currentObjective;
 			
 			if( hasUnit.length > 0 ) {
 				json.hasUnit = true;

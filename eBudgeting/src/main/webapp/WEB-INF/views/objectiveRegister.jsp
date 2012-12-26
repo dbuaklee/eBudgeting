@@ -76,7 +76,7 @@
 
 	{{#if pageParams}}
 	{{#with pageParams}}
-    <div class="pagination">
+    <div class="pagination pagination-small">
         <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <b>หน้า : </b> <ul>
 		{{#each page}}
 	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">

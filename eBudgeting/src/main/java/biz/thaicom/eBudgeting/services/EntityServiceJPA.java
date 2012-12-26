@@ -2667,7 +2667,13 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
 			Integer fiscalYear, Long typeId, PageRequest pageRequest) {
-		return objectiveNameRepository.findAllObjectiveNameByFiscalYearAndTypeId(fiscalYear, typeId, pageRequest);
+		Page<ObjectiveName> page =  objectiveNameRepository.findAllObjectiveNameByFiscalYearAndTypeId(fiscalYear, typeId, pageRequest);
+		
+		for(ObjectiveName n : page) {
+			n.getType().getId();
+		}
+		
+		return page;
 	}
 
 	@Override
