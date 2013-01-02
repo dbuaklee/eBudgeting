@@ -56,12 +56,12 @@
 <div class="row">
 	<div id="mainSelection" class="span11"></div>
 
-	<div id="mainTree" class="span7">
+	<div id="mainTree" class="span6">
 		<div class="content">
 			
 		</div>
 	</div>
-	<div id="childrenSlt" class="span4" style="border: 1px;">
+	<div id="childrenSlt" class="span5" style="border: 1px;">
 		
 	</div>
 </div>
@@ -98,10 +98,11 @@
 <div style="padding: 12px;margin-top: {{topPadding}}px; background-color: #FFFFCC; border: 1px solid #DDDDDD;">
 	<div class="control">
 		<form class="form-search">
-			<div class="input-append">
-				<input type="text" id="availableChildrenSearch" class="span2 search-query">
-				<button type="submit" id="search" class="btn">Search</button>
-			</div>
+				<div class="input-append pull-left">
+					<input type="text" id="availableChildrenSearch" class="span2 search-query">
+					<button type="submit" id="search" class="btn">Search</button>
+				</div> &nbsp;
+				<button type="submit" id="searchDisplayAll" class="btn">แสดงผลทั้งหมด</button>
 		</form>
 	</div>
 	<div class="content">
@@ -385,11 +386,23 @@ $(document).ready(function() {
 			
 			events: {
 				"click .link" : "linkBtnClick",
-				"click button#search" : "searchBtnClick"
+				"click button#search" : "searchBtnClick",
+				"click button#searchDisplayAll" : "searchDisplayAllBtnClick"
 			},
 			clear: function(e) {
 				this.$el.empty();
 			},
+			searchDisplayAllBtnClick: function(e) {
+				this.availableChildren = new ObjectiveNameCollection();
+				this.availableChildren.fetch({
+					url: appUrl('/ObjectiveName/findChildrenNameOfObjective/' + this.objective.get('id') ),
+					success: _.bind(function() {
+						this.renderAvailableChildren();
+					}, this)
+				});
+				return false;
+			},
+			
 			searchBtnClick: function(e) {
 				searchTxt = this.$el.find('#availableChildrenSearch').val();
 				this.availableChildren = new ObjectiveNameCollection();
@@ -508,6 +521,8 @@ $(document).ready(function() {
 				if(type103Id != 0) {
 					mainCtrView.mainTreeView.rootObjective = Objective.findOrCreate(type103Id);
 					mainCtrView.mainTreeView.render();
+					mainCtrView.childrenSltView.$el.empty();
+					
 				} else {
 					mainCtrView.emptyTreeView();
 				}
@@ -527,6 +542,8 @@ $(document).ready(function() {
 				
 				this.$el.find('#type103Div').empty();
 				this.$el.find('#type103Div').html(this.type103DisabledSelectionTemplate());
+				
+				
 			},
 			
 			renderType103: function(e) {
@@ -539,6 +556,8 @@ $(document).ready(function() {
 				// now render 
 				this.$el.find('#type103Div').empty();
 				this.$el.find('#type103Div').html(html);
+				
+				
 			},
 			
 			render: function() {
