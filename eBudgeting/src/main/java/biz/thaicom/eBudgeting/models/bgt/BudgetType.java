@@ -76,6 +76,11 @@ public class BudgetType implements Serializable {
 	
 	@OneToMany(mappedBy="type", fetch=FetchType.LAZY)
 	private List<FormulaStrategy> strategies;
+	
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="BGT_BUDGETLEVEL_ID")
+	private BudgetLevel level;
 
 	public BudgetType() {
 		
@@ -171,6 +176,14 @@ public class BudgetType implements Serializable {
 
 	public void setLineNumber(Integer lineNumber) {
 		this.lineNumber = lineNumber;
+	}
+	
+	public BudgetLevel getLevel() {
+		return level;
+	}
+
+	public void setLevel(BudgetLevel level) {
+		this.level = level;
 	}
 
 	public void doBasicLazyLoad() {
