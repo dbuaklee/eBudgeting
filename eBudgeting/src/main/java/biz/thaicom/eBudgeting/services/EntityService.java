@@ -107,6 +107,8 @@ public interface EntityService {
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
 			Integer fiscalYear, BudgetType budgetType);
 	public List<BudgetType> findAllMainBudgetTypeByFiscalYear(Integer fiscalYear);
+	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer level,
+			Long typeId, Pageable pageable);
 	
 	//FiscalBudgetType
 	public void initFiscalBudgetType(Integer fiscalYear);
@@ -231,6 +233,7 @@ public interface EntityService {
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+
 
 
 	

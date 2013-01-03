@@ -299,6 +299,13 @@ public class EntityServiceJPA implements EntityService {
 		}
 		return b;
 	}
+	
+	@Override
+	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer level,
+			Long typeId, Pageable pageable) {
+		String mainTypePath = "%." + typeId.toString() + ".%";
+		return budgetTypeRepository.findAllByParentLevelAndParentPathLike(level,mainTypePath,pageable);
+	}
 
 	@Override
 	public BudgetType findBudgetTypeEagerLoadById(Long id, Boolean isLoadParent) {
@@ -2732,6 +2739,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		return o;
 	}
+
+
 	
 	
 

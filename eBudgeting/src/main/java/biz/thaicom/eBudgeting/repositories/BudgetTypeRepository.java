@@ -2,6 +2,9 @@ package biz.thaicom.eBudgeting.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -19,5 +22,8 @@ public interface BudgetTypeRepository extends
 			"FROM BudgetType budgetType " +
 			"ORDER BY budgetType.fiscalYear asc")
 	List<Integer> findFiscalYears();
+
+	Page<BudgetType> findAllByParentLevelAndParentPathLike(Integer level,
+			String mainTypePath, Pageable pageable);
 
 }

@@ -273,7 +273,7 @@ var listBudgetCommonType = new BudgetCommonTypeCollection();
 listBudgetCommonType.fetch({
 	url: appUrl('/BudgetCommonType/fiscalYear/'+fiscalYear + "/")
 });
-
+ 
 $(document).ready(function() {
 
 	var FormularLineModalView = Backbone.View.extend({
