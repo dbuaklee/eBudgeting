@@ -152,7 +152,7 @@
 	<ul id="targetsLst">
 		{{#each targets}} 
 			<li data-id="{{id}}">
-				<span class="label label-important"><a href="#" class="removeUnit"><i class="icon icon-trash icon-white"></i></a></span>
+				<a href="#" class="removeUnit" style="color:#BD362F;"><i class="icon icon-trash"></i></a>
 				{{unit.name}} ({{#if isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>
 		{{/each}}
 	</ul>

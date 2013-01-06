@@ -308,7 +308,7 @@ $(document).ready(function() {
 			if(confirm("คุณต้องการลบหน่วยนับ " + target.get('unit').get('name'))) {
 				$.ajax({
 					type : 'POST',
-					url : appUrl('/Objective/' + this.currentObjective.get('id') + '/removeUnit'),
+					url : appUrl('/ObjectiveName/' + this.currentObjective.get('id') + '/removeUnit'),
 					data : {
 						targetId : target.get('id')
 					},
@@ -335,7 +335,7 @@ $(document).ready(function() {
 				console.log(isSumable);
 				$.ajax({
 					type : 'POST',
-					url : appUrl('/Objective/' + this.currentObjective.get('id') + '/addUnit'),
+					url : appUrl('/ObjectiveName/' + this.currentObjective.get('id') + '/addUnit'),
 					data : {
 						unitId : unitId,
 						isSumable : isSumable

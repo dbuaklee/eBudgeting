@@ -298,8 +298,8 @@ public class EntityServiceJPA implements EntityService {
 	}
 	
 	@Override
-	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer level,
-			Long typeId, Pageable pageable,String query) {
+	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer fiscalYear, Integer level,
+			Long typeId, String query, Pageable pageable) {
 		String mainTypePath = "%." + typeId.toString() + ".%";
 		logger.debug(query);
 		Page<BudgetType> p = budgetTypeRepository.findAllByParentLevelAndParentPathLike(level,mainTypePath, query,pageable);
@@ -307,7 +307,9 @@ public class EntityServiceJPA implements EntityService {
 		// now we load the necceessary 
 		for(BudgetType b : p ) {
 			b.getLevel().getId();
-			b.getStrategies().size();
+			logger.debug("xxx");
+			b.setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fiscalYear, b.getId()));
+			b.setCurrentFiscalYear(fiscalYear);
 		}
 		
 		return p;
@@ -486,7 +488,7 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public List<FormulaStrategy> findFormulaStrategyByfiscalYearAndTypeId(
 			Integer fiscalYear, Long budgetTypeId) {
-		List<FormulaStrategy> list = formulaStrategyRepository.findByfiscalYearAndType_idOrderByIndexAsc(fiscalYear, budgetTypeId);
+		List<FormulaStrategy> list = formulaStrategyRepository.findByfiscalYearAndType_id(fiscalYear, budgetTypeId);
 		for(FormulaStrategy strategy : list) {
 			strategy.getFormulaColumns().size();
 			logger.debug("-----" + strategy.getType().getName());
@@ -559,53 +561,31 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 		// now save the commonType
-		if(strategy.get("commonType") != null) {
+		if(strategy.get("commonType") != null && strategy.get("commonType").get("id") != null) {
+			
 			Long cid = strategy.get("commonType").get("id").asLong();
 			BudgetCommonType bct = budgetCommonTypeRepository.findOne(cid);
 			fs.setCommonType(bct);
 		}
 		
-		if(strategy.get("unit") != null) {
+		if(strategy.get("unit") != null && strategy.get("unit").get("id") != null) {
 			Long unitId = strategy.get("unit").get("id").asLong();
 			TargetUnit unit = targetUnitRepository.findOne(unitId);
 			fs.setUnit(unit);
 		}
 		
-		return formulaStrategyRepository.save(fs);
+		formulaStrategyRepository.save(fs);
+		
+		fs.getType().setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
+		fs.getType().setCurrentFiscalYear(fs.getFiscalYear());
+		
+		return fs;
 		
 	}
 
 	@Override
 	public FormulaStrategy updateFormulaStrategy(JsonNode strategy) {
-		Long formulaStrategyId=strategy.get("id").asLong();
-		
-		FormulaStrategy formulaStrategy = formulaStrategyRepository.findOne(formulaStrategyId);
-		
-		if(formulaStrategy != null) {
-			String name = strategy.get("name").asText();
-			formulaStrategy.setName(name);
-			
-			
-		}
-		
-		formulaStrategy.getType().getParent().getChildren().size();
-		
-		
-		// now save the commonType
-		if(strategy.get("commonType") != null) {
-			Long cid = strategy.get("commonType").get("id").asLong();
-			BudgetCommonType bct = budgetCommonTypeRepository.findOne(cid);
-			formulaStrategy.setCommonType(bct);
-		}
-		
-		if(strategy.get("unit") != null) {
-			Long unitId = strategy.get("unit").get("id").asLong();
-			TargetUnit unit = targetUnitRepository.findOne(unitId);
-			formulaStrategy.setUnit(unit);
-		}
-		
-		formulaStrategyRepository.save(formulaStrategy);
-		return formulaStrategy;
+		return saveFormulaStrategy(strategy);
 	}
 
 	
@@ -2484,6 +2464,49 @@ public class EntityServiceJPA implements EntityService {
 		objectiveTargetRepository.delete(t);
 		return "success";
 	}
+	
+	@Override
+	public ObjectiveTarget addUnitToObjectiveName(Long id, Long unitId,
+			Integer isSumable) {
+		ObjectiveName o = objectiveNameRepository.findOne(id);
+		TargetUnit u = targetUnitRepository.findOne(unitId);
+		
+		ObjectiveTarget t = new ObjectiveTarget();
+		t.setUnit(u);
+		
+		if(isSumable == 1 ) {
+			t.setIsSumable(true);
+		} else { 
+			t.setIsSumable(false);
+		}
+		t.setFiscalYear(o.getFiscalYear());
+		
+		objectiveTargetRepository.save(t);
+		
+		// now save t
+		o.addTarget(t);
+		
+		objectiveNameRepository.save(o);
+		
+		
+		return t;
+	}
+
+	@Override
+	public String removeUnitFromObjectiveName(Long id, Long targetId) {
+		ObjectiveName o = objectiveNameRepository.findOne(id);
+		ObjectiveTarget t= objectiveTargetRepository.findOne(targetId);
+		
+		o.getTargets().remove(t);
+		
+		// now save both o and t
+		objectiveNameRepository.save(o);
+		
+		logger.debug(" ++++++++ t.getId() {}" ,t.getId());
+		
+		objectiveTargetRepository.delete(t);
+		return "success";
+	}
 
 	@Override
 	public List<BudgetCommonType> findAllBudgetCommonTypes(Integer fiscalYear) {
@@ -2756,6 +2779,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		for(ObjectiveName n : page) {
 			n.getType().getId();
+			n.getTargets().size();
 		}
 		
 		return page;
@@ -2817,6 +2841,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		return o;
 	}
+
+
 
 
 

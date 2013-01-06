@@ -107,8 +107,8 @@ public interface EntityService {
 	public List<Breadcrumb> createBreadCrumbBudgetType(String prefix,
 			Integer fiscalYear, BudgetType budgetType);
 	public List<BudgetType> findAllMainBudgetTypeByFiscalYear(Integer fiscalYear);
-	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer level,
-			Long typeId, Pageable pageable, String query);
+	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer fiscalYear, Integer level,
+			Long typeId, String query, Pageable pageable);
 	public BudgetType saveBudgetType(JsonNode node);
 	public BudgetType updateBudgetType(JsonNode node);
 	public void deleteBudgetType(Long id);
@@ -177,6 +177,10 @@ public interface EntityService {
 	public ObjectiveName deleteObjectiveName(Long id);
 	
 	public List<ObjectiveName> findAvailableObjectiveNameChildrenByObejective(Long id, String searchQuery);
+	public ObjectiveTarget addUnitToObjectiveName(Long id, Long unitId,
+			Integer isSumable);
+	public String removeUnitFromObjectiveName(Long id, Long targetId);
+	
 	
 	//ObjectiveTarget
 	public List<ObjectiveTarget> findAllObjectiveTargets();
@@ -237,6 +241,7 @@ public interface EntityService {
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+
 
 
 

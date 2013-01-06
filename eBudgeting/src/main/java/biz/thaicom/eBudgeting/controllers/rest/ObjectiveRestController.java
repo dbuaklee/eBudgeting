@@ -418,6 +418,19 @@ public class ObjectiveRestController {
 		return entityService.findAvailableObjectiveNameChildrenByObejective(id, searchQuery );
 	}
 	
+	@RequestMapping(value="/ObjectiveName/{id}/addUnit", method=RequestMethod.POST) 
+	public @ResponseBody ObjectiveTarget addObjectiveNameUnit(@PathVariable Long id,
+			@RequestParam Long unitId, @RequestParam Integer isSumable) {
+
+		return entityService.addUnitToObjectiveName(id, unitId, isSumable);
+	}
+	
+	@RequestMapping(value="/ObjectiveName/{id}/removeUnit", method=RequestMethod.POST) 
+	public @ResponseBody String removeObjectiveNameUnit(@PathVariable Long id,
+			@RequestParam Long targetId) {
+		return entityService.removeUnitFromObjectiveName(id, targetId);
+	}
+	
 	
 	@ExceptionHandler(value=Exception.class)
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {

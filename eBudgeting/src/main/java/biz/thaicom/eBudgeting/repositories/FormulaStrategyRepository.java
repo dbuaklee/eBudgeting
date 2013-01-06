@@ -14,12 +14,14 @@ public interface FormulaStrategyRepository extends
 		PagingAndSortingRepository<FormulaStrategy, Long>, JpaSpecificationExecutor<FormulaStrategy> {
 
 	@Query("" +
-			"SELECT formulaStrategy  " +
+			"SELECT fs  " +
 			"FROM FormulaStrategy fs " +
-			"	INNER JOIN FETCH fs.type type" +
+			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
+			"	INNER JOIN FETCH fs.type type " +
 			"	LEFT OUTER JOIN FETCH type.parent parent " +
-			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 ")
-	public List<FormulaStrategy> findByfiscalYearAndType_idOrderByIndexAsc(Integer fiscalYear, Long budgetTypeId);
+			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 " +
+			"ORDER BY fs.id ")
+	public List<FormulaStrategy> findByfiscalYearAndType_id(Integer fiscalYear, Long budgetTypeId);
 	
 	@Modifying
 	@Query("update FormulaStrategy strategy " +

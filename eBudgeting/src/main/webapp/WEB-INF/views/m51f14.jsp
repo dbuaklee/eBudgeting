@@ -62,17 +62,31 @@
 </select>
 <div></div>
 </script>
+
 <script id="formulaLineModalTemplate" type="text/x-handlebars-template">
-<div><b>การคำนวณ</b>
+<form id="strategyForm" class="form-horizontal">
+	<div class="control-group">
+		<label class="control-label" for="c">ชื่อสูตรการคำนวณ</label>
+		<div class="controls">
+			<input type="text" id="strategyName" placeholder="..." value="{{name}}"> <button class="btn btn-primary" id="saveStrategyBtn">
+			<i class="icon-save"></i> {{#if id}}แก้ไข{{else}}บันทึก{{/if}}</button>
+		</div>
+	</div>
+</form> 
+{{#if id}}
+<div style="border-bottom: 1px solid #C0C0C0;padding-bottom: 2px; margin-bottom:10px;font-weight:bold;">
+	<b>การคำนวณ</b>
 </div>
+<div id="formulaColumnFormCtr"></div>
 <div id="formulaBox">
 	{{this.name}} = <span id="formulaLine"></span>
 </div>
-<div id="formulaColumnFormCtr"></div>
+
+{{/if}}
 </script>
 
-<script id="formulaColumnFormTemplate"
-	type="text/x-handlebars-template">
+<script id="formulaColumnFormTemplate" type="text/x-handlebars-template">
+<div class="well">
 <form id="addFormulaForm" {{#unless columnName}}newForm="true"{{/unless}}
 	{{#if id}}data-id="{{id}}"{{/if}}>
 		<label>ชื่อรายการ</label>
@@ -87,6 +101,7 @@
 		{{#if columnName}}<button class="btn btn-mini deleteFormulaColumnBtn">ลบรายการ</button>{{/if}}
 		<button class="btn btn-mini btn-primary addFormulaColumnBtn">{{#if columnName}}แก้ไขรายการ{{else}}เพิ่มชื่อทะเบียน{{/if}}</button>
 </form>
+</div>
 </script>
 
 <script id="formulaLineTemplate" type="text/x-handlebars-template">
@@ -95,8 +110,8 @@
 <script id="formulaInLinEditTemplate" type="text/x-handlebars-template">
 	<div style="margin-top:4px; margin-bottom:4px;">
 		<input type="text" data-id="{{id}}" value="{{name}}"/> 
-		<button class="btn btn-mini updateFormulaStrategy"><i class="icon-ok" icon-white"/> แก้ไข</button>
-		<button class="btn btn-mini cancelUpdateFormulaStrategy"><i class="icon-remove" icon-white"/> ยกเลิก</button>
+		<button class="btn btn-mini updateFormulaStrategy"><i class="icon-ok icon-white"/> แก้ไข</button>
+		<button class="btn btn-mini cancelUpdateFormulaStrategy"><i class="icon-remove icon-white"/> ยกเลิก</button>
 	</div>
 </script>
 <script id="formulaTemplate" type="text/x-handlebars-template">
@@ -160,7 +175,15 @@
 	<td> {{budgetTypeName parentIds.[1]}}</td>
 	<td> {{budgetTypeName parentIds.[2]}}	</td>
 	<td> {{budgetTypeName parentIds.[3]}} </td>
-	<td> <a href="#" class="showFormulaToolBar">[{{code}}] {{name}} </a> </td>
+	<td> <a href="#" class="showFormulaToolBar">[{{code}}] {{name}} </a>
+		{{#if strategies}}
+			<ul>
+				{{#each strategies}}
+				<li data-id="{{id}}"><a href="#" class="deleteStrategy" style="color:#BD362F;"><span><i class="icon-trash"></i></span></a><a href="#" class="editStrategy">{{name}} = {{{formulaLine formulaColumns false}}}</a></li>
+				{{/each}}
+			</ul>
+		{{/if}}
+	</td>
 	<td> {{unit.name}} </td>
 	<td> {{commonType.name}} </td>
 </script>
@@ -279,7 +302,7 @@ Handlebars.registerHelper("parentBudgetType", function(type){
 Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 	var s = "";
 	if(editForm == false) {
-		s = s+ "<a class='editSpan editFormulaLineBtn' href='#'>";
+		s = s+ "";
 		
 		if(formulaColumns == null || formulaColumns.length == 0) {
 			s =	s+"เพิ่มรายการคำนวณ";
@@ -303,7 +326,7 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 				s = s + "("+ addCommas(formulaColumns[i].value) + " " + formulaColumns[i].unitName  + ")";
 			}
 			if(editForm == true) {
-				s = s + "</a>";
+				s = s + "";
 			}
 		}
 	} 
@@ -311,9 +334,9 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 		if(formulaColumns.length > 0) {
 			s = s + " X ";
 		}
-		s = s + "<a href='#' class='editSpan'>New</a>";
+		s = s + "<a href='#' class='editSpan'>เพิ่มคอลัมภ์</a>";
 	}else {
-		s += "</a>";	
+		s += "";	
 	}
 	
 	
@@ -351,7 +374,7 @@ listBudgetCommonType.fetch({
  
 $(document).ready(function() {
 		
-	var FormularLineModalView = Backbone.View.extend({
+	var FormulaLineModalView = Backbone.View.extend({
 		initialize: function() {
 			_.bindAll(this,'back');
 			_.bindAll(this,'isFixedChanged');
@@ -364,27 +387,24 @@ $(document).ready(function() {
 		},
 		el: "#formulaLineModal",
 		model: null,
-		modalTemplate: Handlebars.compile($("#formulaLineModalTemplate").html()),
+		formulaLineModalTemplate: Handlebars.compile($("#formulaLineModalTemplate").html()),
 		formulaLineTemplate: Handlebars.compile($("#formulaLineTemplate").html()),
 		formulaColumnFormTemplate: Handlebars.compile($("#formulaColumnFormTemplate").html()),
 		
 		collection: new FormulaColumnCollection(),
 		
-		events: {
-			
-			"click #backBtn" : "back",
-			"change input[name=isFixed]" : "isFixedChanged",
-			"click .addFormulaColumnBtn" : "addFormulaColumn",
-			"click .cancelFormulaColumnBtn" : "cancelFormulaColumn",
-			"click .deleteFormulaColumnBtn" : "deleteFormulaColumn",
-			"click .editSpan" : "editFormulaColumn"
-		},
-		
 		render: function() {
-			this.$el.find('.modal-header span').html(this.currentStrategy.get('name'));
+			if( this.currentStrategy.get('id') == null )  {
+				this.$el.find('.modal-header span').html("เพิ่มสูตรการคำนวณใหม่");
+			} else {
+				this.$el.find('.modal-header span').html("แก้ไขสูตรการคำนวณ");
+			}
 			
-			var html = this.modalTemplate(this.currentStrategy.toJSON());
+			
+			var html = this.formulaLineModalTemplate(this.currentStrategy.toJSON());
 			var formularLinehtml = this.formulaLineTemplate(this.collection.toJSON());
+			
+			
 			this.$el.find('.modal-body').html(html);
 			this.$el.find('.modal-body #formulaLine').html(formularLinehtml);
 			this.$el.modal({show: true, backdrop: 'static', keyboard: false});
@@ -403,6 +423,40 @@ $(document).ready(function() {
 			}
 		},
 		
+		events: {
+			
+			"click #backBtn" : "back",
+			"change input[name=isFixed]" : "isFixedChanged",
+			"click .addFormulaColumnBtn" : "addFormulaColumn",
+			"click .cancelFormulaColumnBtn" : "cancelFormulaColumn",
+			"click .deleteFormulaColumnBtn" : "deleteFormulaColumn",
+			"click .editSpan" : "editFormulaColumn",
+			
+			"click #saveStrategyBtn" : "saveStrategy"
+			
+		},
+		
+		saveStrategy: function(e) {
+			var nameTxt = this.$el.find("#strategyName").val();
+			var newStrategy = false;
+			if(this.currentStrategy.get('id') == null) {
+				newStrategy = true;
+			}
+			
+			this.currentStrategy.set('name', nameTxt);
+			this.currentStrategy.set('fiscalYear', fiscalYear);
+			
+			this.currentStrategy.save(null, {
+				success: _.bind(function() {
+					
+					this.currentBudgetType.get('strategies').add(this.currentStrategy);
+					
+					this.render();
+				},this)
+			});
+			
+		},
+		
 		back: function(e) {
 			if(this.currentStrategy.get('formulaColumns') == null) {
 				this.currentStrategy.set('formulaColumns', this.collection);
@@ -410,6 +464,7 @@ $(document).ready(function() {
 			
 			
 			this.currentStrategy.trigger('changeFormula', this.currentStrategy);
+			this.currentBudgetType.trigger('renderRow', this.currentBudgetType);
 			
 			// nothing to recover just hide!
 			this.$el.modal('hide');
@@ -442,7 +497,7 @@ $(document).ready(function() {
 		
 		addFormulaColumn : function(e) {
 			// add this new Formula into formulaStrategy
-			var form = this.$el.find('form');
+			var form = this.$el.find('form#addFormulaForm');
 			var newForm = form.attr("newForm");
 			if(newForm) {
 				var formulaColumn = new FormulaColumn({
@@ -537,7 +592,7 @@ $(document).ready(function() {
 		budgetTypeRowTemplate: Handlebars.compile($("#budgetTypeRowTemplate").html()),
 		
 		formulaInLineEditTpl : Handlebars.compile($("#formulaInLinEditTemplate").html()),
-		formularLineModalView : new FormularLineModalView(),
+		FormulaLineModalView : new FormulaLineModalView(),
 		
 		render: function() {
 			// first render the control
@@ -582,6 +637,13 @@ $(document).ready(function() {
 			}
 		},
 		
+		renderRow: function(budgetType) {
+			var currentTr = this.$el.find('tr[data-id='+budgetType.get('id')+']');
+			
+			$(currentTr).empty();
+			$(currentTr).html(this.budgetTypeRowTemplate(budgetType.toJSON()));
+		},
+		
 		events: {
 			"click .menuNew" : "newRow",
 			"click .menuDelete" : "deleteRow",
@@ -600,6 +662,8 @@ $(document).ready(function() {
 			"click button.addFormula" : "addFormula",
 			"click button.addDefaultFormula" : "addDefaultFormula",
 			"click button.cancelFormula" : "cancelFormula",
+			"click a.deleteStrategy" : "deleteStrategy",
+			"click a.editStrategy" : "editStrategy",
 			
 			"click .editFormulaLineBtn" : "editFormulaLine"
 				
@@ -611,13 +675,45 @@ $(document).ready(function() {
 			this.renderTargetPage(pageNumber);
 		},
 		
-		addFormula: function(e) {
+		deleteStrategy: function(e) {
 			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
 			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
 			
-			var currentFormula = new FormulaStrategy();
+			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
+			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
 
-			this.formularLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
+			e1=e;
+			
+			if(confirm("คุณต้องการลบข้อมูลสูตรการคำนวณ: " + currentFormula.get('name'))) {
+				currentFormula.destroy({
+					success: _.bind(function() {
+						this.renderRow(currentBudgetType);
+					},this)
+				});
+			}
+		},
+		
+		editStrategy: function(e) {
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			currentBudgetType.on('renderRow', this.renderRow, this);
+			
+			var currentFormulaId = $(e.currentTarget).parents('li').attr('data-id');
+			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
+
+			this.FormulaLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
+		},
+		
+		addFormula: function(e) {
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			currentBudgetType.on('renderRow', this.renderRow, this);
+			
+			var currentFormula = new FormulaStrategy();
+			currentFormula.set('type', currentBudgetType);
+			
+
+			this.FormulaLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
 		},
 		 
 		addDefaultFormula: function(e) {
@@ -625,13 +721,10 @@ $(document).ready(function() {
 		},
 		
 		cancelFormula : function(e) {
-			var currentTr = $(e.currentTarget).parents('tr');
-			
 			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
 			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
 			
-			$(currentTr).empty();
-			$(currentTr).html(this.budgetTypeRowTemplate(currentBudgetType.toJSON()));
+			this.renderRow(currentBudgetType);
 			
 		},
 		
@@ -679,7 +772,7 @@ $(document).ready(function() {
 			var currentFormulaId = $(e.currentTarget).parents('tr').attr('data-id');
 			var currentFormula = FormulaStrategy.findOrCreate(currentFormulaId);
 
-			this.formularLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
+			this.FormulaLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
 		},
 		
 		newRow: function(e) {
@@ -835,7 +928,7 @@ $(document).ready(function() {
 		renderChild: function(caller) {
 			console.log('hey');
 			this.renderFormulaStrategy(caller);
-		},
+		}
 		
 		
 	});
@@ -873,6 +966,7 @@ $(document).ready(function() {
 				this.mainTblView.collection.setTargetPage(1);
 				this.mainTblView.collection.setMainTypeId(budgetTypeSelectedId);
 				this.mainTblView.collection.setLevel(4);
+				this.mainTblView.collection.setCurrentFiscalYear(fiscalYear);
 				this.mainTblView.collection.fetch({
 					success: function() {
 						// we should now load it's children?

@@ -111,8 +111,9 @@ public class BudgetTypeRestController {
 	
 	
 	
-	@RequestMapping(value="/BudgetType/listLevel/{level}/mainType/{typeId}/page/{pageNumber}", method=RequestMethod.GET)
+	@RequestMapping(value="/BudgetType/{fiscalYear}/listLevel/{level}/mainType/{typeId}/page/{pageNumber}", method=RequestMethod.GET)
 	public @ResponseBody Page<BudgetType> findAllByMainType(
+			@PathVariable Integer fiscalYear,
 			@PathVariable Long typeId,
 			@PathVariable Integer level,
 			@PathVariable Integer pageNumber,
@@ -124,11 +125,12 @@ public class BudgetTypeRestController {
 		} else {
 			query = "%" + query + "%";
 		}
-		return entityService.findBudgetTypeByLevelAndMainType(level, typeId, pageRequest, query);
+		return entityService.findBudgetTypeByLevelAndMainType(fiscalYear, level, typeId, query, pageRequest);
 	}
 	
-	@RequestMapping(value="/BudgetType/listLevel/{level}/mainType/{typeId}/page/{pageNumber}", method=RequestMethod.POST)
+	@RequestMapping(value="/BudgetType/{fiscalYear}/listLevel/{level}/mainType/{typeId}/page/{pageNumber}", method=RequestMethod.POST)
 	public @ResponseBody Page<BudgetType> findAllByMainTypeQuery(
+			@PathVariable Integer fiscalYear,
 			@PathVariable Long typeId,
 			@PathVariable Integer level,
 			@PathVariable Integer pageNumber,
@@ -140,7 +142,7 @@ public class BudgetTypeRestController {
 		} else {
 			query = "%" + query + "%";
 		}
-		return entityService.findBudgetTypeByLevelAndMainType(level, typeId, pageRequest, query);
+		return entityService.findBudgetTypeByLevelAndMainType(fiscalYear, level, typeId, query, pageRequest);
 	}
 	
 	

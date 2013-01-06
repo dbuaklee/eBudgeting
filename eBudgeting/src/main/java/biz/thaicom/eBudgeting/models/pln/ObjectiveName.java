@@ -1,6 +1,7 @@
 package biz.thaicom.eBudgeting.models.pln;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -110,6 +111,14 @@ public class ObjectiveName implements Serializable{
 
 	public void setTargets(List<ObjectiveTarget> targets) {
 		this.targets = targets;
+	}
+
+	public void addTarget(ObjectiveTarget t) {
+		if(this.targets == null) {
+			this.targets = new ArrayList<ObjectiveTarget>();
+		}
+		this.targets.add(t);
+		
 	}
 
 	

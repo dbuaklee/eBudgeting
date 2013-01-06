@@ -143,9 +143,9 @@ ObjectiveName = Backbone.RelationalModel.extend({
 		relatedModel: 'ObjectiveType'
 	}, {
 		type: Backbone.HasMany,
-		key: 'units',
-		relatedModel: 'TargetUnit',
-		collectionType: 'TargetUnitCollection'
+		key: 'targets',
+		relatedModel: 'ObjectiveTarget',
+    	collectionType: 'ObjectiveTargetCollection'
 	}],
 	urlRoot: appUrl('/ObjectiveName/')
 	    
@@ -609,13 +609,14 @@ BudgetTypePagableCollection = PagableCollection.extend({
 			this.level = options.level;
 			this.mainTypeId = options.mainTypeId;
 			this.targetPage = options.targetPage;
+			this.currentFiscalYear = options.currentFiscalYear;
 		}
 	  },
 	
 	model: BudgetType,
 	
 	url: function() {
-	    return appUrl('/BudgetType/listLevel/'+ this.level +'/mainType/'+this.mainTypeId+'/page/'+this.targetPage);
+	    return appUrl('/BudgetType/'+ this.currentFiscalYear +'/listLevel/'+ this.level +'/mainType/'+this.mainTypeId+'/page/'+this.targetPage);
 	},
 	getIds: function() {
 		return this.pluck("id");
@@ -625,7 +626,11 @@ BudgetTypePagableCollection = PagableCollection.extend({
 	},
 	setLevel : function(level) {
 		this.level = level;
+	},
+	setCurrentFiscalYear: function(fiscalYear) {
+		this.currentFiscalYear = fiscalYear;
 	}
+	
 });
 
 ObjectiveTypeCollection = Backbone.Collection.extend({

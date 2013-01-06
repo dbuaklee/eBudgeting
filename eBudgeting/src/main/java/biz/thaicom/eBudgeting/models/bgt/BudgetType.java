@@ -22,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,17 +80,23 @@ public class BudgetType implements Serializable {
 	@Basic
 	private Integer fiscalYear;
 	
+	@Transient
+	private Integer currentFiscalYear;
+	
+	
 	@Basic
 	@Column(name="IDX")
 	private Integer index;
 	
-	@OneToMany(mappedBy="type", fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
+	@Transient
 	private List<FormulaStrategy> strategies;
 	
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="BGT_BUDGETLEVEL_ID")
 	private BudgetLevel level;
+
+
 
 	public BudgetType() {
 		
@@ -147,6 +154,15 @@ public class BudgetType implements Serializable {
 	public void setFiscalYear(Integer fiscalYear) {
 		this.fiscalYear = fiscalYear;
 	}
+	
+	@Transient
+	public Integer getCurrentFiscalYear() {
+		return currentFiscalYear;
+	}
+
+	public void setCurrentFiscalYear(Integer currentFiscalYear) {
+		this.currentFiscalYear = currentFiscalYear;
+	}
 
 	public Integer getIndex() {
 		return index;
@@ -163,6 +179,7 @@ public class BudgetType implements Serializable {
 		this.parentPath = parentPath;
 	}
 
+	@Transient
 	public List<FormulaStrategy> getStrategies() {
 		return strategies;
 	}
