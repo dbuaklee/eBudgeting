@@ -307,7 +307,7 @@ public class EntityServiceJPA implements EntityService {
 		// now we load the necceessary 
 		for(BudgetType b : p ) {
 			b.getLevel().getId();
-			logger.debug("xxx");
+			b.getCommonType().getId();
 			b.setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setCurrentFiscalYear(fiscalYear);
 		}

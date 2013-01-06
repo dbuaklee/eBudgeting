@@ -83,7 +83,6 @@ public class BudgetType implements Serializable {
 	@Transient
 	private Integer currentFiscalYear;
 	
-	
 	@Basic
 	@Column(name="IDX")
 	private Integer index;
@@ -96,7 +95,9 @@ public class BudgetType implements Serializable {
 	@JoinColumn(name="BGT_BUDGETLEVEL_ID")
 	private BudgetLevel level;
 
-
+	@ManyToOne
+	@JoinColumn(name="COMMONTYPE_BGT_ID")
+	private BudgetCommonType commonType;
 
 	public BudgetType() {
 		
@@ -210,6 +211,14 @@ public class BudgetType implements Serializable {
 
 	public void setLevel(BudgetLevel level) {
 		this.level = level;
+	}
+
+	public BudgetCommonType getCommonType() {
+		return commonType;
+	}
+
+	public void setCommonType(BudgetCommonType commonType) {
+		this.commonType = commonType;
 	}
 
 	public void doBasicLazyLoad() {
