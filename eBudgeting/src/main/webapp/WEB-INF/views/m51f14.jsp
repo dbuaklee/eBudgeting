@@ -53,11 +53,11 @@
 </div>
 
 <script id="budgetSltTemplate" type="text/x-handler-template">
-<b>หมวดรายจ่ายหลัก</b>
+<span style="vertical-align: middle"><strong>{{this.0.level.name}}: </strong></span>
 <select id="budgetTypeSlt" class="type">
 	<option value="0">กรุณาเลือกหมวดงบประมาณ</option>
 	{{#each this}}
-	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
 </select>
 <div></div>
@@ -107,22 +107,47 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
+<div class="control">
+		<form class="form-search">
+				<div class="input-append pull-left">
+					<input type="text" id="searchQuery" class="span2 search-query" value="{{searchTxt}}">
+					<button type="submit" id="search" class="btn">Search</button>
+				</div> &nbsp;
+				<button type="submit" id="searchDisplayAll" class="btn">แสดงผลทั้งหมด</button>
+		</form>
+</div>
+{{#if hasPage}}
+    <div class="pagination pagination-small">
+        <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <b>หน้า : </b> <ul>
+		{{#each page}}
+	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">
+				{{#if isPrev}}&laquo;{{/if}} 
+				{{#if isNext}}&raquo;{{/if}}
+				{{#if showPageNumber}} {{pageNumber}} {{/if}}
+
+			</a>
+		</li>
+	    {{/each}}
+    </div>
+{{/if}}
 <div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
-	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
-	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการย่อย</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการย่อย</a>
+	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบรายการย่อย</a> 
+</div>
+<div id="newRowCtr">
 </div>
 <table class="table table-bordered" id="mainTbl">
 	<thead>
 		<tr>
-			<td style="width:20px;"></td>
-			<td style="width:120px;">หมวดหลัก</td>
-			<td style="width:120px;">หมวดย่อย</td>
-			<td style="width:120px;">รายการหลัก</td>
+			<td style="width:15px;"></td>
+			<td style="width:80px;">หมวดหลัก</td>
+			<td style="width:80px;">หมวดย่อย</td>
+			<td style="width:100px;">รายการหลัก</td>
 			<td >รายการย่อย</td>		
 
 			<td style="width:60px;">หน่วยนับ</td>
-			<td style="width:60px;">รายการกลาง</td>
+			<td style="width:100px;">รายการกลาง</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -130,15 +155,24 @@
 </table>
 </script>
 
-<script id="formulaStrategyRowTemplate" type="text/x-handelbars-template">
+<script id="budgetTypeRowTemplate" type="text/x-handelbars-template">
 <td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}"/></td>
-	<td> {{type.parent.name}}</td>
-
-	<td> {{{parentBudgetType type}}} </td>
-	<td> {{name}} = {{{formulaLine formulaColumns false}}} </td>
+	<td> {{budgetTypeName parentIds.[1]}}</td>
+	<td> {{budgetTypeName parentIds.[2]}}	</td>
+	<td> {{budgetTypeName parentIds.[3]}} </td>
+	<td> <a href="#" class="showFormulaToolBar">[{{code}}] {{name}} </a> </td>
 	<td> {{unit.name}} </td>
 	<td> {{commonType.name}} </td>
 </script>
+
+<script id="formulaCellTemplate" type="text/x-handlebars-template">
+<strong>[{{code}}] {{name}}</strong> <br/>
+<button class='btn btn-mini btn-info addFormula'>เพิ่มสูตรคำนวณ</button>
+<button class='btn btn-mini btn-info addDefaultFormula'>กำหนดราคากลาง</button>
+<button class='btn btn-mini btn-danger cancelFormula'>ยกเลิก</button>
+
+</script>
+
 
 <script id="tbodyTemplate" type="text/x-handlebars-template">
 {{#each this}}
@@ -147,11 +181,22 @@
 {{/each}}
 </script>
 
-
+<script id="editRowTemplate" type="text/x-handelbars-template">
+<td><input type="radio" name="rowRdo" id="rdo_{{index}}" value="{{index}}" checked="checked"/></td>
+	<td> {{budgetTypeName parentIds.[1]}}</td>
+	<td> {{budgetTypeName parentIds.[2]}}	</td>
+	<td> {{budgetTypeName parentIds.[3]}} </td>
+	<td> [{{code}}] <br/><input type="text" id="nameTxt" value="{{name}}"/> 
+		<br/>
+		<button class='btn btn-mini btn-info lineUpdate'>บันทึกข้อมูล</button>
+		<button class='btn btn-mini btn-danger cancelLineUpdate'>ยกเลิก</button>
+	</td>
+	<td> {{unit.name}} </td>
+	<td> {{commonType.name}} </td>
+</script>
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
-<td></td>
-	<td colspan="5">
+	<div class="well">
 		 <form class="form-inline">
 			<div class="control-group">
 				<div class="controls  budgetTypeSlt">
@@ -159,7 +204,7 @@
 			</div>
 
 			<div class="control-group">
-				<label class="control-label" for="nameTxt"> <b>ชื่อรายการ:</b> </label>
+				<label class="control-label" for="nameTxt"> <b>ชื่อรายการย่อย:</b> </label>
 				<div class="controls">
 					<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}"></input> <br/>
 				</div>
@@ -192,15 +237,43 @@
 
 		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึกข้อมูล</button>
 		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
-	</td>
-
+	</div>
 </script>
 
 
 
 <script type="text/javascript">
+Handlebars.registerHelper("budgetTypeName", function(typeId) {
+	if(typeId != null) {
+		var type = parentBudgetTypeCollection.get(typeId);
+		if(type != null) {
+			return type.get('name');
+		} else {
+			type = BudgetType.findOrCreate(typeId);
+			if(type == null) {
+				type = new BudgetType();
+				type.set('id', typeId);
+				$.ajaxSetup({async:false});
+				type.fetch({
+					success: function() {
+						parentBudgetTypeCollection.add(type);
+						
+					}
+				});
+				$.ajaxSetup({async:true});
+				return type.get('name');
+			} else {
+				parentBudgetTypeCollection.add(type);
+				return type.get('name');
+			}
+		}
+	}
+});
+
+
 Handlebars.registerHelper("parentBudgetType", function(type){
-	return type.name;
+	if(type != null ) return type.name;
+	return null;
 });
 
 Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
@@ -260,6 +333,8 @@ var rootBudgetType = new BudgetType({id: 0});
 var e1;
 
 var formulaStrategyCollection = new FormulaStrategyCollection();
+var budgetTypeCollection = new BudgetTypePagableCollection();
+var parentBudgetTypeCollection = new BudgetTypeCollection();
 var budgetTypeRootCollection = new BudgetTypeCollection();
 
 
@@ -275,7 +350,7 @@ listBudgetCommonType.fetch({
 });
  
 $(document).ready(function() {
-
+		
 	var FormularLineModalView = Backbone.View.extend({
 		initialize: function() {
 			_.bindAll(this,'back');
@@ -455,9 +530,11 @@ $(document).ready(function() {
 		currentLineVal: null,
 		
 		newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
+		editRowTemplate: Handlebars.compile($("#editRowTemplate").html()),
+		formulaCellTemplate: Handlebars.compile($("#formulaCellTemplate").html()),
 		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
-		formulaStrategyRowTemplate: Handlebars.compile($("#formulaStrategyRowTemplate").html()),
+		budgetTypeRowTemplate: Handlebars.compile($("#budgetTypeRowTemplate").html()),
 		
 		formulaInLineEditTpl : Handlebars.compile($("#formulaInLinEditTemplate").html()),
 		formularLineModalView : new FormularLineModalView(),
@@ -465,12 +542,16 @@ $(document).ready(function() {
 		render: function() {
 			// first render the control
 			
-			var html = this.mainCtrTemplate();
+			var json = this.collection.toPageParamsJSON();
+			json.searchTxt = this.searchTxt;
+			var html = this.mainCtrTemplate(json);
 			
 			this.$el.html(html);
 			
 			// then the inside row
 			json=this.collection.toJSON();
+			json.pageParams = this.collection.toPageParamsJSON();
+		
 			
 			html = this.tbodyTemplate(json);
 			this.$el.find('tbody').html(html);
@@ -486,13 +567,109 @@ $(document).ready(function() {
 			return this;
 		},
 		
+		renderTargetPage: function(page) {
+			// we have to refresh collection
+			this.collection.setTargetPage(page);
+			if(this.searchTxt == null) {
+				this.collection.fetch();
+			} else {
+				this.collection.fetch({
+					type: 'POST',
+					data: {
+						query: this.searchTxt
+					}
+				});
+			}
+		},
+		
 		events: {
 			"click .menuNew" : "newRow",
 			"click .menuDelete" : "deleteRow",
 			"click .menuEdit"	: "editRow",
 			"click .lineSave" : "saveLine",
-			"click .editFormulaLineBtn" : "editFormulaLine",
-			"click .cancelLineSave" : "cancelSaveLine"
+			"click .lineUpdate" : "updateLine",
+			"click .cancelLineSave" : "cancelSaveLine",
+			"click .cancelLineUpdate" : "cancelUpdateLine",
+			"click button#search" : "searchBtnClick",
+			"click button#searchDisplayAll" : "searchDisplayAllBtnClick",
+
+			"click a.pageLink" : "gotoPage",
+			
+			"click a.showFormulaToolBar" : "showFormulaToolBar",
+			
+			"click button.addFormula" : "addFormula",
+			"click button.addDefaultFormula" : "addDefaultFormula",
+			"click button.cancelFormula" : "cancelFormula",
+			
+			"click .editFormulaLineBtn" : "editFormulaLine"
+				
+			
+		},
+		
+		gotoPage: function(e) {
+			var pageNumber = $(e.target).attr('data-id');
+			this.renderTargetPage(pageNumber);
+		},
+		
+		addFormula: function(e) {
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			
+			var currentFormula = new FormulaStrategy();
+
+			this.formularLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
+		},
+		 
+		addDefaultFormula: function(e) {
+			
+		},
+		
+		cancelFormula : function(e) {
+			var currentTr = $(e.currentTarget).parents('tr');
+			
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			
+			$(currentTr).empty();
+			$(currentTr).html(this.budgetTypeRowTemplate(currentBudgetType.toJSON()));
+			
+		},
+		
+		showFormulaToolBar : function(e) {
+			e1=e;
+			
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			var currentTd = $(e.currentTarget).parents('td');
+			
+			
+			
+			$(currentTd).empty();
+			var json = currentBudgetType.toJSON();
+			var html = this.formulaCellTemplate(json);
+			$(currentTd).html(html);
+			
+			return false;
+			
+		},
+		
+		searchDisplayAllBtnClick: function(e) {
+			this.searchTxt = null;
+			this.collection.setTargetPage(1);
+			this.collection.fetch();
+			return false;
+		},
+		
+		searchBtnClick: function(e) {
+			this.searchTxt = this.$el.find('#searchQuery').val();
+			this.collection.setTargetPage(1);
+			this.collection.fetch({
+				type: 'POST',
+				data: {
+					query: this.searchTxt
+				}
+			});
+			return false;
 		},
 		
 		editFormulaLine : function(e) {
@@ -515,7 +692,7 @@ $(document).ready(function() {
 				json.commonTypeList = listBudgetCommonType.toJSON();
 				
 				
-				$('#mainTbl tbody').append('<tr>'+this.newRowTemplate(json)+'</tr>');
+				$('#newRowCtr').html(this.newRowTemplate(json));
 				var currentBudgetTypeId = $('select#budgetTypeSlt').val();
 				
 				//now populate the budgetTypeSlt
@@ -534,60 +711,54 @@ $(document).ready(function() {
 		},
 		
 		
+		cancelUpdateLine: function(e) {
+			//now put back the value
+			// well do nothing just reset the collection
+			this.$el.find('a.btn').toggleClass('disabled');
+			this.collection.trigger('reset');
+			
+		},
+		
 		cancelSaveLine: function(e) {
 			//now put back the value
 			// well do nothing just reset the collection
 			
 			this.$el.find('a.btn').toggleClass('disabled');
-			this.collection.trigger("reset");
+			$('#newRowCtr').empty();
+			
+		},
+		
+		updateLine: function(e) {
+			var inputNameVal = this.$el.find('#nameTxt').val();
+			var budgetTypeId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			var modelToUpdate = this.collection.get(budgetTypeId);
+			modelToUpdate.save({name: inputNameVal}, {
+				success: _.bind(function() {
+					this.collection.trigger('reset');
+				}, this)
+			});
 			
 		},
 		
 		saveLine: function(e) {
 
-			var formulaStrategyId = $(e.currentTarget).parents('tr').attr('data-id');
+			var parentTypeId = this.$el.find('select.type:last').val();
+			var parentBudgetType = BudgetType.findOrCreate(parentTypeId);
 			
 			var inputNameVal = this.$el.find('#nameTxt').val();
 			var unitId = this.$el.find('select#unitSlt').val();
 			var commonTypeId = this.$el.find('select#commonTypeSlt').val();
 			
-			if(this.collection.get(formulaStrategyId) == null) {
-				//var objType = pageObjective.get('type').get('children').at(0);
-				var newObj =  new FormulaStrategy({name: inputNameVal});
-				
-				var typeId = this.$el.find('select.type:last').val();
-				
-				console.log(typeId);
-				var selectedType = BudgetType.findOrCreate(typeId);
-				
-				newObj.set('type', selectedType);
-				newObj.set('isStandardItem', false);
-				newObj.set('fiscalYear', fiscalYear);
-				newObj.set('unit', TargetUnit.findOrCreate(unitId));
-				newObj.set('commonType', BudgetCommonType.findOrCreate(commonTypeId));
-				
-				newObj.save(null, {success: _.bind(function(data){
-					newObj.set('id', data.id);
+			var newBudgetType = new BudgetType();
+			newBudgetType.set('name', inputNameVal);
+			newBudgetType.set('parent', parentBudgetType);
+			newBudgetType.set('parentLevel', 4);
+			newBudgetType.set('parentPath', '.' + parentBudgetType.get('id') + parentBudgetType.get('parentpath'));
+			newBudgetType.save(null, {
+				success: function() {
 					
-					this.collection.add(newObj);
-					
-					this.collection.trigger('reset');
-				},this)});
-				
-				
-			} else {
-				var fs = this.collection.get(formulaStrategyId);
-				fs.set('unit', TargetUnit.findOrCreate(unitId));
-				fs.set('commonType', BudgetCommonType.findOrCreate(commonTypeId));
-				fs.save({
-					name: inputNameVal
-				}, {
-					success: function() {
-						fs.trigger('changeFormula', fs);
-					}
-				});
-				
-			}
+				}
+			});
 			
 			this.$el.find('a.btn').toggleClass('disabled');
 			this.collection.trigger("reset");
@@ -595,11 +766,11 @@ $(document).ready(function() {
 		},
 		
 		deleteRow: function(e) {
-			var fsId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			var budgetTypeId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
 			
 			if( (! $(e.currentTarget).hasClass('disabled')) && $('input[name=rowRdo]:checked').length == 1 ) {
 				
-				var modelToDelete = this.collection.get(fsId);
+				var modelToDelete = this.collection.get(budgetTypeId);
 				
 				
 					if(confirm("คุณต้องการลบรายการ " + modelToDelete.get('name'))) {
@@ -608,15 +779,10 @@ $(document).ready(function() {
 							success: _.bind(function() {					
 								this.collection.remove(modelToDelete);
 							
-								this.collection.trigger('reset');
+								this.collection.fetch();
 							},this)
 						});
-					
-					
-					this.collection.trigger('reset');
-				} else{
-					alert('คุณต้องเข้าไปลบรายการจากรายการย่อยสุดเท่านั้น');
-				}
+				} 
 			} else {
 				alert('กรุณาเลือกรายการที่ต้องการลบ');
 			}
@@ -650,7 +816,7 @@ $(document).ready(function() {
 				
 				e1=json;
 				
-				var html = this.newRowTemplate(json);
+				var html = this.editRowTemplate(json);
 				$('input[name=rowRdo]:checked').parents('tr').html(html);
 			} else {
 				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
@@ -662,7 +828,7 @@ $(document).ready(function() {
 			
 			var json = formulaStrategy.toJSON();
 			
-			formulaStrategyEl.html(this.formulaStrategyRowTemplate(json));
+			formulaStrategyEl.html(this.budgetTypeRowTemplate(json));
 			
 		},
 		
@@ -676,7 +842,7 @@ $(document).ready(function() {
 	
 	var BudgetSltView = Backbone.View.extend({
 		budgetSltTemplate :  Handlebars.compile($("#budgetSltTemplate").html()),
-		mainTblView: new MainTblView({collection: formulaStrategyCollection}),
+		mainTblView: new MainTblView({collection: budgetTypeCollection}),
 		initialize: function(options){
 			
 		    this.collection.bind('reset', this.render, this);
@@ -703,11 +869,14 @@ $(document).ready(function() {
 		changeSlt: function(e) {
 			var budgetTypeSelectedId = $('select#budgetTypeSlt').val();
 			if(budgetTypeSelectedId != 0) {
+				this.mainTblView.searchTxt = null;
+				this.mainTblView.collection.setTargetPage(1);
+				this.mainTblView.collection.setMainTypeId(budgetTypeSelectedId);
+				this.mainTblView.collection.setLevel(4);
 				this.mainTblView.collection.fetch({
-					//FormulaStrategy/search/{fiscalYear}/rootBudgetType/{budgetTypeId}
-					url: appUrl('/FormulaStrategy/searchIsNotStandardItem/' + fiscalYear + '/rootBudgetType/' + budgetTypeSelectedId),
 					success: function() {
-						
+						// we should now load it's children?
+						// set this.mainTblV
 					}
 				});
 			}
@@ -748,7 +917,7 @@ $(document).ready(function() {
 			e1 = budgetType;
 			budgetType.fetch({success: _.bind(function(model, response){
 				var fetchedBudgetType = response;
-				if(fetchedBudgetType.children != null && fetchedBudgetType.children.length > 0) {
+				if(fetchedBudgetType.parentLevel < 3) {
 					
 					var nextEl = this.$el.selector + " select + div";
 					this.nextBudgetTypeSelectionView = new BudgetTypeSelectionView({model: budgetType, el: nextEl, mainTblView: this.mainTblView});

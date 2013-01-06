@@ -71,6 +71,32 @@ public class BudgetTypeRestController {
 	
 	}
 	
+	@RequestMapping(value="/BudgetType", method=RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	public @ResponseBody BudgetType createBudgetType(
+			@RequestBody JsonNode node) {
+		return entityService.saveBudgetType(node);
+		
+	}
+	
+	@RequestMapping(value="/BudgetType/{id}", method=RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.OK)
+	public @ResponseBody BudgetType updateBudgetType(
+			@PathVariable Long id,
+			@RequestBody JsonNode node) {
+		return entityService.updateBudgetType(node);
+		
+	}
+	
+	
+	@RequestMapping(value="/BudgetType/{id}", method=RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.OK)
+	public @ResponseBody String deleteBudgetType(
+			@PathVariable Long id) {
+		entityService.deleteBudgetType(id);
+		return "OK";
+	}
+	
 	/**
 	 * @RequestMapping(value="/ObjectiveName/fiscalYear/{fiscalYear}/type/{typeId}/page/{pageNumber}", method=RequestMethod.GET)
 	public @ResponseBody Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
@@ -84,14 +110,37 @@ public class BudgetTypeRestController {
 	 */
 	
 	
+	
 	@RequestMapping(value="/BudgetType/listLevel/{level}/mainType/{typeId}/page/{pageNumber}", method=RequestMethod.GET)
 	public @ResponseBody Page<BudgetType> findAllByMainType(
 			@PathVariable Long typeId,
 			@PathVariable Integer level,
-			@PathVariable Integer pageNumber) {
+			@PathVariable Integer pageNumber,
+			@RequestParam (required=false) String query) {
+		PageRequest pageRequest =
+	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "lineNumber");
+		if(query == null || query.length() == 0) {
+			query = "%";
+		} else {
+			query = "%" + query + "%";
+		}
+		return entityService.findBudgetTypeByLevelAndMainType(level, typeId, pageRequest, query);
+	}
+	
+	@RequestMapping(value="/BudgetType/listLevel/{level}/mainType/{typeId}/page/{pageNumber}", method=RequestMethod.POST)
+	public @ResponseBody Page<BudgetType> findAllByMainTypeQuery(
+			@PathVariable Long typeId,
+			@PathVariable Integer level,
+			@PathVariable Integer pageNumber,
+			@RequestParam (required=false) String query) {
 		PageRequest pageRequest =
 	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "code");
-		return entityService.findBudgetTypeByLevelAndMainType(level, typeId, pageRequest);
+		if(query == null || query.length() == 0) {
+			query = "%";
+		} else {
+			query = "%" + query + "%";
+		}
+		return entityService.findBudgetTypeByLevelAndMainType(level, typeId, pageRequest, query);
 	}
 	
 	

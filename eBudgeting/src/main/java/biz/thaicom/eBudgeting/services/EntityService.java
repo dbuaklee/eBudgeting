@@ -108,7 +108,11 @@ public interface EntityService {
 			Integer fiscalYear, BudgetType budgetType);
 	public List<BudgetType> findAllMainBudgetTypeByFiscalYear(Integer fiscalYear);
 	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer level,
-			Long typeId, Pageable pageable);
+			Long typeId, Pageable pageable, String query);
+	public BudgetType saveBudgetType(JsonNode node);
+	public BudgetType updateBudgetType(JsonNode node);
+	public void deleteBudgetType(Long id);
+	
 	
 	//FiscalBudgetType
 	public void initFiscalBudgetType(Integer fiscalYear);
@@ -233,6 +237,7 @@ public interface EntityService {
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+
 
 
 

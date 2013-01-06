@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
+import biz.thaicom.eBudgeting.models.bgt.BudgetLevel;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
@@ -291,10 +292,6 @@ public class EntityServiceJPA implements EntityService {
 		if(b!=null) {
 			b.doBasicLazyLoad();
 			
-			logger.debug("test- ----");
-			
-			logger.debug("-->" + b.getChildren().size());
-			
 			b.getChildren().size();
 		}
 		return b;
@@ -302,9 +299,90 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Override
 	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer level,
-			Long typeId, Pageable pageable) {
+			Long typeId, Pageable pageable,String query) {
 		String mainTypePath = "%." + typeId.toString() + ".%";
-		return budgetTypeRepository.findAllByParentLevelAndParentPathLike(level,mainTypePath,pageable);
+		logger.debug(query);
+		Page<BudgetType> p = budgetTypeRepository.findAllByParentLevelAndParentPathLike(level,mainTypePath, query,pageable);
+		
+		// now we load the necceessary 
+		for(BudgetType b : p ) {
+			b.getLevel().getId();
+			b.getStrategies().size();
+		}
+		
+		return p;
+		
+	}
+	
+	
+	@Override
+	public BudgetType saveBudgetType(JsonNode node) {
+		BudgetType budgetType = new BudgetType();
+		
+		budgetType.setName(node.get("name").asText());
+		budgetType.setParentLevel(node.get("parentLevel").asInt());
+		
+		Long parentTypeId = node.get("parent").get("id").asLong();
+		
+		BudgetType parent = budgetTypeRepository.findOne(parentTypeId);
+		if(parent != null) {
+			budgetType.setParent(parent);
+			budgetType.setParentPath("." + parent.getId() + parent.getParentPath());
+		}
+		
+		BudgetLevel level = budgetTypeRepository.findBudgetLevelNumber(budgetType.getParentLevel());
+		budgetType.setLevel(level);
+		
+		Integer prevLineNumber = null;
+		if(parent.getChildren().size() > 0) {
+			BudgetType lastIndexType = parent.getChildren().get(parent.getChildren().size()-1);
+			budgetType.setIndex(lastIndexType.getIndex()+1);
+			
+			prevLineNumber = lastIndexType.getLineNumber();
+			
+		} else {
+			budgetType.setIndex(0);
+			
+			prevLineNumber = parent.getLineNumber();
+		}
+		
+		budgetType.setLineNumber(prevLineNumber+1);
+		
+		// now the code
+		Integer maxCode = budgetTypeRepository.findMaxCodeAtLevel(level);
+		budgetType.setCode(maxCode+1);
+		
+		
+		// and the last piece will be lineNumber 
+		budgetTypeRepository.incrementLineNumber(prevLineNumber);
+		
+		
+		budgetTypeRepository.save(budgetType);
+		
+		return budgetType;
+	}
+
+	@Override
+	public BudgetType updateBudgetType(JsonNode node) {
+		BudgetType type = budgetTypeRepository.findOne(node.get("id").asLong());
+		if(type != null) {
+			type.setName(node.get("name").asText());
+			
+			budgetTypeRepository.save(type);
+		}
+		
+		return type;
+	}
+
+	@Override
+	public void deleteBudgetType(Long id) {
+		BudgetType type = budgetTypeRepository.findOne(id);
+		if(type == null) {
+			return ;
+		}
+		
+		budgetTypeRepository.delete(type);
+		
 	}
 
 	@Override
@@ -2739,6 +2817,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		return o;
 	}
+
 
 
 	

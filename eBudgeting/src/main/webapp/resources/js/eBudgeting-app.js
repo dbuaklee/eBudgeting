@@ -539,6 +539,9 @@ PagableCollection = Backbone.Collection.extend({
 		}
 		
 		return json;
+	},
+	setTargetPage: function(targetPage) {
+		this.targetPage = targetPage;
 	}
 });
 
@@ -598,6 +601,31 @@ ObjectivePagableCollection = PagableCollection.extend({
 	    this.targetPage = targetPage;
 	}
 	
+});
+
+BudgetTypePagableCollection = PagableCollection.extend({
+	initialize: function(models, options) {
+		if(options!=null) {
+			this.level = options.level;
+			this.mainTypeId = options.mainTypeId;
+			this.targetPage = options.targetPage;
+		}
+	  },
+	
+	model: BudgetType,
+	
+	url: function() {
+	    return appUrl('/BudgetType/listLevel/'+ this.level +'/mainType/'+this.mainTypeId+'/page/'+this.targetPage);
+	},
+	getIds: function() {
+		return this.pluck("id");
+	},
+	setMainTypeId: function(mainTypeId) {
+		this.mainTypeId = mainTypeId;
+	},
+	setLevel : function(level) {
+		this.level = level;
+	}
 });
 
 ObjectiveTypeCollection = Backbone.Collection.extend({

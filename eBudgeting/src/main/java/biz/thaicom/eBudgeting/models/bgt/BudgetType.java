@@ -2,12 +2,14 @@ package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,6 +22,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import biz.thaicom.eBudgeting.services.EntityServiceJPA;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -39,6 +46,8 @@ public class BudgetType implements Serializable {
 	 */
 	private static final long serialVersionUID = -5984004367106256395L;
 	
+	private static final Logger logger = LoggerFactory.getLogger(BudgetType.class);
+	
 	// Field
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="BGT_BUDGETTYPE_SEQ")
@@ -48,7 +57,7 @@ public class BudgetType implements Serializable {
 	private String name;
 	
 	@Basic
-	private String code;
+	private Integer code;
 	
 	@Basic
 	private String parentPath;
@@ -74,7 +83,7 @@ public class BudgetType implements Serializable {
 	@Column(name="IDX")
 	private Integer index;
 	
-	@OneToMany(mappedBy="type", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="type", fetch=FetchType.LAZY, cascade=CascadeType.REMOVE)
 	private List<FormulaStrategy> strategies;
 	
 	
@@ -107,11 +116,11 @@ public class BudgetType implements Serializable {
 		this.name = name;
 	}
 
-	public String getCode() {
+	public Integer getCode() {
 		return code;
 	}
 
-	public void setCode(String code) {
+	public void setCode(Integer code) {
 		this.code = code;
 	}
 
@@ -192,12 +201,13 @@ public class BudgetType implements Serializable {
 			this.getParent().getId();
 		} 
 		
+		logger.debug("id, name: " +this.getId() + ", " + this.getName());
+		
 		if(this.getChildren() != null) {
 			// we have to go deeper one level
 			for(BudgetType child : this.getChildren()){
-				if(child.getChildren() != null) {
-					child.getChildren().size();
-				}
+				child.getLevel().getId();
+				logger.debug(" -- children id, name: " +child.getId() + ", " + child.getName());
 			}
 			
 		}
@@ -241,6 +251,8 @@ public class BudgetType implements Serializable {
 			
 			parentIds.add(parentId);
 		}
+		Collections.reverse(parentIds);
+		
 		return parentIds;
 	}
 	
