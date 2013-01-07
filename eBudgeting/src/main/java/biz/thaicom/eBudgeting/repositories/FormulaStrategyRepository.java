@@ -19,7 +19,7 @@ public interface FormulaStrategyRepository extends
 			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
 			"	INNER JOIN FETCH fs.type type " +
 			"	LEFT OUTER JOIN FETCH type.parent parent " +
-			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 " +
+			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 AND (fs.isStandardItem is null OR fs.isStandardItem = false) " +
 			"ORDER BY fs.id ")
 	public List<FormulaStrategy> findByfiscalYearAndType_id(Integer fiscalYear, Long budgetTypeId);
 	

@@ -18,7 +18,7 @@ public class DatabaseSchemaExport {
 
 	    SchemaExport schema = new SchemaExport(cfg);
 	    //schema.setOutputFile("resources/sql/schema.sql");
-	    schema.create(true, true);
+	    schema.create(true, false);
 		return s;
 	}
 	

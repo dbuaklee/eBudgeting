@@ -135,20 +135,21 @@
     <div class="pagination pagination-small">
         <span style="border: 1px;">พบทั้งสิ้น {{totalElements}} รายการ </span> <b>หน้า : </b> <ul>
 		{{#each page}}
-	    <li {{#if isActive}}class="active"{{/if}}><a href="#" class="pageLink" data-id="{{pageNumber}}">
-				{{#if isPrev}}&laquo;{{/if}} 
-				{{#if isNext}}&raquo;{{/if}}
-				{{#if showPageNumber}} {{pageNumber}} {{/if}}
-
-			</a>
-		</li>
+			{{#if isActive}}<li class="pageLink active disable"><a href="#">{{pageNumber}}</a></li>{{else}}
+		    	<li><a href="#" class="pageLink" data-id="{{pageNumber}}">
+					{{#if isPrev}}&laquo;{{/if}} 
+					{{#if isNext}}&raquo;{{/if}}
+					{{#if showPageNumber}} {{pageNumber}} {{/if}}
+					</a>
+				</li>
+			{{/if}}
 	    {{/each}}
     </div>
 {{/if}}
 <div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการย่อย</a>
-	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการย่อย</a>
-	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบรายการย่อย</a> 
+	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการ</a>
+	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบรายการ</a> 
 </div>
 <div id="newRowCtr">
 </div>
@@ -159,7 +160,7 @@
 			<td style="width:80px;">หมวดหลัก</td>
 			<td style="width:80px;">หมวดย่อย</td>
 			<td style="width:100px;">รายการหลัก</td>
-			<td >รายการย่อย</td>		
+			<td >รายการ</td>		
 
 			<td style="width:60px;">หน่วยนับ</td>
 			<td style="width:100px;">รายการกลาง</td>
@@ -177,6 +178,7 @@
 	<td> {{budgetTypeName parentIds.[3]}} </td>
 	<td> <a href="#" class="showFormulaToolBar">[{{code}}] {{name}} </a>
 		{{#if strategies}}
+			<div><u>รายการย่อย</u></div>
 			<ul>
 				{{#each strategies}}
 				<li data-id="{{id}}"><a href="#" class="deleteStrategy" style="color:#BD362F;"><span><i class="icon-trash"></i></span></a><a href="#" class="editStrategy">{{name}} = {{{formulaLine formulaColumns false}}}</a></li>
@@ -334,7 +336,7 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 		if(formulaColumns.length > 0) {
 			s = s + " X ";
 		}
-		s = s + "<a href='#' class='editSpan'>เพิ่มคอลัมภ์</a>";
+		s = s + "<a href='#' class='editSpan'>เพิ่มคอลัมน์</a>";
 	}else {
 		s += "";	
 	}
