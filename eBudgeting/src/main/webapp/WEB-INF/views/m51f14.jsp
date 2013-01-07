@@ -11,6 +11,18 @@
 
 <div class="row">
 	<div class="span11">
+		<div id="standardPriceModal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<a href="#"	class="btn btn-primary" id="backBtn">กลับหน้าหลัก</a>
+			</div>
+		</div>
 
 		<div id="formulaLineModal" class="modal hide fade">
 			<div class="modal-header">
@@ -66,7 +78,7 @@
 <script id="formulaLineModalTemplate" type="text/x-handlebars-template">
 <form id="strategyForm" class="form-horizontal">
 	<div class="control-group">
-		<label class="control-label" for="c">ชื่อสูตรการคำนวณ</label>
+		<label class="control-label" for="c">ชื่อรายการย่อย</label>
 		<div class="controls">
 			<input type="text" id="strategyName" placeholder="..." value="{{name}}"> <button class="btn btn-primary" id="saveStrategyBtn">
 			<i class="icon-save"></i> {{#if id}}แก้ไข{{else}}บันทึก{{/if}}</button>
@@ -79,7 +91,15 @@
 </div>
 <div id="formulaColumnFormCtr"></div>
 <div id="formulaBox">
-	{{this.name}} = <span id="formulaLine"></span>
+	<div class="pull-left">
+		เรื่อง: </br> จำนวน
+	</div>
+	<div class="pull-left">
+		เรื่อง1: </br> จำนวน
+	</div>
+	<div class="pull-left">
+		เรื่อง2: </br> จำนวน
+	</div>
 </div>
 
 {{/if}}
@@ -126,7 +146,7 @@
 		<form class="form-search">
 				<div class="input-append pull-left">
 					<input type="text" id="searchQuery" class="span2 search-query" value="{{searchTxt}}">
-					<button type="submit" id="search" class="btn">Search</button>
+					<button type="submit" id="search" class="btn">ค้นหารายการ</button>
 				</div> &nbsp;
 				<button type="submit" id="searchDisplayAll" class="btn">แสดงผลทั้งหมด</button>
 		</form>
@@ -192,8 +212,8 @@
 
 <script id="formulaCellTemplate" type="text/x-handlebars-template">
 <strong>[{{code}}] {{name}}</strong> <br/>
-<button class='btn btn-mini btn-info addFormula'>เพิ่มสูตรคำนวณ</button>
-<button class='btn btn-mini btn-info addDefaultFormula'>กำหนดราคากลาง</button>
+<button class='btn btn-mini btn-info addFormula'>เพิ่มรายการย่อย</button>
+<button class='btn btn-mini btn-info addDefaultFormula'>กำหนดราคา</button>
 <button class='btn btn-mini btn-danger cancelFormula'>ยกเลิก</button>
 
 </script>
@@ -375,7 +395,22 @@ listBudgetCommonType.fetch({
 });
  
 $(document).ready(function() {
+	
+	var standardPriceModalView = Backbone.View.extend({
+		initialize: function() {
+			
+		},
+		el: "#standardPriceModal",
 		
+		
+		render: function() {
+				
+		}, 
+		renderOfBudgetType: function(budgetType) {
+			
+		}
+	});
+	
 	var FormulaLineModalView = Backbone.View.extend({
 		initialize: function() {
 			_.bindAll(this,'back');
@@ -397,9 +432,9 @@ $(document).ready(function() {
 		
 		render: function() {
 			if( this.currentStrategy.get('id') == null )  {
-				this.$el.find('.modal-header span').html("เพิ่มสูตรการคำนวณใหม่");
+				this.$el.find('.modal-header span').html("เพิ่มรายการย่อย");
 			} else {
-				this.$el.find('.modal-header span').html("แก้ไขสูตรการคำนวณ");
+				this.$el.find('.modal-header span').html("แก้ไขรายการย่อย");
 			}
 			
 			
