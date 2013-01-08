@@ -180,3 +180,19 @@ span.label.mini {
 .hero-unit li {
 	line-height: 1.2;
 }
+
+#formulaBox > div {
+	float: left;
+	padding:9px 2px 9px 2px;
+}
+
+#formulaBox > div.text {
+	float: left;
+	padding:15px 2px 0px 2px;
+}
+
+#formulaBox > div:FIRST-CHILD {
+	float: left;
+	text-align: right;
+	padding:15px 2px 0px 10px;
+}

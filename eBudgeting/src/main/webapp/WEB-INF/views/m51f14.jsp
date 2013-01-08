@@ -90,18 +90,42 @@
 	<b>การคำนวณ</b>
 </div>
 <div id="formulaColumnFormCtr"></div>
+<form class="form-inline">
 <div id="formulaBox">
-	<div class="pull-left">
-		เรื่อง: </br> จำนวน
+	<div>
+		<div style="height:35px;margin-bottom:10px;">
+			เรื่อง: 
+		</div>
+		<div style="height:35px;">
+			จำนวน:
+		</div>
 	</div>
-	<div class="pull-left">
-		เรื่อง1: </br> จำนวน
+	<div>
+		<div style="height:35px;margin-bottom:10px;">
+			<input type="text" style="width:70px;" value="ราคา (บาท)" disabled="disabled"/>
+		</div>
+		<div style="height:35px;">
+			<input type="text" style="width:70px;"></input>
+		</div>
 	</div>
-	<div class="pull-left">
-		เรื่อง2: </br> จำนวน
+	<div class="text">
+		<div style="height:35px;margin-bottom:10px;">
+			
+		</div>
+		<div style="height:35px;">
+			X
+		</div>
+	</div>
+	<div>
+		<div style="height:35px;margin-bottom:10px;">
+			<input type="text"  style="width:70px;"></input>
+		</div>
+		<div style="height:35px;">
+			<input type="text" style="width:70px;" value="<ขอตั้งระบุ>" disabled="disabled"/>
+		</div>
 	</div>
 </div>
-
+</form>
 {{/if}}
 </script>
 
@@ -492,6 +516,7 @@ $(document).ready(function() {
 				},this)
 			});
 			
+			return false;
 		},
 		
 		back: function(e) {

@@ -576,12 +576,14 @@ public class EntityServiceJPA implements EntityService {
 			fs.setUnit(unit);
 		}
 		
-		formulaStrategyRepository.save(fs);
+		FormulaStrategy saveFs = formulaStrategyRepository.save(fs);
 		
-		fs.getType().setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
-		fs.getType().setCurrentFiscalYear(fs.getFiscalYear());
+		saveFs.getType().setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
+		saveFs.getType().setCurrentFiscalYear(fs.getFiscalYear());
 		
-		return fs;
+		logger.debug("about to return fs!");
+		
+		return saveFs;
 		
 	}
 
