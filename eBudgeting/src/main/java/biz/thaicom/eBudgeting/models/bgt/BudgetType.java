@@ -90,6 +90,8 @@ public class BudgetType implements Serializable {
 	@Transient
 	private List<FormulaStrategy> strategies;
 	
+	@Transient
+	private FormulaStrategy standardStrategy;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="BGT_BUDGETLEVEL_ID")
@@ -187,6 +189,15 @@ public class BudgetType implements Serializable {
 
 	public void setStrategies(List<FormulaStrategy> strategies) {
 		this.strategies = strategies;
+	}
+	
+	@Transient
+	public FormulaStrategy getStandardStrategy() {
+		return standardStrategy;
+	}
+
+	public void setStandardStrategy(FormulaStrategy standardStrategy) {
+		this.standardStrategy = standardStrategy;
 	}
 
 	public Integer getParentLevel() {

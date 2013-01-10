@@ -159,6 +159,14 @@ public class FormulaStrategy  implements Serializable{
 	public void setUnit(TargetUnit unit) {
 		this.unit = unit;
 	}
+
+	public Integer getStandardPrice() {
+		return standardPrice;
+	}
+
+	public void setStandardPrice(Integer standardPrice) {
+		this.standardPrice = standardPrice;
+	}
 	
 	
 

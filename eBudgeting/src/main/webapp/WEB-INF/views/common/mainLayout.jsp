@@ -30,7 +30,7 @@
 	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.3.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.2.2/js/bootstrap.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-editable-1.1.4/js/bootstrap-editable.min.js'/>"></script>
-	<script src="<c:url value='/resources/jslibs/backbone-0.9.2.min.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/backbone-0.9.2.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/backbone-relational-0.6.0.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/handlebars-1.0.0.beta.6.js'/>"></script>
 	

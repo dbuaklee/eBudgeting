@@ -16,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import ch.qos.logback.core.pattern.util.AsIsEscapeUtil;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -311,6 +314,7 @@ public class EntityServiceJPA implements EntityService {
 				b.getCommonType().getId();
 			}
 			b.setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fiscalYear, b.getId()));
+			b.setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setCurrentFiscalYear(fiscalYear);
 		}
 		
@@ -546,6 +550,19 @@ public class EntityServiceJPA implements EntityService {
 		
 		fs.setName(strategy.get("name").asText());
 		fs.setFiscalYear(strategy.get("fiscalYear").asInt());
+		fs.setIsStandardItem(strategy.get("isStandardItem").asBoolean());
+		
+		if(strategy.get("standardPrice") == null) {
+			fs.setStandardPrice(0);
+		} else {
+			
+			try {
+				fs.setStandardPrice(strategy.get("standardPrice").asInt());
+			} catch (NumberFormatException e) {
+				fs.setStandardPrice(0);
+			}
+		}
+		
 		if(strategy.get("isStandardItem") != null) {
 			fs.setIsStandardItem(strategy.get("isStandardItem").asBoolean());
 		} else {
@@ -576,12 +593,67 @@ public class EntityServiceJPA implements EntityService {
 			fs.setUnit(unit);
 		}
 		
+		List<FormulaColumn> newFcList = new ArrayList<FormulaColumn>();
+		List<FormulaColumn> oldFcList = fs.getFormulaColumns();
+		// check if formulaColumn is exists!
+		for(JsonNode fcNode : strategy.get("formulaColumns")) {
+			if(fcNode.get("id") != null) {
+				FormulaColumn fc = formulaColumnRepository.findOne(fcNode.get("id").asLong());
+				if(fc!=null) {
+					//remove from old Fc
+					oldFcList.remove(fc);
+					
+					//update fc
+					fc.setUnitName(fcNode.get("unitName").asText());
+					fc.setIndex(fcNode.get("index").asInt());
+					if(fcNode.get("isFixed") == null) {
+						fc.setIsFixed(false);
+					} else {
+						fc.setIsFixed(fcNode.get("isFixed").asBoolean());
+					}
+					
+					newFcList.add(fc);
+					formulaColumnRepository.save(fc);
+					logger.debug("fc.unitName: " + fc.getUnitName());
+				}
+			} else {
+				FormulaColumn fc = new FormulaColumn();
+				fc.setUnitName(fcNode.get("unitName").asText());
+				fc.setIndex(fcNode.get("index").asInt());
+				if(fcNode.get("isFixed") == null) {
+					fc.setIsFixed(false);
+				} else {
+					fc.setIsFixed(fcNode.get("isFixed").asBoolean());
+				}
+				fc.setStrategy(fs);
+				
+				newFcList.add(fc);
+				formulaColumnRepository.save(fc);
+				logger.debug("fc.unitName: " + fc.getUnitName());
+			}
+		}
+		
+		fs.setFormulaColumns(newFcList);
+		
+		// we should destroy all fc in old list!
+		if(oldFcList!=null) {
+			for(FormulaColumn fc : oldFcList) {
+				formulaColumnRepository.delete(fc);
+			}
+		}
+		
+		
 		FormulaStrategy saveFs = formulaStrategyRepository.save(fs);
 		
 		saveFs.getType().setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
+		saveFs.getType().setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
 		saveFs.getType().setCurrentFiscalYear(fs.getFiscalYear());
 		
 		logger.debug("about to return fs!");
+		
+		for(FormulaColumn fc : saveFs.getFormulaColumns()) {
+			logger.debug(fc.getUnitName());
+		}
 		
 		return saveFs;
 		

@@ -208,6 +208,10 @@ BudgetType = Backbone.RelationalModel.extend({
 	    		key: 'parent'
 	    	}
 	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'standardStrategy',
+	    	relatedModel: 'FormulaStrategy'
+	    },{
 	    	type: Backbone.HasMany,
 	    	key: 'strategies',
 	    	relatedModel: 'FormulaStrategy',
