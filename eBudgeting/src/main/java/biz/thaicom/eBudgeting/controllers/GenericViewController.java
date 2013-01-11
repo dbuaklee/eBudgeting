@@ -1,5 +1,6 @@
 package biz.thaicom.eBudgeting.controllers;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -536,6 +537,11 @@ public class GenericViewController {
 		}
 	}
 
+
+	private Integer getCurrentFiscalYearFromSession(HttpSession session) {
+		Objective rootFy = (Objective) session.getAttribute("currentRootFY");
+		return rootFy.getFiscalYear();
+	}
 
 
 
@@ -1094,84 +1100,31 @@ public class GenericViewController {
 	
 	// --------------------------------------------------------------m61f03: การบันทึกงบประมาณ ระดับกิจกรรมหลัก
 	@RequestMapping("/page/m61f03/")
-	public String render_m63f03(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
+	public String render_m61f03(
+			Model model,
+			HttpServletRequest request, HttpSession session) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
+		setFiscalYearFromSession(model, session);
+		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m61f03";
 	}
 	
-	@RequestMapping("/page/m61f03/{fiscalYear}/{objectiveId}")
-	public String render_m63f03OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request,
-			@Activeuser ThaicomUserDetail currentUser) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m61f03", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m61f03/";
-		}
-		
-		return "m61f03";
-	}
 	
 	// --------------------------------------------------------------m61f04: การบันทึกงบประมาณ ระดับรายการ
 	@RequestMapping("/page/m61f04/")
-	public String render_m63f04(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m61f04";
-	}
-	
-	@RequestMapping("/page/m61f04/{fiscalYear}/{objectiveId}")
-	public String render_m63f04OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request,
-			@Activeuser ThaicomUserDetail currentUser) {
+	public String render_m61f04(
+			Model model, HttpServletRequest request, HttpSession session) {
+			
+		model.addAttribute("rootPage", false);
 		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
+		setFiscalYearFromSession(model, session);
 		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m61f04", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m61f04/";
-		}
+		Integer fy = getCurrentFiscalYearFromSession(session);
+		Objective rootObjective = entityService.findOneRootObjectiveByFiscalyear(fy);
+		
+		model.addAttribute("objectiveId", rootObjective.getId());
+		
 		
 		return "m61f04";
 	}

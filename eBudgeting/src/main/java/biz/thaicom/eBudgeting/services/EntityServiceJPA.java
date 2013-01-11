@@ -208,10 +208,12 @@ public class EntityServiceJPA implements EntityService {
 		return objs;
 	}
 
+	
+	
 	@Override
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad) {
 		
-		List<Objective> list = objectiveRepository.findByParentIdAndFiscalYear(null, fiscalYear);
+		List<Objective> list = objectiveRepository.findByParentIdAndFiscalYearAndParent_Name(null, fiscalYear, "ROOT");
 		if(eagerLoad == true) {
 			for(Objective objective: list) {
 				objective.doEagerLoad();
@@ -607,7 +609,7 @@ public class EntityServiceJPA implements EntityService {
 					fc.setUnitName(fcNode.get("unitName").asText());
 					fc.setIndex(fcNode.get("index").asInt());
 					if(fcNode.get("isFixed") == null) {
-						fc.setIsFixed(false);
+						fc.setIsFixed(true);
 					} else {
 						fc.setIsFixed(fcNode.get("isFixed").asBoolean());
 					}
@@ -621,7 +623,7 @@ public class EntityServiceJPA implements EntityService {
 				fc.setUnitName(fcNode.get("unitName").asText());
 				fc.setIndex(fcNode.get("index").asInt());
 				if(fcNode.get("isFixed") == null) {
-					fc.setIsFixed(false);
+					fc.setIsFixed(true);
 				} else {
 					fc.setIsFixed(fcNode.get("isFixed").asBoolean());
 				}

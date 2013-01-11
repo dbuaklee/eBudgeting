@@ -178,7 +178,7 @@
 			    height: '400',
 			    treeGrid: true,
 			    treeGridModel: 'adjacency',
-			    url: appUrl('/ObjectiveWithBudgetProposal/2556/1/flatDescendants'), 
+			    url: appUrl('/ObjectiveWithBudgetProposal/'+fiscalYear+'/1/flatDescendants'), 
 			    mtype: "GET",
 			    caption: 'รายละเอียดงบประมาณ',
 			    colNames:['id', 'รหัส', 'ชื่อกิจกรรม'],

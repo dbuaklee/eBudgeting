@@ -16,7 +16,7 @@ import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 public interface ObjectiveRepository extends PagingAndSortingRepository<Objective, Long>, JpaSpecificationExecutor<Objective>{
 	public List<Objective> findByTypeId(Long id);
 
-	public List<Objective> findByParentIdAndFiscalYear(Long id, Integer fiscalYear);
+	public List<Objective> findByParentIdAndFiscalYearAndParent_Name(Long id, Integer fiscalYear, String parentName);
 
 	@Query("" +
 			"SELECT objective " +
@@ -168,6 +168,9 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"WHERE objective.type in (?1) and objective.parent is null ")
 		public List<Objective> findAvailableChildrenOfObjectiveType(
 			Set<ObjectiveType> childrenSet);
+
+	public Objective findOneByFiscalYearAndName(Integer fiscalYear,
+			String string);
 
 
 

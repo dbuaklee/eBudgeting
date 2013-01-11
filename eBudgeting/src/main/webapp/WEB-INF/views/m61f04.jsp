@@ -10,7 +10,7 @@
 <div class="row">
 	<div class="span11">
 		
-		<div id="modal" class="modal hide fade">
+		<div id="modal" class="modal wideModal hide fade">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<span style="font-weight: bold;"></span>
@@ -68,13 +68,13 @@
 </script>
 
 <script id="selectionTemplate" type="text/x-handler-template">
-<select id="budgetType_{{this.id}}">
-	<option value="0">กรุณาเลือกรายการ</option>
+<select id="budgetType_{{this.id}}" multiple="multiple" style="height: 100px;" class="span2">
+	{{#if this}}
 	{{#each this.children}}
-	<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
+{{else}} {{/if}}
 </select>
-<div></div>
 </script>
 
 <script id="budgetTypeSelectionTemplate" type="text/x-handler-template">
@@ -89,46 +89,42 @@
 </script>
 
 <script id="strategySelectionTemplate" type="text/x-handler-template">
-<select id="strategySlt" {{#if editStrategy}} disabled {{/if}}>
-	<option value="0">กรุณาเลือกรายการ</option>
+<select id="strategySlt" multiple="multiple" style="height: 100px;" class="span2" >
 	{{#each this}}
 	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{name}}</option>
 	{{/each}}
 </select>
-<div><form id="input-form">
-		
-	</form></div>
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<table class="table table-bordered" id="headerTbl" style="margin-bottom:0px; width:960px; table-layout:fixed;">
+<table class="table table-bordered" id="headerTbl" style="margin-bottom:0px; width:720px; table-layout:fixed;">
 	<thead>
 		<tr>
 			<th style="width:20px;">#</th>
-			<th style="width:290px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:260px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
 			<th style="width:60px;">เป้าหมาย</th>
 			<th style="width:60px;">หน่วยนับ</th>
-			<th style="width:120px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
-			<th style="width:120px;">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
-			<th style="width:120px;">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
-			<th style="width:120px;">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
+			<th style="width:80px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
+			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
+			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
+			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td style="width:20px;"></td>
-			<td style="width:290px;text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
-			<td style="width:60px;"></td>
-			<td style="width:60px;"></td>
-			<td style="width:120px;"><strong>{{sumProposal allProposal}}</td>
-			<td style="width:120px;"><strong>{{sumProposalNext1Year allProposal}}</strong></td>
-			<td style="width:120px;"><strong>{{sumProposalNext2Year allProposal}}</strong></td>
-			<td style="width:120px;"><strong>{{sumProposalNext3Year allProposal}}</strong></td>
+			<td></td>
+			<td style="text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
+			<td></td>
+			<td></td>
+			<td><strong>{{sumProposal allProposal}}</td>
+			<td><strong>{{sumProposalNext1Year allProposal}}</strong></td>
+			<td><strong>{{sumProposalNext2Year allProposal}}</strong></td>
+			<td><strong>{{sumProposalNext3Year allProposal}}</strong></td>
 		</tr>
 	</tbody>
 </table>
-<div style="height: 600px; overflow: auto; width:1065px">
-<table class="table table-bordered" id="mainTbl" style="width:960px; table-layout:fixed;">
+<div style="height: 600px; overflow: auto; width:875px">
+<table class="table table-bordered" id="mainTbl" style="width:720px; table-layout:fixed;">
 	<tbody>
 		
 			{{{childrenNodeTpl this 0}}}
@@ -138,7 +134,7 @@
 </div>
 </script>
 <script id="mainCtr1Template" type="text/x-handler-template">
-<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:1150px; table-layout:fixed;">
+<table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:860px; table-layout:fixed;">
 	<thead>
 		<tr>
 			<th style="width:400px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
@@ -245,67 +241,71 @@
 <script id="childrenNodeTemplate" type="text/x-handler-template">
 	<tr data-level="{{this.level}}" data-id="{{this.id}}" class="type-{{type.id}}">
 		<td style="width:20px;"></td>
-		<td style="width:290px;" class="{{#if this.children}}disable{{/if}}">
-			<span style="padding-left:{{this.padding}}px;width:{{substract 405 this.padding}}px;">
+		<td style="width:260px;" class="{{#if this.children}}disable{{/if}}">
+			<div class="pull-left" style="margin-left:{{this.padding}}px; width:18px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
-					<label class="expand" for="bullet_{{this.id}}"><img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/></label>
+					<label class="expand" for="bullet_{{this.id}}"><icon class="icon-caret-down"></i></label>
 					{{else}}					
-						<img width=8 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/> - 
-					{{/if}}
+						<icon class="icon-file-alt"></i>
+					{{/if}}					
+			</div>
+			<div class="pull-left" style="width:{{nameWidth}}px;">
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">
 						{{#unless this.children}}<a href="#" class="detail">{{/unless}}
 						<b>{{this.type.name}}</b> [{{this.code}}] {{this.name}}
 						{{#unless this.children}}</a>{{/unless}}
 					</label>
-					{{#unless this.children}}
-						<img width=12 height=5 src="/eBudgeting/resources/graphics/1pixel.png"/>
-						{{{listProposals this.filterProposals}}}
-					{{/unless}}
-			</span> 
+			</div>
+{{#unless this.children}}
+			<div class="clearfix">	{{{listProposals this.filterProposals}}}</div>
+{{/unless}}
+			
+			
+			
 		</td>
-			<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
 			<span>
 				{{#each filterTargetValues}}{{#if ../this.isLeaf}}<a href="#" data-id="{{id}}" target-id="{{target.id}}" class="targetValueModal">{{/if}}
 				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}{{#if ../../this.isLeaf}}เพิ่ม{{else}}-{{/if}}{{/if}}
 				{{#if ../this.isLeaf}}</a>{{/if}}<br/>{{/each}}
 			</span>
-			</td>
-			<td  style="width:60px; text-align:center" class="{{#if this.children}}disable{{/if}}">
+		</td>
+		<td  style="width:60px; text-align:center" class="{{#if this.children}}disable{{/if}}">
 			<span>
 				<ul  style="list-style:none; margin: 0px;">{{#each filterTargetValues}}<li style="list-style:none; padding: 0px;">{{target.unit.name}} ({{#if target.isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>{{/each}}</ul>
 			</span>
-			</td>
-			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		</td>
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
-			</td>
+		</td>
 
-			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
-			</td>
-			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		</td>
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
-			</td>
-			<td style="width:120px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		</td>
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
-			</td>
+		</td>
 	</tr>
 	{{{childrenNodeTpl this.children this.level}}}  
 </script>
@@ -324,11 +324,22 @@
 		{{/each}}
 	</ul>
 	</div>
-	{{/each}}				
+	{{/each}}
 </div>
-<div id="budgetTypeSelectionDiv"></div>
-
-
+<hr/>
+กรอกข้อมูลใหม่
+<div class="row">
+<div class="span2" id="budgetTypeSelectionDivL1">หมวดหลัก<div></div></div>
+<div class="span2" id="budgetTypeSelectionDivL2">หมวดย่อย<div></div></div>
+<div class="span2" id="budgetTypeSelectionDivL3">รายการหลัก<div></div></div>
+<div class="span2" id="budgetTypeSelectionDivL4">รายการ<div></div></div>
+</div>
+<div class="span2" id="strategySelectionDiv">รายการย่อย<div></div>
+<div id="inputDiv">
+<form id="input-form">
+		
+</form></div>
+</div>
 </script>
 
 
@@ -341,12 +352,11 @@
 
 <script id="inputModalTemplate" type="text/x-handler-template">
 	<hr/>
-	ชื่อรายการ: <input type="text" id="proposalName" value="{{propsalStrategyName}}"/>
 	<table class="formula table table-condensed">
 	<tr>
 	{{#each this.formulaColumns}}
 		<td style="text-align:center" width=80>
-		{{columnName}} 
+
 		</td>
 		{{#if this.$last}}
 			<td style="text-align:center" width=5 rowspan="3">
@@ -370,11 +380,11 @@
 		{{#if isFixed}}
 		<td style="text-align:center" class="isNotFixed" data-id="{{id}}">
 			<input id="formulaColumnId-{{id}}" type="text" class="span1 formulaColumnInput" value="{{value}}"></input>
-		</td>
+		</td>	
 		{{else}}
 		<td style="text-align:center" class="isFixed" data-id="{{id}}">
 			{{formatNumber value}}
-		</td>
+		</td>	
 		{{/if}}
 		
 	{{/each}}
@@ -430,7 +440,7 @@
 
 
 <script type="text/javascript">
-	var objectiveId = "${objective.id}";
+	var objectiveId = "${objectiveId}";
 	var fiscalYear = "${fiscalYear}";
 
 	var pageUrl = "/page/m2f12/";
@@ -552,7 +562,8 @@
 			if (children[0].type.id > 0) {
 				children.forEach(function(child) {
 					child["level"] = level + 1;
-					child["padding"] = (parseInt(level) + 1) * 12;
+					child["padding"] = (parseInt(level)) * 15;
+					child["nameWidth"] = 260 - 18 - child["padding"];
 					out = out + childNodeTpl(child);
 				});
 
@@ -579,10 +590,10 @@
 			if(options != null) {
 				this.parentModal = options.parentModal;
 			} 
+			this.displayNull=false;
 			
 		},
-	
-		el : "#strategySelectionDiv",
+		
 		events : {
 			"change #strategySlt" : "strategySelect",
 			"click .saveProposal" : "saveProposal",
@@ -595,13 +606,29 @@
 		currentStrategyCollection : null,
 	
 		render : function() {
-			if (this.currentStrategyCollection != null) {
+			var selectionDiv = this.$el.find('div:first-child');
+			if (this.currentStrategyCollection != null && this.currentStrategyCollection.length > 0) {
 				var json = this.currentStrategyCollection.toJSON();
-				this.$el.html(this.strategySelectionTemplate(json));
+				selectionDiv.html(this.strategySelectionTemplate(json));
+			} else {
+				if(this.displayNull) {
+					selectionDiv.html("ไม่มีรายการย่อย");
+				} else {
+					selectionDiv.html(this.strategySelectionTemplate({}));
+				}
 			}
 	
 		},
 	
+		setRootModel: function(collection, displayNull) {
+			this.currentStrategyCollection=collection;
+			if(displayNull == true) {
+				this.displayNull = true;
+			} else {
+				this.displayNull = false;
+			}
+		},
+		
 		renderWithStrategy : function(strategyCollection, parentModal, budgetType) {
 			this.parentModal = parentModal;
 			this.currentStrategyCollection = strategyCollection;
@@ -977,50 +1004,45 @@
 	var BudgetTypeAllSelectionView = Backbone.View.extend({
 		initialize: function(options){
 			if(options != null) {
-				this.el = options.el;
-				this.model = options.model;
+				this.level = options.level;
 				this.parentModal = options.parentModal;
 			} 
 			
 		},
-		el: "#budgetTypeSelectionDiv",
 		selectionTpl : Handlebars.compile($("#selectionTemplate").html()),
 		
 		render: function(){
 			// first clear the siblings select
-			this.$el.nextAll('div').remove();
 			this.$el.empty();
-			this.$el.html(this.selectionTpl(this.model.toJSON()));
+			if(this.model != null) {
+				this.$el.html(this.selectionTpl(this.model.toJSON()));
+			} else {
+				this.$el.html(this.selectionTpl({}));
+			}
+			
 		},
 		
 		events: {
-			"change select:first" : "selectionChange" // only the first one
+			"change select" : "selectionChange" 
+		},
+		
+		setRootModel: function(rootModel) {
+			this.model =  rootModel;
 		},
 		
 		selectionChange: function(e) {
-			var selectedBudgetTypeId = $(e.target).val();
+			var selectedBudgetTypeId = $(e.target).val()[0];
 			// now try to get this model
 			var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
-			e1 = budgetType;
 			budgetType.fetch({success: _.bind(function(model, response){
 				var fetchedBudgetType = response;
 				if(fetchedBudgetType.children != null && fetchedBudgetType.children.length > 0) {
+					//we feed this to the next level?
+					this.parentModal.updateBudgetTypeSelectionLevelWithModel(this.level+1, budgetType);
 					
-					var nextEl = this.$el.selector + " select + div";
-					
-					console.log($(nextEl));
-					
-					this.nextBudgetTypeSelectionView = new BudgetTypeAllSelectionView({model: budgetType, el: nextEl, parentModal: this.parentModal});
-					this.nextBudgetTypeSelectionView.render();
 				} else {
 					
 					// then we should now filling in the proposed budget
-					var nextEl = this.$el.selector + " select + div";
-					this.strategySelectionView = new StrategySelectionView({parentModal: this.parentModal});
-					
-//					this.nextBudgetTypeSelectionView = new BudgetProposalView({model: fetchedBudgetType, el: nextEl});
-					
-//					this.nextBudgetTypeSelectionView.fetchFormulaLine(fetchedBudgetType.id);
 					
 					// ok now we'll get the strategy here
 					var formulaStrategies = new FormulaStrategyCollection;
@@ -1029,10 +1051,7 @@
 						url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + budgetType.get('id')),
 						success : _.bind(function(data) {
 							budgetType.set('strategies', formulaStrategies);
-							this.strategySelectionView.setElement(nextEl);
-
-							this.strategySelectionView.renderWithStrategy(formulaStrategies, this.parentModal, budgetType);
-
+							this.parentModal.updateBudgetTypeSelectionLevelWithModel(this.level+1, formulaStrategies);
 						}, this)
 					});
 					
@@ -1167,15 +1186,32 @@
 
 	var ModalView = Backbone.View.extend({
 		initialize : function() {
-
+			
 		},
 
 		el : "#modal",
 
-		budgetTypeSelectionView : new BudgetTypeAllSelectionView(),
-
+		
 		modalTemplate : Handlebars.compile($('#modalTemplate').html()),
 
+		updateBudgetTypeSelectionLevelWithModel: function(level, model) {
+			level = level-1;
+			var btView = this.budgetTypeSelctionArray[level];
+			if(level==4) {
+				btView.setRootModel(model,true);	
+			} else {
+				btView.setRootModel(model);
+			}
+			btView.render();
+			
+			// and for the rest set to null
+			for(var i=level+1; i<this.budgetTypeSelctionArray.length; i++) {
+				this.budgetTypeSelctionArray[i].setRootModel(null);
+				this.budgetTypeSelctionArray[i].render();
+			}
+			
+		},
+		
 		events : {
 			"click .removeProposal" : "removeProposal",
 			"click .editProposal" : "editProposal",
@@ -1187,7 +1223,6 @@
 		cancelModal : function(e) {
 			window.location.reload();
 		},
-
 		editProposal : function(e) {
 			var proposalStrategyId = $(e.target).parents('li').attr('data-id');
 			var budgetProposalId = $(e.target).parents('li').attr('proposal-id');
@@ -1241,12 +1276,44 @@
 				this.$el.find('.modal-header span').html(
 						this.objective.get('name'));
 				this.$el.find('.modal-body').html(html);
-
 				
 				var rootBudgetType = BudgetType.findOrCreate({id:0});
 			    rootBudgetType.fetch({success: _.bind(function(){
-			    	this.budgetTypeSelectionView = new BudgetTypeAllSelectionView({model: rootBudgetType, el:'#budgetTypeSelectionDiv', parentModal: this});
-			    	this.budgetTypeSelectionView.render();
+			    	this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1 > div', level: 1, parentModal: this});
+					this.budgetTypeSelectionViewL2 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL2 > div', level: 2, parentModal: this});
+					this.budgetTypeSelectionViewL3 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL3 > div', level: 3, parentModal: this});
+					this.budgetTypeSelectionViewL4 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL4 > div', level: 4, parentModal: this});
+					this.startegySelectionView = new StrategySelectionView({el: '#strategySelectionDiv > div', parentModal: this});
+
+					this.budgetTypeSelctionArray = [];
+					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL1);
+					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL2);
+					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL3);
+					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL4);
+					this.budgetTypeSelctionArray.push(this.startegySelectionView);
+
+					
+					
+			    	this.budgetTypeSelectionViewL1.$el = $('#budgetTypeSelectionDivL1 > div');
+			    	this.budgetTypeSelectionViewL1.setRootModel(rootBudgetType);
+			    	this.budgetTypeSelectionViewL1.render();
+			    	
+			    	
+			    	this.budgetTypeSelectionViewL2.$el = $('#budgetTypeSelectionDivL2 > div');
+			    	this.budgetTypeSelectionViewL1.setRootModel(null);
+			    	this.budgetTypeSelectionViewL2.render();
+			    	
+			    	this.budgetTypeSelectionViewL3.$el = $('#budgetTypeSelectionDivL3 > div');
+			    	this.budgetTypeSelectionViewL1.setRootModel(null);
+			    	this.budgetTypeSelectionViewL3.render();
+			    	
+			    	this.budgetTypeSelectionViewL4.$el = $('#budgetTypeSelectionDivL4 > div');
+			    	this.budgetTypeSelectionViewL1.setRootModel(null);
+			    	this.budgetTypeSelectionViewL4.render();
+			    	
+			    	this.startegySelectionView.$el = $('#strategySelectionDiv');
+			    	this.startegySelectionView.renderWithStrategy(null, this, null);
+			    	this.startegySelectionView.render();
 		    	},this)});
 				
 			}
@@ -1444,7 +1511,7 @@
 		toggle : function(e) {
 			l = e;
 			var clickLevel = $(l.target).parents('tr').attr('data-level');
-			$(l.target).next('label').toggleClass("expand collapse");
+			$(l.target).next('label').find('icon').toggleClass("icon-caret-right icon-caret-down");
 
 			var currentTr = $(l.target).parents('tr');
 
