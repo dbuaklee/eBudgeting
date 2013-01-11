@@ -105,7 +105,7 @@
 {{else}}
 	<form id="strategyForm" class="form-horizontal">
 		<div class="control-group">
-			<label class="control-label" for="c">ชื่อรายการย่อย</label>
+			<label class="control-label" for="c">ชื่อรายการ</label>
 			<div class="controls">
 				<input type="text" id="strategyName" placeholder="..." value="{{name}}"> 
 			</div>
@@ -403,7 +403,7 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 			if(!formulaColumns[i].isFixed) {
 				s = s + formulaColumns[i].unitName  + "";
 			} else {
-				s = s + "("+ addCommas(formulaColumns[i].value) + " " + formulaColumns[i].unitName  + ")";
+				s = s + " " + formulaColumns[i].unitName  + " ";
 			}
 			if(editForm == true) {
 				s = s + "";

@@ -327,15 +327,16 @@
 	{{/each}}
 </div>
 <hr/>
+<div id="inputAll">
 กรอกข้อมูลใหม่
 <div class="row">
 <div class="span2" id="budgetTypeSelectionDivL1">หมวดหลัก<div></div></div>
 <div class="span2" id="budgetTypeSelectionDivL2">หมวดย่อย<div></div></div>
 <div class="span2" id="budgetTypeSelectionDivL3">รายการหลัก<div></div></div>
 <div class="span2" id="budgetTypeSelectionDivL4">รายการ<div></div></div>
-</div>
 <div class="span2" id="strategySelectionDiv">รายการย่อย<div></div>
-<div id="inputDiv">
+</div>
+<div id="inputDiv" class="span10">
 <form id="input-form">
 		
 </form></div>
@@ -350,62 +351,83 @@
 </form>
 </script>
 
-<script id="inputModalTemplate" type="text/x-handler-template">
-	<hr/>
-	<table class="formula table table-condensed">
-	<tr>
-	{{#each this.formulaColumns}}
-		<td style="text-align:center" width=80>
-
-		</td>
-		{{#if this.$last}}
-			<td style="text-align:center" width=5 rowspan="3">
-			=
-			</td>
-		{{else}}
-			<td style="text-align:center" width=5 rowspan="3">
-			X
-			</td>
-		{{/if}}
-	{{/each}}
-	<td  style="text-align:center" width=80>
-		คิดเป็น
-	</td>
-	<td rowspan="3">
-		<button class="btn btn-mini copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button>
-	</td>
-	</tr>
-	<tr>
-	{{#each this.formulaColumns}}
-		{{#if isFixed}}
-		<td style="text-align:center" class="isNotFixed" data-id="{{id}}">
-			<input id="formulaColumnId-{{id}}" type="text" class="span1 formulaColumnInput" value="{{value}}"></input>
-		</td>	
-		{{else}}
-		<td style="text-align:center" class="isFixed" data-id="{{id}}">
-			{{formatNumber value}}
-		</td>	
-		{{/if}}
-		
-	{{/each}}
-	<td  style="text-align:center" id="totalInputForm">
-		{{total}}
-	</td>
-	</tr>
-	<tr>
-	{{#each this.formulaColumns}}
-		<td style="text-align:center">
-		{{unitName}}
-		</td>
-	{{/each}}
-	<td style="text-align:center">บาท
-	</td>
-	</tr>
-	</table>
+<script id="defaultInputTemplate" type="text/x-handler-template">
+	<div id="formulaBox">
+		<div>
+			<div style="height:35px;margin-bottom:10px;">
+				เรื่อง: 
+			</div>
+			<div style="height:35px;">
+				จำนวน:
+			</div>
+		</div>
+		<div>
+			<div style="height:35px;margin-bottom:5px;padding-top:5px;text-align:center;padding-right:30px;">
+				<strong>ขอตั้ง</strong>
+			</div>
+			<div style="height:35px;" id="totalInputForm">
+				<input type="text" id="totalInputTxt" style="width:120px;" value="{{total}}"></input>  บาท
+			</div>
+		</div>
+	</div>
+	
+<div class="clearfix"></div>
+<div style="margin-top:5px; margin-bottom: 10px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+<div>
 	ประมาณการปี {{next1Year}}: <input type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/> บาท <br/>
 	ประมาณการปี {{next2Year}}: <input type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/> บาท <br/>
 	ประมาณการปี {{next3Year}}: <input type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/> บาท <br/>
 	{{#if editStrategy}}<button data-id="{{proposalStrategyId}}" class="btn btn-mini updateProposal">แก้ไข</button>{{else}}<button class="btn btn-mini saveProposal">บันทึก</button>{{/if}}
+</div>
+</script>
+
+
+<script id="inputModalTemplate" type="text/x-handler-template">
+	<div id="formulaBox">
+		<div>
+			<div style="height:35px;margin-bottom:10px;">
+				เรื่อง: 
+			</div>
+			<div style="height:35px;">
+				จำนวน:
+			</div>
+		</div>
+		<div>
+			<div style="height:35px;margin-bottom:10px;">
+				<input type="text" style="width:70px;" value="ราคา (บาท)" disabled="disabled"/>
+			</div>
+			<div style="height:35px;">
+				<input type="text" id="standardPriceTxt" style="width:70px;" disabled="disabled" value="{{standardPrice}}"></input> &times;
+			</div>
+		</div>
+		{{#each formulaColumns}}
+		<div>
+			<div style="height:35px;margin-bottom:10px;">
+				<input type="text" style="width:70px;" value="{{unitName}}" disabled="disabled"/>
+			</div>
+			<div style="height:35px;">
+				<input type="text" class="formulaColumnInput" style="width:70px;"  value="{{value}}"></input> {{#if $last}}={{else}}&times;{{/if}}
+			</div>
+		</div>
+		{{/each}}
+		<div>
+			<div style="height:35px;margin-bottom:5px;padding-top:5px;text-align:center;padding-right:30px;">
+				<strong>คิดเป็นขอตั้ง</strong>
+			</div>
+			<div style="height:35px;" id="totalInputForm">
+				<input type="text" id="totalInputTxt" style="width:120px;" disabled="disabled" value="{{total}}"></input>  บาท
+			</div>
+		</div>
+	</div>
+	
+<div class="clearfix"></div>
+<div style="margin-top:5px; margin-bottom: 10px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+<div>
+	ประมาณการปี {{next1Year}}: <input type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/> บาท <br/>
+	ประมาณการปี {{next2Year}}: <input type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/> บาท <br/>
+	ประมาณการปี {{next3Year}}: <input type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/> บาท <br/>
+	{{#if editStrategy}}<button data-id="{{proposalStrategyId}}" class="btn btn-mini updateProposal">แก้ไข</button>{{else}}<button class="btn btn-mini saveProposal">บันทึก</button>{{/if}}
+</div>
 </script>
 
 <script id="proposalInputTemplate" type="text/x-handler-template">
@@ -606,7 +628,7 @@
 		currentStrategyCollection : null,
 	
 		render : function() {
-			var selectionDiv = this.$el.find('div:first-child');
+			var selectionDiv = this.$el.find('#strategySelectionDiv > div:first-child');
 			if (this.currentStrategyCollection != null && this.currentStrategyCollection.length > 0) {
 				var json = this.currentStrategyCollection.toJSON();
 				selectionDiv.html(this.strategySelectionTemplate(json));
@@ -708,35 +730,24 @@
 	
 		inputChange : function(e) {
 			// OK we'll go through all td value
-			var allTdIsFixed = $(e.target).parents('tr').find('td.isFixed');
-			var allTdIsNotFixed = $(e.target).parents('tr').find('td.isNotFixed');
-	
-			var amount = 1;
-	
-			//now multiply all from is Fixed!
-			for ( var i = 0; i < allTdIsFixed.length; i++) {
-				var formulaColumnId = $(allTdIsFixed[i]).attr('data-id');
-				var fc = FormulaColumn.findOrCreate(formulaColumnId);
-				amount = amount * fc.get('value');
+			var standardPrice = this.currentStrategy.get('standardPrice');
+			
+			if(isNaN(standardPrice) || standardPrice == null) {
+				standardPrice = 1;
 			}
-	
-			//now moveon to the rest
-			for ( var i = 0; i < allTdIsNotFixed.length; i++) {
-				var value = $(allTdIsNotFixed[i]).find('input').val();
-				value = value.replace(/[^\d\.\-\ ]/g, '');
-				if (isNaN(parseInt(value))) {
-					amount = "";
-					break;
-				}
-				amount = amount * parseInt(value);
+			var amount = standardPrice;
+			
+			var allInput = this.$el.find('.formulaColumnInput');
+			for(var i=0; i<allInput.length; i++ ) {
+				amount = amount * allInput[i].value;
 			}
-	
+			
 			// now put amount back amount
-			$('#totalInputForm').html(addCommas(amount));
+			this.$el.find('#totalInputTxt').val(addCommas(amount));
 		},
 	
 		copyToNextYear : function(e) {
-			var valueToCopy = $('#totalInputForm').html();
+			var valueToCopy = $('#totalInputTxt').val();
 			valueToCopy = valueToCopy.replace(/,/g, '');
 			this.$el.find('#amountRequestNext1Year').val(valueToCopy);
 			this.$el.find('#amountRequestNext2Year').val(valueToCopy);
@@ -1193,14 +1204,17 @@
 
 		
 		modalTemplate : Handlebars.compile($('#modalTemplate').html()),
+		defaultInputTemplate : Handlebars.compile($('#defaultInputTemplate').html()),
 
 		updateBudgetTypeSelectionLevelWithModel: function(level, model) {
 			level = level-1;
 			var btView = this.budgetTypeSelctionArray[level];
 			if(level==4) {
-				btView.setRootModel(model,true);	
+				btView.setRootModel(model,true);
+				$('#input-form').html(this.defaultInputTemplate({}));
 			} else {
 				btView.setRootModel(model);
+				$('#input-form').empty();
 			}
 			btView.render();
 			
@@ -1283,7 +1297,7 @@
 					this.budgetTypeSelectionViewL2 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL2 > div', level: 2, parentModal: this});
 					this.budgetTypeSelectionViewL3 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL3 > div', level: 3, parentModal: this});
 					this.budgetTypeSelectionViewL4 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL4 > div', level: 4, parentModal: this});
-					this.startegySelectionView = new StrategySelectionView({el: '#strategySelectionDiv > div', parentModal: this});
+					this.startegySelectionView = new StrategySelectionView({el: '#inputAll', parentModal: this});
 
 					this.budgetTypeSelctionArray = [];
 					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL1);
@@ -1311,7 +1325,7 @@
 			    	this.budgetTypeSelectionViewL1.setRootModel(null);
 			    	this.budgetTypeSelectionViewL4.render();
 			    	
-			    	this.startegySelectionView.$el = $('#strategySelectionDiv');
+			    	this.startegySelectionView.$el = $('#inputAll');
 			    	this.startegySelectionView.renderWithStrategy(null, this, null);
 			    	this.startegySelectionView.render();
 		    	},this)});
