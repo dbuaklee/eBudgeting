@@ -5,5 +5,6 @@
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
  
 	<bean id="sample.xls" class="biz.thaicom.eBudgeting.view.SampleXLSView"/>
+	<bean id="report1.xls" class="biz.thaicom.eBudgeting.view.Report1XLSView"/>
 	
 </beans>
