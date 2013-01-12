@@ -314,13 +314,17 @@
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	{{#each filterProposals}}
 	<div> 
-	<u>{{budgetType.topParentName}} {{budgetType.name}}</u>
-	<ul id="budgetProposeLst">
+	<u>{{budgetType.topParentName}} / {{budgetType.name}}</u>
+	<ul id="budgetProposalLst">
 		{{#each proposalStrategies}} 
 			<li data-id="{{id}}" proposal-id="{{../id}}">
-				<span class="label label-info"><a href="#" class="editProposal"><i class="icon icon-edit icon-white editProposal"></i></a></span>				
-				<span class="label label-important"><a href="#" class="removeProposal"><i class="icon icon-trash icon-white removeProposal"></i></a></span>
-				{{name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+				<a href="#" class="editProposal"><i class="icon-edit icon-blue editProposal"></i></a>				
+				<a href="#" class="removeProposal"><i class="icon-trash icon-red removeProposal"></i></a>
+				{{#if formulaStrategy}}
+					{{formulaStrategy.name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+				{{else}}
+					{{name}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+				{{/if}}
 		{{/each}}
 	</ul>
 	</div>
@@ -355,15 +359,15 @@
 	<div id="formulaBox">
 		<div>
 			<div style="height:35px;margin-bottom:10px;">
-				เรื่อง: 
+				รายการ: 
 			</div>
 			<div style="height:35px;">
-				จำนวน:
+				จำนวนขอตั้ง:
 			</div>
 		</div>
 		<div>
-			<div style="height:35px;margin-bottom:5px;padding-top:5px;text-align:center;padding-right:30px;">
-				<strong>ขอตั้ง</strong>
+			<div style="height:35px;margin-bottom:5px;padding-top:5px;">
+				<strong>{{budgetTypeName}}</strong>
 			</div>
 			<div style="height:35px;" id="totalInputForm">
 				<input type="text" id="totalInputTxt" style="width:120px;" value="{{total}}"></input>  บาท
@@ -383,6 +387,9 @@
 
 
 <script id="inputModalTemplate" type="text/x-handler-template">
+	<div>
+				รายการ: <strong> {{type.name}} / {{name}} </strong>
+	</div>
 	<div id="formulaBox">
 		<div>
 			<div style="height:35px;margin-bottom:10px;">
@@ -406,13 +413,13 @@
 				<input type="text" style="width:70px;" value="{{unitName}}" disabled="disabled"/>
 			</div>
 			<div style="height:35px;">
-				<input type="text" class="formulaColumnInput" style="width:70px;"  value="{{value}}"></input> {{#if $last}}={{else}}&times;{{/if}}
+				<input type="text" class="formulaColumnInput" id="formulaColumnId-{{id}}" style="width:70px;"  value="{{value}}"></input> {{#if $last}}={{else}}&times;{{/if}}
 			</div>
 		</div>
 		{{/each}}
 		<div>
 			<div style="height:35px;margin-bottom:5px;padding-top:5px;text-align:center;padding-right:30px;">
-				<strong>คิดเป็นขอตั้ง</strong>
+				
 			</div>
 			<div style="height:35px;" id="totalInputForm">
 				<input type="text" id="totalInputTxt" style="width:120px;" disabled="disabled" value="{{total}}"></input>  บาท
@@ -479,9 +486,7 @@
 	 		var topParentName = proposals[0].budgetType.topParentName;
 	 		retStr = retStr + "<li><u>" + topParentName +"</u><ul>";
 	 		for(var i=0; i< proposals.length; i++) {
-	 				
-
-	 			
+	 					 			
 	 			if(topParentName == proposals[i].budgetType.topParentName) {
 	 				retStr = retStr + "<li>" + proposals[i].budgetType.name + " - " + addCommas(proposals[i].amountRequest) + " บาท</li>";
 	 			} else {
@@ -533,32 +538,27 @@
 	});
 
 	Handlebars.registerHelper("formulaLine", function(strategy) {
-
-		var s = "";
+		console.log(strategy);
+		var s = addCommas(strategy.formulaStrategy.standardPrice) + " บาท ";
 
 		if (strategy.formulaStrategy != null) {
 			var formulaColumns = strategy.formulaStrategy.formulaColumns;
 			for ( var i = 0; i < formulaColumns.length; i++) {
-				if (i > 0) {
-					s = s + " X ";
-				}
-
-				s = s + formulaColumns[i].columnName;
+				
+				s = s + " &times; ";
 				if (formulaColumns[i].isFixed) {
 					// now we'll go through requestColumns
 					var j;
 					for (j = 0; j < strategy.requestColumns.length; j++) {
 						if (strategy.requestColumns[j].column.id == formulaColumns[i].id) {
-							s = s + "(" + addCommas(strategy.requestColumns[j].amount)
-								+ formulaColumns[i].unitName
-								+ ")";
+							s = s + addCommas(strategy.requestColumns[j].amount)
+								+ " " + formulaColumns[i].unitName;
 						}
 					}
 
 				} else {
-					s = s + "(" + addCommas(formulaColumns[i].value)
-						+ " " + formulaColumns[i].unitName
-						+ ")";
+					s = s +  addCommas(formulaColumns[i].value)
+						+ " " + formulaColumns[i].unitName;
 				}
 
 			}
@@ -620,9 +620,10 @@
 			"change #strategySlt" : "strategySelect",
 			"click .saveProposal" : "saveProposal",
 			"click .copytoNextYear" : "copyToNextYear",
-			"change .formulaColumnInput" : 'inputChange',
-			"click .updateProposal" : 'updateProposal'
+			"change .formulaColumnInput" : "inputChange",
+			"click .updateProposal" : "updateProposal"
 		},
+		
 		inputModalTemplate : Handlebars.compile($('#inputModalTemplate').html()),
 		strategySelectionTemplate : Handlebars.compile($('#strategySelectionTemplate').html()),
 		currentStrategyCollection : null,
@@ -655,6 +656,7 @@
 			this.parentModal = parentModal;
 			this.currentStrategyCollection = strategyCollection;
 			this.currentBudgetType = budgetType;
+			this.displayNull = true;
 			this.render();
 		},
 	
@@ -758,8 +760,7 @@
 	
 			var strategyId = e.target.value;
 	
-			var strategy = this.currentStrategyCollection
-					.get(strategyId);
+			var strategy = this.currentStrategyCollection.get(strategyId);
 			this.currentStrategy = strategy;
 	
 			var columns = strategy.get('formulaColumns');
@@ -775,6 +776,9 @@
 			var html = this.inputModalTemplate(json);
 			// render strategy!
 			this.$el.find('#input-form').html(html);
+			
+			// now update with the parent 
+			this.parentModal.currentFormulaStrategySelection = strategy; 
 	
 		},
 	
@@ -824,8 +828,7 @@
 	
 				$.ajax({
 					type : 'PUT',
-					url : appUrl('/ProposalStrategy/'
-							+ proposalStrategy.get('id')),
+					url : appUrl('/ProposalStrategy/' + proposalStrategy.get('id')),
 					data : JSON.stringify(json),
 					contentType : 'application/json;charset=utf-8',
 					dataType : "json",
@@ -838,178 +841,87 @@
 		},
 	
 		saveProposal : function(e) {
-			if (this.currentStrategy != null) {
-				var objective = this.parentModal.objective;
-				var budgetType = this.currentBudgetType;
+			var objective = this.parentModal.objective;
+			var budgetType = this.currentBudgetType;
 	
-				var budgetProposal = null;
+			var budgetProposal = this.currentBudgetProposal;
 	
-				//find appropriate budgetProposal, the one with budgetTypeid == the selected one
-				var pList = objective.get('filterProposals');
-				for ( var i = 0; i < pList.length; i++) {
-					var proposal = pList.at(i);
+			if (budgetProposal == null) {
+				// create new BudgetProposal
+				budgetProposal = new BudgetProposal();
+				budgetProposal.set('forObjective', objective);
+				budgetProposal.set('budgetType', budgetType);
+				// now put this proposal into objective;
+				objective.get('filterProposals').push(budgetProposal);
+			}
 	
-					if (proposal.get('budgetType').get('id') == budgetType
-							.get('id')) {
-						budgetProposal = proposal;
-						break;
-					}
-	
-				}
-	
-				if (budgetProposal == null) {
-					// create new BudgetProposal
-					budgetProposal = new BudgetProposal();
-					budgetProposal.set('forObjective', {
-						id : objective.get('id')
-					});
-					budgetProposal.set('budgetType', {
-						id : budgetType.get('id')
-					});
-	
-					// now put this proposal into objective;
-					objective.get('filterProposals').push(budgetProposal);
-				}
-	
-				// we will make a new ProposalStrategy
-				var proposalStrategy = new ProposalStrategy();
-	
-				proposalStrategy.set('formulaStrategy', {
-					id : this.currentStrategy.get('id')
-				});
-	
+			
+			
+			// we will make a new ProposalStrategy
+			var proposalStrategy = new ProposalStrategy();
+			budgetProposal.get('proposalStrategies').add(proposalStrategy);
+			
+			proposalStrategy.set('formulaStrategy', this.currentStrategy);
+			var calculatedAmount = 0;
+			
+			if(this.currentStrategy == null) {
+				calculatedAmount = this.$el.find('#totalInputForm').val();
+				proposalStrategy.set('name', this.currentBudgetType.get('name'));
+			} else{
 				// loop through formulaColumns
+				proposalStrategy.set('name', this.currentStrategy.get('name'));
 				var i;
-				var calculatedAmount = 0;
-				var formulaColumns = this.currentStrategy
-						.get('formulaColumns');
+				calculatedAmount = this.currentStrategy.get('standardPrice');
+				var formulaColumns = this.currentStrategy.get('formulaColumns');
 				for (i = 0; i < formulaColumns.length; i++) {
 					var fc = formulaColumns.at(i);
 					if (fc.get('isFixed')) {
 						var requestColumn = new RequestColumn();
-						requestColumn.set('amount', this.$el.find(
-								'#formulaColumnId-' + fc.get('id'))
-								.val());
+						requestColumn.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
 						requestColumn.set('column', fc);
-						requestColumn.set('proposalStrategy',
-								proposalStrategy);
+						requestColumn.set('proposalStrategy', proposalStrategy);
 	
-						proposalStrategy.get('requestColumns').add(
-								requestColumn);
+						proposalStrategy.get('requestColumns').add(requestColumn);
 	
 						if (calculatedAmount == 0) {
-							calculatedAmount = requestColumn
-									.get('amount');
+							calculatedAmount = requestColumn.get('amount');
 						} else {
-							calculatedAmount = calculatedAmount
-									* requestColumn.get('amount');
+							calculatedAmount = calculatedAmount * requestColumn.get('amount');
 						}
 	
 					} else {
 						if (calculatedAmount == 0) {
 							calculatedAmount = fc.get('value');
 						} else {
-							calculatedAmount = calculatedAmount
-									* fc.get('value');
+							calculatedAmount = calculatedAmount * fc.get('value');
 						}
 					}
 				}
-				proposalStrategy.set('totalCalculatedAmount',
-						calculatedAmount);
-				proposalStrategy.set('proposal', budgetProposal);
-				proposalStrategy.set('name', this.$el.find(
-						'#proposalName').val());
-				proposalStrategy.set('amountRequestNext1Year', this.$el
-						.find('#amountRequestNext1Year').val());
-				proposalStrategy.set('amountRequestNext2Year', this.$el
-						.find('#amountRequestNext2Year').val());
-				proposalStrategy.set('amountRequestNext3Year', this.$el
-						.find('#amountRequestNext3Year').val());
-	
-				if (budgetProposal.get('id') == null) {
-					// now ready to post back
-					var json = budgetProposal.toJSON();
-					json.forObjective = {
-						id : json.forObjective.id
-					};
-					json.budgetType = {
-						id : json.budgetType.id
-					};
-	
-					$.ajax({
-						type : 'POST',
-						url : appUrl('/BudgetProposal'),
-						data : JSON.stringify(json),
-						contentType : 'application/json;charset=utf-8',
-						dataType : "json",
-						success : _.bind(function(data) {
-							budgetProposal.set('id',data.id);
-	
-							var json = proposalStrategy.toJSON();
-							json.formulaStrategy = null;
-							json.proposal = null;
-
-							var i;
-							for (i = 0; i < json.requestColumns.length; i++) {
-								json.requestColumns[i].column = {
-									id : json.requestColumns[i].column.id
-								};
-							}
-
-							$.ajax({
-								type : 'POST',
-								url : appUrl('/ProposalStrategy/'
-										+ budgetProposal.get('id')
-										+ '/'
-										+ proposalStrategy.get('formulaStrategy').get('id')),
-								data : JSON
-										.stringify(json),
-								contentType : 'application/json;charset=utf-8',
-								dataType : "json",
-								success : _.bind(function() {
-									budgetProposal.get('proposalStrategies').push(proposalStrategy);
-									this.parentModal.render();
-									
-								},this)
-							});
-
-					}, this)
-						});
-				} else {
-					var json = proposalStrategy.toJSON();
-					json.formulaStrategy = null;
-					json.proposal = null;
-	
-					var i;
-					for (i = 0; i < json.requestColumns.length; i++) {
-						json.requestColumns[i].column = {
-							id : json.requestColumns[i].column.id
-						};
-					}
-	
-					$.ajax({
-						type : 'POST',
-						url : appUrl('/ProposalStrategy/'
-								+ budgetProposal.get('id')
-								+ '/'
-								+ proposalStrategy.get(
-										'formulaStrategy').get('id')),
-						data : JSON.stringify(json),
-						contentType : 'application/json;charset=utf-8',
-						dataType : "json",
-						success : _.bind(function() {
-							budgetProposal.get('proposalStrategies')
-									.push(proposalStrategy);
-							// rerender?
-							e1 = budgetProposal;
-							this.parentModal.render();
-						}, this)
-					});
-				}
-	
 			}
-		},
+			proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
+			
+			proposalStrategy.set('proposal', budgetProposal);
+			
+			proposalStrategy.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
+			proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
+			proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
 	
+			// either do create or update!?
+			if (budgetProposal.get('id') == null) {
+				budgetProposal.save(null, {
+					success: _.bind(function() {
+						this.parentModal.render();
+					},this)
+				});
+			} else {
+				// so we can go straight to save proposalStrategy
+				proposalStrategy.save(null, {
+					success: _.bind(function() {
+						this.parentModal.render();
+					},this)
+				});
+			}	
+		}
 	});
 
 	var BudgetTypeAllSelectionView = Backbone.View.extend({
@@ -1062,7 +974,7 @@
 						url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + budgetType.get('id')),
 						success : _.bind(function(data) {
 							budgetType.set('strategies', formulaStrategies);
-							this.parentModal.updateBudgetTypeSelectionLevelWithModel(this.level+1, formulaStrategies);
+							this.parentModal.updateStrategySelection(budgetType, formulaStrategies);
 						}, this)
 					});
 					
@@ -1201,29 +1113,43 @@
 		},
 
 		el : "#modal",
-
+	
+		currentBudgetTypeSelection: [],
+		currentFormulaStrategySelection: null,
 		
 		modalTemplate : Handlebars.compile($('#modalTemplate').html()),
 		defaultInputTemplate : Handlebars.compile($('#defaultInputTemplate').html()),
 
 		updateBudgetTypeSelectionLevelWithModel: function(level, model) {
-			level = level-1;
-			var btView = this.budgetTypeSelctionArray[level];
-			if(level==4) {
-				btView.setRootModel(model,true);
-				$('#input-form').html(this.defaultInputTemplate({}));
-			} else {
-				btView.setRootModel(model);
-				$('#input-form').empty();
+			//set the previos level to this model
+			this.currentBudgetTypeSelection[level-2]=model;
+			// and remove all the rest forward
+			for(var i=level-1; i<this.budgetTypeSelectionArray.length; i++) {
+				this.currentBudgetTypeSelection[i] = null;
 			}
+			
+			level = level-1;
+			var btView = this.budgetTypeSelectionArray[level];
+			btView.setRootModel(model);
+			
+			// reset input area
+			$('#input-form').empty();
+			
+			// render the next selection
 			btView.render();
 			
 			// and for the rest set to null
-			for(var i=level+1; i<this.budgetTypeSelctionArray.length; i++) {
-				this.budgetTypeSelctionArray[i].setRootModel(null);
-				this.budgetTypeSelctionArray[i].render();
+			for(var i=level+1; i<this.budgetTypeSelectionArray.length; i++) {
+				this.budgetTypeSelectionArray[i].setRootModel(null);
+				this.budgetTypeSelectionArray[i].render();
 			}
 			
+		},
+		
+		updateStrategySelection: function(budgetType, formulaStrategies) {
+			this.currentBudgetTypeSelection[3] = budgetType;
+			this.budgetTypeSelectionArray[4].renderWithStrategy(formulaStrategies, this, budgetType);
+			$('#input-form').html(this.defaultInputTemplate({budgetTypeName: budgetType.get('name')}));
 		},
 		
 		events : {
@@ -1287,8 +1213,7 @@
 		render : function() {
 			if (this.objective != null) {
 				var html = this.modalTemplate(this.objective.toJSON());
-				this.$el.find('.modal-header span').html(
-						this.objective.get('name'));
+				this.$el.find('.modal-header span').html(this.objective.get('name'));
 				this.$el.find('.modal-body').html(html);
 				
 				var rootBudgetType = BudgetType.findOrCreate({id:0});
@@ -1299,12 +1224,12 @@
 					this.budgetTypeSelectionViewL4 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL4 > div', level: 4, parentModal: this});
 					this.startegySelectionView = new StrategySelectionView({el: '#inputAll', parentModal: this});
 
-					this.budgetTypeSelctionArray = [];
-					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL1);
-					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL2);
-					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL3);
-					this.budgetTypeSelctionArray.push(this.budgetTypeSelectionViewL4);
-					this.budgetTypeSelctionArray.push(this.startegySelectionView);
+					this.budgetTypeSelectionArray = [];
+					this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL1);
+					this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL2);
+					this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL3);
+					this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL4);
+					this.budgetTypeSelectionArray.push(this.startegySelectionView);
 
 					
 					
@@ -1452,8 +1377,7 @@
 
 			var proposalStrategyCollection = new ProposalStrategyCollection();
 			proposalStrategyCollection.fetch({
-				url : appUrl('/ProposalStrategy/find/' + fiscalYear + '/'
-						+ currentObjective.get('id')),
+				url : appUrl('/ProposalStrategy/find/' + fiscalYear + '/' + currentObjective.get('id')),
 				success : _.bind(function() {
 					var proposals = currentObjective.get('filterProposals');
 					var i;

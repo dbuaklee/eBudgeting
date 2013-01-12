@@ -32,6 +32,7 @@ import biz.thaicom.eBudgeting.models.pln.TargetValue;
 import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
+import biz.thaicom.security.models.ThaicomUserDetail;
 
 public interface EntityService {
 	
@@ -138,7 +139,7 @@ public interface EntityService {
 	
 	//BudgetProposal
 	public BudgetProposal findBudgetProposalById(Long budgetProposalId);
-	public BudgetProposal saveBudgetProposal(BudgetProposal proposal);
+	public BudgetProposal saveBudgetProposal(JsonNode proposal, ThaicomUserDetail currentUser);
 	public List<BudgetProposal> findBudgetProposalByObjectiveIdAndBudgetTypeId(Long objectiveId, Long budgetTypeId);
 
 	

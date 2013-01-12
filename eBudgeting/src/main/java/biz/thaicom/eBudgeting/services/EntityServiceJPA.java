@@ -3,10 +3,14 @@ package biz.thaicom.eBudgeting.services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import javax.crypto.spec.PSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +70,7 @@ import biz.thaicom.eBudgeting.repositories.ReservedBudgetRepository;
 import biz.thaicom.eBudgeting.repositories.TargetUnitRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueAllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueRepository;
+import biz.thaicom.security.models.ThaicomUserDetail;
 
 @Service
 @Transactional
@@ -1222,14 +1227,112 @@ public class EntityServiceJPA implements EntityService {
 		return strategyJpa;
 	}
 
-	@Override
-	public BudgetProposal saveBudgetProposal(BudgetProposal proposal) {
-		logger.debug("budgetType id: " + proposal.getBudgetType().getId());
-		// make sure we have budgetType
-		BudgetType b = budgetTypeRepository.findOne(proposal.getBudgetType().getId());
-		proposal.setBudgetType(b);
+	private Long getJsonNodeId(JsonNode node) {
+		if(node == null) {
+			return null;
+		}
 		
-		return budgetProposalRepository.save(proposal);
+		logger.debug(node.toString());
+		//logger.debug("id = " + node.get("id").toString());
+		
+		if(node.get("id") != null) {
+			
+			return node.get("id").asLong();
+		} else {
+			if(node.asLong() == 0) {
+				return null;
+			} else {
+				return node.asLong();
+			}
+		}
+		
+	}
+	
+	private  ProposalStrategy createProposalStrategy(JsonNode psNode) {
+		ProposalStrategy ps;
+		if(getJsonNodeId(psNode) != null) {
+			logger.debug("psNodeId = "+ getJsonNodeId(psNode));
+			ps = proposalStrategyRepository.findOne(getJsonNodeId(psNode));
+		} else {
+			ps = new ProposalStrategy();
+		}
+		
+		// the fs suppose to be there or either null?
+		FormulaStrategy fs = formulaStrategyRepository.findOne(getJsonNodeId(psNode.get("formulaStrategy")));
+		ps.setFormulaStrategy(fs);
+		
+		ps.setTotalCalculatedAmount(psNode.get("totalCalculatedAmount").asLong());
+		ps.setAmountRequestNext1Year(psNode.get("amountRequestNext1Year").asLong());
+		ps.setAmountRequestNext2Year(psNode.get("amountRequestNext2Year").asLong());
+		ps.setAmountRequestNext3Year(psNode.get("amountRequestNext3Year").asLong());
+		
+		// now look at the formulaColumns
+		if(psNode.get("formulaStrategy") != null) {
+			List<RequestColumn> rcList = new ArrayList<RequestColumn>();
+			ps.setRequestColumns(rcList);
+			
+			logger.debug(">> requestColumns: "+ psNode.get("requestColumns").toString());
+			Iterator<JsonNode> rcNodeIter = psNode.get("requestColumns").iterator();
+			while (rcNodeIter.hasNext()) {
+			
+				JsonNode rcNode  = rcNodeIter.next();
+				RequestColumn rc;
+				if(getJsonNodeId(rcNode) != null) {
+					rc = requestColumnRepositories.findOne(getJsonNodeId(rcNode));
+				} else {
+					rc = new RequestColumn();
+				}
+				
+				FormulaColumn fc = formulaColumnRepository.findOne(getJsonNodeId(rcNode.get("column")));
+				
+				rc.setAmount(rcNode.get("amount").asInt());
+				rc.setProposalStrategy(ps);
+				rc.setColumn(fc);
+				
+				rcList.add(rc);
+			}
+		}
+		
+		return ps;
+	}
+	
+	@Override
+	public BudgetProposal saveBudgetProposal(JsonNode proposalNode, ThaicomUserDetail currentUser) {
+		
+		logger.debug(proposalNode.toString());
+		
+		// we only deal with new proposal here
+		if(proposalNode.get("id") != null) {
+			return null;
+		}
+		
+		BudgetProposal proposal = new BudgetProposal();
+		// now wire up all the dressing?
+		
+		proposal.setOwner(currentUser.getWorkAt());
+		
+		Long objectiveId = getJsonNodeId(proposalNode.get("forObjective"));
+		
+		Objective forObjective = objectiveRepository.findOne(objectiveId);
+		proposal.setForObjective(forObjective);
+
+		logger.debug(">> budgetType=" + proposalNode.get("budgetType").toString());
+		
+		JsonNode a = proposalNode.get("budgetType");
+		getJsonNodeId(a);
+		
+		logger.debug(">> budgetTypeID=" + getJsonNodeId(proposalNode.get("budgetType")));
+		BudgetType budgetType = budgetTypeRepository.findOne(getJsonNodeId(proposalNode.get("budgetType")));
+		proposal.setBudgetType(budgetType);
+		
+		budgetProposalRepository.save(proposal);
+		
+		
+		ProposalStrategy ps = createProposalStrategy(proposalNode.get("proposalStrategies").get(0));
+		saveProposalStrategy(ps, proposal.getId(), ps.getFormulaStrategy().getId());
+		
+		
+		return proposal;
 	}
 
 	@Override
@@ -1614,7 +1717,15 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(
 			Integer fiscalYear, Long ownerId, Long objectiveId) {
-		return proposalStrategyRepository.findByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, ownerId, objectiveId);
+		List<ProposalStrategy> psList = proposalStrategyRepository.findByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, ownerId, objectiveId);
+		for(ProposalStrategy ps : psList) {
+			if(ps.getFormulaStrategy()!=null) {
+				ps.getFormulaStrategy().getFormulaColumns().size();
+				ps.getRequestColumns().size();
+			}
+		}
+		return psList;
+		
 	}
 	
 	@Override

@@ -305,13 +305,13 @@ public class BudgetType implements Serializable {
 			switch (Integer.parseInt(topParentId)) {
 			case 1:
 				return "งบบุคลากร";
-			case 2:
+			case 47:
 				return "งบดำเนินงาน";
-			case 3:
+			case 118:
 				return "งบลงทุน";
-			case 4:
+			case 779:
 				return "งบอุดหนุน";
-			case 5:
+			case 785:
 				return "งบรายจ่ายอื่น";
 			default:
 				return "unknown";

@@ -146,16 +146,27 @@ public class BudgetProposalRestController {
 	}
 	
 
+
 	@RequestMapping(value="/BudgetProposal", method=RequestMethod.POST)
 	public @ResponseBody BudgetProposal saveBudgetProposal (
-			@RequestBody BudgetProposal proposal,
+			@RequestBody JsonNode proposal,
 			@Activeuser ThaicomUserDetail currentUser){
 		
-		proposal.setOwner(currentUser.getWorkAt());
-		
-		return entityService.saveBudgetProposal(proposal);
+		return entityService.saveBudgetProposal(proposal, currentUser);
 		
 	}
+	
+
+//	@RequestMapping(value="/BudgetProposal1", method=RequestMethod.POST)
+//	public @ResponseBody BudgetProposal saveBudgetProposal1 (
+//			@RequestBody BudgetProposal proposal,
+//			@Activeuser ThaicomUserDetail currentUser){
+//		
+//		proposal.setOwner(currentUser.getWorkAt());
+//		
+//		//return entityService.saveBudgetProposal(proposal);
+//		
+//	}
 	
 	@RequestMapping(value="/AllocationRecord/{fiscalYear}/R{round}", method=RequestMethod.GET)
 	public @ResponseBody String initAllocationRecord(
