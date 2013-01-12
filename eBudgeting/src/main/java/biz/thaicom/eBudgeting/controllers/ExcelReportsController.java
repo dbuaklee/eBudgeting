@@ -31,7 +31,7 @@ public class ExcelReportsController {
 		return "sample.xls";
 	}
 
-<<<<<<< HEAD
+
 	@RequestMapping("/admin/excel/report1.xls/{id}")
 	public String excelReport1(@PathVariable Long id, Model model) {
 		
@@ -45,8 +45,8 @@ public class ExcelReportsController {
 		return "report1.xls";
 	}
 
-}
-=======
+
+
 	@RequestMapping("/admin/excel/report2.xls")
 	public String excelReport2 (
 		@RequestParam(required=false) String year,
@@ -70,4 +70,3 @@ public class ExcelReportsController {
 	}
 	
 }
->>>>>>> refs/remotes/origin/master
