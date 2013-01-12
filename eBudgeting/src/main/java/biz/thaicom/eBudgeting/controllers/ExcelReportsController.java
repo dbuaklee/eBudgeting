@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class ExcelReportsController {
-	@RequestMapping("/excel/sample/")
+	@RequestMapping("/excel/sample.xls")
 	public String excelSample(Model model) {
+		model.addAttribute("fiscalYear", 2556);
 		
-		
-		return "m2f13";
+		return "sample.xls";
 	}
 }
