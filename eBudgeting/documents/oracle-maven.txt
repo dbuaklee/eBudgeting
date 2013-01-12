@@ -1,0 +1,4 @@
+Script to add Oracle into local maven
+
+mvn install:install-file -Dfile={Path/to/your/ojdbc.jar} -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.3.0 -Dpackaging=jar
+mvn install:install-file -Dfile={Path/to/your/ojdbc.jar} -DgroupId=com.oracle -DartifactId=orai18n -Dversion=11.2.0.3.0 -Dpackaging=jar
