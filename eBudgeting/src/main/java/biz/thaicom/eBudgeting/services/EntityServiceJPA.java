@@ -1151,7 +1151,7 @@ public class EntityServiceJPA implements EntityService {
 		while (temp.getForObjective().getParent() != null) {
 			// now we'll get all proposal
 			Objective parent = temp.getForObjective().getParent();
-			temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+			temp = budgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(parent,owner,b.getBudgetType());
 			
 			if(temp!=null) {
 				temp.addAmountRequest(-amountToBeReduced);
@@ -1167,7 +1167,10 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long budgetProposalId, Long formulaStrategyId) {
 		
-		FormulaStrategy formulaStrategy= formulaStrategyRepository.findOne(formulaStrategyId);
+		FormulaStrategy formulaStrategy=null;
+		if(formulaStrategyId != null) {
+		 formulaStrategy = formulaStrategyRepository.findOne(formulaStrategyId);
+		}
 		
 		strategy.setFormulaStrategy(formulaStrategy);
 		
@@ -1232,9 +1235,6 @@ public class EntityServiceJPA implements EntityService {
 			return null;
 		}
 		
-		logger.debug(node.toString());
-		//logger.debug("id = " + node.get("id").toString());
-		
 		if(node.get("id") != null) {
 			
 			return node.get("id").asLong();
@@ -1251,16 +1251,21 @@ public class EntityServiceJPA implements EntityService {
 	private  ProposalStrategy createProposalStrategy(JsonNode psNode) {
 		ProposalStrategy ps;
 		if(getJsonNodeId(psNode) != null) {
-			logger.debug("psNodeId = "+ getJsonNodeId(psNode));
 			ps = proposalStrategyRepository.findOne(getJsonNodeId(psNode));
 		} else {
 			ps = new ProposalStrategy();
 		}
 		
 		// the fs suppose to be there or either null?
-		FormulaStrategy fs = formulaStrategyRepository.findOne(getJsonNodeId(psNode.get("formulaStrategy")));
+		FormulaStrategy fs = null;
+		if(getJsonNodeId(psNode.get("formulaStrategy")) != null) {
+			fs = formulaStrategyRepository.findOne(getJsonNodeId(psNode.get("formulaStrategy")));
+		}
+		
+		
 		ps.setFormulaStrategy(fs);
 		
+		ps.setName(psNode.get("name").asText());
 		ps.setTotalCalculatedAmount(psNode.get("totalCalculatedAmount").asLong());
 		ps.setAmountRequestNext1Year(psNode.get("amountRequestNext1Year").asLong());
 		ps.setAmountRequestNext2Year(psNode.get("amountRequestNext2Year").asLong());
@@ -1329,7 +1334,14 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 		ProposalStrategy ps = createProposalStrategy(proposalNode.get("proposalStrategies").get(0));
-		saveProposalStrategy(ps, proposal.getId(), ps.getFormulaStrategy().getId());
+		saveProposalStrategy(ps, proposal.getId(), ps.getFormulaStrategy() != null ? ps.getFormulaStrategy().getId() : null );
+		
+		if(proposal.getProposalStrategies() == null) {
+			List<ProposalStrategy> psList = new ArrayList<ProposalStrategy> (); 
+			psList.add(ps);
+			
+			proposal.setProposalStrategies(psList);
+		}
 		
 		
 		return proposal;
@@ -1745,8 +1757,6 @@ public class EntityServiceJPA implements EntityService {
 		if(strategy != null) {
 			// now get information from JSON string?
 			
-			strategy.setName(rootNode.get("name").asText());
-			
 			Long adjustedAmount = strategy.getTotalCalculatedAmount() - rootNode.get("totalCalculatedAmount").asLong();
 			Long adjustedAmountRequestNext1Year = strategy.getAmountRequestNext1Year()==null?0:strategy.getAmountRequestNext1Year() - rootNode.get("amountRequestNext1Year").asLong();
 			Long adjustedAmountRequestNext2Year = strategy.getAmountRequestNext2Year()==null?0:strategy.getAmountRequestNext2Year() - rootNode.get("amountRequestNext2Year").asLong();
@@ -1796,7 +1806,7 @@ public class EntityServiceJPA implements EntityService {
 			while (temp.getForObjective().getParent() != null) {
 				// now we'll get all proposal
 				Objective parent = temp.getForObjective().getParent();
-				temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+				temp = budgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(parent,owner,b.getBudgetType());
 				
 				if(temp!=null) {
 					temp.adjustAmountRequest(adjustedAmount);

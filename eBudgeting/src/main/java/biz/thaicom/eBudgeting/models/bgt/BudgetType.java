@@ -298,7 +298,7 @@ public class BudgetType implements Serializable {
 		if(this.parentPath == null) {
 			return "";
 		}
-		Pattern p = Pattern.compile(".*([0-9]+)\\.0\\.");
+		Pattern p = Pattern.compile(".*\\.([0-9]+)\\.0\\.");
 		Matcher m = p.matcher(this.parentPath);
 		if (m.find()) {
 			String topParentId = m.group(1);
