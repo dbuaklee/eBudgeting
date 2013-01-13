@@ -653,7 +653,7 @@ $(document).ready(function() {
 			}
 			
 			if(this.currentStrategy.get('isStandardItem') == true) {
-				this.currentStrategy.set('name', "DEFAULT");
+				this.currentStrategy.set('name', this.currentBudgetType.get('name'));
 			} else {
 				this.currentStrategy.set('name', nameTxt);
 			}
@@ -850,7 +850,7 @@ $(document).ready(function() {
 			if(currentFormula == null) {
 				currentFormula = new FormulaStrategy();
 				currentFormula.set("type", currentBudgetType);
-				currentFormula.set("name", "DEFAULT");
+				currentFormula.set("name", this.currentBudgetType.get('name'));
 				currentFormula.set("isStandardItem", true);
 			} 
 

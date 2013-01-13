@@ -320,7 +320,7 @@ public class EntityServiceJPA implements EntityService {
 			if(b.getCommonType() != null) {
 				b.getCommonType().getId();
 			}
-			b.setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fiscalYear, b.getId()));
+			b.setStrategies(formulaStrategyRepository.findOnlyNonStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setCurrentFiscalYear(fiscalYear);
 		}
@@ -652,7 +652,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		FormulaStrategy saveFs = formulaStrategyRepository.save(fs);
 		
-		saveFs.getType().setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
+		saveFs.getType().setStrategies(formulaStrategyRepository.findOnlyNonStandardByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
 		saveFs.getType().setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
 		saveFs.getType().setCurrentFiscalYear(fs.getFiscalYear());
 		

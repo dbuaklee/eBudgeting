@@ -19,7 +19,7 @@ public interface FormulaStrategyRepository extends
 			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
 			"	INNER JOIN FETCH fs.type type " +
 			"	LEFT OUTER JOIN FETCH type.parent parent " +
-			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 AND (fs.isStandardItem is null OR fs.isStandardItem = false) " +
+			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2  " +
 			"ORDER BY fs.index ")
 	public List<FormulaStrategy> findByfiscalYearAndType_id(Integer fiscalYear, Long budgetTypeId);
 	
@@ -29,7 +29,7 @@ public interface FormulaStrategyRepository extends
 			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
 			"	INNER JOIN FETCH fs.type type " +
 			"	LEFT OUTER JOIN FETCH type.parent parent " +
-			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 AND (fs.isStandardItem is null OR fs.isStandardItem = true) " +
+			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 AND fs.isStandardItem = true " +
 			"ORDER BY fs.id ")
 	public FormulaStrategy findOnlyStandardByfiscalYearAndType_id(
 			Integer fiscalYear, Long id);
@@ -51,6 +51,18 @@ public interface FormulaStrategyRepository extends
 			"	AND (strategy.type.id = ?3 or strategy.type.parentPath like ?4) " )
 	public List<FormulaStrategy> findAllByfiscalYearAndIsStandardItemAndType_ParentPathLike(
 			Integer fiscalYear, Boolean isStandardItem, Long budgetTypeId, String parentPath);
+
+	
+	@Query("" +
+			"SELECT fs  " +
+			"FROM FormulaStrategy fs " +
+			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
+			"	INNER JOIN FETCH fs.type type " +
+			"	LEFT OUTER JOIN FETCH type.parent parent " +
+			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 AND fs.isStandardItem = false " +
+			"ORDER BY fs.id ")
+	public List<FormulaStrategy> findOnlyNonStandardByfiscalYearAndType_id(
+			Integer fiscalYear, Long budgetTypeId);
 
 
 	
