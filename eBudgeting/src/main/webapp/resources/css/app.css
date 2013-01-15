@@ -124,6 +124,11 @@ table.table thead td {
 	font-weight: bold;
 }
 
+table.table thead th {
+	text-align: center;
+	vertical-align: top;
+}
+
 table tr.sumRow td {
 	background-color:#4C6E9C;
 	color: #ffffff;
@@ -145,6 +150,14 @@ table.table tbody tr.type-102 td {
 
 table.table tbody tr.type-103 td {
 	background-color: #eedd82;
+}
+
+table.table tbody td.centerAlign {
+	text-align: center;
+}
+
+table.table tbody td.rightAlign {
+	text-align: right;
 }
 
 .modal .modal-header {

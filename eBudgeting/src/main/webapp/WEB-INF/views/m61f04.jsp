@@ -101,13 +101,13 @@
 	<thead>
 		<tr>
 			<th style="width:20px;">#</th>
-			<th style="width:260px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:260px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong></th>
 			<th style="width:60px;">เป้าหมาย</th>
 			<th style="width:60px;">หน่วยนับ</th>
-			<th style="width:80px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
-			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
-			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
-			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
+			<th style="width:80px;">งบประมาณปี  {{this.0.fiscalYear}}</th>
+			<th style="width:80px;">ปี  {{next this.0.fiscalYear 1}}</th>
+			<th style="width:80px;">ปี  {{next this.0.fiscalYear 2}}</th>
+			<th style="width:80px;">ปี  {{next this.0.fiscalYear 3}}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -265,19 +265,19 @@
 			
 			
 		</td>
-		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}} centerAlign">
 			<span>
 				{{#each filterTargetValues}}{{#if ../this.isLeaf}}<a href="#" data-id="{{id}}" target-id="{{target.id}}" class="targetValueModal">{{/if}}
 				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}{{#if ../../this.isLeaf}}เพิ่ม{{else}}-{{/if}}{{/if}}
 				{{#if ../this.isLeaf}}</a>{{/if}}<br/>{{/each}}
 			</span>
 		</td>
-		<td  style="width:60px; text-align:center" class="{{#if this.children}}disable{{/if}}">
+		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}} centerAlign">
 			<span>
 				<ul  style="list-style:none; margin: 0px;">{{#each filterTargetValues}}<li style="list-style:none; padding: 0px;">{{target.unit.name}} ({{#if target.isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>{{/each}}</ul>
 			</span>
 		</td>
-		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
@@ -285,21 +285,21 @@
 				{{/if}}
 		</td>
 
-		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 		</td>
-		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
 					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
 				{{/if}}
 		</td>
-		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
 				{{#if this.children}}
 					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
 				{{else}}
@@ -638,7 +638,12 @@
 			if (children[0].type.id > 0) {
 				children.forEach(function(child) {
 					child["level"] = level + 1;
-					child["padding"] = (parseInt(level)) * 15;
+					
+					if(level<4) {
+					 	child["padding"] = 0;
+					} else {
+						child["padding"] = (parseInt(level)-3) * 20;
+					}
 					child["nameWidth"] = 260 - 18 - child["padding"];
 					out = out + childNodeTpl(child);
 				});
