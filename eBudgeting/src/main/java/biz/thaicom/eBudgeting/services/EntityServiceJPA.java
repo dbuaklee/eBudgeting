@@ -19,11 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetLevel;
@@ -50,10 +45,10 @@ import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetCommonTypeRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
+import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FiscalBudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
-import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveBudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveNameRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
@@ -67,6 +62,11 @@ import biz.thaicom.eBudgeting.repositories.TargetUnitRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueAllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueRepository;
 import biz.thaicom.security.models.ThaicomUserDetail;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
@@ -316,6 +316,9 @@ public class EntityServiceJPA implements EntityService {
 			if(b.getCommonType() != null) {
 				b.getCommonType().getId();
 			}
+			if(b.getUnit() != null) {
+				b.getUnit().getId();
+			}
 			b.setStrategies(formulaStrategyRepository.findOnlyNonStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setCurrentFiscalYear(fiscalYear);
@@ -328,45 +331,68 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Override
 	public BudgetType saveBudgetType(JsonNode node) {
-		BudgetType budgetType = new BudgetType();
+		BudgetType budgetType;
+		if(node.get("id") == null) {
+			budgetType = new BudgetType();
+			Long parentTypeId = node.get("parent").get("id").asLong();
+			
+			BudgetType parent = budgetTypeRepository.findOne(parentTypeId);
+			if(parent != null) {
+				logger.debug("parentId: " + parent.getId());
+				budgetType.setParent(parent);
+				budgetType.setParentPath("." + parent.getId() + parent.getParentPath());
+				budgetType.setParentLevel(node.get("parentLevel").asInt());
+			}
+			
+			BudgetLevel level = budgetTypeRepository.findBudgetLevelNumber(budgetType.getParentLevel());
+			budgetType.setLevel(level);
+			
+			Integer prevLineNumber = null;
+			if(parent.getChildren().size() > 0) {
+				BudgetType lastIndexType = parent.getChildren().get(parent.getChildren().size()-1);
+				budgetType.setIndex(lastIndexType.getIndex()+1);
+				
+				prevLineNumber = lastIndexType.getLineNumber();
+				
+			} else {
+				budgetType.setIndex(0);
+				
+				prevLineNumber = parent.getLineNumber();
+			}
+			
+			budgetType.setLineNumber(prevLineNumber+1);
+			
+			// now the code
+			logger.debug("level " + level.getId());
+			Integer maxCode = budgetTypeRepository.findMaxCodeAtLevel(level);
+			logger.debug("maxCode" +maxCode);
+			budgetType.setCode(maxCode+1);
+			
+			
+			// and the last piece will be lineNumber 
+			budgetTypeRepository.incrementLineNumber(prevLineNumber);
+		} else {
+			budgetType = budgetTypeRepository.findOne(node.get("id").asLong());
+		}
+		
 		
 		budgetType.setName(node.get("name").asText());
 		budgetType.setParentLevel(node.get("parentLevel").asInt());
 		
-		Long parentTypeId = node.get("parent").get("id").asLong();
 		
-		BudgetType parent = budgetTypeRepository.findOne(parentTypeId);
-		if(parent != null) {
-			budgetType.setParent(parent);
-			budgetType.setParentPath("." + parent.getId() + parent.getParentPath());
+		
+		
+		// then the commontype
+		if(getJsonNodeId(node.get("commonType"))!=null) {
+			BudgetCommonType bct = budgetCommonTypeRepository.findOne(getJsonNodeId(node.get("commonType")));
+			budgetType.setCommonType(bct);
 		}
 		
-		BudgetLevel level = budgetTypeRepository.findBudgetLevelNumber(budgetType.getParentLevel());
-		budgetType.setLevel(level);
-		
-		Integer prevLineNumber = null;
-		if(parent.getChildren().size() > 0) {
-			BudgetType lastIndexType = parent.getChildren().get(parent.getChildren().size()-1);
-			budgetType.setIndex(lastIndexType.getIndex()+1);
-			
-			prevLineNumber = lastIndexType.getLineNumber();
-			
-		} else {
-			budgetType.setIndex(0);
-			
-			prevLineNumber = parent.getLineNumber();
+		// lastly unit
+		if(getJsonNodeId(node.get("unit"))!=null) {
+			TargetUnit unit = targetUnitRepository.findOne(getJsonNodeId(node.get("unit")));
+			budgetType.setUnit(unit);
 		}
-		
-		budgetType.setLineNumber(prevLineNumber+1);
-		
-		// now the code
-		Integer maxCode = budgetTypeRepository.findMaxCodeAtLevel(level);
-		budgetType.setCode(maxCode+1);
-		
-		
-		// and the last piece will be lineNumber 
-		budgetTypeRepository.incrementLineNumber(prevLineNumber);
-		
 		
 		budgetTypeRepository.save(budgetType);
 		

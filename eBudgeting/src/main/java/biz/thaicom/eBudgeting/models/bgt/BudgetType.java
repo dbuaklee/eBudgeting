@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.services.EntityServiceJPA;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -100,6 +101,10 @@ public class BudgetType implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="COMMONTYPE_BGT_ID")
 	private BudgetCommonType commonType;
+	
+	@ManyToOne
+	@JoinColumn(name="PLN_UNIT_ID")
+	private TargetUnit unit;
 
 	public BudgetType() {
 		
@@ -230,6 +235,14 @@ public class BudgetType implements Serializable {
 
 	public void setCommonType(BudgetCommonType commonType) {
 		this.commonType = commonType;
+	}
+	
+	public TargetUnit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(TargetUnit unit) {
+		this.unit = unit;
 	}
 
 	public void doBasicLazyLoad() {

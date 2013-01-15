@@ -84,7 +84,7 @@ public class BudgetTypeRestController {
 	public @ResponseBody BudgetType updateBudgetType(
 			@PathVariable Long id,
 			@RequestBody JsonNode node) {
-		return entityService.updateBudgetType(node);
+		return entityService.saveBudgetType(node);
 		
 	}
 	

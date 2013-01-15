@@ -216,6 +216,14 @@ BudgetType = Backbone.RelationalModel.extend({
 	    	key: 'strategies',
 	    	relatedModel: 'FormulaStrategy',
 	    	collectionType: 'FormulaStrategyCollection'
+	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'commonType',
+	    	relatedModel : 'BudgetCommonType'
+	    },{
+	    	type: Backbone.HasOne,
+	    	key: 'unit',
+	    	relatedModel : 'TargetUnit'
 	    }
 	],
 	setIdUrl: function(id) {
