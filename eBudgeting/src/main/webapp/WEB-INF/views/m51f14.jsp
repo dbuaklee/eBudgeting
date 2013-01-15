@@ -273,7 +273,8 @@
 </strong> <br/>
 <button class='btn btn-mini btn-info addFormula'>เพิ่มรายการย่อย</button>
 <button class='btn btn-mini btn-info addDefaultFormula'>กำหนดราคา</button>
-<button class='btn btn-mini btn-danger cancelFormula'>ยกเลิก</button>
+<button class='btn btn-mini btn-danger deleteDefaultFormula'>ลบการกำหนดราคา</button>
+<button class='btn btn-mini btn-danger cancelFormula'>กลับ</button>
 
 </script>
 
@@ -505,7 +506,6 @@ $(document).ready(function() {
 		},
 		changeUnitName: function(e) {
 			this.formulaColumn.set('unitName',$(e.target).val());
-			console.log(this.formulaColumn.get('unitName'));
 		},
 		removeSelf: function(e) {
 			
@@ -574,8 +574,6 @@ $(document).ready(function() {
 				formulaColumns.add(fc);
 			}
 			
-			
-			console.log(this.currentStrategy.get('name'));
 			
 			this.$el.find('.modal-body').html(html);
 			
@@ -672,7 +670,13 @@ $(document).ready(function() {
 			this.currentStrategy.save(null, {
 				success: _.bind(function() {
 					if(newStrategy) {
-						this.currentBudgetType.get('strategies').add(this.currentStrategy);
+						if(this.currentStrategy.get('isStandardItem') == true) {
+							this.currentBudgetType.set('standardStrategy',this.currentStrategy);
+						} else {
+							this.currentBudgetType.get('strategies').add(this.currentStrategy);
+						}
+						
+						
 					}
 					this.currentStrategy.get('formulaColumns').comparator = function(formulaColumn) {
 						  return formulaColumn.get("index");
@@ -787,6 +791,7 @@ $(document).ready(function() {
 			
 			"click button.addFormula" : "addFormula",
 			"click button.addDefaultFormula" : "addDefaultFormula",
+			"click button.deleteDefaultFormula" : "deleteDefaultFormula",
 			"click button.cancelFormula" : "cancelFormula",
 			"click a.deleteStrategy" : "deleteStrategy",
 			"click a.editStrategy" : "editStrategy",
@@ -846,15 +851,31 @@ $(document).ready(function() {
 			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
 			currentBudgetType.on('renderRow', this.renderRow, this);
 			
-			var currentFormula = currentBudgetType.get('standardStrategy')
+			var currentFormula = currentBudgetType.get('standardStrategy');
 			if(currentFormula == null) {
 				currentFormula = new FormulaStrategy();
 				currentFormula.set("type", currentBudgetType);
-				currentFormula.set("name", this.currentBudgetType.get('name'));
+				currentFormula.set("name", currentBudgetType.get('name'));
 				currentFormula.set("isStandardItem", true);
 			} 
 
 			this.formulaLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
+		},
+		
+		deleteDefaultFormula: function(e) {
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			currentBudgetType.on('renderRow', this.renderRow, this);
+			
+			var currentFormula = currentBudgetType.get('standardStrategy');
+			if(currentFormula != null) {
+				currentFormula.destroy({
+					success: function(){
+						alert("คุณได้ลบข้อมูลแล้ว");
+						currentBudgetType.trigger('renderRow', currentBudgetType);
+					}
+				});
+			} 
 		},
 		
 		cancelFormula : function(e) {
@@ -1060,7 +1081,6 @@ $(document).ready(function() {
 		},
 		
 		renderChild: function(caller) {
-			console.log('hey');
 			this.renderFormulaStrategy(caller);
 		}
 		

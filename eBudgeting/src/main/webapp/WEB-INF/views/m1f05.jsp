@@ -113,6 +113,8 @@ $(document).ready(function() {
 					rootObjective.trigger('reset');
 				}
 			});
+			
+			return false;
 		},
 		
 		render: function() {

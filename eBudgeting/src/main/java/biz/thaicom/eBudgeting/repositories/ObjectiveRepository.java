@@ -52,7 +52,6 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 
 	
 	
-	
 	@Query("" +  
 			"SELECT distinct objective " +
 			"FROM Objective objective" +

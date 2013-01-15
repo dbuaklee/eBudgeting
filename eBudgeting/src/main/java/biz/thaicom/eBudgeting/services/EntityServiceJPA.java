@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.crypto.spec.PSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import ch.qos.logback.core.pattern.util.AsIsEscapeUtil;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -424,6 +420,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		return fiscalYears;
 	}
+	
+	
 
 	@Override
 	public void initFiscalBudgetType(Integer fiscalYear) {
@@ -432,6 +430,7 @@ public class EntityServiceJPA implements EntityService {
 		for(BudgetType type : types) {
 			// check first if we already have this one
 			FiscalBudgetType fbt = fiscalBudgetTypeRepository.findOneByBudgetTypeAndFiscalYear(type, fiscalYear); 
+			logger.debug("fbt: " + fbt);
 			if(fbt == null) {
 				// we have to add this one
 				FiscalBudgetType newFbt = new FiscalBudgetType();
@@ -832,6 +831,7 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public List<Objective> findChildrenObjectivewithBudgetProposal(
 			Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal) {
+		logger.debug("ownerId: " + ownerId);
 		List<Objective> objectives = objectiveRepository.findByObjectiveBudgetProposal(fiscalYear, ownerId, objectiveId);
 		
 		for(Objective objective : objectives) {
@@ -841,6 +841,20 @@ public class EntityServiceJPA implements EntityService {
 		return objectives;
 	}
 
+	@Override
+	public List<Objective> findChildrenObjectivewithObjectiveBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId,
+			Boolean isChildrenTraversal) {
+		List<Objective> objectives = objectiveRepository.findByObjectiveBudgetProposal(fiscalYear, ownerId, objectiveId);
+		
+		for(Objective objective : objectives) {
+//			logger.debug("** " + objective.getBudgetType().getName());
+			objective.doEagerLoadWithBudgetProposal(isChildrenTraversal);
+		}
+		return objectives;
+	}
+	
+	
 	@Override
 	public BudgetProposal findBudgetProposalById(Long budgetProposalId) {
 		return budgetProposalRepository.findOne(budgetProposalId);
@@ -1014,7 +1028,7 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Override
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
-			Integer fiscalYear, Long objectiveId) {
+			Integer fiscalYear, Long objectiveId, Boolean isFindObjectiveBudget) {
 		String parentPathLikeString = "%."+objectiveId.toString()+"%";
 		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear, parentPathLikeString);
 		
@@ -1030,7 +1044,6 @@ public class EntityServiceJPA implements EntityService {
 			o.addToSumBudgetTypeProposals(proposal);
 			
 			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
-			
 			
 			//o.getProposals().add(proposal);
 			logger.debug("proposal size is " + o.getProposals().size());
@@ -1138,9 +1151,15 @@ public class EntityServiceJPA implements EntityService {
 		ProposalStrategy proposalStrategy = proposalStrategyRepository.findOne(id);
 		
 		Long amountToBeReduced = proposalStrategy.getTotalCalculatedAmount();
+		Long amountRequestNext1Year = proposalStrategy.getAmountRequestNext1Year();
+		Long amountRequestNext2Year = proposalStrategy.getAmountRequestNext2Year();
+		Long amountRequestNext3Year = proposalStrategy.getAmountRequestNext3Year();
 		
 		BudgetProposal b = proposalStrategy.getProposal();
 		b.addAmountRequest(-amountToBeReduced);
+		b.addAmountRequestNext1Year(-amountRequestNext1Year);
+		b.addAmountRequestNext2Year(-amountRequestNext2Year);
+		b.addAmountRequestNext3Year(-amountRequestNext3Year);
 		budgetProposalRepository.save(b);
 		
 		Organization owner = b.getOwner();
@@ -1155,6 +1174,10 @@ public class EntityServiceJPA implements EntityService {
 			
 			if(temp!=null) {
 				temp.addAmountRequest(-amountToBeReduced);
+				temp.addAmountRequestNext1Year(-amountRequestNext1Year);
+				temp.addAmountRequestNext2Year(-amountRequestNext2Year);
+				temp.addAmountRequestNext3Year(-amountRequestNext3Year);
+				
 			} 
 			budgetProposalRepository.save(temp);
 		}
@@ -2565,6 +2588,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 		Objective obj = objectiveRepository.findRootOfFiscalYear(fiscalYear);
+		
 		if(obj == null) {
 			ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
 			
@@ -2591,6 +2615,7 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		// now init fiscalBudgetType
+		logger.debug("initfiscalBudgetType");
 		initFiscalBudgetType(fiscalYear);
 		
 		return "success";
@@ -2778,6 +2803,14 @@ public class EntityServiceJPA implements EntityService {
 			Integer fiscalYear) {
 		return fiscalBudgetTypeRepository.findAllByFiscalYear(fiscalYear);
 	}
+	
+	@Override
+	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYearUpToLevel(
+			Integer fiscalYear, Integer level) {
+		// TODO Auto-generated method stub
+		return fiscalBudgetTypeRepository.findAllByFiscalYearUpToLevel(fiscalYear, level);
+	}
+
 
 	@Override
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList) {
@@ -3040,6 +3073,9 @@ public class EntityServiceJPA implements EntityService {
 		
 		return o;
 	}
+
+
+
 
 
 

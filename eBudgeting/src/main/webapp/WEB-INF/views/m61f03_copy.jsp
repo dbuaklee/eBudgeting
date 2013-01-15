@@ -88,35 +88,113 @@
 
 
 <script id="resultTableTemplate" type="text/x-handler-template">
-<table class="table table-bordered">
+<table class="table table-bordered" id="headerTbl" style="margin-bottom:0px; width:720px; table-layout:fixed;">
 	<thead>
-	<tr>
-		<td style="width:400px;">รายการหลัก</td>
-		<td>งบประมาณขอตั้ง ปี {{fiscalYear}}</td>
-		<td>งบประมาณขอตั้ง ปี {{next1Year}}</td>
-		<td>งบประมาณขอตั้ง ปี {{next2Year}}</td>
-		<td>งบประมาณขอตั้ง ปี {{next3Year}}</td>
-	</tr>
+		<tr>
+			<th style="width:20px;">#</th>
+			<th style="width:260px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong><br/>- ระดับ{{this.0.type.name}}</th>
+			<th style="width:60px;">เป้าหมาย</th>
+			<th style="width:60px;">หน่วยนับ</th>
+			<th style="width:80px;">ขอตั้งปี  {{this.0.fiscalYear}}</th>
+			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 1}}</th>
+			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 2}}</th>
+			<th style="width:80px;">ประมาณการ  {{next this.0.fiscalYear 3}}</th>
+		</tr>
 	</thead>
 	<tbody>
-	{{#each this}}
-		<tr data-id="{{objectiveBudgetId}}">
-			<td>{{name}}</td>
-			<td data-id="{{id}}">{{#if amountRequest}}<a href="#" class="editBudget">{{formatNumber amountRequest}} บาท</a>{{else}}<a class="editBudget" href="#">เพิ่มงบประมาณ</a>{{/if}}</td>
-			<td>{{#if amountRequestNext1Year}}{{formatNumber amountRequestNext1Year}} บาท{{else}} - {{/if}}</td>
-			<td>{{#if amountRequestNext2Year}}{{formatNumber amountRequestNext2Year}} บาท{{else}} - {{/if}}</td>
-			<td>{{#if amountRequestNext3Year}}{{formatNumber amountRequestNext3Year}} บาท{{else}} - {{/if}}</td>
+		<tr>
+			<td></td>
+			<td style="text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
+			<td></td>
+			<td></td>
+			<td><strong>{{sumProposal allProposal}}</td>
+			<td><strong>{{sumProposalNext1Year allProposal}}</strong></td>
+			<td><strong>{{sumProposalNext2Year allProposal}}</strong></td>
+			<td><strong>{{sumProposalNext3Year allProposal}}</strong></td>
 		</tr>
-	{{/each}}
-	<tr class="sumRow">
-		<td> รวมทั้งสิ้น </td>
-		<td>{{formatNumber sumAmountRequest}} บาท</td>
-		<td>{{formatNumber sumAmountRequestNext1Year}} บาท</td>
-		<td>{{formatNumber sumAmountRequestNext2Year}} บาท</td>
-		<td>{{formatNumber sumAmountRequestNext3Year}} บาท</td>
-	</tr> 
 	</tbody>
 </table>
+<div style="height: 600px; overflow: auto; width:875px">
+<table class="table table-bordered" id="mainTbl" style="width:720px; table-layout:fixed;">
+	<tbody>
+		
+			{{{childrenNodeTpl this 0}}}
+		
+	</tbody>
+</table>
+</div>
+</script>
+
+<script id="childrenNodeTemplate" type="text/x-handler-template">
+	<tr data-level="{{this.level}}" data-id="{{this.id}}" class="type-{{type.id}}" showChildren="true" parentPath="{{this.parentPath}}">
+		<td style="width:20px;"></td>
+		<td style="width:260px;" class="{{#if this.children}}disable{{/if}}">
+			<div class="pull-left" style="margin-left:{{this.padding}}px; width:18px;">
+					{{#if this.children}}
+					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
+					<label class="expand" for="bullet_{{this.id}}"><icon class="label-caret icon-caret-down"></i></label>
+					{{else}}					
+						<icon class="icon-file-alt"></i>
+					{{/if}}					
+			</div>
+			<div class="pull-left" style="width:{{nameWidth}}px;">
+					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
+					<label class="main" for="item_{{this.id}}">
+						{{#unless this.children}}<a href="#" class="detail">{{/unless}}
+						<b>{{this.type.name}}</b> [{{this.code}}] {{this.name}}
+						{{#unless this.children}}</a>{{/unless}}
+					</label>
+			</div>
+{{#unless this.children}}
+			<div class="clearfix">	{{{listProposals this.filterProposals}}}</div>
+{{/unless}}
+			
+			
+			
+		</td>
+		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}}">
+			<span>
+				{{#each filterTargetValues}}{{#if ../this.isLeaf}}<a href="#" data-id="{{id}}" target-id="{{target.id}}" class="targetValueModal">{{/if}}
+				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}{{#if ../../this.isLeaf}}เพิ่ม{{else}}-{{/if}}{{/if}}
+				{{#if ../this.isLeaf}}</a>{{/if}}<br/>{{/each}}
+			</span>
+		</td>
+		<td  style="width:60px; text-align:center" class="{{#if this.children}}disable{{/if}}">
+			<span>
+				<ul  style="list-style:none; margin: 0px;">{{#each filterTargetValues}}<li style="list-style:none; padding: 0px;">{{target.unit.name}} ({{#if target.isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>{{/each}}</ul>
+			</span>
+		</td>
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+		</td>
+
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+		</td>
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+		</td>
+		<td style="width:80px;" style="text-align:right;" class="{{#if this.children}}disable{{/if}}">
+				{{#if this.children}}
+					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
+				{{else}}
+					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</a>
+				{{/if}}
+		</td>
+	</tr>
+	{{{childrenNodeTpl this.children this.level}}}  
 </script>
 
 <script id="modalBodyTemplate" type="text/x-handlebars-template">
@@ -143,6 +221,129 @@
 	var l = null;
 	var e1;
 	var e2;
+	
+	
+	Handlebars.registerHelper("listProposals", function(proposals) {
+		if(proposals == null || proposals.length == 0) return "";
+		
+		var budgetTypeList = [];
+		
+		for(var i=0; i< proposals.length; i++) {
+ 			if(budgetTypeList[proposals[i].budgetType.topParentName] == null) budgetTypeList[proposals[i].budgetType.topParentName] = 0;
+
+ 			budgetTypeList[proposals[i].budgetType.topParentName] += proposals[i].amountRequest;
+ 		}
+ 		
+ 		var json=[];
+ 		for(var i=0; i< topBudgetList.length; i++) {
+ 			if(budgetTypeList[topBudgetList[i]] != null && budgetTypeList[topBudgetList[i]] > 0) {
+ 				json.push({name: topBudgetList[i], total: budgetTypeList[topBudgetList[i]]});
+ 			}
+ 		}
+ 		 		
+ 		return proposalListTemplate(json);
+		
+	});
+	
+	Handlebars.registerHelper("sumProposal", function(proposals) {
+		var amount = 0;
+		for ( var i = 0; i < proposals.length; i++) {
+			amount += proposals[i].amountRequest;
+		}
+		return addCommas(amount);
+
+	});
+	Handlebars.registerHelper("sumProposalNext1Year", function(proposals) {
+		var amount = 0;
+		for ( var i = 0; i < proposals.length; i++) {
+			amount += proposals[i].amountRequestNext1Year;
+		}
+		return addCommas(amount);
+
+	});
+	Handlebars.registerHelper("sumProposalNext2Year", function(proposals) {
+		var amount = 0;
+		for ( var i = 0; i < proposals.length; i++) {
+			amount += proposals[i].amountRequestNext2Year;
+		}
+		return addCommas(amount);
+
+	});
+	Handlebars.registerHelper("sumProposalNext3Year", function(proposals) {
+		var amount = 0;
+		for ( var i = 0; i < proposals.length; i++) {
+			amount += proposals[i].amountRequestNext3Year;
+		}
+		return addCommas(amount);
+
+	});
+
+	Handlebars.registerHelper("formulaLine", function(strategy) {
+		console.log(strategy);
+		var s = addCommas(strategy.formulaStrategy.standardPrice) + " บาท ";
+
+		if (strategy.formulaStrategy != null) {
+			var formulaColumns = strategy.formulaStrategy.formulaColumns;
+			for ( var i = 0; i < formulaColumns.length; i++) {
+				
+				s = s + " &times; ";
+				if (formulaColumns[i].isFixed) {
+					// now we'll go through requestColumns
+					var j;
+					for (j = 0; j < strategy.requestColumns.length; j++) {
+						if (strategy.requestColumns[j].column.id == formulaColumns[i].id) {
+							s = s + addCommas(strategy.requestColumns[j].amount)
+								+ " " + formulaColumns[i].unitName;
+						}
+					}
+
+				} else {
+					s = s +  addCommas(formulaColumns[i].value)
+						+ " " + formulaColumns[i].unitName;
+				}
+
+			}
+		}
+
+		return s;
+	});
+
+	Handlebars.registerHelper('substract', function(a, b) {
+		return a - b;
+	});
+
+	Handlebars.registerHelper('childrenNodeTpl', function(children, level) {
+		var out = '';
+		var childNodeTpl = Handlebars
+				.compile($("#childrenNodeTemplate").html());
+		var childNormalNodeTpl = Handlebars.compile($(
+				"#childrenNormalNodeTemplate").html());
+		if (level == undefined)
+			level = 0;
+		if (children != null && children.length > 0) {
+
+			if (children[0].type.id > 0) {
+				children.forEach(function(child) {
+					child["level"] = level + 1;
+					child["padding"] = (parseInt(level)) * 15;
+					child["nameWidth"] = 260 - 18 - child["padding"];
+					out = out + childNodeTpl(child);
+				});
+
+			} else {
+				children.forEach(function(child) {
+					out = out + childNormalNodeTpl(child);
+				});
+			}
+		}
+
+		return out;
+	});
+
+	Handlebars.registerHelper('next', function(val, next) {
+		return val + next;
+	});
+
 	
 	var ModalView = Backbone.View.extend({
 		modalBodyTemplate: Handlebars.compile($("#modalBodyTemplate").html()),
@@ -262,15 +463,17 @@
 			
 			
 			// now we should load the table of this objective 
-			this.objectiveBudgetProposalCollection = new ObjectiveBudgetProposalCollection();
-			this.objectiveBudgetProposalCollection.fetch({
-				url: appUrl('/ObjectiveBudgetProposal/'+fiscalYear+'/'+targetObjectiveId),
-				success: _.bind(function() {
-					
-					
-					this.renderResultTable();
-				}, this)
+			this.objectiveCollection = new ObjectiveCollection();
+			this.objectiveCollection.url = appUrl("/ObjectiveWithObjectiveBudgetProposal/" + fiscalYear+ "/" + this.objective.get('id') + "/flatDescendants");
+			this.objectiveCollection.fetch({
+				success: function() {
+					this.renderTable();
+				}
 			});
+			
+		},
+		
+		renderTable: function() {
 			
 		},
 		

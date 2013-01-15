@@ -312,8 +312,6 @@ $(document).ready(function() {
 				// get this index
 				var i = parentDiv.find('li').index(li);
 				
-				console.log(this.currentFirstLevelIndex + " " + i);
-				
 				$("#main3").html(this.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
 				
 				
@@ -345,7 +343,6 @@ $(document).ready(function() {
 	 	
 	 	if(menuLevel == '0') {
 	 		var firstMenu = _.where(menuJson, {code: menuCode})[0];
-	 		console.log(firstMenu);
 	 		$("#main2").html(mainView.subMenuTemplate(firstMenu.menus));
 	 		mainView.currentFirstLevelIndex = _.indexOf(menuJson, firstMenu);
 	 	} else if(menuLevel == '1') {

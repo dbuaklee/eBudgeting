@@ -67,12 +67,16 @@ public interface EntityService {
 	public Objective updateObjective(Objective objective);
 	
 	public List<Objective> findChildrenObjectivewithBudgetProposal(Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal);
+	public List<Objective> findChildrenObjectivewithObjectiveBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal);
+	
+	
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
 			Integer fiscalYear, Long ownerId, Long objectiveId);
 
 	
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
-			Integer fiscalYear, Long objectiveId);
+			Integer fiscalYear, Long objectiveId, Boolean isFindObjectiveBudget);
 
 	public Objective addBudgetTypeToObjective(Long id, Long budgetTypeId);
 	public Objective removeBudgetTypeToObjective(Long id, Long budgetTypeId);
@@ -183,6 +187,8 @@ public interface EntityService {
 	public String removeUnitFromObjectiveName(Long id, Long targetId);
 	
 	
+	
+	
 	//ObjectiveTarget
 	public List<ObjectiveTarget> findAllObjectiveTargets();
 	public List<ObjectiveTarget> findAllObjectiveTargetsByFiscalyear(Integer fiscalYear);
@@ -242,6 +248,9 @@ public interface EntityService {
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			Integer fiscalYear);
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
+	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYearUpToLevel(
+			Integer fiscalYear, Integer level);
+
 
 
 

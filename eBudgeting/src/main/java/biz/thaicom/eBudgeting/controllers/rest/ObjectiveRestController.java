@@ -282,11 +282,28 @@ public class ObjectiveRestController {
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
 			) {
-		List<Objective> objectives = entityService.findFlatChildrenObjectivewithBudgetProposalAndAllocation(fiscalYear, objectiveId);
+		boolean isFindObjectiveBudget = false;
+		List<Objective> objectives = entityService.findFlatChildrenObjectivewithBudgetProposalAndAllocation(fiscalYear, objectiveId, isFindObjectiveBudget);
 		
 		return objectives;
 		
 	}
+	
+	@RequestMapping(value="/ObjectiveWithObjectiveBudgetProposalAndAllocation/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithObjectiveBudgetPorposalAndAllocation(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId,
+			@Activeuser ThaicomUserDetail currentUser
+			) {
+		
+		boolean isFindObjectiveBudget = true;
+		List<Objective> objectives = entityService.findFlatChildrenObjectivewithBudgetProposalAndAllocation(fiscalYear, objectiveId, isFindObjectiveBudget);
+		
+		return objectives;
+		
+	}
+	
+	
 	
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{ownerId}/{objectiveId}/descendants", method=RequestMethod.GET)
@@ -360,6 +377,7 @@ public class ObjectiveRestController {
 	@RequestMapping(value="/Objective/initFiscalYear", method=RequestMethod.POST)
 	public @ResponseBody String initFiscalYear(
 			@RequestParam Integer fiscalYear){
+		logger.debug("initFiscalYear " + fiscalYear);
 		return entityService.initFiscalYear(fiscalYear);
 		
 	}

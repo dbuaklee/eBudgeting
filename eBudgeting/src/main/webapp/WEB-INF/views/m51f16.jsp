@@ -91,7 +91,7 @@ var fiscalYear = "${fiscalYear}";
 var e1;
 
 Handlebars.registerHelper("paddingLevel", function(level) {
-	var step = level-2;
+	var step = level-1;
 	return (step*50) + 8;
 
 });
@@ -151,7 +151,7 @@ $(document).ready(function() {
 		mainCtrView = new MainCtrView();
 		
 		fiscalBudgetTypeCollection.fetch({
-			url: appUrl('/FiscalBudgetType/fiscalYear/' + fiscalYear + '/'),
+			url: appUrl('/FiscalBudgetType/fiscalYear/' + fiscalYear + '/upToLevel/3' ),
 			success: function() {
 				
 				fiscalBudgetTypeCollection.trigger('reset');

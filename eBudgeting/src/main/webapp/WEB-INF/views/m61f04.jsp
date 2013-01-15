@@ -239,13 +239,13 @@
 </script>
 
 <script id="childrenNodeTemplate" type="text/x-handler-template">
-	<tr data-level="{{this.level}}" data-id="{{this.id}}" class="type-{{type.id}}">
+	<tr data-level="{{this.level}}" data-id="{{this.id}}" class="type-{{type.id}}" showChildren="true" parentPath="{{this.parentPath}}">
 		<td style="width:20px;"></td>
 		<td style="width:260px;" class="{{#if this.children}}disable{{/if}}">
 			<div class="pull-left" style="margin-left:{{this.padding}}px; width:18px;">
 					{{#if this.children}}
 					<input class="checkbox_tree bullet" type="checkbox" id="bullet_{{this.id}}"/>
-					<label class="expand" for="bullet_{{this.id}}"><icon class="icon-caret-down"></i></label>
+					<label class="expand" for="bullet_{{this.id}}"><icon class="label-caret icon-caret-down"></i></label>
 					{{else}}					
 						<icon class="icon-file-alt"></i>
 					{{/if}}					
@@ -495,7 +495,7 @@
 
 <script type="text/javascript">
 	var objectiveId = "${objectiveId}";
-	var fiscalYear = "${fiscalYear}";
+	var fiscalYear = parseInt("${fiscalYear}");
 
 	var pageUrl = "/page/m2f12/";
 	var mainTblView = null;
@@ -821,13 +821,8 @@
 			this.$el.find('#amountRequestNext3Year').val(valueToCopy);
 		},
 	
-		strategySelect : function(e) {
-	
-			var strategyId = e.target.value;
-	
-			var strategy = this.currentStrategyCollection.get(strategyId);
-			this.currentStrategy = strategy;
-	
+		renderInputStrategy: function(strategy) {
+			this.currentStrategy=strategy;
 			var columns = strategy.get('formulaColumns');
 			//now set the last column
 			columns.at(columns.length - 1).set("$last", true);
@@ -845,6 +840,16 @@
 			// now update with the parent 
 			this.parentModal.currentFormulaStrategySelection = strategy; 
 	
+		},
+		
+		strategySelect : function(e) {
+	
+			var strategyId = e.target.value;
+	
+			var strategy = this.currentStrategyCollection.get(strategyId);
+			this.currentStrategy = strategy;
+			this.renderInputStrategy(strategy);
+			
 		},
 	
 		updateProposal : function(e) {
@@ -1054,12 +1059,26 @@
 					// then we should now filling in the proposed budget
 					
 					// ok now we'll get the strategy here
-					var formulaStrategies = new FormulaStrategyCollection;
+					var formulaStrategies = new FormulaStrategyCollection();
 
 					formulaStrategies.fetch({
 						url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + budgetType.get('id')),
 						success : _.bind(function(data) {
+							// we'll have to loop through formulaStrategies
+							if(formulaStrategies.length > 0) {
+								
+								for(var i=0; i<formulaStrategies.length; i++) {
+									
+									var fs = formulaStrategies.at(i);
+									if(fs.get('isStandardItem') == true) {
+										budgetType.set('standardStrategy', fs);
+										formulaStrategies.remove(fs);
+									}
+								}
+							}
+							
 							budgetType.set('strategies', formulaStrategies);
+							
 							this.parentModal.updateStrategySelection(budgetType, formulaStrategies);
 						}, this)
 					});
@@ -1239,7 +1258,12 @@
 		updateStrategySelection: function(budgetType, formulaStrategies) {
 			this.currentBudgetTypeSelection[3] = budgetType;
 			this.budgetTypeSelectionArray[4].renderWithStrategy(formulaStrategies, this, budgetType);
-			$('#input-form').html(this.defaultInputTemplate({budgetTypeName: budgetType.get('name')}));
+			
+			if(budgetType.get('standardStrategy') != null) {
+				this.budgetTypeSelectionArray[4].renderInputStrategy(budgetType.get('standardStrategy'));
+			} else {
+				$('#input-form').html(this.defaultInputTemplate({budgetTypeName: budgetType.get('name')}));
+			}
 		},
 		
 		events : {
@@ -1600,14 +1624,34 @@
 		},
 
 		toggle : function(e) {
-			l = e;
-			var clickLevel = $(l.target).parents('tr').attr('data-level');
-			$(l.target).next('label').find('icon').toggleClass("icon-caret-right icon-caret-down");
+			var l = e;
+			var id = $(l.target).parents('tr').attr('data-id');
+			var showChildren = $(l.target).parents('tr').attr('showChildren');
+			if(showChildren == "true") {
+				$(l.target).parents('tr').attr('showChildren', "false");
+			} else {
+				$(l.target).parents('tr').attr('showChildren', "true");
+			}
+			$(l.target).next('label').find('icon.label-caret').toggleClass("icon-caret-right icon-caret-down");
 
 			var currentTr = $(l.target).parents('tr');
-
-			currentTr.nextUntil('tr[data-level=' + clickLevel + ']').toggle();
+			e1=currentTr;
+			
+			currentTr.nextAll('[parentPath*=".' + id + '."]').each(function(el) {
+				var $el = $(this);
+				
+				if(showChildren == "true") {
+					// this is hide
+						$el.hide();
+				} else {
+					// this is show
+						$el.show();
+				}
+				
+				
+			}); 
 		}
+		
 
 	});
 

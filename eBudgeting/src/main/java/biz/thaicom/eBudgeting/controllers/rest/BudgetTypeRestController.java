@@ -191,6 +191,13 @@ public class BudgetTypeRestController {
 		return entityService.findAllFiscalBudgetTypeByFiscalYear(fiscalYear);
 	}
 	
+	@RequestMapping(value="/FiscalBudgetType/fiscalYear/{fiscalYear}/upToLevel/{level}", method=RequestMethod.GET)
+	public @ResponseBody List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYearUpToLevel(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Integer level) {
+		return entityService.findAllFiscalBudgetTypeByFiscalYearUpToLevel(fiscalYear,level);
+	}
+	
 	@RequestMapping(value="/FiscalBudgetType/setMainBudget/{fiscalYear}", method=RequestMethod.POST)
 	public @ResponseBody String setFiscalBudgetTypeMainBudget(
 			@PathVariable Integer fiscalYear,
