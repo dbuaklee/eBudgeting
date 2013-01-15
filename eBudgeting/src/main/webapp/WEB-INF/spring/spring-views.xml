@@ -3,12 +3,28 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
- 
+
+<!--  
 	<bean id="sample.xls" class="biz.thaicom.eBudgeting.view.SampleXLSView"/>
 
 	<bean id="report2.xls" class="biz.thaicom.eBudgeting.view.Report2XLSView"/>
 	<bean id="report11.xls" class="biz.thaicom.eBudgeting.view.Report11XLSView"/>
 	<bean id="report1.xls" class="biz.thaicom.eBudgeting.view.Report1XLSView"/>
-
+	<bean id="track1.xls" class="biz.thaicom.eBudgeting.view.Track1XLSView"/>
+ -->
+ 
+ 	<bean id="m51r01.xls" class="biz.thaicom.eBudgeting.view.M51R01XLSView"/>
+ 	<bean id="m51r02.xls" class="biz.thaicom.eBudgeting.view.M51R02XLSView"/>
+ 	<bean id="m51r03.xls" class="biz.thaicom.eBudgeting.view.M51R03XLSView"/>
+ 	<bean id="m51r04.xls" class="biz.thaicom.eBudgeting.view.M51R04XLSView"/>
+ 	<bean id="m51r05.xls" class="biz.thaicom.eBudgeting.view.M51R05XLSView"/>
+ 	<bean id="m51r06.xls" class="biz.thaicom.eBudgeting.view.M51R06XLSView"/>
+ 	<bean id="m51r07.xls" class="biz.thaicom.eBudgeting.view.M51R07XLSView"/>
+ 	<bean id="m51r08.xls" class="biz.thaicom.eBudgeting.view.M51R08XLSView"/>
+ 	<bean id="m51r09.xls" class="biz.thaicom.eBudgeting.view.M51R09XLSView"/>
+ 	<bean id="m51r10.xls" class="biz.thaicom.eBudgeting.view.M51R10XLSView"/>
+ 	<bean id="m51r11.xls" class="biz.thaicom.eBudgeting.view.M51R11XLSView"/>
+ 	<bean id="m51r12.xls" class="biz.thaicom.eBudgeting.view.M51R12XLSView"/>
+ 	<bean id="m51r13.xls" class="biz.thaicom.eBudgeting.view.M51R13XLSView"/>
 	
 </beans>

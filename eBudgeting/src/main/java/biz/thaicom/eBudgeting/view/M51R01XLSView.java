@@ -20,7 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 
-public class Report1XLSView extends AbstractPOIExcelView {
+public class M51R01XLSView extends AbstractPOIExcelView {
 
 	@Override
 	protected Workbook createWorkbook() {
@@ -36,7 +36,6 @@ public class Report1XLSView extends AbstractPOIExcelView {
 
 		ObjectiveType type = (ObjectiveType) model.get("type");
 		List<Objective> objectiveList = (List<Objective>) model.get("objectiveList");
-		
 		Integer fiscalYear = (Integer) model.get("fiscalYear");
 		Sheet sheet = workbook.createSheet("sheet1");
 
@@ -59,7 +58,7 @@ public class Report1XLSView extends AbstractPOIExcelView {
 		cellA.setCellValue("รหัส");
 		cellA.setCellStyle(styles.get("header"));
 		Cell cellB = thirdRow.createCell(1);
-		cellB.setCellValue("ชื่อกิจกรรม");
+		cellB.setCellValue("ชื่อ");
 		cellB.setCellStyle(styles.get("header"));
 
 		

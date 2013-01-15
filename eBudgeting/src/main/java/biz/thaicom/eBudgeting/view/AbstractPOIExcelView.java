@@ -46,7 +46,8 @@ public abstract class AbstractPOIExcelView extends AbstractView {
 
         // Set the content type.
         response.setContentType(getContentType());
-
+        
+        
         // Flush byte array to servlet output stream.
         ServletOutputStream out = response.getOutputStream();
         out.flush();
