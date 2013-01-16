@@ -322,7 +322,7 @@
 <form id="input-form">
 		
 </form>
-<button class="btn btn-mini updateProposal">บันทึก</button><button class="btn btn-mini backToProposal">ย้อนกลับ</button>
+<button class="btn btn-mini btn-primary updateProposal">บันทึก</button>  <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
 </div>
 </script>
 
@@ -337,10 +337,9 @@
 <div class="span2" id="strategySelectionDiv">รายการย่อย<div></div>
 </div>
 <div id="inputDiv" class="span10">
-<form id="input-form">
+	<form id="input-form" style="margin-bottom:0px;">
 		
-</form>
-
+	</form>
 </div>
 </div>
 <button class="btn btn-mini saveProposal">บันทึก</button><button class="btn btn-mini backToProposal">ย้อนกลับ</button>
@@ -368,18 +367,38 @@
 				<strong>{{budgetTypeName}}</strong>
 			</div>
 			<div style="height:35px;" id="totalInputForm">
-				<input type="text" id="totalInputTxt" style="width:120px;" value="{{totalCalculatedAmount}}"></input>  บาท
+				<div class="input-append"><input type="text" id="totalInputTxt" style="width:120px;" value="{{totalCalculatedAmount}}"></input><span class="add-on">บาท</span></div>
 			</div>
 		</div>
 	</div>
 	
 <div class="clearfix"></div>
-<div style="margin-top:5px; margin-bottom: 10px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-<div>
-	ประมาณการปี {{next1Year}}: <input type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/> บาท <br/>
-	ประมาณการปี {{next2Year}}: <input type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/> บาท <br/>
-	ประมาณการปี {{next3Year}}: <input type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/> บาท <br/>
+<div id="formulaBox">
+	<div>
+		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next1Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/><span class="add-on">บาท</span></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next2Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/><span class="add-on">บาท</span></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next3Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/><span class="add-on">บาท</span></div>
+	</div>
 </div>
+<div class="clearfix"></div>
+{{#if budgetTypeUnitName}}
+<div id="formulaBox">
+	<div>
+		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" value="{{targetValue}}" data-unitId={{TargetUnitId}}/><span class="add-on">{{budgetTypeUnitName}}</span></div>
+	</div>
+</div>
+{{/if}}
+<div class="clearfix"></div>
 </script>
 
 
@@ -419,18 +438,38 @@
 				
 			</div>
 			<div style="height:35px;" id="totalInputForm">
-				<input type="text" id="totalInputTxt" style="width:120px;" disabled="disabled" value="{{total}}"></input>  บาท
+				<div class="input-append"><input type="text" id="totalInputTxt" style="width:120px;" disabled="disabled" value="{{total}}"></input><span class="add-on">บาท</span></div>
 			</div>
 		</div>
 	</div>
 	
 <div class="clearfix"></div>
-<div style="margin-top:5px; margin-bottom: 10px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-<div>
-	ประมาณการปี {{next1Year}}: <input type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/> บาท <br/>
-	ประมาณการปี {{next2Year}}: <input type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/> บาท <br/>
-	ประมาณการปี {{next3Year}}: <input type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/> บาท <br/>
+<div id="formulaBox">
+	<div>
+		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next1Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/><span class="add-on">บาท</span></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next2Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/><span class="add-on">บาท</span></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next3Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/><span class="add-on">บาท</span></div>
+	</div>
 </div>
+<div class="clearfix"></div>
+{{#if budgetTypeUnitName}}
+<div id="formulaBox">
+	<div>
+		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" value="{{targetValue}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
+	</div>
+</div>
+{{/if}}
+<div class="clearfix"></div>
 </script>
 
 <script id="proposalInputTemplate" type="text/x-handler-template">
@@ -835,6 +874,13 @@
 			// here we'll get the propose column
 	
 			var json = strategy.toJSON();
+			
+			if(json.unit != null) {
+				json.budgetTypeUnitName = json.unit.name; 
+			} else if(json.type.unit != null) {
+				json.budgetTypeUnitName = json.type.unit.name;
+			}
+			
 			json.next1Year = strategy.get('fiscalYear') + 1;
 			json.next2Year = strategy.get('fiscalYear') + 2;
 			json.next3Year = strategy.get('fiscalYear') + 3;
@@ -996,6 +1042,14 @@
 			proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
 			proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
 			
+			var unitId = this.$el.find('#targetValue').attr('data-unitId');
+			if(unitId !=null) {
+				var unit = TargetUnit.findOrCreate(unitId);
+				proposalStrategy.set('targetUnit', unit);
+				proposalStrategy.set('targetValue', this.$el.find('#targetValue').val());
+			}
+			
+			
 			budgetProposal.set('amountRequest', calculatedAmount);
 			budgetProposal.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
 			budgetProposal.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
@@ -1147,20 +1201,17 @@
 			var budgetTypeId = $(e.target).val();
 
 			if (budgetTypeId > 0) {
-				var budgetType = this.currentBudgetTypeCollection
-						.get(budgetTypeId);
+				var budgetType = this.currentBudgetTypeCollection.get(budgetTypeId);
 				this.currentBudgetType = budgetType;
 
 				// ok now we'll get the strategy here
 				var formulaStrategies = new FormulaStrategyCollection;
 
 				formulaStrategies.fetch({
-					url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/"
-							+ budgetType.get('id')),
+					url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/"	+ budgetType.get('id')),
 					success : _.bind(function(data) {
 						budgetType.set('strategies', formulaStrategies);
-						this.strategySelectionView
-								.setElement("#strategySelectionDiv");
+						this.strategySelectionView.setElement("#strategySelectionDiv");
 
 						this.strategySelectionView.renderWithStrategy(
 								formulaStrategies, this.parentModal);
@@ -1267,7 +1318,17 @@
 			if(budgetType.get('standardStrategy') != null) {
 				this.budgetTypeSelectionArray[4].renderInputStrategy(budgetType.get('standardStrategy'));
 			} else {
-				$('#input-form').html(this.defaultInputTemplate({budgetTypeName: budgetType.get('name')}));
+				var json = {budgetTypeName: budgetType.get('name')};
+				
+				if(budgetType.get('unit') != null) {
+					json.budgetTypeUnitName = budgetType.get('unit').get('name');
+				}
+				
+				json.next1Year = fiscalYear+1;
+				json.next2Year = fiscalYear+2;
+				json.next3Year = fiscalYear+3;
+				
+				$('#input-form').html(this.defaultInputTemplate(json));
 			}
 		},
 		
@@ -1344,7 +1405,11 @@
 				var budgetType = budgetProposal.get('budgetType');
 				json = proposalStrategy.toJSON();
 				json.budgetTypeName = budgetType.get('name');
-
+				
+				if(proposalStrategy.get('targetUnit') != null) {
+					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
+				}
+				
 				json.next1Year = fiscalYear + 1;
 				json.next1YearValue = proposalStrategy.get('amountRequestNext1Year');
 	
@@ -1358,6 +1423,10 @@
 				this.$el.find('#input-form').html(this.defaultInputTemplate(json));
 			} else {
 				json = proposalStrategy.get('formulaStrategy').toJSON();
+				
+				if(proposalStrategy.get('targetUnit') != null) {
+					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
+				}
 				
 				json.total = proposalStrategy.get('totalCalculatedAmount');
 				

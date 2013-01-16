@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -61,6 +63,13 @@ public class ProposalStrategy implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="FORMULASTRATEGY_ID")
 	private FormulaStrategy formulaStrategy;
+	
+	@ManyToOne
+	@JoinColumn(name="PLN_UNIT_ID")
+	private TargetUnit targetUnit;
+	
+	@Basic
+	private Long targetValue;
 	
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="proposalStrategy",
 			cascade=CascadeType.REMOVE)
@@ -168,7 +177,22 @@ public class ProposalStrategy implements Serializable {
 			Long totalCalculatedAllocatedAmount) {
 		this.totalCalculatedAllocatedAmount = totalCalculatedAllocatedAmount;
 	}
-	
-	
 
+	public TargetUnit getTargetUnit() {
+		return targetUnit;
+	}
+
+	public void setTargetUnit(TargetUnit targetUnit) {
+		this.targetUnit = targetUnit;
+	}
+
+	public Long getTargetValue() {
+		return targetValue;
+	}
+
+	public void setTargetValue(Long targetValue) {
+		this.targetValue = targetValue;
+	}
+	
+	
 }

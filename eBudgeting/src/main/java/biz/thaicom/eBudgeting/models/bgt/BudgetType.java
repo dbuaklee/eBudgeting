@@ -257,9 +257,16 @@ public class BudgetType implements Serializable {
 			// we have to go deeper one level
 			for(BudgetType child : this.getChildren()){
 				child.getLevel().getId();
-				logger.debug(" -- children id, name: " +child.getId() + ", " + child.getName());
+				if(child.getUnit() != null) {
+					child.getUnit().getId();
+				}
+				
 			}
 			
+		}
+		
+		if(this.getUnit() != null) {
+			this.getUnit().getId();
 		}
 	}
 	

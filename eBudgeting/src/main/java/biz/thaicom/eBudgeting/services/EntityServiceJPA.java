@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.hibernate.id.IdentityGenerator.GetGeneratedKeysDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -299,6 +300,7 @@ public class EntityServiceJPA implements EntityService {
 			b.doBasicLazyLoad();
 			
 			b.getChildren().size();
+			//for each children get
 		}
 		return b;
 	}
@@ -1229,6 +1231,7 @@ public class EntityServiceJPA implements EntityService {
 		b.addAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
 		b.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
 		b.addAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
+		
 		budgetProposalRepository.save(b);
 		
 		strategy.setProposal(b);
@@ -1250,7 +1253,6 @@ public class EntityServiceJPA implements EntityService {
 				temp.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
 				temp.addAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
 			} else {
-				logger.debug("--------------------------------");
 				temp = new BudgetProposal();
 				temp.setForObjective(parent);
 				temp.setOwner(owner);
@@ -1260,10 +1262,31 @@ public class EntityServiceJPA implements EntityService {
 				temp.setAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
 				temp.setAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
 			}
-			logger.debug("================================temp.getBudgetType() {}", temp.getBudgetType());
+
 			budgetProposalRepository.save(temp);
 		}
 		
+		// now deal with target
+		if(strategy.getTargetValue() > 0) {
+			Objective obj = strategy.getProposal().getForObjective();
+			
+			while(obj.getParent()!=null) {
+				List<TargetValue> tvList = targetValueRepository.findAllByOnwerIdAndTargetUnitIdAndObjectiveId(owner.getId(), strategy.getTargetUnit().getId(), obj.getId());
+				
+				
+				for(TargetValue tv: tvList) {
+					if(tv.getTarget().getIsSumable()) {
+						tv.adjustRequestedValue(strategy.getTargetValue());
+					} else {
+						break;
+					}
+					targetValueRepository.save(tv);
+				}
+				obj = obj.getParent();
+				
+			}
+			
+		}
 		
 		ProposalStrategy strategyJpa =  proposalStrategyRepository.save(strategy);
 		
@@ -1347,6 +1370,18 @@ public class EntityServiceJPA implements EntityService {
 			}
 		}
 		
+		// lastly do the targetValue
+		if( getJsonNodeId(psNode.get("targetUnit")) != null ) {
+			TargetUnit unit = targetUnitRepository.findOne(getJsonNodeId(psNode.get("targetUnit")));
+			ps.setTargetUnit(unit);
+			if(psNode.get("targetValue") != null) {
+				ps.setTargetValue(psNode.get("targetValue").asLong());
+			} else {
+				ps.setTargetValue(0L);
+			}
+		}
+		
+		
 		return ps;
 	}
 	
@@ -1414,10 +1449,7 @@ public class EntityServiceJPA implements EntityService {
 			obj.getBudgetTypes().add(b);
 			
 			obj.getTargets().size();
-			logger.debug("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-			
 			objectiveRepository.save(obj);
-			logger.debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");			
 			return obj;
 		} else {
 			return null;
