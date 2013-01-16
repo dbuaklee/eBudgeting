@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 
 public interface ObjectiveTargetRepository extends
 		JpaSpecificationExecutor<ObjectiveTarget>, PagingAndSortingRepository<ObjectiveTarget, Long> {
@@ -29,4 +31,7 @@ public interface ObjectiveTargetRepository extends
 			"WHERE objective.parentPath like ?1 ")
 	public List<ObjectiveTarget> findAllByObjectiveParentPathLike(
 			String parentPathLikeString);
+
+	public ObjectiveTarget findOneByForObjectivesAndUnit(Objective obj,
+			TargetUnit targetUnit);
 }

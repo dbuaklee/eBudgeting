@@ -394,7 +394,7 @@
 		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
 	</div>
 	<div style="margin: 0px 8px;">
-		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" value="{{targetValue}}" data-unitId={{TargetUnitId}}/><span class="add-on">{{budgetTypeUnitName}}</span></div>
+		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" value="{{targetValue}}" data-unitId="{{targetUnitId}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
 	</div>
 </div>
 {{/if}}
@@ -438,7 +438,7 @@
 				
 			</div>
 			<div style="height:35px;" id="totalInputForm">
-				<div class="input-append"><input type="text" id="totalInputTxt" style="width:120px;" disabled="disabled" value="{{total}}"></input><span class="add-on">บาท</span></div>
+				<div class="input-append"><input type="text" id="totalInputTxt" style="width:120px;"  disabled="disabled" value="{{total}}"></input><span class="add-on">บาท</span></div>
 			</div>
 		</div>
 	</div>
@@ -465,7 +465,7 @@
 		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
 	</div>
 	<div style="margin: 0px 8px;">
-		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" value="{{targetValue}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
+		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" data-unitId="{{targetUnitId}}" value="{{targetValue}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
 	</div>
 </div>
 {{/if}}
@@ -877,8 +877,10 @@
 			
 			if(json.unit != null) {
 				json.budgetTypeUnitName = json.unit.name; 
+				json.targetUnitId = json.unit.name.id;
 			} else if(json.type.unit != null) {
 				json.budgetTypeUnitName = json.type.unit.name;
+				json.targetUnitId = json.type.unit.name.id;
 			}
 			
 			json.next1Year = strategy.get('fiscalYear') + 1;
@@ -1315,6 +1317,7 @@
 			this.currentBudgetTypeSelection[3] = budgetType;
 			this.budgetTypeSelectionArray[4].renderWithStrategy(formulaStrategies, this, budgetType);
 			
+			
 			if(budgetType.get('standardStrategy') != null) {
 				this.budgetTypeSelectionArray[4].renderInputStrategy(budgetType.get('standardStrategy'));
 			} else {
@@ -1322,6 +1325,8 @@
 				
 				if(budgetType.get('unit') != null) {
 					json.budgetTypeUnitName = budgetType.get('unit').get('name');
+					json.targetUnitId = budgetType.get('unit').get('id');
+					
 				}
 				
 				json.next1Year = fiscalYear+1;
@@ -1408,6 +1413,7 @@
 				
 				if(proposalStrategy.get('targetUnit') != null) {
 					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
+					josn.targetUnitId = proposalStrategy.get('targetUnit').get('id');
 				}
 				
 				json.next1Year = fiscalYear + 1;
@@ -1426,6 +1432,7 @@
 				
 				if(proposalStrategy.get('targetUnit') != null) {
 					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
+					josn.targetUnitId = proposalStrategy.get('targetUnit').get('id');
 				}
 				
 				json.total = proposalStrategy.get('totalCalculatedAmount');

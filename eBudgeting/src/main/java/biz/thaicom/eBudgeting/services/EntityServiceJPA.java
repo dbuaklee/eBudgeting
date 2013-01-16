@@ -1150,8 +1150,10 @@ public class EntityServiceJPA implements EntityService {
 		
 		// get List of ObjectiveTarget?
 		List<ObjectiveTarget> targets = objectiveTargetRepository.findAllByObjectiveParentPathLike(parentPathLikeString);
+		
 		for(ObjectiveTarget target : targets) {
 			target.getForObjectives().size();
+			
 			for(Objective o : target.getForObjectives()) {
 				logger.debug("Adding objective target to list");
 				Integer index = list.indexOf(o);
@@ -1272,16 +1274,39 @@ public class EntityServiceJPA implements EntityService {
 			
 			while(obj.getParent()!=null) {
 				List<TargetValue> tvList = targetValueRepository.findAllByOnwerIdAndTargetUnitIdAndObjectiveId(owner.getId(), strategy.getTargetUnit().getId(), obj.getId());
-				
-				
-				for(TargetValue tv: tvList) {
-					if(tv.getTarget().getIsSumable()) {
-						tv.adjustRequestedValue(strategy.getTargetValue());
+				TargetValue tv = null;
+				if(tvList.size() == 0) {
+					
+					//find a matching Target
+					ObjectiveTarget matchingTarget = objectiveTargetRepository.findOneByForObjectivesAndUnit(obj, strategy.getTargetUnit());
+					
+					//crate a new TargetValue
+					if(matchingTarget != null) {
+					
+						tv = new TargetValue();	
+						tv.setTarget(matchingTarget);
+						tv.setForObjective(obj);
+						tv.setOwner(owner);
+						tv.setRequestedValue(strategy.getTargetValue());
 					} else {
 						break;
 					}
-					targetValueRepository.save(tv);
+					
+				} else {
+				
+					for(TargetValue tvInList: tvList) {
+						if(tvInList.getTarget().getIsSumable()) {
+							tv = tvInList;
+							
+							tv.adjustRequestedValue(strategy.getTargetValue());
+						} else {
+							break;
+						}
+					}
 				}
+				
+				if(tv != null) targetValueRepository.save(tv);
+				
 				obj = obj.getParent();
 				
 			}
@@ -1369,6 +1394,8 @@ public class EntityServiceJPA implements EntityService {
 				rcList.add(rc);
 			}
 		}
+		logger.debug(">>> " + psNode.toString());
+		logger.debug(">>> " + psNode.get("targetUnit").toString());
 		
 		// lastly do the targetValue
 		if( getJsonNodeId(psNode.get("targetUnit")) != null ) {
@@ -1405,12 +1432,12 @@ public class EntityServiceJPA implements EntityService {
 		Objective forObjective = objectiveRepository.findOne(objectiveId);
 		proposal.setForObjective(forObjective);
 
-		logger.debug(">> budgetType=" + proposalNode.get("budgetType").toString());
+		
 		
 		JsonNode a = proposalNode.get("budgetType");
 		getJsonNodeId(a);
 		
-		logger.debug(">> budgetTypeID=" + getJsonNodeId(proposalNode.get("budgetType")));
+		
 		BudgetType budgetType = budgetTypeRepository.findOne(getJsonNodeId(proposalNode.get("budgetType")));
 		proposal.setBudgetType(budgetType);
 		
@@ -3125,6 +3152,12 @@ public class EntityServiceJPA implements EntityService {
 		o.setParent(parent);
 		o.setParentLevel(parent.getParentLevel()+1);
 		o.setParentPath("." + parentId + parent.getParentPath());
+		
+		// now set the target
+		for(ObjectiveTarget ot : oName.getTargets()) {
+			o.setTargets(new ArrayList<ObjectiveTarget>());
+			o.getTargets().add(ot);
+		}
 		
 		// now save O
 		objectiveRepository.save(o);

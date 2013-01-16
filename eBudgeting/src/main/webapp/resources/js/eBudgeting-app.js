@@ -318,6 +318,10 @@ ProposalStrategy = Backbone.RelationalModel.extend({
     		type: Backbone.HasMany,
     		key: 'proposalStrategy'
     	}
+	},{
+		type:Backbone.HasOne,
+		key: 'targetUnit',
+		relatedModel: 'TargetUnit'
 	}],
 	urlRoot: appUrl('/ProposalStrategy')
 });
