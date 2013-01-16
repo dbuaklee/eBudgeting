@@ -133,18 +133,6 @@ public class BudgetProposalRestController {
 		return entityService.updateProposalStrategy(id, data);		
 		
 	}
-	
-	@RequestMapping(value="/ProposalStrategy/{budgetProposalId}/{formulaStrategyId}", method=RequestMethod.POST)
-	public @ResponseBody ProposalStrategy saveProposalStrategy (
-			@PathVariable Long budgetProposalId,
-			@PathVariable Long formulaStrategyId,
-			@RequestBody ProposalStrategy strategy){
-		
-		
-		return entityService.saveProposalStrategy(strategy, budgetProposalId, formulaStrategyId);
-		
-	}
-	
 
 
 	@RequestMapping(value="/BudgetProposal", method=RequestMethod.POST)
