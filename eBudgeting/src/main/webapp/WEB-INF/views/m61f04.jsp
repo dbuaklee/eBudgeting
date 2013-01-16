@@ -267,9 +267,9 @@
 		</td>
 		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}} centerAlign">
 			<span>
-				{{#each filterTargetValues}}{{#if ../this.isLeaf}}<a href="#" data-id="{{id}}" target-id="{{target.id}}" class="targetValueModal">{{/if}}
-				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}{{#if ../../this.isLeaf}}เพิ่ม{{else}}-{{/if}}{{/if}}
-				{{#if ../this.isLeaf}}</a>{{/if}}<br/>{{/each}}
+				{{#each filterTargetValues}}
+				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}0{{/if}}<br/>
+				{{/each}}
 			</span>
 		</td>
 		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}} centerAlign">
@@ -342,7 +342,7 @@
 	</form>
 </div>
 </div>
-<button class="btn btn-mini saveProposal">บันทึก</button><button class="btn btn-mini backToProposal">ย้อนกลับ</button>
+<button class="btn btn-mini btn-primary saveProposal">บันทึก</button> <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
 </script>
 
 <script id="targetValueModalTemplate" type="text/x-handler-template">
@@ -521,10 +521,15 @@
 				<a href="#" class="editProposal"><i class="icon-edit icon-blue editProposal"></i></a>				
 				<a href="#" class="removeProposal"><i class="icon-trash icon-red removeProposal"></i></a>
 				{{#if formulaStrategy}}
-					{{formulaStrategy.name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+					{{formulaStrategy.name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท
 				{{else}}
-					{{name}} = {{{formatNumber totalCalculatedAmount}}} บาท</li>
+					{{name}} = {{{formatNumber totalCalculatedAmount}}} บาท
 				{{/if}}
+				{{#if targetUnit}}
+					(เป้าหมาย: {{formatNumber targetValue}} {{targetUnit.name}})
+				{{/if}}
+
+			</li>
 		{{/each}}
 		{{/each}}
 	</ul>
@@ -544,6 +549,7 @@
 	var topBudgetList = ["งบบุคลากร","งบดำเนินงาน","งบลงทุน","งบอุดหนุน","งบรายจ่ายอื่น"];
 	var l = null;
 	var e1;
+	var e2;
 
 	var proposalListTemplate = Handlebars.compile($('#proposalListTemplate').html());
 	var proposalStrategyListTemplate = Handlebars.compile($('#proposalStrategyListTemplate').html());
@@ -761,6 +767,7 @@
 			this.currentStrategyCollection = strategyCollection;
 			this.currentBudgetType = budgetType;
 			this.displayNull = true;
+			this.currentStrategy = null;
 			this.render();
 		},
 	
@@ -877,10 +884,10 @@
 			
 			if(json.unit != null) {
 				json.budgetTypeUnitName = json.unit.name; 
-				json.targetUnitId = json.unit.name.id;
+				json.targetUnitId = json.unit.id;
 			} else if(json.type.unit != null) {
 				json.budgetTypeUnitName = json.type.unit.name;
-				json.targetUnitId = json.type.unit.name.id;
+				json.targetUnitId = json.type.unit.id;
 			}
 			
 			json.next1Year = strategy.get('fiscalYear') + 1;
@@ -949,7 +956,8 @@
 					proposalStrategy.set('totalCalculatedAmount', this.$el.find('#totalInputTxt').val());	
 				}
 				
-				proposalStrategy.set('name', this.$el.find('#proposalName').val());
+				
+				proposalStrategy.set('targetValue', this.$el.find("#targetValue").val());
 				proposalStrategy.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
 				proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
 				proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
@@ -957,6 +965,8 @@
 				// now we can send changes to the server?
 				var json = proposalStrategy.toJSON();
 	
+				
+				this.$el.find('button.updateProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
 				$.ajax({
 					type : 'PUT',
 					url : appUrl('/ProposalStrategy/' + proposalStrategy.get('id')),
@@ -1059,6 +1069,7 @@
 	
 			// either do create or update!?
 			if (budgetProposal.get('id') == null) {
+				this.$el.find('button.saveProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
 				saveModel(budgetProposal,
 					_.bind(function(resp,status,xhr) {
 						budgetProposal.set('id', resp.id);
@@ -1360,6 +1371,8 @@
 			var budgetProposal = this.objective.get('filterProposals').get(budgetProposalId);
 			var proposalStrategy = budgetProposal.get('proposalStrategies').get(proposalStrategyId);
 
+			e2=proposalStrategy;
+			
 			// we'll begin by render the budgetTypeSelectionView
 			this.renderEditProposal(budgetProposal, proposalStrategy);
 
@@ -1412,8 +1425,19 @@
 				json.budgetTypeName = budgetType.get('name');
 				
 				if(proposalStrategy.get('targetUnit') != null) {
-					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
-					josn.targetUnitId = proposalStrategy.get('targetUnit').get('id');
+					
+					if(proposalStrategy.get('targetUnit') instanceof Backbone.Model) {
+						json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
+						json.targetUnitId = proposalStrategy.get('targetUnit').get('id');	
+					} else {
+						var t = TargetUnit.findOrCreate(proposalStrategy.get('targetUnit'));
+						if(t!=null) {
+							json.budgetTypeUnitName = t.get('name');
+							json.targetUnitId = t.get('id');
+						}
+					}
+					
+					
 				}
 				
 				json.next1Year = fiscalYear + 1;
@@ -1429,10 +1453,16 @@
 				this.$el.find('#input-form').html(this.defaultInputTemplate(json));
 			} else {
 				json = proposalStrategy.get('formulaStrategy').toJSON();
-				
-				if(proposalStrategy.get('targetUnit') != null) {
+				json.targetValue = proposalStrategy.get('targetValue');
+				if(proposalStrategy.get('targetUnit') instanceof Backbone.Model) {
 					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
-					josn.targetUnitId = proposalStrategy.get('targetUnit').get('id');
+					json.targetUnitId = proposalStrategy.get('targetUnit').get('id');	
+				} else {
+					var t = TargetUnit.findOrCreate(proposalStrategy.get('targetUnit'));
+					if(t!=null) {
+						json.budgetTypeUnitName = t.get('name');
+						json.targetUnitId = t.get('id');
+					}
 				}
 				
 				json.total = proposalStrategy.get('totalCalculatedAmount');
@@ -1458,7 +1488,7 @@
 					
 				}
 				
-				
+				console.log(json);
 				this.$el.find('#input-form').html(this.inputModalTemplate(json));
 			}
 			
@@ -1515,6 +1545,7 @@
 				this.$el.find('.modal-body').html(html);
 			}
 
+			
 			this.$el.modal({
 				show : true,
 				backdrop : 'static',

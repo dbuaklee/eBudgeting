@@ -148,7 +148,6 @@ public interface EntityService {
 
 	
 	//ProposalStrategy
-	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long budgetProposalId, Long formulaStrategyId);
 	public List<ProposalStrategy> findProposalStrategyByBudgetProposal(
 			Long budgetProposalId);
 	public List<ProposalStrategy> findProposalStrategyByFiscalyearAndObjective(

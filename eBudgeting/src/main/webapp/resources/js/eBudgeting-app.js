@@ -303,28 +303,7 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 
 });
 
-ProposalStrategy = Backbone.RelationalModel.extend({
-	idAttribute: 'id',
-	relations: [{
-		type:Backbone.HasOne,
-		key: 'formulaStrategy',
-		relatedModel: 'FormulaStrategy'
-			
-	},{
-    	type:Backbone.HasMany,
-    	key: 'requestColumns',
-    	relatedModel: 'RequestColumn',
-    	reversRelation: {
-    		type: Backbone.HasMany,
-    		key: 'proposalStrategy'
-    	}
-	},{
-		type:Backbone.HasOne,
-		key: 'targetUnit',
-		relatedModel: 'TargetUnit'
-	}],
-	urlRoot: appUrl('/ProposalStrategy')
-});
+
 
 RequestColumn = Backbone.RelationalModel.extend({
 	idAtrribute: 'id',
@@ -413,6 +392,10 @@ ProposalStrategy = Backbone.RelationalModel.extend({
 		type:Backbone.HasOne,
 		key: 'proposal',
 		relatedModel: 'BudgetProposal' 
+	},{
+		type:Backbone.HasOne,
+		key: 'targetUnit',
+		relatedModel: 'TargetUnit' 
 	}],
 	urlRoot: appUrl('/ProposalStrategy')
 });

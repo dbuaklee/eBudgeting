@@ -1217,8 +1217,8 @@ public class EntityServiceJPA implements EntityService {
 		return proposalStrategy;
 	}
 	
-	@Override
-	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long budgetProposalId, Long formulaStrategyId) {
+	
+	private ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long oldTargetValue, Long budgetProposalId, Long formulaStrategyId) {
 		
 		FormulaStrategy formulaStrategy=null;
 		if(formulaStrategyId != null) {
@@ -1229,6 +1229,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		// 
 		BudgetProposal b = budgetProposalRepository.findOne(budgetProposalId);
+		
 		b.addAmountRequest(strategy.getTotalCalculatedAmount());
 		b.addAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
 		b.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
@@ -1269,7 +1270,7 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		// now deal with target
-		if(strategy.getTargetValue() > 0) {
+		if(strategy.getTargetValue() != null && strategy.getTargetValue() > 0) {
 			Objective obj = strategy.getProposal().getForObjective();
 			
 			while(obj.getParent()!=null) {
@@ -1298,7 +1299,7 @@ public class EntityServiceJPA implements EntityService {
 						if(tvInList.getTarget().getIsSumable()) {
 							tv = tvInList;
 							
-							tv.adjustRequestedValue(strategy.getTargetValue());
+							tv.adjustRequestedValue(oldTargetValue-strategy.getTargetValue());
 						} else {
 							break;
 						}
@@ -1362,14 +1363,24 @@ public class EntityServiceJPA implements EntityService {
 		
 		ps.setFormulaStrategy(fs);
 		
-		ps.setName(psNode.get("name").asText());
+		if(psNode.get("name") != null)
+			ps.setName(psNode.get("name").asText());
+		else 
+			ps.setName("");
+		
+		
 		ps.setTotalCalculatedAmount(psNode.get("totalCalculatedAmount").asLong());
 		ps.setAmountRequestNext1Year(psNode.get("amountRequestNext1Year").asLong());
 		ps.setAmountRequestNext2Year(psNode.get("amountRequestNext2Year").asLong());
 		ps.setAmountRequestNext3Year(psNode.get("amountRequestNext3Year").asLong());
 		
+		
+		
 		// now look at the formulaColumns
 		if(psNode.get("formulaStrategy") != null) {
+			
+			logger.debug(">> formulaStrategy: "+ psNode.get("formulaStrategy").toString());
+			
 			List<RequestColumn> rcList = new ArrayList<RequestColumn>();
 			ps.setRequestColumns(rcList);
 			
@@ -1443,9 +1454,14 @@ public class EntityServiceJPA implements EntityService {
 		
 		budgetProposalRepository.save(proposal);
 		
-		
+		Long oldTargetValue = 0L;
+		if(proposalNode.get("proposalStrategies").get(0).get("targetUnit") != null) {
+			oldTargetValue = proposalNode.get("proposalStrategies").get(0).get("targetUnit").asLong();
+		}
 		ProposalStrategy ps = createProposalStrategy(proposalNode.get("proposalStrategies").get(0));
-		saveProposalStrategy(ps, proposal.getId(), ps.getFormulaStrategy() != null ? ps.getFormulaStrategy().getId() : null );
+	
+		saveProposalStrategy(ps,  oldTargetValue, proposal.getId(),
+				ps.getFormulaStrategy() != null ? ps.getFormulaStrategy().getId() : null );
 		
 		if(proposal.getProposalStrategies() == null) {
 			List<ProposalStrategy> psList = new ArrayList<ProposalStrategy> (); 
@@ -1860,86 +1876,106 @@ public class EntityServiceJPA implements EntityService {
 	public ProposalStrategy updateProposalStrategy(Long id,
 			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException {
 
-		ProposalStrategy strategy = proposalStrategyRepository.findOne(id);
+		ProposalStrategy oldPs = proposalStrategyRepository.findOne(id);
 		
-		if(strategy != null) {
-			// now get information from JSON string?
-			
-			Long adjustedAmount = strategy.getTotalCalculatedAmount() - rootNode.get("totalCalculatedAmount").asLong();
-			Long adjustedAmountRequestNext1Year = strategy.getAmountRequestNext1Year()==null?0:strategy.getAmountRequestNext1Year() - rootNode.get("amountRequestNext1Year").asLong();
-			Long adjustedAmountRequestNext2Year = strategy.getAmountRequestNext2Year()==null?0:strategy.getAmountRequestNext2Year() - rootNode.get("amountRequestNext2Year").asLong();
-			Long adjustedAmountRequestNext3Year = strategy.getAmountRequestNext3Year()==null?0:strategy.getAmountRequestNext3Year() - rootNode.get("amountRequestNext3Year").asLong();
-			
-			
-			strategy.adjustTotalCalculatedAmount(adjustedAmount);
-			
-			strategy.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
-			strategy.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
-			strategy.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
-			
-			// now looping through the RequestColumns
-			JsonNode requestColumnsArray = rootNode.get("requestColumns");
-			
-			List<RequestColumn> rcList = strategy.getRequestColumns();
-			for(RequestColumn rc : rcList) {
-				Long rcId = rc.getId();
-				// now find this in
-				for(JsonNode rcNode : requestColumnsArray) {
-					if( rcId == rcNode.get("id").asLong()) {
-						//we can just update this one ?
-						rc.setAmount(rcNode.get("amount").asInt());
-						break;
-					}
-				}
-				
-			}
-			
-			proposalStrategyRepository.save(strategy);
-			
-			// now save this budgetProposal
-			BudgetProposal b = strategy.getProposal();
-			b.adjustAmountRequest(adjustedAmount);
-			b.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
-			b.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
-			b.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
-			
-			budgetProposalRepository.save(b);
-			
-			
-			
-			Organization owner = strategy.getProposal().getOwner();
-			
-			BudgetProposal temp = b;
-			// OK we'll go through the amount of this one and it's parent!?
-			while (temp.getForObjective().getParent() != null) {
-				// now we'll get all proposal
-				Objective parent = temp.getForObjective().getParent();
-				temp = budgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(parent,owner,b.getBudgetType());
-				
-				if(temp!=null) {
-					temp.adjustAmountRequest(adjustedAmount);
-					temp.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
-					temp.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
-					temp.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
-				} else {
-					temp = new BudgetProposal();
-					temp.setForObjective(parent);
-					temp.setOwner(owner);
-//					temp.setBudgetType(parent.getBudgetType());
-					temp.setAmountRequest(strategy.getTotalCalculatedAmount());
-					temp.setAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
-					temp.setAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
-					temp.setAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
-				}
-				budgetProposalRepository.save(temp);
-			}
-			
-			return strategy;
-		} else {
-			return null;
-		}
+		Long oldTargetValue = oldPs.getTargetValue();
+
+		
+		ProposalStrategy ps = createProposalStrategy(rootNode);
 		
 		
+		saveProposalStrategy(ps, oldTargetValue, ps.getProposal().getId(),
+				ps.getFormulaStrategy() == null?null:ps.getFormulaStrategy().getId());
+		
+		
+		return ps;
+		
+//		ProposalStrategy strategy = proposalStrategyRepository.findOne(id);
+//		
+//		if(strategy != null) {
+//			// now get information from JSON string?
+//			
+//			Long adjustedAmount = strategy.getTotalCalculatedAmount() - rootNode.get("totalCalculatedAmount").asLong();
+//			Long adjustedAmountRequestNext1Year = strategy.getAmountRequestNext1Year()==null?0:strategy.getAmountRequestNext1Year() - rootNode.get("amountRequestNext1Year").asLong();
+//			Long adjustedAmountRequestNext2Year = strategy.getAmountRequestNext2Year()==null?0:strategy.getAmountRequestNext2Year() - rootNode.get("amountRequestNext2Year").asLong();
+//			Long adjustedAmountRequestNext3Year = strategy.getAmountRequestNext3Year()==null?0:strategy.getAmountRequestNext3Year() - rootNode.get("amountRequestNext3Year").asLong();
+//			Long adjustedTargetValue = strategy.getTargetValue()==null?0:strategy.getTargetValue() - rootNode.get("targetValue").asLong();
+//			
+//			strategy.adjustTotalCalculatedAmount(adjustedAmount);
+//			
+//			strategy.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
+//			strategy.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
+//			strategy.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
+//			
+//			strategy.setTargetValue(rootNode.get("targetValue").asLong());
+//			
+//			// now looping through the RequestColumns
+//			JsonNode requestColumnsArray = rootNode.get("requestColumns");
+//			
+//			List<RequestColumn> rcList = strategy.getRequestColumns();
+//			for(RequestColumn rc : rcList) {
+//				Long rcId = rc.getId();
+//				// now find this in
+//				for(JsonNode rcNode : requestColumnsArray) {
+//					if( rcId == rcNode.get("id").asLong()) {
+//						//we can just update this one ?
+//						rc.setAmount(rcNode.get("amount").asInt());
+//						break;
+//					}
+//				}
+//				
+//			}
+//			
+//			proposalStrategyRepository.save(strategy);
+//			
+//			// now save this budgetProposal
+//			BudgetProposal b = strategy.getProposal();
+//			b.adjustAmountRequest(adjustedAmount);
+//			b.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
+//			b.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
+//			b.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
+//			
+//			budgetProposalRepository.save(b);
+//			
+//			
+//			
+//			Organization owner = strategy.getProposal().getOwner();
+//			
+//			BudgetProposal temp = b;
+//			// OK we'll go through the amount of this one and it's parent!?
+//			while (temp.getForObjective().getParent() != null) {
+//				// now we'll get all proposal
+//				Objective parent = temp.getForObjective().getParent();
+//				temp = budgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(parent,owner,b.getBudgetType());
+//				
+//				if(temp!=null) {
+//					temp.adjustAmountRequest(adjustedAmount);
+//					temp.adjustAmountRequestNext1Year(adjustedAmountRequestNext1Year);
+//					temp.adjustAmountRequestNext2Year(adjustedAmountRequestNext2Year);
+//					temp.adjustAmountRequestNext3Year(adjustedAmountRequestNext3Year);
+//				} else {
+//					temp = new BudgetProposal();
+//					temp.setForObjective(parent);
+//					temp.setOwner(owner);
+////					temp.setBudgetType(parent.getBudgetType());
+//					temp.setAmountRequest(strategy.getTotalCalculatedAmount());
+//					temp.setAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
+//					temp.setAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
+//					temp.setAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
+//				}
+//				budgetProposalRepository.save(temp);
+//			}
+//			
+//			
+//			
+//			
+//			
+//			return strategy;
+//		} else {
+//			return null;
+//		}
+//		
+//		
 	}
 
 
