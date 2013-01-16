@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.crypto.spec.PSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import ch.qos.logback.core.pattern.util.AsIsEscapeUtil;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
@@ -54,10 +45,10 @@ import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetCommonTypeRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
+import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FiscalBudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
-import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveBudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveNameRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
@@ -71,6 +62,11 @@ import biz.thaicom.eBudgeting.repositories.TargetUnitRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueAllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueRepository;
 import biz.thaicom.security.models.ThaicomUserDetail;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
@@ -320,7 +316,10 @@ public class EntityServiceJPA implements EntityService {
 			if(b.getCommonType() != null) {
 				b.getCommonType().getId();
 			}
-			b.setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fiscalYear, b.getId()));
+			if(b.getUnit() != null) {
+				b.getUnit().getId();
+			}
+			b.setStrategies(formulaStrategyRepository.findOnlyNonStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setCurrentFiscalYear(fiscalYear);
 		}
@@ -332,45 +331,68 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Override
 	public BudgetType saveBudgetType(JsonNode node) {
-		BudgetType budgetType = new BudgetType();
+		BudgetType budgetType;
+		if(node.get("id") == null) {
+			budgetType = new BudgetType();
+			Long parentTypeId = node.get("parent").get("id").asLong();
+			
+			BudgetType parent = budgetTypeRepository.findOne(parentTypeId);
+			if(parent != null) {
+				logger.debug("parentId: " + parent.getId());
+				budgetType.setParent(parent);
+				budgetType.setParentPath("." + parent.getId() + parent.getParentPath());
+				budgetType.setParentLevel(node.get("parentLevel").asInt());
+			}
+			
+			BudgetLevel level = budgetTypeRepository.findBudgetLevelNumber(budgetType.getParentLevel());
+			budgetType.setLevel(level);
+			
+			Integer prevLineNumber = null;
+			if(parent.getChildren().size() > 0) {
+				BudgetType lastIndexType = parent.getChildren().get(parent.getChildren().size()-1);
+				budgetType.setIndex(lastIndexType.getIndex()+1);
+				
+				prevLineNumber = lastIndexType.getLineNumber();
+				
+			} else {
+				budgetType.setIndex(0);
+				
+				prevLineNumber = parent.getLineNumber();
+			}
+			
+			budgetType.setLineNumber(prevLineNumber+1);
+			
+			// now the code
+			logger.debug("level " + level.getId());
+			Integer maxCode = budgetTypeRepository.findMaxCodeAtLevel(level);
+			logger.debug("maxCode" +maxCode);
+			budgetType.setCode(maxCode+1);
+			
+			
+			// and the last piece will be lineNumber 
+			budgetTypeRepository.incrementLineNumber(prevLineNumber);
+		} else {
+			budgetType = budgetTypeRepository.findOne(node.get("id").asLong());
+		}
+		
 		
 		budgetType.setName(node.get("name").asText());
 		budgetType.setParentLevel(node.get("parentLevel").asInt());
 		
-		Long parentTypeId = node.get("parent").get("id").asLong();
 		
-		BudgetType parent = budgetTypeRepository.findOne(parentTypeId);
-		if(parent != null) {
-			budgetType.setParent(parent);
-			budgetType.setParentPath("." + parent.getId() + parent.getParentPath());
+		
+		
+		// then the commontype
+		if(getJsonNodeId(node.get("commonType"))!=null) {
+			BudgetCommonType bct = budgetCommonTypeRepository.findOne(getJsonNodeId(node.get("commonType")));
+			budgetType.setCommonType(bct);
 		}
 		
-		BudgetLevel level = budgetTypeRepository.findBudgetLevelNumber(budgetType.getParentLevel());
-		budgetType.setLevel(level);
-		
-		Integer prevLineNumber = null;
-		if(parent.getChildren().size() > 0) {
-			BudgetType lastIndexType = parent.getChildren().get(parent.getChildren().size()-1);
-			budgetType.setIndex(lastIndexType.getIndex()+1);
-			
-			prevLineNumber = lastIndexType.getLineNumber();
-			
-		} else {
-			budgetType.setIndex(0);
-			
-			prevLineNumber = parent.getLineNumber();
+		// lastly unit
+		if(getJsonNodeId(node.get("unit"))!=null) {
+			TargetUnit unit = targetUnitRepository.findOne(getJsonNodeId(node.get("unit")));
+			budgetType.setUnit(unit);
 		}
-		
-		budgetType.setLineNumber(prevLineNumber+1);
-		
-		// now the code
-		Integer maxCode = budgetTypeRepository.findMaxCodeAtLevel(level);
-		budgetType.setCode(maxCode+1);
-		
-		
-		// and the last piece will be lineNumber 
-		budgetTypeRepository.incrementLineNumber(prevLineNumber);
-		
 		
 		budgetTypeRepository.save(budgetType);
 		
@@ -424,6 +446,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		return fiscalYears;
 	}
+	
+	
 
 	@Override
 	public void initFiscalBudgetType(Integer fiscalYear) {
@@ -432,6 +456,7 @@ public class EntityServiceJPA implements EntityService {
 		for(BudgetType type : types) {
 			// check first if we already have this one
 			FiscalBudgetType fbt = fiscalBudgetTypeRepository.findOneByBudgetTypeAndFiscalYear(type, fiscalYear); 
+			logger.debug("fbt: " + fbt);
 			if(fbt == null) {
 				// we have to add this one
 				FiscalBudgetType newFbt = new FiscalBudgetType();
@@ -652,7 +677,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		FormulaStrategy saveFs = formulaStrategyRepository.save(fs);
 		
-		saveFs.getType().setStrategies(formulaStrategyRepository.findByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
+		saveFs.getType().setStrategies(formulaStrategyRepository.findOnlyNonStandardByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
 		saveFs.getType().setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fs.getFiscalYear(), fs.getType().getId()));
 		saveFs.getType().setCurrentFiscalYear(fs.getFiscalYear());
 		
@@ -832,6 +857,7 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public List<Objective> findChildrenObjectivewithBudgetProposal(
 			Integer fiscalYear, Long ownerId, Long objectiveId, Boolean isChildrenTraversal) {
+		logger.debug("ownerId: " + ownerId);
 		List<Objective> objectives = objectiveRepository.findByObjectiveBudgetProposal(fiscalYear, ownerId, objectiveId);
 		
 		for(Objective objective : objectives) {
@@ -841,6 +867,20 @@ public class EntityServiceJPA implements EntityService {
 		return objectives;
 	}
 
+	@Override
+	public List<Objective> findChildrenObjectivewithObjectiveBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId,
+			Boolean isChildrenTraversal) {
+		List<Objective> objectives = objectiveRepository.findByObjectiveBudgetProposal(fiscalYear, ownerId, objectiveId);
+		
+		for(Objective objective : objectives) {
+//			logger.debug("** " + objective.getBudgetType().getName());
+			objective.doEagerLoadWithBudgetProposal(isChildrenTraversal);
+		}
+		return objectives;
+	}
+	
+	
 	@Override
 	public BudgetProposal findBudgetProposalById(Long budgetProposalId) {
 		return budgetProposalRepository.findOne(budgetProposalId);
@@ -1014,7 +1054,7 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Override
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
-			Integer fiscalYear, Long objectiveId) {
+			Integer fiscalYear, Long objectiveId, Boolean isFindObjectiveBudget) {
 		String parentPathLikeString = "%."+objectiveId.toString()+"%";
 		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear, parentPathLikeString);
 		
@@ -1030,7 +1070,6 @@ public class EntityServiceJPA implements EntityService {
 			o.addToSumBudgetTypeProposals(proposal);
 			
 			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
-			
 			
 			//o.getProposals().add(proposal);
 			logger.debug("proposal size is " + o.getProposals().size());
@@ -1138,9 +1177,15 @@ public class EntityServiceJPA implements EntityService {
 		ProposalStrategy proposalStrategy = proposalStrategyRepository.findOne(id);
 		
 		Long amountToBeReduced = proposalStrategy.getTotalCalculatedAmount();
+		Long amountRequestNext1Year = proposalStrategy.getAmountRequestNext1Year();
+		Long amountRequestNext2Year = proposalStrategy.getAmountRequestNext2Year();
+		Long amountRequestNext3Year = proposalStrategy.getAmountRequestNext3Year();
 		
 		BudgetProposal b = proposalStrategy.getProposal();
 		b.addAmountRequest(-amountToBeReduced);
+		b.addAmountRequestNext1Year(-amountRequestNext1Year);
+		b.addAmountRequestNext2Year(-amountRequestNext2Year);
+		b.addAmountRequestNext3Year(-amountRequestNext3Year);
 		budgetProposalRepository.save(b);
 		
 		Organization owner = b.getOwner();
@@ -1151,10 +1196,14 @@ public class EntityServiceJPA implements EntityService {
 		while (temp.getForObjective().getParent() != null) {
 			// now we'll get all proposal
 			Objective parent = temp.getForObjective().getParent();
-			temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+			temp = budgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(parent,owner,b.getBudgetType());
 			
 			if(temp!=null) {
 				temp.addAmountRequest(-amountToBeReduced);
+				temp.addAmountRequestNext1Year(-amountRequestNext1Year);
+				temp.addAmountRequestNext2Year(-amountRequestNext2Year);
+				temp.addAmountRequestNext3Year(-amountRequestNext3Year);
+				
 			} 
 			budgetProposalRepository.save(temp);
 		}
@@ -1167,7 +1216,10 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long budgetProposalId, Long formulaStrategyId) {
 		
-		FormulaStrategy formulaStrategy= formulaStrategyRepository.findOne(formulaStrategyId);
+		FormulaStrategy formulaStrategy=null;
+		if(formulaStrategyId != null) {
+		 formulaStrategy = formulaStrategyRepository.findOne(formulaStrategyId);
+		}
 		
 		strategy.setFormulaStrategy(formulaStrategy);
 		
@@ -1232,9 +1284,6 @@ public class EntityServiceJPA implements EntityService {
 			return null;
 		}
 		
-		logger.debug(node.toString());
-		//logger.debug("id = " + node.get("id").toString());
-		
 		if(node.get("id") != null) {
 			
 			return node.get("id").asLong();
@@ -1251,16 +1300,21 @@ public class EntityServiceJPA implements EntityService {
 	private  ProposalStrategy createProposalStrategy(JsonNode psNode) {
 		ProposalStrategy ps;
 		if(getJsonNodeId(psNode) != null) {
-			logger.debug("psNodeId = "+ getJsonNodeId(psNode));
 			ps = proposalStrategyRepository.findOne(getJsonNodeId(psNode));
 		} else {
 			ps = new ProposalStrategy();
 		}
 		
 		// the fs suppose to be there or either null?
-		FormulaStrategy fs = formulaStrategyRepository.findOne(getJsonNodeId(psNode.get("formulaStrategy")));
+		FormulaStrategy fs = null;
+		if(getJsonNodeId(psNode.get("formulaStrategy")) != null) {
+			fs = formulaStrategyRepository.findOne(getJsonNodeId(psNode.get("formulaStrategy")));
+		}
+		
+		
 		ps.setFormulaStrategy(fs);
 		
+		ps.setName(psNode.get("name").asText());
 		ps.setTotalCalculatedAmount(psNode.get("totalCalculatedAmount").asLong());
 		ps.setAmountRequestNext1Year(psNode.get("amountRequestNext1Year").asLong());
 		ps.setAmountRequestNext2Year(psNode.get("amountRequestNext2Year").asLong());
@@ -1329,7 +1383,14 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 		ProposalStrategy ps = createProposalStrategy(proposalNode.get("proposalStrategies").get(0));
-		saveProposalStrategy(ps, proposal.getId(), ps.getFormulaStrategy().getId());
+		saveProposalStrategy(ps, proposal.getId(), ps.getFormulaStrategy() != null ? ps.getFormulaStrategy().getId() : null );
+		
+		if(proposal.getProposalStrategies() == null) {
+			List<ProposalStrategy> psList = new ArrayList<ProposalStrategy> (); 
+			psList.add(ps);
+			
+			proposal.setProposalStrategies(psList);
+		}
 		
 		
 		return proposal;
@@ -1745,8 +1806,6 @@ public class EntityServiceJPA implements EntityService {
 		if(strategy != null) {
 			// now get information from JSON string?
 			
-			strategy.setName(rootNode.get("name").asText());
-			
 			Long adjustedAmount = strategy.getTotalCalculatedAmount() - rootNode.get("totalCalculatedAmount").asLong();
 			Long adjustedAmountRequestNext1Year = strategy.getAmountRequestNext1Year()==null?0:strategy.getAmountRequestNext1Year() - rootNode.get("amountRequestNext1Year").asLong();
 			Long adjustedAmountRequestNext2Year = strategy.getAmountRequestNext2Year()==null?0:strategy.getAmountRequestNext2Year() - rootNode.get("amountRequestNext2Year").asLong();
@@ -1796,7 +1855,7 @@ public class EntityServiceJPA implements EntityService {
 			while (temp.getForObjective().getParent() != null) {
 				// now we'll get all proposal
 				Objective parent = temp.getForObjective().getParent();
-				temp = budgetProposalRepository.findByForObjectiveAndOwner(parent,owner);
+				temp = budgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(parent,owner,b.getBudgetType());
 				
 				if(temp!=null) {
 					temp.adjustAmountRequest(adjustedAmount);
@@ -2555,6 +2614,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		
 		Objective obj = objectiveRepository.findRootOfFiscalYear(fiscalYear);
+		
 		if(obj == null) {
 			ObjectiveType rootType = objectiveTypeRepository.findOne(ObjectiveTypeId.ROOT.getValue());
 			
@@ -2581,6 +2641,7 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		// now init fiscalBudgetType
+		logger.debug("initfiscalBudgetType");
 		initFiscalBudgetType(fiscalYear);
 		
 		return "success";
@@ -2768,6 +2829,14 @@ public class EntityServiceJPA implements EntityService {
 			Integer fiscalYear) {
 		return fiscalBudgetTypeRepository.findAllByFiscalYear(fiscalYear);
 	}
+	
+	@Override
+	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYearUpToLevel(
+			Integer fiscalYear, Integer level) {
+		// TODO Auto-generated method stub
+		return fiscalBudgetTypeRepository.findAllByFiscalYearUpToLevel(fiscalYear, level);
+	}
+
 
 	@Override
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList) {
@@ -3030,6 +3099,9 @@ public class EntityServiceJPA implements EntityService {
 		
 		return o;
 	}
+
+
+
 
 
 

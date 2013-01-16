@@ -45,5 +45,13 @@ public interface FiscalBudgetTypeRepository extends
 	@Query("UPDATE FiscalBudgetType fbt " +
 			"SET fbt.isMainType = true " +
 			"WHERE fbt.fiscalYear = ?1 and fbt.id in (?2) ")
-	public void setIsMainBudget(Integer fiscalYear, List<Long> ids); 
+	public void setIsMainBudget(Integer fiscalYear, List<Long> ids);
+
+	@Query("" +
+			"SELECT fbt " +
+			"FROM FiscalBudgetType fbt " +
+			"WHERE fbt.fiscalYear = ?1 AND fbt.budgetType.parentLevel <= ?2 AND fbt.budgetType.parentLevel > 0 " +
+			"ORDER BY fbt.budgetType.lineNumber")
+	public List<FiscalBudgetType> findAllByFiscalYearUpToLevel(
+			Integer fiscalYear, Integer level); 
 }

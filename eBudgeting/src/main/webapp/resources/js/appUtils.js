@@ -106,6 +106,18 @@ function changeCurrentRootFY(sel) {
 			alert("success!");
 		}
 	
-	});
+	});	
+}
+
+function saveModel(model, success, error) {
 	
+	$.ajax({
+		type: 'POST', 
+		dataType: 'json',
+		url: model.url(),
+		contentType : 'application/json',
+		data: JSON.stringify(model.toJSON()),
+		success: success,
+		error: error
+	});
 }

@@ -220,8 +220,8 @@
     </div>
 {{/if}}
 <div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มรายการ</a>
-	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขรายการ</a>
+	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขทะเบียน</a>
 	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบรายการ</a> 
 </div>
 <div id="newRowCtr">
@@ -273,7 +273,8 @@
 </strong> <br/>
 <button class='btn btn-mini btn-info addFormula'>เพิ่มรายการย่อย</button>
 <button class='btn btn-mini btn-info addDefaultFormula'>กำหนดราคา</button>
-<button class='btn btn-mini btn-danger cancelFormula'>ยกเลิก</button>
+<button class='btn btn-mini btn-danger deleteDefaultFormula'>ลบการกำหนดราคา</button>
+<button class='btn btn-mini btn-danger cancelFormula'>กลับ</button>
 
 </script>
 
@@ -301,14 +302,18 @@
 
 <script id="newRowTemplate" type="text/x-handlebars-template">
 	<div class="well">
-		 <form class="form-inline">
+		 <form class="form-inline" data-id="{{id}}">
 			<div class="control-group">
-				<div class="controls  budgetTypeSlt">
-				</div>
+				{{#if this.editBudgetType}}
+					<b>แก้ไขรายการย่อย</b>
+				{{else}}
+					<div class="controls  budgetTypeSlt">
+					</div>
+				{{/if}}
 			</div>
 
 			<div class="control-group">
-				<label class="control-label" for="nameTxt"> <b>ชื่อรายการย่อย:</b> </label>
+				<label class="control-label" for="nameTxt"> <b>ชื่อรายการ:</b> </label>
 				<div class="controls">
 					<input id="nameTxt" type='text' placeholder='...' class='span7' value="{{name}}"></input> <br/>
 				</div>
@@ -339,7 +344,7 @@
 			</div>
 		</form>
 
-		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave'>บันทึกข้อมูล</button>
+		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave' data-id="{{id}}">บันทึกข้อมูล</button>
 		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</div>
 </script>
@@ -423,7 +428,7 @@ Handlebars.registerHelper("formulaLine", function(formulaColumns, editForm){
 	return s;
 });
 
-<!--
+
 var fiscalYear = "${fiscalYear}";
 var typeId;
 
@@ -505,7 +510,6 @@ $(document).ready(function() {
 		},
 		changeUnitName: function(e) {
 			this.formulaColumn.set('unitName',$(e.target).val());
-			console.log(this.formulaColumn.get('unitName'));
 		},
 		removeSelf: function(e) {
 			
@@ -559,7 +563,7 @@ $(document).ready(function() {
 			if( this.currentStrategy.get('id') == null )  {
 				html = this.isStandardItem ? "เพิ่มราคากลาง" : "เพิ่มรายการย่อย";
 			} else {
-				html = this.isStandardItem ? "แก้ไขราคากลาง" : "แก้ไขรายการย่อย";
+				html = this.isStandardItem ? "แก้ไขราคากลาง" : "แก้ไขรายการย่อยและการกำหนดราคาต่อหน่วย (บาท/หน่วยนับ)";
 			}
 			this.$el.find('.modal-header span').html(html);
 			
@@ -574,8 +578,6 @@ $(document).ready(function() {
 				formulaColumns.add(fc);
 			}
 			
-			
-			console.log(this.currentStrategy.get('name'));
 			
 			this.$el.find('.modal-body').html(html);
 			
@@ -653,7 +655,7 @@ $(document).ready(function() {
 			}
 			
 			if(this.currentStrategy.get('isStandardItem') == true) {
-				this.currentStrategy.set('name', "DEFAULT");
+				this.currentStrategy.set('name', this.currentBudgetType.get('name'));
 			} else {
 				this.currentStrategy.set('name', nameTxt);
 			}
@@ -672,7 +674,13 @@ $(document).ready(function() {
 			this.currentStrategy.save(null, {
 				success: _.bind(function() {
 					if(newStrategy) {
-						this.currentBudgetType.get('strategies').add(this.currentStrategy);
+						if(this.currentStrategy.get('isStandardItem') == true) {
+							this.currentBudgetType.set('standardStrategy',this.currentStrategy);
+						} else {
+							this.currentBudgetType.get('strategies').add(this.currentStrategy);
+						}
+						
+						
 					}
 					this.currentStrategy.get('formulaColumns').comparator = function(formulaColumn) {
 						  return formulaColumn.get("index");
@@ -787,6 +795,7 @@ $(document).ready(function() {
 			
 			"click button.addFormula" : "addFormula",
 			"click button.addDefaultFormula" : "addDefaultFormula",
+			"click button.deleteDefaultFormula" : "deleteDefaultFormula",
 			"click button.cancelFormula" : "cancelFormula",
 			"click a.deleteStrategy" : "deleteStrategy",
 			"click a.editStrategy" : "editStrategy",
@@ -846,15 +855,31 @@ $(document).ready(function() {
 			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
 			currentBudgetType.on('renderRow', this.renderRow, this);
 			
-			var currentFormula = currentBudgetType.get('standardStrategy')
+			var currentFormula = currentBudgetType.get('standardStrategy');
 			if(currentFormula == null) {
 				currentFormula = new FormulaStrategy();
 				currentFormula.set("type", currentBudgetType);
-				currentFormula.set("name", "DEFAULT");
+				currentFormula.set("name", currentBudgetType.get('name'));
 				currentFormula.set("isStandardItem", true);
 			} 
 
 			this.formulaLineModalView.renderFormulaLineWith(currentFormula, currentBudgetType);
+		},
+		
+		deleteDefaultFormula: function(e) {
+			var currentBudgetTypeId = $(e.currentTarget).parents('tr').attr('data-id');
+			var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+			currentBudgetType.on('renderRow', this.renderRow, this);
+			
+			var currentFormula = currentBudgetType.get('standardStrategy');
+			if(currentFormula != null) {
+				currentFormula.destroy({
+					success: function(){
+						alert("คุณได้ลบข้อมูลแล้ว");
+						currentBudgetType.trigger('renderRow', currentBudgetType);
+					}
+				});
+			} 
 		},
 		
 		cancelFormula : function(e) {
@@ -939,6 +964,72 @@ $(document).ready(function() {
 			}
 		},
 		
+		editRow: function(e) {
+			var fsId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
+			
+			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
+
+				var model = this.collection.get(fsId);
+				
+				var json = model.toJSON();
+				
+				json.unitList = listTargetUnits.toJSON();
+				
+				var unit = _.find(json.unitList, function(unit) {
+					if(json.unit != null) {
+						return json.unit.id == unit.id;
+					}
+				});
+				
+				if(unit!=null) {unit.selected = true;}
+				
+				json.commonTypeList = listBudgetCommonType.toJSON();
+				json.editBudgetType = true;
+				
+				var commonType =  _.find(json.commonTypeList, function(commonType) {
+					if(json.commonType!=null) {
+						
+						return json.commonType.id == commonType.id;
+					}
+				});
+				
+				if(commonType!=null) {
+					commonType.selected = true;
+				}
+
+				
+				$('#newRowCtr').html(this.newRowTemplate(json));	
+				
+				this.$el.find('a.btn').toggleClass('disabled');
+				
+				/* var model = this.collection.get(fsId);
+				
+				var json = model.toJSON();
+					
+				json.unitList = listTargetUnits.toJSON();
+				if(model.get('unit') != null) {
+					for(var i=0; i<json.unitList.length; i++) {
+						if(json.unitList[i].id == model.get('unit').get('id')) {}
+						json.unitList[i].selected = 'selected';
+					}
+				}
+				
+				
+				json.commonTypeList = listBudgetCommonType.toJSON();
+				if(model.get('commonType') != null) {
+					for(var i=0; i<json.commonTypeList.length; i++) {
+						if(json.commonTypeList[i].id == model.get('commonType').get('id')) {}
+						json.commonTypeList[i].selected = 'selected';
+					}
+				}
+
+				var html = this.editRowTemplate(json);
+				$('input[name=rowRdo]:checked').parents('tr').html(html); */
+			} else {
+				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
+			}
+		},
+		
 		
 		cancelUpdateLine: function(e) {
 			//now put back the value
@@ -971,18 +1062,43 @@ $(document).ready(function() {
 		
 		saveLine: function(e) {
 
-			var parentTypeId = this.$el.find('select.type:last').val();
-			var parentBudgetType = BudgetType.findOrCreate(parentTypeId);
+			var id = $(e.target).attr('data-id');
+			var budgetType = BudgetType.findOrCreate(id);
 			
+			
+			var parentBudgetType;
+			var newBudgetType;
 			var inputNameVal = this.$el.find('#nameTxt').val();
 			var unitId = this.$el.find('select#unitSlt').val();
-			var commonTypeId = this.$el.find('select#commonTypeSlt').val();
+			var unit = TargetUnit.findOrCreate(unitId);
 			
-			var newBudgetType = new BudgetType();
-			newBudgetType.set('name', inputNameVal);
-			newBudgetType.set('parent', parentBudgetType);
-			newBudgetType.set('parentLevel', 4);
-			newBudgetType.set('parentPath', '.' + parentBudgetType.get('id') + parentBudgetType.get('parentpath'));
+			var commonTypeId = this.$el.find('select#commonTypeSlt').val();
+			var commonType = BudgetCommonType.findOrCreate(commonTypeId);
+			
+			
+			
+			if(budgetType== null) {
+				var parentTypeId = this.$el.find('select.type:last').val();
+				parentBudgetType = BudgetType.findOrCreate(parentTypeId);
+				
+				newBudgetType = new BudgetType();
+				newBudgetType.set('name', inputNameVal);
+				newBudgetType.set('parent', parentBudgetType);
+				newBudgetType.set('parentLevel', 4);
+				newBudgetType.set('parentPath', '.' + parentBudgetType.get('id') + parentBudgetType.get('parentpath'));
+				
+			} else {
+				parentBudgetType = budgetType.get('parent');
+				newBudgetType = budgetType;
+				newBudgetType.set('name', inputNameVal);
+				
+			}
+			
+			newBudgetType.set('commonType', commonType);
+			newBudgetType.set('unit', unit);
+			
+			
+			
 			newBudgetType.save(null, {
 				success: function() {
 					
@@ -1017,38 +1133,7 @@ $(document).ready(function() {
 			}
 		},
 		
-		editRow: function(e) {
-			var fsId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
-			
-			if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
-				this.$el.find('a.btn').toggleClass('disabled');
-				var model = this.collection.get(fsId);
-				
-				var json = model.toJSON();
-					
-				json.unitList = listTargetUnits.toJSON();
-				if(model.get('unit') != null) {
-					for(var i=0; i<json.unitList.length; i++) {
-						if(json.unitList[i].id == model.get('unit').get('id')) {}
-						json.unitList[i].selected = 'selected';
-					}
-				}
-				
-				
-				json.commonTypeList = listBudgetCommonType.toJSON();
-				if(model.get('commonType') != null) {
-					for(var i=0; i<json.commonTypeList.length; i++) {
-						if(json.commonTypeList[i].id == model.get('commonType').get('id')) {}
-						json.commonTypeList[i].selected = 'selected';
-					}
-				}
-
-				var html = this.editRowTemplate(json);
-				$('input[name=rowRdo]:checked').parents('tr').html(html);
-			} else {
-				alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
-			}
-		},
+		
 		
 		renderFormulaStrategy: function(formulaStrategy) {
 			var formulaStrategyEl = this.$el.find('tr[data-id='+ formulaStrategy.get('id') +']');
@@ -1060,7 +1145,6 @@ $(document).ready(function() {
 		},
 		
 		renderChild: function(caller) {
-			console.log('hey');
 			this.renderFormulaStrategy(caller);
 		}
 		

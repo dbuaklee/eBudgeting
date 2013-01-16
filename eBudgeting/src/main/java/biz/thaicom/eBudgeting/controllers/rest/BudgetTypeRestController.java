@@ -84,7 +84,7 @@ public class BudgetTypeRestController {
 	public @ResponseBody BudgetType updateBudgetType(
 			@PathVariable Long id,
 			@RequestBody JsonNode node) {
-		return entityService.updateBudgetType(node);
+		return entityService.saveBudgetType(node);
 		
 	}
 	
@@ -189,6 +189,13 @@ public class BudgetTypeRestController {
 	public @ResponseBody List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYear(
 			@PathVariable Integer fiscalYear) {
 		return entityService.findAllFiscalBudgetTypeByFiscalYear(fiscalYear);
+	}
+	
+	@RequestMapping(value="/FiscalBudgetType/fiscalYear/{fiscalYear}/upToLevel/{level}", method=RequestMethod.GET)
+	public @ResponseBody List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYearUpToLevel(
+			@PathVariable Integer fiscalYear,
+			@PathVariable Integer level) {
+		return entityService.findAllFiscalBudgetTypeByFiscalYearUpToLevel(fiscalYear,level);
 	}
 	
 	@RequestMapping(value="/FiscalBudgetType/setMainBudget/{fiscalYear}", method=RequestMethod.POST)
