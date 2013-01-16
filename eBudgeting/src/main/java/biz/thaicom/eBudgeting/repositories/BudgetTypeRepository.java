@@ -23,7 +23,6 @@ public interface BudgetTypeRepository extends
 			"FROM BudgetType budgetType " +
 			"ORDER BY budgetType.fiscalYear asc")
 	List<Integer> findFiscalYears();
-
 	
 	@Query("SELECT budgetType " +
 			"FROM BudgetType budgetType " +
@@ -32,6 +31,11 @@ public interface BudgetTypeRepository extends
 	Page<BudgetType> findAllByParentLevelAndParentPathLike(Integer level,
 			String mainTypePath, String query, Pageable pageable);
 	
+	@Query("SELECT budgetType " +
+			"FROM BudgetType budgetType " +
+			"WHERE parentLevel = ?1 " +
+			"ORDER BY budgetType.code asc ")
+	List<BudgetType> findAllByParentLevel(Integer level);
 	
 	@Query("SELECT level " +
 			"FROM BudgetLevel level " +

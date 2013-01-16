@@ -114,6 +114,7 @@ public interface EntityService {
 	public List<BudgetType> findAllMainBudgetTypeByFiscalYear(Integer fiscalYear);
 	public Page<BudgetType> findBudgetTypeByLevelAndMainType(Integer fiscalYear, Integer level,
 			Long typeId, String query, Pageable pageable);
+	public List<BudgetType> findBudgetTypeByLevel(Integer fiscalYear, Integer level);
 	public BudgetType saveBudgetType(JsonNode node);
 	public BudgetType updateBudgetType(JsonNode node);
 	public void deleteBudgetType(Long id);

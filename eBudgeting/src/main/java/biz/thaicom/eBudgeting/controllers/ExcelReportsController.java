@@ -3,6 +3,7 @@ package biz.thaicom.eBudgeting.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.services.EntityService;
@@ -211,6 +213,17 @@ public class ExcelReportsController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		
 		return "m51r13.xls";
+	}
+
+	@RequestMapping("/m51r14.xls/{fiscalYear}/file/m51r14.xls")
+	public String excelM51R14(@PathVariable Integer fiscalYear, Model model) {
+		
+		List<BudgetType> type = entityService.findBudgetTypeByLevel(fiscalYear, 3);
+		
+		model.addAttribute("type", type);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m51r14.xls";
 	}
 
 	@RequestMapping("/admin/excel/report1.xls/{id}")

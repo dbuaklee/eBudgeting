@@ -330,6 +330,32 @@ public class EntityServiceJPA implements EntityService {
 		
 	}
 	
+	@Override
+	public List<BudgetType> findBudgetTypeByLevel(Integer fiscalYear, Integer level) {
+		List<BudgetType> p = budgetTypeRepository.findAllByParentLevel(level);
+		
+		// now we load the necceessary 
+		for(BudgetType b : p ) {
+			b.getLevel().getId();
+			if(b.getCommonType() != null) {
+				b.getCommonType().getId();
+			}
+			if(b.getUnit() != null) {
+				b.getUnit().getId();
+			}
+			
+			b.getChildren().size();
+			
+			logger.debug("children size: " + b.getChildren().size());
+			
+			b.setStrategies(formulaStrategyRepository.findOnlyNonStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
+			b.setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
+			b.setCurrentFiscalYear(fiscalYear);
+		}
+		
+		return p;
+		
+	}
 	
 	@Override
 	public BudgetType saveBudgetType(JsonNode node) {
