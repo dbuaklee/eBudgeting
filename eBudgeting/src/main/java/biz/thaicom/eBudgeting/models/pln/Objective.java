@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 
@@ -101,6 +102,9 @@ public class Objective implements Serializable {
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
 	private List<BudgetProposal> proposals;
+	
+	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
+	private List<ObjectiveBudgetProposal> objectiveProposals;
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
 	private List<AllocationRecord> allocationRecords;

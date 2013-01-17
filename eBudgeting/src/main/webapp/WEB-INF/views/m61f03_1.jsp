@@ -292,7 +292,7 @@
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
-<div class="menu"><button id="addBudget" class="btn">เพื่มรายการงบประมาณ</button> <button class="btn">บันทึกข้อมูลโครงการ</button></div>
+<div class="menu"><button id="addBudget" class="btn">เพื่มรายการงบประมาณ</button>
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	{{{listProposalStrategies filterProposals}}}
 </div>
@@ -311,11 +311,7 @@
 <div id="inputAll">
 กรอกข้อมูลใหม่
 <div class="row">
-<div class="span2" id="budgetTypeSelectionDivL1">หมวดหลัก<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL2">หมวดย่อย<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL3">รายการหลัก<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL4">รายการ<div></div></div>
-<div class="span2" id="strategySelectionDiv">รายการย่อย<div></div>
+<div class="span2" id="budgetTypeSelectionDivL1">เลือกหมวดงบประมาณ<div></div></div>
 </div>
 <div id="inputDiv" class="span10">
 	<form id="input-form" style="margin-bottom:0px;">
@@ -369,164 +365,35 @@
 	</div>
 </div>
 <div class="clearfix"></div>
-{{#if budgetTypeUnitName}}
-<div id="formulaBox">
-	<div>
-		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" value="{{targetValue}}" data-unitId="{{targetUnitId}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
-	</div>
-</div>
-{{/if}}
-<div class="clearfix"></div>
 </script>
-
-
-<script id="inputModalTemplate" type="text/x-handler-template">
-	<div id="proposalStrategyId" data-id="{{proposalStrategyId}}">
-				รายการ: <strong> {{type.name}} / {{name}} </strong>
-	</div>
-	<div id="formulaBox">
-		<div>
-			<div style="height:35px;margin-bottom:10px;">
-				เรื่อง: 
-			</div>
-			<div style="height:35px;">
-				จำนวน:
-			</div>
-		</div>
-		<div>
-			<div style="height:35px;margin-bottom:10px;">
-				<input type="text" style="width:70px;" value="ราคา (บาท)" disabled="disabled"/>
-			</div>
-			<div style="height:35px;">
-				<input type="text" id="standardPriceTxt" style="width:70px;" disabled="disabled" value="{{standardPrice}}"></input> &times;
-			</div>
-		</div>
-		{{#each formulaColumns}}
-		<div>
-			<div style="height:35px;margin-bottom:10px;">
-				<input type="text" style="width:70px;" value="{{unitName}}" disabled="disabled"/>
-			</div>
-			<div style="height:35px;">
-				<input type="text" class="formulaColumnInput" id="formulaColumnId-{{id}}" style="width:70px;"  value="{{value}}"></input> {{#if $last}}={{else}}&times;{{/if}}
-			</div>
-		</div>
-		{{/each}}
-		<div>
-			<div style="height:35px;margin-bottom:5px;padding-top:5px;text-align:center;padding-right:30px;">
-				
-			</div>
-			<div style="height:35px;" id="totalInputForm">
-				<div class="input-append"><input type="text" id="totalInputTxt" style="width:120px;"  disabled="disabled" value="{{total}}"></input><span class="add-on">บาท</span></div>
-			</div>
-		</div>
-	</div>
-	
-<div class="clearfix"></div>
-<div id="formulaBox">
-	<div>
-		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next1Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next2Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next3Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-</div>
-<div class="clearfix"></div>
-{{#if budgetTypeUnitName}}
-<div id="formulaBox">
-	<div>
-		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" data-unitId="{{targetUnitId}}" value="{{targetValue}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
-	</div>
-</div>
-{{/if}}
-<div class="clearfix"></div>
-</script>
-
-<script id="proposalInputTemplate" type="text/x-handler-template">
-<div id="proposalInputCtr">
-<br/>
-ระบุชื่อรายการ <input type="text"/> <br/>
-ระบุจำนวนเงินงบประมาณ <input type="text"/> <br/>
-
-<button class="btn btn-primary">บันทึก</button> <button class="btn btn-primary">ยกเลิก</button> 
-</div>
-</script>
-
-
-<script id="mainfrmTemplate" type="text/x-handler-template">
-<br/>
-<hr/>
-<h4>กรุณากรอกข้อมูลงบประมาณ</h4>
-{{this.type.name}} - {{this.name}}
-<div id="budgetSelectionCtr"></div>
-</script>
-
 
 <script id="budgetInputSelectionTemplate" type="text/x-handler-template">
-<select id="budgetType_{{this.id}}" multiple="multiple" style="height: 100px;" class="span2">
+<select id="budgetType" class="span4">
 	{{#if this}}
-	{{#each this.children}}
+	{{#each this}}
 		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
 	{{/each}}
 {{else}} {{/if}}
 </select>
 </script>
 
-<script id="proposalListTemplate" type="text/x-handler-template">
+<script id="objectiveBudgetProposalListTemplate" type="text/x-handler-template">
 <ul>
 {{#each this}}
-	<li>{{name}}: {{formatNumber total}} บาท</li>
+	<li>{{budgetType.name}}: {{formatNumber amountRequest}} บาท</li>
 {{/each}}
 </ul>
-</script>
-
-<script id="proposalStrategyListTemplate" type="text/x-handler-template">
-{{#each this}}
-	<div> 
-	<u>{{name}}: {{formatNumber total}} บาท </u>
-	<ul id="budgetProposalLst">
-		{{#each proposals}}
-		{{#each proposalStrategies}} 
-			<li data-id="{{id}}" proposal-id="{{../id}}">
-				<a href="#" class="editProposal"><i class="icon-edit icon-blue editProposal"></i></a>				
-				<a href="#" class="removeProposal"><i class="icon-trash icon-red removeProposal"></i></a>
-				{{#if formulaStrategy}}
-					{{formulaStrategy.name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท
-				{{else}}
-					{{name}} = {{{formatNumber totalCalculatedAmount}}} บาท
-				{{/if}}
-				{{#if targetUnit}}
-					(เป้าหมาย: {{formatNumber targetValue}} {{targetUnit.name}})
-				{{/if}}
-
-			</li>
-		{{/each}}
-		{{/each}}
-	</ul>
-	</div>
-	{{/each}}
 </script>
 
 <script type="text/javascript">
 	var objectiveId = "${objectiveId}";
 	var fiscalYear = parseInt("${fiscalYear}");
-
-	var pageUrl = "/page/m2f12/";
+	
 	var mainCtrView = null;
 	var objectiveCollection = null;
 	var budgetTypeSelectionView = null;
 	var rootCollection;
+	var mainBudgetTypeCollection = null;
 	var topBudgetList = ["งบบุคลากร","งบดำเนินงาน","งบลงทุน","งบอุดหนุน","งบรายจ่ายอื่น"];
 	var l = null;
 	var e1;
@@ -1072,7 +939,6 @@
 				this.level = options.level;
 				this.parentModal = options.parentModal;
 			} 
-			
 		},
 		budgetInputSelectionTemplate : Handlebars.compile($("#budgetInputSelectionTemplate").html()),
 		
@@ -1080,8 +946,8 @@
 			// first clear the siblings select
 			
 			this.$el.empty();
-			if(this.model != null) {
-				this.$el.html(this.budgetInputSelectionTemplate(this.model.toJSON()));
+			if(this.collection != null) {
+				this.$el.html(this.budgetInputSelectionTemplate(this.collection.toJSON()));
 			} else {
 				this.$el.html(this.budgetInputSelectionTemplate({}));
 			}
@@ -1093,8 +959,8 @@
 			"change select" : "selectionChange" 
 		},
 		
-		setRootModel: function(rootModel) {
-			this.model =  rootModel;
+		setCollection: function(collection) {
+			this.collection =  collection;
 			
 		},
 		
@@ -1142,29 +1008,7 @@
 			
 			// ok we'll have to set back to this!?
 			
-		},
-
-		renderWithDisableSelect : function(budgetProposal, proposalStrategy) {
-			
-			this.strategySelectionView = new StrategySelectionView({parentModal: this.parentModal});
-	
-			var budgetType = budgetProposal.get('budgetType');
-			
-			// ok now we'll get the strategy here
-			var formulaStrategies = new FormulaStrategyCollection;
-	
-			formulaStrategies.fetch({
-				url : appUrl('/FormulaStrategy/search/' + fiscalYear + "/" + budgetType.get('id')),
-				success : _.bind(function(data) {
-					budgetType.set('strategies', formulaStrategies);
-					this.strategySelectionView.setElement(this.el);
-	
-					this.strategySelectionView.renderWithWithDisableSelect(	formulaStrategies, proposalStrategy, this.parentModal);
-	
-				}, this)
-			});
-		}
-		
+		}	
 	});
 
 	var ModalView = Backbone.View.extend({
@@ -1382,45 +1226,11 @@
 
 		renderInputALL : function(proposalStrategy) {
 			this.$el.find('.modal-body').html(this.inputAllDivTemplate());
-			
-			var rootBudgetType = BudgetType.findOrCreate({id:0});
-		    rootBudgetType.fetch({success: _.bind(function(){
-		    	this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1 > div', level: 1, parentModal: this});
-				this.budgetTypeSelectionViewL2 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL2 > div', level: 2, parentModal: this});
-				this.budgetTypeSelectionViewL3 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL3 > div', level: 3, parentModal: this});
-				this.budgetTypeSelectionViewL4 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL4 > div', level: 4, parentModal: this});
-				this.startegySelectionView = new StrategySelectionView({el: '#inputAll', parentModal: this});
-
-				this.budgetTypeSelectionArray = [];
-				this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL1);
-				this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL2);
-				this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL3);
-				this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL4);
-				this.budgetTypeSelectionArray.push(this.startegySelectionView);
-
-				
-				
-		    	this.budgetTypeSelectionViewL1.$el = $('#budgetTypeSelectionDivL1 > div');
-		    	this.budgetTypeSelectionViewL1.setRootModel(rootBudgetType);
-		    	this.budgetTypeSelectionViewL1.render();
-		    	
-		    	
-		    	this.budgetTypeSelectionViewL2.$el = $('#budgetTypeSelectionDivL2 > div');
-		    	this.budgetTypeSelectionViewL2.setRootModel(null);
-		    	this.budgetTypeSelectionViewL2.render();
-		    	
-		    	this.budgetTypeSelectionViewL3.$el = $('#budgetTypeSelectionDivL3 > div');
-		    	this.budgetTypeSelectionViewL3.setRootModel(null);
-		    	this.budgetTypeSelectionViewL3.render();
-		    	
-		    	this.budgetTypeSelectionViewL4.$el = $('#budgetTypeSelectionDivL4 > div');
-		    	this.budgetTypeSelectionViewL4.setRootModel(null);
-		    	this.budgetTypeSelectionViewL4.render();
-		    	
-		    	this.startegySelectionView.$el = $('#inputAll');
-		    	this.startegySelectionView.renderWithStrategy(null, this, null);
-		    	this.startegySelectionView.render();
-	    	},this)});
+			this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1 > div', level: 1, parentModal: this});
+			this.budgetTypeSelectionViewL1.$el = $('#budgetTypeSelectionDivL1 > div');
+		    this.budgetTypeSelectionViewL1.setCollection(mainBudgetTypeCollection);
+		    this.budgetTypeSelectionViewL1.render();
+		    			
 		},
 		
 		render : function() {
@@ -1617,8 +1427,6 @@
 		}, 
 		renderInitialWith: function(objective) {
 			
-			e1=this;
-			
 			this.rootObjective = objective;
 			
 			// now get this rootObjective Children
@@ -1657,48 +1465,19 @@
 
 		events : {
 			"click input[type=checkbox].bullet" : "toggle",
-			"click .detail" : "detailModal",
-			"click .targetValueModal" : "detailTargetValue"
-		},
-		
-		detailTargetValue: function(e) {
-			var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
-			var currentObjective = Objective.findOrCreate(currentObjectiveId);
-			
-			var targetId = $(e.target).attr('target-id');
-			var valueId = $(e.target).attr('data-id');
-			
-			this.targetValueModalView.renderWith(currentObjective, targetId, valueId);
-			
-			
+			"click .detail" : "detailModal"
 		},
 
 		detailModal : function(e) {
 			var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
 			var currentObjective = Objective.findOrCreate(currentObjectiveId);
-
-			var proposalStrategyCollection = new ProposalStrategyCollection();
-			proposalStrategyCollection.fetch({
-				url : appUrl('/ProposalStrategy/find/' + fiscalYear + '/' + currentObjective.get('id')),
-				success : _.bind(function() {
-					var proposals = currentObjective.get('filterProposals');
-					var i;
-					for (i = 0; i < proposalStrategyCollection.length; i++) {
-						var strategy = proposalStrategyCollection.at(i);
-						proposals.get(strategy.get('proposal').get('id')).get(
-								'proposalStrategies').add(strategy);
-					}
-
-					this.modalView.renderWith(currentObjective);
-				}, this)
-			});
-
+			this.modalView.renderWith(currentObjective);
+		
 		},
 		render : function() {
 			this.$el.html(this.mainCtrTemplate());
 			this.mainSelectionView = new MainSelectionView({el: "#mainCtr #mainSelection"});
-			
-						
+
 			this.rootObjective = new Objective(); 
 			this.rootObjective.fetch({
 				url: appUrl('/Objective/ROOT/'+fiscalYear),
@@ -1707,7 +1486,9 @@
 				},this)
 			});
 		},
-		
+		renderInputAll: function() {
+			
+		},
 		renderMainTblWithParent: function(parentObjective){
 			this.currentParentObjective = parentObjective;
 			this.renderMainTbl();
@@ -1719,7 +1500,7 @@
 				objectiveCollection = new ObjectiveCollection();
 				this.collection = new ObjectiveCollection();
 				
-				objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposal/" + fiscalYear+ "/" + this.currentParentObjective.get('id') + "/flatDescendants");
+				objectiveCollection.url = appUrl("/ObjectiveWithObjectiveBudgetProposal/" + fiscalYear+ "/" + this.currentParentObjective.get('id') + "/flatDescendants");
 				
 				objectiveCollection.fetch({
 					success : _.bind( function() {
@@ -1742,7 +1523,7 @@
 						
 						this.collection.add(objectiveCollection.where({parent: this.currentParentObjective}));
 						
-						var allProposal = new BudgetProposalCollection(); 
+						var allProposal = new ObjectiveBudgetProposalCollection(); 
 						_.each(this.collection.pluck('filterProposals'), function(bpCollection) {
 							if(bpCollection.length > 0) {
 								bpCollection.each(function(bp) {
@@ -1800,6 +1581,10 @@
 
 	$(document).ready(function() {
 
+		mainBudgetTypeCollection = new BudgetTypeCollection();
+		mainBudgetTypeCollection.url=appUrl("/BudgetType/fiscalYear/" + fiscalYear +"/mainType");
+		mainBudgetTypeCollection.fetch();
+		
 		mainCtrView = new MainCtrView();
 		mainCtrView.render();
 

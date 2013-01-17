@@ -51,7 +51,7 @@ public class ObjectiveTarget implements Serializable{
 	@Basic
 	private Boolean isSumable;
 	
-	@ManyToOne(fetch=FetchType.EAGER, cascade = CascadeType.REMOVE)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="TARGETUNIT_ID")
 	private TargetUnit unit;
 

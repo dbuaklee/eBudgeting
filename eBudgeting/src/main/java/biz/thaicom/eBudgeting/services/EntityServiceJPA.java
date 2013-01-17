@@ -1201,6 +1201,51 @@ public class EntityServiceJPA implements EntityService {
 		
 		return list;
 	}
+	
+	@Override
+	public List<Objective> findFlatChildrenObjectivewithObjectiveBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId) {
+		String parentPathLikeString = "%."+objectiveId.toString()+"%";
+		List<Objective> list = objectiveRepository.findFlatByObjectiveObjectiveBudgetProposal(fiscalYear, ownerId, parentPathLikeString);
+		
+		
+		//get List of 
+		
+		// get List of targetValue
+		Map<String, TargetValue> targetValueMap = new HashMap<String, TargetValue>();
+		List<TargetValue> targetValues = targetValueRepository.findAllByOnwerIdAndObjectiveParentPathLike(ownerId, parentPathLikeString);
+		for(TargetValue tv : targetValues) {
+			targetValueMap.put(tv.getForObjective().getId()+ "," + tv.getTarget().getId(), tv);
+				
+		}
+		
+		// get List of ObjectiveTarget?
+		List<ObjectiveTarget> targets = objectiveTargetRepository.findAllByObjectiveParentPathLike(parentPathLikeString);
+		
+		for(ObjectiveTarget target : targets) {
+			target.getForObjectives().size();
+			
+			for(Objective o : target.getForObjectives()) {
+				logger.debug("Adding objective target to list");
+				Integer index = list.indexOf(o);
+				Objective objInlist = list.get(index);
+				logger.debug("objInList target size = " + objInlist.getTargets().size());
+				
+				TargetValue tv = targetValueMap.get(objInlist.getId() + "," + target.getId());
+				if(tv==null) {
+					tv = new TargetValue();
+					tv.setTarget(target);
+					tv.setForObjective(objInlist);
+					
+				}
+				objInlist.addfilterTargetValue(tv);
+				
+			}
+						
+		}
+		
+		return list;
+	}
 
 	@Override
 	public ProposalStrategy deleteProposalStrategy(Long id) {
@@ -1862,6 +1907,9 @@ public class EntityServiceJPA implements EntityService {
 				objectiveRepository.save(parent);
 			} 
 		}
+		
+		objectiveRelationsRepository.deleteAllObjective(obj);
+		
 		
 		if(nameCascade == true) {
 			ObjectiveName name= obj.getObjectiveName();
@@ -2878,11 +2926,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		o.getTargets().remove(t);
 		
-		// now save both o and t
-		objectiveNameRepository.save(o);
-		
-		logger.debug(" ++++++++ t.getId() {}" ,t.getId());
-		
+		t.setUnit(null);
+				
 		objectiveTargetRepository.delete(t);
 		return "success";
 	}
@@ -3181,6 +3226,17 @@ public class EntityServiceJPA implements EntityService {
 	public ObjectiveName deleteObjectiveName(Long id) {
 		ObjectiveName on = objectiveNameRepository.findOne(id);
 		if(on!=null) {
+			List<Objective> oList = objectiveRepository.findAllByObjectiveName(on);
+			
+			// we must delete all Objective before 
+			for(Objective o : oList) {
+				// now delete all relation that have o
+				
+				
+				objectiveRepository.delete(o);
+			}
+			
+			
 			objectiveNameRepository.delete(on);
 		}
 		return on;
