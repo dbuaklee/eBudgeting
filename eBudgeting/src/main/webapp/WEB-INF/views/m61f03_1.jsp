@@ -1765,64 +1765,6 @@
 			}
 		},
 			
-			
-/*			
-			var allProposal = new BudgetProposalCollection(); 
-			_.each(rootCollection.pluck('filterProposals'), function(bpCollection) {
-				if(bpCollection.length > 0) {
-					bpCollection.each(function(bp) {
-						allProposal.add(bp);
-					});
-				}
-			});
-			
-			
-			
-			
-			
-			var json = this.collection.toJSON();
-			json.allProposal = allProposal.toJSON();
-			
-			this.$el.html(this.mainTblTpl(json));
-*/
-
-
-			//render Each one in the collection first
-//			this.$el.html(this.mainTbl1Tpl(this.collection.toJSON()));
-//			for(var i= 0; i< this.collection.length; i++) {
-//				var o = this.collection.at(i);
-//				this.$el.find('#mainTbl tbody').append(this.nodeRowTpl(o.toJSON()));
-				
-				// get this children
-
-//			}
-			
-			// now render all the children
-//			var next = objectiveCollection.indexOf(this.collection.at(this.collection.length)) + 1;
-			
-//			for(next; next < objectiveCollection.length; next ++) {
-				
-//				var o = objectiveCollection.at(next);
-//				var html  = this.nodeRowTpl(o.toJSON());
-				
-				
-//				var parentEl = this.$el.find('tr[data-id='+ o.get('parent').get('id') +']');
-				
-				
-//				$(html).insertAfter(this.$el.find(parentEl));
-//			}
-
-		
-			// now we have to run the table row number
-			
-/*			
-			this.$el.find('#mainTbl tbody td:first-child', this).each(function(i){
-		        $(this).html((i+1) + ".");
-		    });
-			
-*/
-
-			
 		emptyTbl: function(e) {
 			this.$el.find('#mainTbl').empty();
 		},
@@ -1839,7 +1781,6 @@
 			$(l.target).next('label').find('icon.label-caret').toggleClass("icon-caret-right icon-caret-down");
 
 			var currentTr = $(l.target).parents('tr');
-			e1=currentTr;
 			
 			currentTr.nextAll('[parentPath*=".' + id + '."]').each(function(el) {
 				var $el = $(this);
@@ -1852,10 +1793,8 @@
 						$el.show();
 				}
 				
-				
 			}); 
 		}
-		
 
 	});
 

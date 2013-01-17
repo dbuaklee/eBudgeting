@@ -1692,9 +1692,6 @@
 			});
 			
 			
-			
-			
-			
 			var json = this.collection.toJSON();
 			json.allProposal = allProposal.toJSON();
 			

@@ -29,7 +29,7 @@ div.navbar {
 }
 
 div#pageHeader {
-	background-image: url("../graphics/header1.gif");
+	background-image: url("../graphics/header2.gif");
 	height: 120px;
 }
 
@@ -117,11 +117,16 @@ ul.right-align li
 	padding-right: .6em;
 }
 
+div.inRow tr td:first-child {
+	border-left: 0px;
+}
+
 table.table thead td {
 	background-color:#4C6E9C;
 	color: #ffffff;
 	text-align: center;
 	font-weight: bold;
+	
 }
 
 table.table thead th {
