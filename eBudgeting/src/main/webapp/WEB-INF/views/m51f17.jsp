@@ -69,7 +69,7 @@
 
 <script id="treeRootTemplate" type="text/x-handler-template">
 	<table class="table table-bordered">
-		<tr data-id={{id}}>
+		<tr data-id={{id}} data-level="{{parentLevel}}">
 			<td><span class="label label-info mini">{{type.name}}</span><br/>
 				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i>{{name}}</a></td>
 			<td style="width:40px;"> </td>
@@ -81,8 +81,8 @@
 	<span class="loading"> Loading <img src="/eBudgeting/resources/graphics/loading-small.gif"/></span>
 </script>
 <script id="treeTRTemplate" type="text/x-handler-template">
-	<tr data-id={{id}}>
-			<td  style="padding-left: {{paddingLevel parentLevel}}px;"><span class="label label-info mini">{{type.name}}</span><br/>
+	<tr data-id={{id}} data-level="{{parentLevel}}">
+			<td style="padding-left: {{paddingLevel parentLevel}}px;"><span class="label label-info mini">{{type.name}}</span><br/>
 				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> [{{code}}] {{name}}</a> 
 			</td>
 				<td>
@@ -132,7 +132,7 @@
 
 <script id="mainSelectionTemplate" type="text/x-handler-template">
 <form class="form-horizontal">
-<div class="control-group">
+<div class="control-group"  style="margin-bottom:5px;">
 	<label class="control-label">แผนงาน :</label> 
 	<div class="controls">
 		<select id="type101Slt" class="span5">
@@ -142,7 +142,7 @@
 	</div>
 </div>
 	<div id="type102Div">
-		<div class="control-group">
+		<div class="control-group"  style="margin-bottom:5px;">
 			<label class="control-label">ผลผลิต/โครงการ :</label>
 			<div class="controls">
 				<select class="span5" disabled="disabled">
@@ -152,7 +152,7 @@
 		</div>	
 	</div>
 	<div id="type103Div">
-		<div class="control-group">
+		<div class="control-group"  style="margin-bottom:5px;">
 			<label class="control-label">กิจกรรมหลัก :</label>
 			<div class="controls">
 				<select class="span5" disabled="disabled">
@@ -166,7 +166,7 @@
 </script>
 
 <script id="selectionTemplate" type="text/x-handler-template">
-<div class="control-group">
+<div class="control-group"  style="margin-bottom:5px;">
 	<label class="control-label">{{type.name}} :</label>
 	<div class="controls">
 		<select id="type{{type.id}}Slt" class="span5">
@@ -240,6 +240,21 @@ $(document).ready(function() {
 			renderNewRow : function(parentObjective, newObjective) {
 				// find tr of this parentObjective
 				var parentTrEl = this.$el.find('tr[data-id='+ parentObjective.get('id') +']');
+				var dataLevel = $(parentTrEl).attr("data-level");
+				
+				var prev = $(parentTrEl);
+				var next = $(parentTrEl).next('tr');
+				console.log('next: ' + $(next[0]).attr('data-id'));
+				
+				while(next.length>0 && $(next[0]).attr("data-level") > dataLevel ) {
+					
+					console.log('next: ' + $(next[0]).attr('data-id'));
+					prev = $(next[0]);
+					next = $(next[0]).next('tr');
+					
+				}
+				
+				
 				var json = newObjective.toJSON();
 				
 				if(json.type.id > 103 && json.type.id < 109) {
@@ -248,11 +263,8 @@ $(document).ready(function() {
 					json.type.unlinkable = false;
 				}
 				
-				e1=json;
 				var html = this.treeTRTemplate(json);
-				$(parentTrEl).after(html);
-				
-				
+				$(prev).after(html);
 			},
 			
 			unlinkBtnClick : function(e) {

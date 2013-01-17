@@ -3,6 +3,7 @@ package biz.thaicom.eBudgeting.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -50,5 +51,10 @@ public interface ObjectiveRelationsRepository extends JpaSpecificationExecutor<O
 			"	LEFT OUTER JOIN FETCH objective.targets targets " +
 			"WHERE relation.fiscalYear=?1 AND relation.childType=?2 AND objective.id in (?3) ")
 	public List<ObjectiveRelationsRepository> findAllByFiscalYearAndChildTypeWithIds(Integer fiscalYear, ObjectiveType childType, List<Long> ids);
+
+	@Modifying
+	@Query("" +
+			"DELETE ObjectiveRelations r where r.objective = ?1 OR r.parent = ?1 ")
+	public void deleteAllObjective(Objective o);
 	
 }

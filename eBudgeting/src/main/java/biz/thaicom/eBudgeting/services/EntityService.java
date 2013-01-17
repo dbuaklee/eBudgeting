@@ -74,6 +74,8 @@ public interface EntityService {
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposal(
 			Integer fiscalYear, Long ownerId, Long objectiveId);
 
+	List<Objective> findFlatChildrenObjectivewithObjectiveBudgetProposal(
+			Integer fiscalYear, Long ownerId, Long objectiveId);
 	
 	public List<Objective> findFlatChildrenObjectivewithBudgetProposalAndAllocation(
 			Integer fiscalYear, Long objectiveId, Boolean isFindObjectiveBudget);
@@ -250,6 +252,7 @@ public interface EntityService {
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYearUpToLevel(
 			Integer fiscalYear, Integer level);
+
 
 
 

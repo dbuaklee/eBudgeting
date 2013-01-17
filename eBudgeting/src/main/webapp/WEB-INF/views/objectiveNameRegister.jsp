@@ -150,7 +150,7 @@
 	<ul id="targetsLst">
 		{{#each targets}} 
 			<li data-id="{{id}}">
-				<span class="label label-important"><a href="#" class="removeUnit"><i class="icon icon-trash icon-white"></i></a></span>
+				<a href="#" class="removeUnit" style="color:#BD362F;"><i class="icon icon-trash"></i></a>
 				{{unit.name}} ({{#if isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>
 		{{/each}}
 	</ul>
@@ -657,28 +657,24 @@ $(document).ready(function() {
 			if( (! $(e.currentTarget).hasClass('disabled')) && $('input[name=rowRdo]:checked').length == 1 ) {
 				
 				var modelToDelete = this.collection.get(objectiveId);
+				if(confirm("คุณต้องการลบรายการ " + modelToDelete.get('name'))) {
 				
-				if(modelToDelete.get('isLeaf') == true) {
-					if(confirm("คุณต้องการลบรายการ " + modelToDelete.get('name'))) {
-					
-						modelToDelete.destroy({
-							success: _.bind(function() {					
-								this.collection.remove(modelToDelete);
+					modelToDelete.destroy({
+						success: _.bind(function() {					
+							this.collection.remove(modelToDelete);
+						
+							// now we have to run through and reindex
+							this.collection.each(function(model, index) {
+								model.set('index', index);
+							});
 							
-								// now we have to run through and reindex
-								this.collection.each(function(model, index) {
-									model.set('index', index);
-								});
-								
-								this.collection.trigger('reset');
-							},this)
-						});
-					}
-					
-					this.collection.trigger('reset');
-				} else{
-					alert('คุณต้องเข้าไปลบรายการจากรายการย่อยสุดเท่านั้น');
+							this.collection.trigger('reset');
+						},this)
+					});
 				}
+				
+				this.collection.trigger('reset');
+			
 			} else {
 				alert('กรุณาเลือกรายการที่ต้องการลบ');
 			}
