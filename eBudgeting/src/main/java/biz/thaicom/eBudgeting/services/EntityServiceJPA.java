@@ -344,6 +344,7 @@ public class EntityServiceJPA implements EntityService {
 				b.getUnit().getId();
 			}
 			
+			b.getParent().getId();
 			b.getChildren().size();
 			
 			logger.debug("children size: " + b.getChildren().size());

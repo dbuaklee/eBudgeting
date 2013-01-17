@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.services.EntityService;
 
 @Controller
@@ -224,6 +225,28 @@ public class ExcelReportsController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		
 		return "m51r14.xls";
+	}
+
+	@RequestMapping("/m51r15.xls/{fiscalYear}/file/m51r15.xls")
+	public String excelM51R15(@PathVariable Integer fiscalYear, Model model) {
+		
+		List<BudgetType> type = entityService.findBudgetTypeByLevel(fiscalYear, 3);
+		
+		model.addAttribute("type", type);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m51r15.xls";
+	}
+
+	@RequestMapping("/m51r18.xls/{fiscalYear}/file/m51r18.xls")
+	public String excelM51R18(@PathVariable Integer fiscalYear, Model model) {
+		
+		List<TargetUnit> unit = entityService.findAllTargetUnits();
+		
+		model.addAttribute("unit", unit);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m51r18.xls";
 	}
 
 	@RequestMapping("/admin/excel/report1.xls/{id}")
