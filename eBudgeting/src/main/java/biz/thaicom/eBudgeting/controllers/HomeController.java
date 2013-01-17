@@ -93,6 +93,7 @@ public class HomeController {
 		}
 		
 		model.addAttribute("fySltEnable", true);
+		
 		return "dashboard";
 	}
 	

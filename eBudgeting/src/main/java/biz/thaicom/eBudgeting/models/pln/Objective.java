@@ -134,6 +134,9 @@ public class Objective implements Serializable {
 	private List<BudgetProposal> filterProposals;	
 	
 	@Transient
+	private List<ObjectiveBudgetProposal> filterObjectiveBudgetProposals;
+	
+	@Transient
 	private List<TargetValue> filterTargetValues;
 	
 	@Transient
@@ -477,6 +480,21 @@ public class Objective implements Serializable {
 	}
 	public void setFilterTargetValues(List<TargetValue> filterTargetValues) {
 		this.filterTargetValues = filterTargetValues;
+	}
+	
+	public List<ObjectiveBudgetProposal> getObjectiveProposals() {
+		return objectiveProposals;
+	}
+	public void setObjectiveProposals(
+			List<ObjectiveBudgetProposal> objectiveProposals) {
+		this.objectiveProposals = objectiveProposals;
+	}
+	public List<ObjectiveBudgetProposal> getFilterObjectiveBudgetProposals() {
+		return filterObjectiveBudgetProposals;
+	}
+	public void setFilterObjectiveBudgetProposals(
+			List<ObjectiveBudgetProposal> filterObjectiveBudgetProposals) {
+		this.filterObjectiveBudgetProposals = filterObjectiveBudgetProposals;
 	}
 	public List<TargetValueAllocationRecord> getTargetValueAllocationRecords() {
 		return targetValueAllocationRecords;

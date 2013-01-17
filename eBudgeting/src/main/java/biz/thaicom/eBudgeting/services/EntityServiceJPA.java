@@ -1209,8 +1209,11 @@ public class EntityServiceJPA implements EntityService {
 		String parentPathLikeString = "%."+objectiveId.toString()+"%";
 		List<Objective> list = objectiveRepository.findFlatByObjectiveObjectiveBudgetProposal(fiscalYear, ownerId, parentPathLikeString);
 		
-		
-		//get List of 
+		for(Objective o : list) {
+		//get List of ObjectiveBudgetProposal
+			List<ObjectiveBudgetProposal> obpList = objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(objectiveId, ownerId);
+			o.setFilterObjectiveBudgetProposals(obpList);
+		}
 		
 		// get List of targetValue
 		Map<String, TargetValue> targetValueMap = new HashMap<String, TargetValue>();
