@@ -1128,6 +1128,25 @@ public class GenericViewController {
 		
 		return "m61f04";
 	}
+
+	// --------------------------------------------------------------m61f04: การบันทึกงบประมาณ ระดับรายการ
+	@RequestMapping("/page/m61f04_1/")
+	public String render_m61f04_1(
+			Model model, HttpServletRequest request, HttpSession session) {
+			
+		model.addAttribute("rootPage", false);
+		
+		setFiscalYearFromSession(model, session);
+		
+		Integer fy = getCurrentFiscalYearFromSession(session);
+		Objective rootObjective = entityService.findOneRootObjectiveByFiscalyear(fy);
+		
+		model.addAttribute("objectiveId", rootObjective.getId());
+		
+		
+		return "m61f04_1";
+	}
+
 	
 	// --------------------------------------------------------------m62f01: การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม 
 	@RequestMapping("/page/m62f01/")
