@@ -136,7 +136,10 @@ public class ObjectiveRestController {
 	@RequestMapping(value="/Objective/{id}/removeUnit", method=RequestMethod.POST) 
 	public @ResponseBody String removeUnit(@PathVariable Long id,
 			@RequestParam Long targetId) {
-		return entityService.removeUnitFromObjective(id, targetId);
+		String s =  entityService.removeUnitFromObjective(id, targetId);
+		logger.debug("returning: " + s );
+		
+		return s;
 	}
 	
 	

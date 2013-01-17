@@ -5,7 +5,7 @@
 
 <div class="hero-unit" style="margin-top: 60px;">
 	<div class="page-header">
-		<img src="<c:url value="/resources/graphics/header1.gif"/>"/> 
+		<img src="<c:url value="/resources/graphics/header2.gif"/>"/> 
 		<h3>Login</h3>
 	</div>
 

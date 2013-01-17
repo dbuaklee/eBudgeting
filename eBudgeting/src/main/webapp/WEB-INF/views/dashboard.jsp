@@ -127,7 +127,7 @@ var menuJson = [{
        	 	[{name: "m61f01: การโยกข้อมูลงบประมาณและ MTEF จากปีงบประมาณก่อนหน้า (ระดับกิจกรรม)", code: "m61f01", link: "page/m2f14/", disabled: "disabled"},
 	         {name: "m61f02: การโยกข้อมูลงบประมาณและ MTEF จากปีงบประมาณก่อนหน้า (ระดับรายการ)",code: "m61f02",  link: "page/m2f14/", disabled: "disabled"},
 	         {name: "m61f03: การบันทึกงบประมาณ ระดับกิจกรรม",code: "m61f03",  link: "page/m61f03/"},
-	         {name: "m61f04: การบันทึกงบประมาณ ระดับรายการ", code: "m61f04", link: "page/m61f04/"},
+	         {name: "m61f04: การบันทึกงบประมาณ ระดับรายการ", code: "m61f04", link: "page/m61f04_1/"},
 	         {name: "m61f05: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)",code: "m61f05",  link: "page/m2f14/" , disabled: "disabled"}
 	        ]},
 	         

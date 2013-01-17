@@ -1099,7 +1099,7 @@ public class GenericViewController {
 	}
 	
 	// --------------------------------------------------------------m61f03: การบันทึกงบประมาณ ระดับกิจกรรมหลัก
-	@RequestMapping("/page/m61f03/")
+	@RequestMapping("/page/m61f03_1/")
 	public String render_m61f03(
 			Model model,
 			HttpServletRequest request, HttpSession session) {
@@ -1107,7 +1107,7 @@ public class GenericViewController {
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYears", fiscalYears);
-		return "m61f03_copy";
+		return "m61f03_1";
 	}
 	
 	

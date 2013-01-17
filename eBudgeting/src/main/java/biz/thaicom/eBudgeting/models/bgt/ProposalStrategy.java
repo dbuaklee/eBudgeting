@@ -194,5 +194,51 @@ public class ProposalStrategy implements Serializable {
 		this.targetValue = targetValue;
 	}
 	
+	private static Long copyLongValueNotNull(Long orig) {
+		if(orig!=null) {
+			return orig.longValue();
+		} else {
+			return 0L;
+		}
+	}
+	
+	public static ProposalStrategy copyLongValue(ProposalStrategy orig) {
+		ProposalStrategy ps = new ProposalStrategy();
+		if(orig != null && orig.targetValue != null) {
+			ps.setTargetValue(copyLongValueNotNull(orig.targetValue));
+		} else {
+			ps.setTargetValue(0L);
+		}
+		
+		if(orig != null && orig.totalCalculatedAmount != null) {
+			ps.setTotalCalculatedAmount(copyLongValueNotNull(orig.totalCalculatedAmount));
+		} else {
+			ps.setTotalCalculatedAmount(0L);
+		}
+		
+		if(orig != null && orig.totalCalculatedAllocatedAmount != null) {
+			ps.setTotalCalculatedAllocatedAmount(copyLongValueNotNull(orig.totalCalculatedAllocatedAmount));
+		} else {
+			ps.setTotalCalculatedAllocatedAmount(0L);
+		}
+		
+		if(orig != null && orig.amountRequestNext1Year != null) {
+			ps.setAmountRequestNext1Year(copyLongValueNotNull(orig.amountRequestNext1Year));
+		} else {
+			ps.setAmountRequestNext1Year(0L);
+		}
+		
+		if(orig != null && orig.amountRequestNext2Year != null) {
+			ps.setAmountRequestNext2Year(copyLongValueNotNull(orig.amountRequestNext2Year));
+		} else {
+			ps.setAmountRequestNext2Year(0L);
+		}
+		if(orig != null && orig.amountRequestNext3Year != null) {
+			ps.setAmountRequestNext3Year(copyLongValueNotNull(orig.amountRequestNext3Year));
+		} else {
+			ps.setAmountRequestNext3Year(0L);
+		}
+		return ps;
+	}
 	
 }

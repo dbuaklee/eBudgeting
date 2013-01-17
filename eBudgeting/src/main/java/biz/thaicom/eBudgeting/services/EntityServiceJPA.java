@@ -1245,7 +1245,7 @@ public class EntityServiceJPA implements EntityService {
 	}
 	
 	
-	private ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, Long oldTargetValue, Long budgetProposalId, Long formulaStrategyId) {
+	private ProposalStrategy saveProposalStrategy(ProposalStrategy strategy, ProposalStrategy oldStrategy, Long budgetProposalId, Long formulaStrategyId) {
 		
 		FormulaStrategy formulaStrategy=null;
 		if(formulaStrategyId != null) {
@@ -1257,10 +1257,10 @@ public class EntityServiceJPA implements EntityService {
 		// 
 		BudgetProposal b = budgetProposalRepository.findOne(budgetProposalId);
 		
-		b.addAmountRequest(strategy.getTotalCalculatedAmount());
-		b.addAmountRequestNext1Year(strategy.getAmountRequestNext1Year());
-		b.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year());
-		b.addAmountRequestNext3Year(strategy.getAmountRequestNext3Year());
+		b.addAmountRequest(strategy.getTotalCalculatedAmount()-oldStrategy.getTotalCalculatedAmount());
+		b.addAmountRequestNext1Year(strategy.getAmountRequestNext1Year()-oldStrategy.getAmountRequestNext1Year());
+		b.addAmountRequestNext2Year(strategy.getAmountRequestNext2Year()-oldStrategy.getAmountRequestNext2Year());
+		b.addAmountRequestNext3Year(strategy.getAmountRequestNext2Year()-oldStrategy.getAmountRequestNext3Year());
 		
 		budgetProposalRepository.save(b);
 		
@@ -1326,7 +1326,7 @@ public class EntityServiceJPA implements EntityService {
 						if(tvInList.getTarget().getIsSumable()) {
 							tv = tvInList;
 							
-							tv.adjustRequestedValue(oldTargetValue-strategy.getTargetValue());
+							tv.adjustRequestedValue(oldStrategy.getTargetValue()-strategy.getTargetValue());
 						} else {
 							break;
 						}
@@ -1481,13 +1481,18 @@ public class EntityServiceJPA implements EntityService {
 		
 		budgetProposalRepository.save(proposal);
 		
-		Long oldTargetValue = 0L;
-		if(proposalNode.get("proposalStrategies").get(0).get("targetUnit") != null) {
-			oldTargetValue = proposalNode.get("proposalStrategies").get(0).get("targetUnit").asLong();
+		ProposalStrategy oldps = null;
+		if(proposalNode.get("proposalStrategies") != null && proposalNode.get("proposalStrategies").get(0) != null 
+				&& proposalNode.get("proposalStrategies").get(0).get("id")!= null) { 
+			 oldps = proposalStrategyRepository.findOne(proposalNode.get("proposalStrategies").get(0).get("id").asLong());
 		}
+		
+		ProposalStrategy oldStrategy = ProposalStrategy.copyLongValue(oldps);
+		
+		
 		ProposalStrategy ps = createProposalStrategy(proposalNode.get("proposalStrategies").get(0));
 	
-		saveProposalStrategy(ps,  oldTargetValue, proposal.getId(),
+		saveProposalStrategy(ps,  oldStrategy, proposal.getId(),
 				ps.getFormulaStrategy() != null ? ps.getFormulaStrategy().getId() : null );
 		
 		if(proposal.getProposalStrategies() == null) {
@@ -1905,13 +1910,13 @@ public class EntityServiceJPA implements EntityService {
 
 		ProposalStrategy oldPs = proposalStrategyRepository.findOne(id);
 		
-		Long oldTargetValue = oldPs.getTargetValue();
-
+		ProposalStrategy oldStrategy = ProposalStrategy.copyLongValue(oldPs);
 		
 		ProposalStrategy ps = createProposalStrategy(rootNode);
 		
 		
-		saveProposalStrategy(ps, oldTargetValue, ps.getProposal().getId(),
+		
+		saveProposalStrategy(ps, oldStrategy, ps.getProposal().getId(),
 				ps.getFormulaStrategy() == null?null:ps.getFormulaStrategy().getId());
 		
 		
@@ -2826,14 +2831,17 @@ public class EntityServiceJPA implements EntityService {
 		Objective o = objectiveRepository.findOne(objectiveId);
 		ObjectiveTarget t= objectiveTargetRepository.findOne(targetId);
 		
+
+		
 		o.getTargets().remove(t);
+		o.getObjectiveName().getTargets().remove(t);
 		
-		// now save both o and t
-		objectiveRepository.save(o);
+		t.setUnit(null);
 		
-		logger.debug(" ++++++++ t.getId() {}" ,t.getId());
 		
 		objectiveTargetRepository.delete(t);
+				
+		
 		return "success";
 	}
 	
