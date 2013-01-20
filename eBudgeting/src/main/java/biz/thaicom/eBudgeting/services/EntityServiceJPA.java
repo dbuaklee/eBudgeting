@@ -3034,14 +3034,24 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public ObjectiveBudgetProposal saveObjectiveBudgetProposal(
 			Organization workAt, JsonNode node) {
-		ObjectiveBudgetProposal obp = new ObjectiveBudgetProposal();
+
+		ObjectiveBudgetProposal obp;
+		
+		if(getJsonNodeId(node) != null) {
+			obp = objectiveBudgetProposalRepository.findOne(getJsonNodeId(node));
+		} else {
+			obp = new ObjectiveBudgetProposal();
+		}
+		ObjectiveBudgetProposal obpOldValue = new ObjectiveBudgetProposal();
+		obpOldValue.copyValue(obp);
+		
+		
 		obp.setOwner(workAt);
 		
 		BudgetType type = null;
 		
 		if(node.get("budgetType") !=null ) {
 			if(node.get("budgetType").get("id") != null) {
-				logger.debug("xxxxx");
 				type = budgetTypeRepository.findOne(node.get("budgetType").get("id").asLong());
 			}
 		}
@@ -3049,7 +3059,6 @@ public class EntityServiceJPA implements EntityService {
 		Objective objective= null;
 		if(node.get("forObjective") !=null ) {
 			if(node.get("forObjective").get("id") != null) {
-				logger.debug("xxxxx");
 				objective = objectiveRepository.findOne(node.get("forObjective").get("id").asLong());
 			}
 		}
@@ -3082,10 +3091,28 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		objectiveBudgetProposalRepository.save(obp);
-		
 		List<ObjectiveBudgetProposal> obpList = objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(obp.getForObjective().getId(), workAt.getId());
-		
 		obp.getForObjective().setFilterObjectiveBudgetProposals(obpList);
+		
+		//now before return back we'll update the parents
+		Objective o = obp.getForObjective().getParent();
+		BudgetType budgetType = obp.getBudgetType();
+		while(o != null) {
+			ObjectiveBudgetProposal obpParent = objectiveBudgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(o, workAt, budgetType);
+			if(obpParent == null) {
+				obpParent= new ObjectiveBudgetProposal();
+				obpParent.setForObjective(o);
+				obpParent.setBudgetType(budgetType);
+				obpParent.setOwner(workAt);
+			}
+			
+			// now we set the obp to this one!
+			obpParent.adjustAmount(obp, obpOldValue);
+			
+			objectiveBudgetProposalRepository.save(obpParent);
+			
+			o = o.getParent();
+		}
 		
 		
 		return obp;

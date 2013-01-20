@@ -148,6 +148,31 @@ public class ObjectiveBudgetProposal implements Serializable {
 		this.forObjective = forObjective;
 	}
 
+	public void copyValue(ObjectiveBudgetProposal obp) {
+		this.amountRequest = nullReturnZero(obp.getAmountRequest());
+		this.amountAllocated = nullReturnZero(obp.getAmountAllocated());
+		this.amountRequestNext1Year = nullReturnZero(obp.getAmountRequestNext1Year());
+		this.amountRequestNext2Year = nullReturnZero(obp.getAmountRequestNext2Year());
+		this.amountRequestNext3Year = nullReturnZero(obp.getAmountRequestNext3Year());
+	}
+
+	private long nullReturnZero(Long longValue) {
+		return longValue == null ? 0L: longValue.longValue();
+	}
+
+	public void adjustAmount(ObjectiveBudgetProposal obp, ObjectiveBudgetProposal obpOldValue) {
+		this.amountRequest = nullReturnZero(this.amountRequest) + nullReturnZero(obp.getAmountRequest()) - nullReturnZero(obpOldValue.getAmountRequest());
+		this.amountAllocated = nullReturnZero(this.amountAllocated) + nullReturnZero(obp.getAmountAllocated()) - nullReturnZero(obpOldValue.getAmountAllocated());
+		this.amountRequestNext1Year = nullReturnZero(this.amountRequestNext1Year) + nullReturnZero(obp.getAmountRequestNext1Year()) - nullReturnZero(obpOldValue.getAmountRequestNext1Year());
+		this.amountRequestNext2Year = nullReturnZero(this.amountRequestNext2Year) + nullReturnZero(obp.getAmountRequestNext2Year()) - nullReturnZero(obpOldValue.getAmountRequestNext2Year());
+		this.amountRequestNext3Year = nullReturnZero(this.amountRequestNext3Year) + nullReturnZero(obp.getAmountRequestNext3Year()) - nullReturnZero(obpOldValue.getAmountRequestNext3Year());
+		
+	}
+	
+	
+
+
+
 	
 	
 }

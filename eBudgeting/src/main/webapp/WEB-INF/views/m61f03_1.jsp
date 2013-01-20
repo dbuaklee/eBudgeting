@@ -253,33 +253,17 @@
 			</span>
 		</td>
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				<span>{{#if this.filterObjectiveBudgetProposals}}{{{sumProposal this.filterObjectiveBudgetProposals}}}{{else}}-{{/if}}</span>
 		</td>
 
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				<span>{{#if this.filterObjectiveBudgetProposals}}{{{sumProposalNext1Year this.filterObjectiveBudgetProposals}}}{{else}}-{{/if}}</span>
 		</td>
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				<span>{{#if this.filterObjectiveBudgetProposals}}{{{sumProposalNext2Year this.filterObjectiveBudgetProposals}}}{{else}}-{{/if}}</span>				
 		</td>
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				<span>{{#if this.filterObjectiveBudgetProposals}}{{{sumProposalNext3Year this.filterObjectiveBudgetProposals}}}{{else}}-{{/if}}</span>
 		</td>
 	</tr>
 	{{{childrenNodeTpl this.children this.level}}}  
