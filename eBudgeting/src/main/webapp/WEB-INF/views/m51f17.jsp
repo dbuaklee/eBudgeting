@@ -205,6 +205,7 @@
 
 var fiscalYear = "${fiscalYear}";
 var e1;
+var e2;
 
 Handlebars.registerHelper("paddingLevel", function(level) {
 	var step = level-4;
@@ -251,7 +252,7 @@ $(document).ready(function() {
 					console.log('next: ' + $(next[0]).attr('data-id'));
 					prev = $(next[0]);
 					next = $(next[0]).next('tr');
-					
+					 
 				}
 				
 				
@@ -269,15 +270,19 @@ $(document).ready(function() {
 			
 			unlinkBtnClick : function(e) {
 				var clickunLinkObjectiveId = $(e.target).parents("tr").attr("data-id");
+				console.log(clickunLinkObjectiveId);
 				var clickunLinkObjective = Objective.findOrCreate(clickunLinkObjectiveId);
 				
 				if(clickunLinkObjective != null) {
 					clickunLinkObjective.url = appUrl('/Objective/'+ clickunLinkObjectiveId);
 					
-					clickunLinkObjective.destroy({
+					clickunLinkObjective.destroy({wait:true,
 						success: function() {
 							$(e.target).parents("tr").remove();
-						}	
+						},
+						error: function(model, xhr, options) {
+							alert("ไม่สามารถลบรายการได้ \n Error: " + xhr.responseText);
+						}
 					});
 
 				}

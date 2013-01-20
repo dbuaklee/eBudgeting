@@ -666,12 +666,12 @@ $(document).ready(function() {
 				
 				var modelToDelete = this.collection.get(objectiveId);
 				
-				if(modelToDelete.get('isLeaf') == true) {
+				
 					if(confirm("คุณต้องการลบรายการ " + modelToDelete.get('name'))) {
 						
 						var objectiveNameToDelete = modelToDelete.get('objectiveName');
 					
-						modelToDelete.destroy({
+						modelToDelete.destroy({wait: true,
 							success: _.bind(function() {					
 								this.collection.remove(modelToDelete);
 							
@@ -686,16 +686,17 @@ $(document).ready(function() {
 										this.collection.trigger('reset');
 									},this)
 								});
+							
 								
-								
+							},this),
+							error: _.bind(function(model, xhr, options) {
+								alert("ไม่สามารถลบรายการได้ \n Error: " + xhr.responseText);
 							},this)
 						});
 					}
 					
-					this.collection.trigger('reset');
-				} else{
-					alert('คุณต้องเข้าไปลบรายการจากรายการย่อยสุดเท่านั้น');
-				}
+
+				
 			} else {
 				alert('กรุณาเลือกรายการที่ต้องการลบ');
 			}
