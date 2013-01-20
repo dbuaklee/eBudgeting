@@ -54,7 +54,7 @@ public interface EntityService {
 	public Objective findOjectiveById(Long id);
 	public List<Objective> findObjectiveChildrenByObjectiveId(Long id);
 	public List<Objective> findAvailableObjectiveChildrenByObjectiveId(Long id);
-	
+	public List<Objective> findAllObjectiveChildren(Long id);
 	
 	
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad);
