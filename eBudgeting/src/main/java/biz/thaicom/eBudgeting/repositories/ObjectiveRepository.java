@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 
 public interface ObjectiveRepository extends PagingAndSortingRepository<Objective, Long>, JpaSpecificationExecutor<Objective>{
@@ -64,6 +65,20 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	public List<Objective> findFlatByObjectiveBudgetProposal(
 			Integer fiscalYear, Long ownerId, String parentPathLikeString);
 	
+	
+	@Query("" +  
+			"SELECT distinct objective " +
+			"FROM Objective objective" +
+			"	INNER JOIN FETCH objective.parent parent " +
+			"	INNER JOIN FETCH objective.type type " +
+			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
+			"	LEFT OUTER JOIN objective.objectiveProposals proposal with proposal.owner.id = ?2 " +
+			"WHERE objective.fiscalYear = ?1 AND (objective.parentPath like ?3 OR objective.parentPath is null) " +
+			"ORDER BY objective.index asc ")	
+	public List<Objective> findFlatByObjectiveObjectiveBudgetProposal(
+			Integer fiscalYear, Long ownerId, String parentPathLikeString);
+	
+	
 	@Query("" +  
 			"SELECT distinct objective " +
 			"FROM Objective objective" +
@@ -76,6 +91,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	public List<Objective> findFlatByObjectiveBudgetProposal(
 			Integer fiscalYear, String parentPathLikeString);
 	
+
 	@Query("" +
 			"SELECT objective " +
 			"FROM Objective objective " +
@@ -170,6 +186,10 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 
 	public Objective findOneByFiscalYearAndName(Integer fiscalYear,
 			String string);
+
+	public List<Objective> findAllByObjectiveName(ObjectiveName on);
+
+
 
 
 

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 
@@ -103,6 +104,9 @@ public class Objective implements Serializable {
 	private List<BudgetProposal> proposals;
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
+	private List<ObjectiveBudgetProposal> objectiveProposals;
+	
+	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
 	private List<AllocationRecord> allocationRecords;
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
@@ -128,6 +132,9 @@ public class Objective implements Serializable {
 	
 	@Transient
 	private List<BudgetProposal> filterProposals;	
+	
+	@Transient
+	private List<ObjectiveBudgetProposal> filterObjectiveBudgetProposals;
 	
 	@Transient
 	private List<TargetValue> filterTargetValues;
@@ -473,6 +480,21 @@ public class Objective implements Serializable {
 	}
 	public void setFilterTargetValues(List<TargetValue> filterTargetValues) {
 		this.filterTargetValues = filterTargetValues;
+	}
+	
+	public List<ObjectiveBudgetProposal> getObjectiveProposals() {
+		return objectiveProposals;
+	}
+	public void setObjectiveProposals(
+			List<ObjectiveBudgetProposal> objectiveProposals) {
+		this.objectiveProposals = objectiveProposals;
+	}
+	public List<ObjectiveBudgetProposal> getFilterObjectiveBudgetProposals() {
+		return filterObjectiveBudgetProposals;
+	}
+	public void setFilterObjectiveBudgetProposals(
+			List<ObjectiveBudgetProposal> filterObjectiveBudgetProposals) {
+		this.filterObjectiveBudgetProposals = filterObjectiveBudgetProposals;
 	}
 	public List<TargetValueAllocationRecord> getTargetValueAllocationRecords() {
 		return targetValueAllocationRecords;
