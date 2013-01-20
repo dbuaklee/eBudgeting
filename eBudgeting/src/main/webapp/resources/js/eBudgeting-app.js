@@ -38,6 +38,11 @@ Objective = Backbone.RelationalModel.extend({
 	    	collectionType: 'BudgetProposalCollection'
 	    },{
 	    	type: Backbone.HasMany,
+	    	key: 'filterObjectiveBudgetProposals',
+	    	relatedModel: 'ObjectiveBudgetProposal',
+	    	collectionType: 'ObjectiveBudgetProposalCollection'
+	    },{
+	    	type: Backbone.HasMany,
 	    	key: 'sumBudgetTypeProposals',
 	    	relatedModel: 'BudgetProposal',
 	    	collectionType: 'BudgetProposalCollection'
@@ -351,6 +356,12 @@ BudgetProposal = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/BudgetProposal')
 });
 ObjectiveBudgetProposal = Backbone.RelationalModel.extend({
+	 defaults: {
+         amountRequest: 0,
+         amountRequestNext1Year: 0,
+         amountRequestNext2Year: 0,
+         amountRequestNext3Year: 0
+     },
 	idAttribute: 'id',
 	relations: [{
 		type:Backbone.HasOne,

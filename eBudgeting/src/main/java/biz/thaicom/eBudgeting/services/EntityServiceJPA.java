@@ -1211,7 +1211,11 @@ public class EntityServiceJPA implements EntityService {
 		
 		for(Objective o : list) {
 		//get List of ObjectiveBudgetProposal
-			List<ObjectiveBudgetProposal> obpList = objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(objectiveId, ownerId);
+			
+			logger.debug("finding objective budget proposal of objective code: " + o.getCode() + " ");
+			List<ObjectiveBudgetProposal> obpList = objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(o.getId(), ownerId);
+			
+			logger.debug("found " + obpList.size() + " proposals" );
 			o.setFilterObjectiveBudgetProposals(obpList);
 		}
 		
@@ -3078,6 +3082,11 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		objectiveBudgetProposalRepository.save(obp);
+		
+		List<ObjectiveBudgetProposal> obpList = objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(obp.getForObjective().getId(), workAt.getId());
+		
+		obp.getForObjective().setFilterObjectiveBudgetProposals(obpList);
+		
 		
 		return obp;
 	}
