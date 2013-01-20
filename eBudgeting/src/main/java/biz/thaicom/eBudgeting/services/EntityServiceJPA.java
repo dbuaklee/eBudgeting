@@ -29,6 +29,7 @@ import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposalTarget;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
@@ -178,8 +179,9 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public Objective findOjectiveById(Long id) {
 		Objective objective = objectiveRepository.findOne(id);
-		objective.doBasicLazyLoad();
-		
+		if(objective != null) {
+			objective.doBasicLazyLoad();
+		}
 		
 		
 		return objective;
@@ -3039,12 +3041,38 @@ public class EntityServiceJPA implements EntityService {
 		
 		if(getJsonNodeId(node) != null) {
 			obp = objectiveBudgetProposalRepository.findOne(getJsonNodeId(node));
+			
 		} else {
 			obp = new ObjectiveBudgetProposal();
+			// now for Each targetValue we'll have to init one here
+			if(node.get("targets") != null) {
+				
+				obp.setTargets(new ArrayList<ObjectiveBudgetProposalTarget>());
+				for(JsonNode target : node.get("targets")){
+					ObjectiveBudgetProposalTarget targetJPA = new ObjectiveBudgetProposalTarget();
+					targetJPA.setUnit(targetUnitRepository.findOne(getJsonNodeId(target.get("unit"))));
+					targetJPA.setObjectiveBudgetProposal(obp);
+					obp.getTargets().add(targetJPA);
+					
+				}
+				
+			}
 		}
 		ObjectiveBudgetProposal obpOldValue = new ObjectiveBudgetProposal();
 		obpOldValue.copyValue(obp);
 		
+		if(node.get("targets") != null) {
+			for(JsonNode target : node.get("targets")){
+				logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>JSON_NODE_UNIT_ID" + getJsonNodeId(node.get("unit")));
+				for(ObjectiveBudgetProposalTarget targetJpa : obp.getTargets()) {
+					logger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<TARGETJPA_UNIT_ID" + targetJpa.getUnit().getId());
+					if(targetJpa.getUnit().getId() == getJsonNodeId(target.get("unit"))) {
+						targetJpa.setTargetValue(target.get("targetValue").asLong());
+						break;
+					}
+				}
+			}	
+		}
 		
 		obp.setOwner(workAt);
 		
@@ -3111,42 +3139,14 @@ public class EntityServiceJPA implements EntityService {
 			
 			objectiveBudgetProposalRepository.save(obpParent);
 			
+			for(ObjectiveBudgetProposalTarget tt: obpParent.getTargets()) {
+				logger.debug("-------------->>>>>>>>>>>> " + tt.getTargetValue());
+			}
+			
 			o = o.getParent();
 		}
 		
-		
-		return obp;
-	}
-
-	@Override
-	public ObjectiveBudgetProposal updateObjectiveBudgetProposal(JsonNode node) {
-		Long obpId=node.get("id").asLong();
-		
-		ObjectiveBudgetProposal obp = objectiveBudgetProposalRepository.findOne(obpId);
-		if(obp == null) {
-			return null;
-		}
-
-		if(node.get("amountRequest")!=null ) {
-			obp.setAmountRequest(node.get("amountRequest").asLong());
-		}
-		
-		if(node.get("amountRequestNext1Year")!=null ) {
-			obp.setAmountRequestNext1Year(node.get("amountRequestNext1Year").asLong());
-		}
-		
-		if(node.get("amountRequestNext2Year")!=null ) {
-			obp.setAmountRequestNext2Year(node.get("amountRequestNext2Year").asLong());
-		}
-		
-		if(node.get("amountRequestNext3Year")!=null ) {
-			obp.setAmountRequestNext3Year(node.get("amountRequestNext3Year").asLong());
-		}
-	
-		objectiveBudgetProposalRepository.save(obp);
-		
-		obp.getBudgetType().getName();
-		obp.getForObjective().getName();
+		obp.getForObjective().getTargets().size();
 		
 		return obp;
 	}
@@ -3159,6 +3159,34 @@ public class EntityServiceJPA implements EntityService {
 			return null;
 		}
 
+		obp.getForObjective().getTargets().size();
+		
+		//now before return back we'll update the parents
+		Objective o = obp.getForObjective().getParent();
+		BudgetType budgetType = obp.getBudgetType();
+		Organization workAt = obp.getOwner();
+		ObjectiveBudgetProposal zeroObp = new ObjectiveBudgetProposal();
+		zeroObp.copyValue(obp);
+		// now reset all to zero
+		zeroObp.resetToZeroValue();
+		
+		while(o != null) {
+			ObjectiveBudgetProposal obpParent = objectiveBudgetProposalRepository.findByForObjectiveAndOwnerAndBudgetType(o, workAt, budgetType);
+			if(obpParent == null) {
+				obpParent= new ObjectiveBudgetProposal();
+				obpParent.setForObjective(o);
+				obpParent.setBudgetType(budgetType);
+				obpParent.setOwner(workAt);
+			}
+			
+			// now we set the obp to this one!
+			obpParent.adjustAmount(zeroObp, obp);
+			
+			objectiveBudgetProposalRepository.save(obpParent);
+			
+			o = o.getParent();
+		}
+		
 		objectiveBudgetProposalRepository.delete(obp);
 		
 		return obp;

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.databind.JsonNode;
 
 
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
@@ -74,6 +75,18 @@ public class ObjectiveRestController {
 	public @ResponseBody Objective getObjectiveById(@PathVariable Long id) {
 		logger.debug("id: " + id);
 		return entityService.findOjectiveById(id); 
+	}
+	
+	@RequestMapping(value="/Objective/loadObjectiveBudgetProposal/{id}", method=RequestMethod.GET)
+	public @ResponseBody Objective getObjectiveLoadObjectiveBudgetProposalById(
+			@PathVariable Long id, 
+			@Activeuser ThaicomUserDetail currentUser) {
+		Objective o = entityService.findOjectiveById(id);
+		if(o!=null) {
+			List<ObjectiveBudgetProposal> obpList = entityService.findObjectiveBudgetproposalByObjectiveIdAndOwnerId(id, currentUser.getWorkAt().getId());
+			o.setFilterObjectiveBudgetProposals(obpList);
+		}
+		return o;  
 	}
 	
 	@RequestMapping(value="/Objective/{id}/children", method=RequestMethod.GET)

@@ -292,8 +292,7 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 	    },{
 	    	type: Backbone.HasOne,
 	    	key: 'type',
-	    	relatedModel: 'BudgetType',
-	    	collectionType: 'BudgetTypeCollection'
+	    	relatedModel: 'BudgetType'
 	    },{
 	    	type: Backbone.HasOne,
 	    	key: 'commonType',
@@ -356,12 +355,6 @@ BudgetProposal = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/BudgetProposal')
 });
 ObjectiveBudgetProposal = Backbone.RelationalModel.extend({
-	 defaults: {
-         amountRequest: 0,
-         amountRequestNext1Year: 0,
-         amountRequestNext2Year: 0,
-         amountRequestNext3Year: 0
-     },
 	idAttribute: 'id',
 	relations: [{
 		type:Backbone.HasOne,
@@ -371,8 +364,27 @@ ObjectiveBudgetProposal = Backbone.RelationalModel.extend({
 		type:Backbone.HasOne,
 		key: 'budgetType',
 		relatedModel: 'BudgetType'
+	},{
+		type: Backbone.HasMany,
+		key: 'targets',
+		relatedModel: 'ObjectiveBudgetProposalTarget',
+		collectionType: 'ObjectiveBudgetProposalTargetCollection'
+			
 	}],
 	urlRoot: appUrl('/ObjectiveBudgetProposal/')
+});
+
+ObjectiveBudgetProposalTarget = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'unit',
+		relatedModel: 'TargetUnit'
+	}, {
+		type: Backbone.HasOne,
+		key: 'objectiveBudgetProposal',
+		relatedModel: 'ObjectiveBudgetProposal'
+	}]
 });
 
 ReservedBudget = Backbone.RelationalModel.extend({
@@ -703,6 +715,9 @@ FiscalBudgetTypeCollection = Backbone.Collection.extend({
 ObjectiveBudgetProposalCollection = Backbone.Collection.extend({
 	model: ObjectiveBudgetProposal
 }); 
+ObjectiveBudgetProposalTargetCollection = Backbone.Collection.extend({
+	model: ObjectiveBudgetProposalTarget
+});  
 
 //Handlebars Utils
 
