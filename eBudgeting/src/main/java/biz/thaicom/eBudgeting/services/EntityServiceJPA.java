@@ -2264,7 +2264,7 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public List<TargetUnit> findAllTargetUnits() {
-		return (List<TargetUnit>) targetUnitRepository.findAll();
+		return (List<TargetUnit>) targetUnitRepository.findAllSortedByName();
 	}
 
 	@Override
