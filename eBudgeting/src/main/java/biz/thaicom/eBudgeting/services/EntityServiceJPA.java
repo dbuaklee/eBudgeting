@@ -170,6 +170,29 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
+	public List<Objective> findAllObjectiveChildren(Long id) {
+		Objective objective = objectiveRepository.findOne(id);
+		List<Objective> obj = objective.getChildren();
+		
+		for (Objective o : obj) {
+			deepInitObjective(o);
+		}
+		
+		return obj;
+	}
+
+	private void deepInitObjective(Objective obj) {
+		if(obj == null || obj.getChildren() == null || obj.getChildren().size() == 0) {
+			return;
+		} else {
+			obj.getChildren().size();
+			for(Objective o : obj.getChildren()) {
+				deepInitObjective(o);
+			}
+		}
+	}
+
+	@Override
 	public Objective findParentObjective(Objective objective) {
 		Objective self = objectiveRepository.findOne(objective.getId());
 		

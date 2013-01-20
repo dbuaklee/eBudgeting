@@ -238,6 +238,19 @@ public class ExcelReportsController {
 		return "m51r15.xls";
 	}
 
+	@RequestMapping("/m51r17.xls/{fiscalYear}/file/m51r17.xls")
+	public String excelM51R17(@PathVariable Integer fiscalYear, Model model) {
+		
+		Objective root = entityService.findOneRootObjectiveByFiscalyear(fiscalYear);
+		
+		List<Objective> objectiveList = entityService.findAllObjectiveChildren(root.getId());
+		
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m51r17.xls";
+	}
+
 	@RequestMapping("/m51r18.xls/{fiscalYear}/file/m51r18.xls")
 	public String excelM51R18(@PathVariable Integer fiscalYear, Model model) {
 		
@@ -247,6 +260,76 @@ public class ExcelReportsController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		
 		return "m51r18.xls";
+	}
+
+	@RequestMapping("/m52r01.xls/{fiscalYear}/file/m52r01.xls")
+	public String excelM52R01(@PathVariable Integer fiscalYear, Model model) {
+		
+		ObjectiveType type = entityService.findObjectiveTypeById((long) 113);
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 113);
+		
+		model.addAttribute("type", type);
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m52r01.xls";
+	}
+
+	@RequestMapping("/m53r01.xls/{fiscalYear}/file/m53r01.xls")
+	public String excelM53R01(@PathVariable Integer fiscalYear, Model model) {
+		
+		ObjectiveType type = entityService.findObjectiveTypeById((long) 114);
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 114);
+		
+		model.addAttribute("type", type);
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m53r01.xls";
+	}
+
+	@RequestMapping("/m53r02.xls/{fiscalYear}/file/m53r02.xls")
+	public String excelM53R02(@PathVariable Integer fiscalYear, Model model) {
+		
+		ObjectiveType type = entityService.findObjectiveTypeById((long) 115);
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 115);
+		
+		model.addAttribute("type", type);
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m53r02.xls";
+	}
+
+	@RequestMapping("/m53r03.xls/{fiscalYear}/file/m53r03.xls")
+	public String excelM53R03(@PathVariable Integer fiscalYear, Model model) {
+		
+		ObjectiveType type = entityService.findObjectiveTypeById((long) 116);
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 116);
+		
+		model.addAttribute("type", type);
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m53r03.xls";
+	}
+
+	@RequestMapping("/m54r01.xls/{fiscalYear}/file/m54r01.xls")
+	public String excelM54R01(@PathVariable Integer fiscalYear, Model model) {
+		
+		ObjectiveType type = entityService.findObjectiveTypeById((long) 118);
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 118);
+		
+		model.addAttribute("type", type);
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m54r01.xls";
 	}
 
 	@RequestMapping("/admin/excel/report1.xls/{id}")
