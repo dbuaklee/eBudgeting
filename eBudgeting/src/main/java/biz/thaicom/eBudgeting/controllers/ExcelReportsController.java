@@ -241,9 +241,7 @@ public class ExcelReportsController {
 	@RequestMapping("/m51r17.xls/{fiscalYear}/file/m51r17.xls")
 	public String excelM51R17(@PathVariable Integer fiscalYear, Model model) {
 		
-		Objective root = entityService.findOneRootObjectiveByFiscalyear(fiscalYear);
-		
-		List<Objective> objectiveList = entityService.findAllObjectiveChildren(root.getId());
+		List<Objective> objectiveList = entityService.findAllObjectiveChildren(fiscalYear,(long) 101);
 		
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
@@ -330,6 +328,19 @@ public class ExcelReportsController {
 		model.addAttribute("fiscalYear", fiscalYear);
 		
 		return "m54r01.xls";
+	}
+
+	@RequestMapping("/m55r01.xls/{fiscalYear}/file/m55r01.xls")
+	public String excelM55R01(@PathVariable Integer fiscalYear, Model model) {
+		
+		List<Objective> objectiveList1 = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 119);
+		List<Objective> objectiveList2 = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 120);
+		
+		model.addAttribute("objectiveList1", objectiveList1);
+		model.addAttribute("objectiveList2", objectiveList2);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m55r01.xls";
 	}
 
 	@RequestMapping("/admin/excel/report1.xls/{id}")

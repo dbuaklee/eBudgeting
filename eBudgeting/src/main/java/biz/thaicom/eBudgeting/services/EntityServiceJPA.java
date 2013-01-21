@@ -169,9 +169,8 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public List<Objective> findAllObjectiveChildren(Long id) {
-		Objective objective = objectiveRepository.findOne(id);
-		List<Objective> obj = objective.getChildren();
+	public List<Objective> findAllObjectiveChildren(Integer fiscalYear, Long id) {
+		List<Objective> obj = objectiveRepository.findAllByFiscalYearAndType_id(fiscalYear, id);
 		
 		for (Objective o : obj) {
 			deepInitObjective(o);
