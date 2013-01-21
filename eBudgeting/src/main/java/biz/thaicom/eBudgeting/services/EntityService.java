@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
+import biz.thaicom.eBudgeting.models.bgt.BudgetSignOff;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
@@ -252,6 +253,17 @@ public interface EntityService {
 	public String updateFiscalBudgetTypeIsMainBudget(Integer fiscalYear, List<Long> idList);
 	public List<FiscalBudgetType> findAllFiscalBudgetTypeByFiscalYearUpToLevel(
 			Integer fiscalYear, Integer level);
+	
+	
+	//BudgetSignOff
+	public BudgetSignOff findBudgetSignOffByFiscalYearAndOrganization(
+			Integer fiscalYear, Organization workAt);
+	public Long findSumTotalBudgetProposalOfOwner(Integer fiscalYear,
+			Organization workAt);
+	public Long findSumTotalObjectiveBudgetProposalOfOwner(Integer fiscalYear,
+			Organization workAt);
+	public BudgetSignOff updateBudgetSignOff(Integer fiscalYear, ThaicomUserDetail currentUser,
+			String command);
 
 
 

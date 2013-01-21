@@ -3,6 +3,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <div class="hero-unit white">
+<c:if test='${not empty readOnly}'>
+		<div class="alert">
+    			<strong>Sign Off แล้ว</strong> สามารถเปิดดูข้อมูลได้อย่างเดียว ไม่สามารถแก้ไขเพิ่มเติมได้ 
+    		</div>
+	</c:if>
+
 <div id="headLine">
 	<h4>การบันทึกงบประมาณ ระดับรายการ</h4> 
 </div>
@@ -550,6 +556,8 @@
 	var l = null;
 	var e1;
 	var e2;
+	
+	var readOnly="${readOnly}";
 
 	var proposalListTemplate = Handlebars.compile($('#proposalListTemplate').html());
 	var proposalStrategyListTemplate = Handlebars.compile($('#proposalStrategyListTemplate').html());

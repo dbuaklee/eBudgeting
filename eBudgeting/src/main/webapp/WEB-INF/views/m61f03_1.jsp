@@ -4,6 +4,11 @@
 
 <div class="hero-unit white">
 <div id="headLine">
+	<c:if test='${not empty readOnly}'>
+		<div class="alert">
+    			<strong>Sign Off แล้ว</strong> สามารถเปิดดูข้อมูลได้อย่างเดียว ไม่สามารถแก้ไขเพิ่มเติมได้ 
+    		</div>
+	</c:if>
 	<h4>การบันทึกงบประมาณ ระดับกิจกรรม</h4> 
 </div>
 
@@ -271,14 +276,15 @@
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
-<div class="menu"><button id="addBudget" class="btn">เพื่มรายการงบประมาณ</button>
+<div class="menu">{{#unless readOnly}}<button id="addBudget" class="btn">เพิ่มรายการงบประมาณ</button>{{/unless}}
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	<ul>
 	{{#each filterObjectiveBudgetProposals}}
 		<li data-id="{{id}}">
-				
+				{{#unless ../readOnly}}
 				<a href="#" class="editProposal"><i class="icon-edit icon-blue"></i></a>				
 				<a href="#" class="removeProposal"><i class="icon-trash icon-red"></i></a>
+				{{/unless}}
 				<strong>{{budgetType.name}} : </strong>	{{{formatNumber amountRequest}}} บาท
 				
 			</li>
@@ -376,6 +382,8 @@
 	var l = null;
 	var e1;
 	var e2;
+	
+	var readOnly = "${readOnly}";
 
 	var proposalListTemplate = Handlebars.compile($('#proposalListTemplate').html());
 	

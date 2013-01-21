@@ -494,6 +494,35 @@ TargetValueAllocationRecord = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/TargetValueAllocationRecord')
 });
 
+Person = Backbone.RelationalModel.extend({
+	idAttribute: 'id'
+});
+
+BudgetSignOff = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'lock1Person',
+		relatedModel: 'Person'
+	},{
+		type: Backbone.HasOne,
+		key: 'lock2Person',
+		relatedModel: 'Person'
+	},{
+		type: Backbone.HasOne,
+		key: 'unLock1Person',
+		relatedModel: 'Person'
+	},{
+		type: Backbone.HasOne,
+		key: 'unLock2Person',
+		relatedModel: 'Person'
+	}, {
+		type: Backbone.HasOne,
+		key: 'owner',
+		relatedModel: 'Organization'
+	}]
+});
+
 
 // PagableCollection
 PagableCollection = Backbone.Collection.extend({

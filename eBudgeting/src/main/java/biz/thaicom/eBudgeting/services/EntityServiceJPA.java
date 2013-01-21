@@ -2,6 +2,7 @@ package biz.thaicom.eBudgeting.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +25,7 @@ import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetLevel;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
+import biz.thaicom.eBudgeting.models.bgt.BudgetSignOff;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
@@ -47,6 +49,7 @@ import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetCommonTypeRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
+import biz.thaicom.eBudgeting.repositories.BudgetSignOffRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FiscalBudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
@@ -131,6 +134,9 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private ObjectiveNameRepository objectiveNameRepository;
+	
+	@Autowired
+	private BudgetSignOffRepository budgetSignOffRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -3380,6 +3386,78 @@ public class EntityServiceJPA implements EntityService {
 		
 		return o;
 	}
+
+	@Override
+	public BudgetSignOff findBudgetSignOffByFiscalYearAndOrganization(
+			Integer fiscalYear, Organization workAt) {
+		BudgetSignOff budgetSignOff = budgetSignOffRepository.findOneByFiscalYearAndOwner(fiscalYear, workAt);
+		
+		if(budgetSignOff == null) {
+			budgetSignOff = new BudgetSignOff();
+			budgetSignOff.setFiscalYear(fiscalYear);
+			budgetSignOff.setOwner(workAt);
+			budgetSignOffRepository.save(budgetSignOff);
+		}
+		
+		return budgetSignOff;
+	}
+
+	@Override
+	public Long findSumTotalBudgetProposalOfOwner(Integer fiscalYear,
+			Organization workAt) {
+		return budgetProposalRepository.findSumTotalOfOwner(fiscalYear,workAt);
+	}
+
+	@Override
+	public Long findSumTotalObjectiveBudgetProposalOfOwner(Integer fiscalYear,
+			Organization workAt) {
+		return objectiveBudgetProposalRepository.findSumTotalOfOwner(fiscalYear,workAt);
+	}
+
+	@Override
+	public BudgetSignOff updateBudgetSignOff(Integer fiscalYear,ThaicomUserDetail currentUser,
+			String command) {
+		
+		
+		BudgetSignOff bso = findBudgetSignOffByFiscalYearAndOrganization(fiscalYear, currentUser.getWorkAt());
+		if(command.equals("lock1")) {
+			bso.setLock1Person(currentUser.getPerson());
+			bso.setLock1TimeStamp(new Date());
+			
+			bso.setUnLock1Person(null);
+			bso.setUnLock1TimeStamp(null);
+		} else if(command.equals("lock2")) {
+			bso.setLock2Person(currentUser.getPerson());
+			bso.setLock2TimeStamp(new Date());
+			
+			bso.setUnLock2Person(null);
+			bso.setUnLock2TimeStamp(null);
+			
+		} else if(command.equals("unLock1")) {
+			bso.setUnLock1Person(currentUser.getPerson());
+			bso.setUnLock1TimeStamp(new Date());
+			
+			bso.setLock1Person(null);
+			bso.setLock1TimeStamp(null);
+			
+		} else if(command.equals("unLock2")) {
+			bso.setUnLock2Person(currentUser.getPerson());
+			bso.setUnLock2TimeStamp(new Date());
+			
+			bso.setLock2Person(null);
+			bso.setLock2TimeStamp(null);
+			
+		}
+		
+		
+		budgetSignOffRepository.save(bso);
+		
+		return bso;
+	}
+	
+	
+	
+	
 
 
 

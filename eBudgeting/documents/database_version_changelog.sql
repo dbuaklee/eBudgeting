@@ -614,3 +614,40 @@
         references PLN_TARGETUNIT
 
     create sequence BGT_OBJBGTPROPOSALTARGET_SEQ
+    
+-- version 3
+-- Modified Date: Jan 21, 2013
+    
+    alter table BGT_BUDGETSIGNOFF add (
+        lock1TimeStamp timestamp,
+        lock2TimeStamp timestamp,
+	    unlock1TimeStamp timestamp,
+        unLock2TimeStamp timestamp,
+        HRX_LOCK1PERSON_ID number(19,0),
+        HRX_LOCK2PERSON_ID number(19,0),
+        HRX_UNLOCK1PERSON_ID number(19,0),
+        HRX_UNLOCK2PERSON_ID number(19,0)
+    )
+    
+    alter table BGT_BUDGETSIGNOFF 
+        add constraint FKB506AFFDEE824A36 
+        foreign key (HRX_LOCK2PERSON_ID) 
+        references HRX_PERSON
+
+    alter table BGT_BUDGETSIGNOFF 
+        add constraint FKB506AFFDFA38D917 
+        foreign key (HRX_LOCK1PERSON_ID) 
+        references HRX_PERSON
+
+    alter table BGT_BUDGETSIGNOFF 
+        add constraint FKB506AFFD89C930CF 
+        foreign key (HRX_UNLOCK2PERSON_ID) 
+        references HRX_PERSON
+
+    alter table BGT_BUDGETSIGNOFF 
+        add constraint FKB506AFFD957FBFB0 
+        foreign key (HRX_UNLOCK1PERSON_ID) 
+        references HRX_PERSON
+
+    
+    

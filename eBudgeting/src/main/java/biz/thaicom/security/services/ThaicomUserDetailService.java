@@ -40,6 +40,7 @@ public class ThaicomUserDetailService implements UserDetailsService {
 			
 			//userDetail.setWorkAt(user.getPerson());
 			userDetail.setWorkAt(user.getPerson().getWorkAt());
+			userDetail.setPerson(user.getPerson());
 			//if(user.getPerson().getWorkAt().getId() == 7) {
 				AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_USER_PLAN"));
 			//}

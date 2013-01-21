@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import biz.thaicom.eBudgeting.models.hrx.Organization;
+import biz.thaicom.eBudgeting.models.hrx.Person;
 
 public class ThaicomUserDetail implements UserDetails {
 
@@ -21,6 +22,8 @@ public class ThaicomUserDetail implements UserDetails {
 	private String username;
 	
 	private Organization workAt;
+	
+	private Person person;
 	
 	
 	public ThaicomUserDetail(String username, String password, Collection<? extends GrantedAuthority> AUTHORITIES) {
@@ -41,6 +44,14 @@ public class ThaicomUserDetail implements UserDetails {
 	
 	public String getWorkAtAbbr() {
 		return this.workAt.getAbbr();
+	}
+
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	@Override
@@ -77,5 +88,8 @@ public class ThaicomUserDetail implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+
+
+
 
 }

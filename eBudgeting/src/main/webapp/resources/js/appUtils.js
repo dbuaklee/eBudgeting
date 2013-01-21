@@ -79,6 +79,16 @@ Handlebars.registerHelper('formatNumber', function(number) {
 	return addCommas(number);
 });
 
+Handlebars.registerHelper('formatTimeDetail', function(timeStamp){
+	if(timeStamp !=null) {
+		var time = moment(timeStamp);
+		return time.format("DD/MM/YYYY HH:mm:ssน.");
+		
+	} else {
+		return "";
+	}
+});
+
 
 function addCommas(nStr)
 {

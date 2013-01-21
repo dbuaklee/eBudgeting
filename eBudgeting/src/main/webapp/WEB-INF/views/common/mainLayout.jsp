@@ -33,9 +33,7 @@
 	<script src="<c:url value='/resources/jslibs/backbone-0.9.2.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/backbone-relational-0.6.0.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/handlebars-1.0.0.beta.6.js'/>"></script>
-	
-	<script src="<c:url value='/resources/jslibs/jqGrid-4.4.1/js/i18n/grid.locale-th.js'/>"></script>
-	<script src="<c:url value='/resources/jslibs/jqGrid-4.4.1/js/jquery.jqGrid.src.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/moment-1.7.2.min.js'/>"></script>	
 		
 	<script src="<c:url value='/resources/js/appUtils.js'/>"></script>
 	<script src="<c:url value='/resources/js/eBudgeting-app.js'/>"></script>

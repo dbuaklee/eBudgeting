@@ -28,5 +28,14 @@ public interface ObjectiveBudgetProposalRepository extends
 	ObjectiveBudgetProposal findByForObjectiveAndOwnerAndBudgetType(Objective o,
 			Organization workAt, BudgetType budgetType);
 
+	@Query("" +
+			"SELECT sum(proposal.amountRequest) " +
+			"FROM ObjectiveBudgetProposal proposal " +
+			"WHERE proposal.forObjective.parent is null " +
+			"	AND proposal.forObjective.fiscalYear = ?1 " +
+			"	AND proposal.owner = ?2 ")
+
+	Long findSumTotalOfOwner(Integer fiscalYear, Organization workAt);
+
 
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import biz.thaicom.eBudgeting.models.bgt.BudgetSignOff;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTypeId;
@@ -529,11 +531,13 @@ public class GenericViewController {
 	}
 	
 	
-	private void setFiscalYearFromSession(Model model, HttpSession session) {
+	private Integer setFiscalYearFromSession(Model model, HttpSession session) {
 		if(session.getAttribute("currentRootFY") != null) {
 			Objective rootFy = (Objective) session.getAttribute("currentRootFY");
 			model.addAttribute("fiscalYear", rootFy.getFiscalYear());
+			return rootFy.getFiscalYear();
 		}
+		return null;
 	}
 
 
@@ -1101,18 +1105,56 @@ public class GenericViewController {
 	@RequestMapping("/page/m61f03_1/")
 	public String render_m61f03(
 			Model model,
-			HttpServletRequest request, HttpSession session) {
+			HttpServletRequest request, HttpSession session,
+			@Activeuser ThaicomUserDetail currentUser) {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();
-		setFiscalYearFromSession(model, session);
+		Integer fy = setFiscalYearFromSession(model, session);
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYears", fiscalYears);
+		
+		//check the budgetSignOff
+		BudgetSignOff bso = entityService.findBudgetSignOffByFiscalYearAndOrganization(
+				fy, currentUser.getWorkAt());
+		
+		if(bso.getLock1Person() != null) {
+			// should not be able to edit!
+			model.addAttribute("readOnly", true);
+		}
+		
 		return "m61f03_1";
 	}
 	
 	
 	// --------------------------------------------------------------m61f04: การบันทึกงบประมาณ ระดับรายการ
-	@RequestMapping("/page/m61f04/")
-	public String render_m61f04(
+//	@RequestMapping("/page/m61f04/")
+//	public String render_m61f04(
+//			Model model, HttpServletRequest request, HttpSession session,
+//			@Activeuser ThaicomUserDetail currentUser) {
+//			
+//		model.addAttribute("rootPage", false);
+//		
+//		setFiscalYearFromSession(model, session);
+//		
+//		Integer fy = getCurrentFiscalYearFromSession(session);
+//		Objective rootObjective = entityService.findOneRootObjectiveByFiscalyear(fy);
+//		
+//		model.addAttribute("objectiveId", rootObjective.getId());
+//
+//		//check the budgetSignOff
+//		BudgetSignOff bso = entityService.findBudgetSignOffByFiscalYearAndOrganization(
+//				fy, currentUser.getWorkAt());
+//		
+//		if(bso.getLock1Person() != null) {
+//			// should not be able to edit!
+//			model.addAttribute("readOnly", true);
+//		}
+//		
+//		return "m61f04";
+//	}
+
+	// --------------------------------------------------------------m61f05: การบันทึก SignOff/Release
+	@RequestMapping("/page/m61f05/")
+	public String render_m61f05(
 			Model model, HttpServletRequest request, HttpSession session) {
 			
 		model.addAttribute("rootPage", false);
@@ -1125,13 +1167,15 @@ public class GenericViewController {
 		model.addAttribute("objectiveId", rootObjective.getId());
 		
 		
-		return "m61f04";
+		return "m61f05";
 	}
-
+	
+	
 	// --------------------------------------------------------------m61f04: การบันทึกงบประมาณ ระดับรายการ
 	@RequestMapping("/page/m61f04_1/")
 	public String render_m61f04_1(
-			Model model, HttpServletRequest request, HttpSession session) {
+			Model model, HttpServletRequest request, HttpSession session,
+			@Activeuser ThaicomUserDetail currentUser) {
 			
 		model.addAttribute("rootPage", false);
 		
@@ -1142,6 +1186,15 @@ public class GenericViewController {
 		
 		model.addAttribute("objectiveId", rootObjective.getId());
 		
+		//check the budgetSignOff
+		BudgetSignOff bso = entityService.findBudgetSignOffByFiscalYearAndOrganization(
+				fy, currentUser.getWorkAt());
+		
+		if(bso.getLock1Person() != null) {
+			// should not be able to edit!
+			model.addAttribute("readOnly", true);
+		}
+
 		
 		return "m61f04_1";
 	}

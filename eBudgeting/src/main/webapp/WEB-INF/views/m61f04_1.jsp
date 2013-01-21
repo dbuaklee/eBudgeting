@@ -3,8 +3,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <div class="hero-unit white">
+
 <div id="headLine">
-	<h4>การบันทึกงบประมาณ ระดับรายการ</h4>
+	<c:if test='${not empty readOnly}'>
+		<div class="alert">
+    			<strong>Sign Off แล้ว</strong> สามารถเปิดดูข้อมูลได้อย่างเดียว ไม่สามารถแก้ไขเพิ่มเติมได้ 
+    		</div>
+	</c:if><h4>การบันทึกงบประมาณ ระดับรายการ</h4>
 </div>
 
 <div class="row">
@@ -292,9 +297,9 @@
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
-<div class="menu"><button id="addBudget" class="btn">เพื่มรายการงบประมาณ</button> <button class="btn">บันทึกข้อมูลโครงการ</button></div>
+<div class="menu">{{#unless readOnly}}<button id="addBudget" class="btn">เพื่มรายการงบประมาณ</button> <button class="btn">บันทึกข้อมูลโครงการ</button>{{/unless}}</div>
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
-	{{{listProposalStrategies filterProposals}}}
+	{{{listProposalStrategies filterProposals readOnly}}}
 </div>
 </script>
 
@@ -499,8 +504,10 @@
 		{{#each proposals}}
 		{{#each proposalStrategies}} 
 			<li data-id="{{id}}" proposal-id="{{../id}}">
+				{{#unless ../../../readOnly}} 
 				<a href="#" class="editProposal"><i class="icon-edit icon-blue editProposal"></i></a>				
 				<a href="#" class="removeProposal"><i class="icon-trash icon-red removeProposal"></i></a>
+				{{/unless}}
 				{{#if formulaStrategy}}
 					{{formulaStrategy.name}} : {{{formulaLine this}}} = {{{formatNumber totalCalculatedAmount}}} บาท
 				{{else}}
@@ -531,11 +538,12 @@
 	var l = null;
 	var e1;
 	var e2;
+	var readOnly = "${readOnly}";
 
 	var proposalListTemplate = Handlebars.compile($('#proposalListTemplate').html());
 	var proposalStrategyListTemplate = Handlebars.compile($('#proposalStrategyListTemplate').html());
 	
-	Handlebars.registerHelper("listProposalStrategies", function(proposals) {
+	Handlebars.registerHelper("listProposalStrategies", function(proposals, readOnly) {
 		if(proposals == null || proposals.length == 0) return "";
 		
 		var budgetTypeList = [];
@@ -557,6 +565,7 @@
  			}
  		}
 		
+ 		json.readOnly = readOnly;
 		
 		return proposalStrategyListTemplate(json);
 	});
@@ -618,7 +627,6 @@
 	});
 
 	Handlebars.registerHelper("formulaLine", function(strategy) {
-		console.log(strategy);
 		var s = addCommas(strategy.formulaStrategy.standardPrice) + " บาท ";
 
 		if (strategy.formulaStrategy != null) {
@@ -1425,7 +1433,9 @@
 		
 		render : function() {
 			if (this.objective != null) {
-				var html = this.modalTemplate(this.objective.toJSON());
+				var json = this.objective.toJSON();
+				json.readOnly = readOnly;
+				var html = this.modalTemplate(json);
 				this.$el.find('.modal-header span').html(this.objective.get('name'));
 				this.$el.find('.modal-body').html(html);
 			}

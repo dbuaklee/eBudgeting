@@ -1,7 +1,11 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +25,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
+import biz.thaicom.eBudgeting.models.bgt.BudgetSignOff;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
+import biz.thaicom.eBudgeting.models.hrx.Person;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
 import biz.thaicom.security.models.ThaicomUserDetail;
@@ -199,6 +205,63 @@ public class BudgetProposalRestController {
 		
 		return "success";
 	}
+	
+	@RequestMapping(value="/BudgetSignOff/{fiscalYear}/updateCommand/{command}", method=RequestMethod.GET)
+	public @ResponseBody Map<String, Object> updateBudgetSignOff(
+			@PathVariable Integer fiscalYear,
+			@Activeuser ThaicomUserDetail currentUser,
+			@PathVariable String command){
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		BudgetSignOff budgetSignOff = entityService.updateBudgetSignOff(fiscalYear, currentUser, command);
+		
+		if(command.equals("lock1")) {
+			map.put("person", budgetSignOff.getLock1Person());
+			map.put("timeStamp", budgetSignOff.getLock1TimeStamp());
+			
+		} else if(command.equals("lock2")) {
+			map.put("person", budgetSignOff.getLock2Person());
+			map.put("timeStamp", budgetSignOff.getLock2TimeStamp());
+			
+		} else if(command.equals("unLock1")) {
+			map.put("person", budgetSignOff.getUnLock1Person());
+			map.put("timeStamp", budgetSignOff.getUnLock1TimeStamp());
+			
+		} else if(command.equals("unLock2")) {
+			map.put("person", budgetSignOff.getUnLock2Person());
+			map.put("timeStamp", budgetSignOff.getUnLock2TimeStamp());
+			
+		}
+		
+		
+		return map;
+		
+	}
+	
+	@RequestMapping(value="/BudgetProposal/sumTotalOfOwner/{fiscalYear}") 
+	public @ResponseBody List<Long> findSumTotalProposalOfOwner(
+			@PathVariable Integer fiscalYear,
+			@Activeuser ThaicomUserDetail currentUser) {
+		
+		List<Long> returnList = new ArrayList<Long>();
+		
+		returnList.add(entityService.findSumTotalBudgetProposalOfOwner(fiscalYear, currentUser.getWorkAt()));
+		returnList.add(entityService.findSumTotalObjectiveBudgetProposalOfOwner(fiscalYear, currentUser.getWorkAt()));
+		
+		
+		return returnList;
+	}
+ 	
+	@RequestMapping(value="/BudgetSignOff/{fiscalYear}")
+	public @ResponseBody BudgetSignOff findBudgetSignOffByFiscalYear(
+			@PathVariable Integer fiscalYear,
+			@Activeuser ThaicomUserDetail currentUser) {
+		
+		return entityService.findBudgetSignOffByFiscalYearAndOrganization(fiscalYear, currentUser.getWorkAt());
+	}
+	
+	
 	
 	
 	@ExceptionHandler(value=EntityNotFoundException.class)
