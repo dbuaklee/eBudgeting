@@ -188,10 +188,9 @@ var menuJson = [{
 		     {name: "m51r17: ตรวจสอบสายการเชื่อมโยงข้อมูล (สายยุทธศาสตร์กระทรวงฯ-กลยุทธ์หน่วยงาน)", link: "m51r17.xls/"+fiscalYear+"/file/m51r17.xls",disabled: "disabled"},
 		     {name: "m51r17: ทะเบียนหน่วยนับ", link: "m51r18.xls/"+fiscalYear+"/file/m51r18.xls"}
 		     ]},
-		 {name: "รายงานการตรวจสอบ (m82)", code: "m82", menus: 
-		    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m82f03: ตรวจสอบการบันทึกเงินระดับรายการ", link: "page/m2f14/", disabled: "disabled"}]},
+	  {name: "รายงานการตรวจสอบ (m52r)", menus: 
+				    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls"},
+				     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", link: "m52r02.xls/"+fiscalYear+"/file/m52r02.xls"}]},		 
 	     {name: "รายงานตามแบบแผนปฏิบัติราชการ] (m83)", code: "m83",  menus: 
 			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
 			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
@@ -259,12 +258,11 @@ var menuUserJson = [{
 	        ]}]
 	         
 },{
-	name: "ระบบรายงาน (m8)",
+	name: "ระบบรายงาน (Report)",
 	menus: [
-		 {name: "รายงานทะเบียน (m81)", menus: 
-		    [{name: "m81f01: การบันทึกงบประมาณระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m81f02: การบันทึกงบประมาณระดับรายการ", link: "page/m2f14/", disabled: "disabled"},  
-		     {name: "m81f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", disabled: "disabled"}]}]
+		 {name: "รายงานการตรวจสอบ (m52r)", menus: 
+		    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls"},
+		     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", link: "m52r02.xls/"+fiscalYear+"/file/m52r02.xls"}]}]
 }];
 
 var menuTemplate = Handlebars.compile($("#menuTemplate").html());

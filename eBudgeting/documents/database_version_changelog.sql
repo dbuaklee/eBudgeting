@@ -617,7 +617,7 @@
     
 -- version 3
 -- Modified Date: Jan 21, 2013
-    
+    update app_info set db_version=3;
     alter table BGT_BUDGETSIGNOFF add (
         lock1TimeStamp timestamp,
         lock2TimeStamp timestamp,

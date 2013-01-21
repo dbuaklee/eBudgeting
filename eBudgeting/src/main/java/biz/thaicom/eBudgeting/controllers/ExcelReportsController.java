@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.services.EntityService;
+import biz.thaicom.security.models.Activeuser;
+import biz.thaicom.security.models.ThaicomUserDetail;
 
 @Controller
 public class ExcelReportsController {
@@ -275,10 +278,18 @@ public class ExcelReportsController {
 	}
 
 	@RequestMapping("/m52r01_1.xls/{fiscalYear}/file/m52r01_1.xls")
-	public String excelM52R01_1(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM52R01_1(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
-		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(fiscalYear, (long) 103);
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(fiscalYear, (long) 103, currentUser.getWorkAt());
 		
+		for(Objective o : objectiveList) {
+			for(BudgetProposal p : o.getProposals()) {
+				if(p.getOwner().getId() != currentUser.getWorkAt().getId()) {
+					o.getProposals().remove(p);
+				}
+			}
+		}
 		
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);

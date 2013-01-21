@@ -107,7 +107,7 @@ public interface EntityService {
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);
 	public Objective objectiveAddChildObjectiveName(Long parentId, Long nameId);
 	public List<Objective> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
-			Integer fiscalYear, long l);
+			Integer fiscalYear, long l, Organization organization);
 	
 		
 	//BudgetType
