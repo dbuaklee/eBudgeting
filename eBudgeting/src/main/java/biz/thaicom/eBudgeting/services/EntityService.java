@@ -106,6 +106,8 @@ public interface EntityService {
 	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);
 	public Objective objectiveAddChildObjectiveName(Long parentId, Long nameId);
+	public List<Objective> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
+			Integer fiscalYear, long l);
 	
 		
 	//BudgetType
@@ -264,6 +266,7 @@ public interface EntityService {
 			Organization workAt);
 	public BudgetSignOff updateBudgetSignOff(Integer fiscalYear, ThaicomUserDetail currentUser,
 			String command);
+
 
 
 

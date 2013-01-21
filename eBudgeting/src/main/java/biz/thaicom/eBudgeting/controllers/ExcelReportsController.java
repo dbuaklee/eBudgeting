@@ -274,6 +274,31 @@ public class ExcelReportsController {
 		return "m52r01.xls";
 	}
 
+	@RequestMapping("/m52r01_1.xls/{fiscalYear}/file/m52r01_1.xls")
+	public String excelM52R01_1(@PathVariable Integer fiscalYear, Model model) {
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(fiscalYear, (long) 103);
+		
+		
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m52r01_1.xls";
+	}
+
+	@RequestMapping("/m52r28.xls/{fiscalYear}/file/m52r28.xls")
+	public String excelM52R28(@PathVariable Integer fiscalYear, Model model) {
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 102);
+		List<BudgetType> budgetTypeList = entityService.findBudgetTypeByLevel(fiscalYear, 1);
+		
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("budgetTypeList", budgetTypeList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m52r28.xls";
+	}
+
 	@RequestMapping("/m53r01.xls/{fiscalYear}/file/m53r01.xls")
 	public String excelM53R01(@PathVariable Integer fiscalYear, Model model) {
 		

@@ -189,6 +189,16 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 
 	public List<Objective> findAllByObjectiveName(ObjectiveName on);
 
+	
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective" +
+			"	INNER JOIN FETCH objective.proposals proposal " +
+			"	INNER JOIN FETCH proposal.budgetType budgetType " +
+			"WHERE objective.fiscalYear = ?1 AND objective.type.id = ?2 ")
+	public List<Objective> findAllByTypeIdAndFiscalYearInitBudgetProposal(
+			Integer fiscalYear, long typeId);
+
 
 
 
