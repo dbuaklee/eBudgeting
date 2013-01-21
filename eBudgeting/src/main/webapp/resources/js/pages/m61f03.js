@@ -70,14 +70,13 @@ var ModalView = Backbone.View.extend({
 	saveProposal: function(e) {
 		this.$el.find('button.saveProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
 		
-		var obpId = this.$el.find('form#input-form').attr('id');
-		var obp = ObjectiveBudgetProposal.findOrCreate(obpId);
+		var obp = this.currentObjectiveBudgetProposal;
 		
 		var budgetTypeId = this.$el.find('#budgetTypeSlt').val();
 		var budgetType = BudgetType.findOrCreate(budgetTypeId);
 		
-		if(obp == null ){
-			obp = new ObjectiveBudgetProposal();
+		if(obp.get('budgetType') == null ){
+			obp.set('budgetType', budgetType);
 		}
 		
 					// now get the input
@@ -86,8 +85,13 @@ var ModalView = Backbone.View.extend({
 		obp.set('amountRequestNext2Year', this.$el.find('input#amountRequestNext2Year').val());
 		obp.set('amountRequestNext3Year', this.$el.find('input#amountRequestNext3Year').val());
 		
-		obp.set('forObjective', this.objective);
-		obp.set('budgetType', budgetType);
+		// now copy all target if exists!
+		if(obp.get('targets') != null) {
+			for(var i=0; i<obp.get('targets').length; i++) {
+				var target = obp.get('targets').at(i);
+				target.set('targetValue', this.$el.find('input#targetValue'+target.get('unit').get('id')).val());
+			}
+		}
 		
 		//now ready for save
 		obp.save(null, {
@@ -98,145 +102,89 @@ var ModalView = Backbone.View.extend({
 		
 	},
 	editProposal : function(e) {
-		var proposalStrategyId = $(e.target).parents('li').attr('data-id');
-		var budgetProposalId = $(e.target).parents('li').attr('proposal-id');
-
-		// now get this one
-		var budgetProposal = this.objective.get('filterProposals').get(budgetProposalId);
-		var proposalStrategy = budgetProposal.get('proposalStrategies').get(proposalStrategyId);
+		var obpId = $(e.target).parents('li').attr('data-id');
+		var obp = ObjectiveBudgetProposal.findOrCreate(obpId);
 
 		// we'll begin by render the budgetTypeSelectionView
-		this.renderEditProposal(budgetProposal, proposalStrategy);
+		this.renderEditProposal(obp);
 
 	},
 
 	removeProposal : function(e) {
-		var proposalStrategyId = $(e.target).parents('li').attr('data-id');
-		var budgetProposalId = $(e.target).parents('li').attr('proposal-id');
-
-		// now get this one
-		var budgetProposal = this.objective.get('filterProposals').get(budgetProposalId);
-		var proposalStrategy = budgetProposal.get('proposalStrategies').get(proposalStrategyId);
-
-		if (proposalStrategy != null) {
+		$(e.target).parents('li').css('text-decoration', 'line-through');
+		var obpId = $(e.target).parents('li').attr('data-id');
+		var obp = ObjectiveBudgetProposal.findOrCreate(obpId);
+		
+		if (obp != null) {
 			// we can start deleting it now.. 
 
 			var r = confirm("คุณต้องการนำรายการนี้ออก?");
 			if (r == true) {
 				$.ajax({
 					type : 'DELETE',
-					url : appUrl('/ProposalStrategy/' + proposalStrategyId),
+					url : appUrl('/ObjectiveBudgetProposal/' + obpId),
 					success : _.bind(function() {
-							budgetProposal.get('proposalStrategies').remove(proposalStrategy);
-							var newAmount = budgetProposal.get('amountRequest') - proposalStrategy.get('totalCalculatedAmount');
-							budgetProposal.set('amountRequest', newAmount);
-
-							// now we'll have to trigger change all the way up ward
-
-							this.objective.trigger('change',this.objective);
+							this.objective.get('filterObjectiveBudgetProposals').remove(obp);
 							this.render();
 						}, this)
 					});
 
+			} else {
+				$(e.target).parents('li').css('text-decoration', '');
 			}
 			return false;
 
 		}
 	},
 	
-	renderEditProposal: function(budgetProposal, proposalStrategy) {
-		this.$el.find('.modal-body').html(this.inputEditProposalTemplate());
+	renderEditProposal: function(obp) {
+		this.currentObjectiveBudgetProposal = obp;
 		
-		this.startegySelectionView = new StrategySelectionView({el: '#inputAll', parentModal: this});
-		this.startegySelectionView.setCurrentBudgetTypeAndStrategy(budgetProposal.get('budgetType'), proposalStrategy.get('formulaStrategy'));
+		var json=obp.toJSON();
 		
-		var json;
-		if(proposalStrategy.get('formulaStrategy') == null) {
-			var budgetType = budgetProposal.get('budgetType');
-			json = proposalStrategy.toJSON();
-			json.budgetTypeName = budgetType.get('name');
-			
-			if(proposalStrategy.get('targetUnit') != null) {
-				
-				if(proposalStrategy.get('targetUnit') instanceof Backbone.Model) {
-					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
-					json.targetUnitId = proposalStrategy.get('targetUnit').get('id');	
-				} else {
-					var t = TargetUnit.findOrCreate(proposalStrategy.get('targetUnit'));
-					if(t!=null) {
-						json.budgetTypeUnitName = t.get('name');
-						json.targetUnitId = t.get('id');
-					}
-				}
-				
-				
-			}
-			
-			json.next1Year = fiscalYear + 1;
-			json.next1YearValue = proposalStrategy.get('amountRequestNext1Year');
-
-			json.next2Year = fiscalYear + 2;
-			json.next2YearValue = proposalStrategy.get('amountRequestNext2Year');
-
-			json.next3Year = fiscalYear + 3;
-			json.next3YearValue = proposalStrategy.get('amountRequestNext3Year');
-			json.proposalStrategyId = proposalStrategy.get('id');
-			
-			this.$el.find('#input-form').html(this.defaultInputTemplate(json));
-		} else {
-			json = proposalStrategy.get('formulaStrategy').toJSON();
-			json.targetValue = proposalStrategy.get('targetValue');
-			if(proposalStrategy.get('targetUnit') instanceof Backbone.Model) {
-				json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
-				json.targetUnitId = proposalStrategy.get('targetUnit').get('id');	
-			} else {
-				var t = TargetUnit.findOrCreate(proposalStrategy.get('targetUnit'));
-				if(t!=null) {
-					json.budgetTypeUnitName = t.get('name');
-					json.targetUnitId = t.get('id');
-				}
-			}
-			
-			json.total = proposalStrategy.get('totalCalculatedAmount');
-			
-			json.proposalStrategyId = proposalStrategy.get('id');
-			json.next1Year = fiscalYear + 1;
-			json.next1YearValue = proposalStrategy.get('amountRequestNext1Year');
-
-			json.next2Year = fiscalYear + 2;
-			json.next2YearValue = proposalStrategy.get('amountRequestNext2Year');
-
-			json.next3Year = fiscalYear + 3;
-			json.next3YearValue = proposalStrategy.get('amountRequestNext3Year');
-			
-			// now fill in value from request columns
-			for(var i=0; i< json.formulaColumns.length; i++) {
-				var fcId = json.formulaColumns[i].id;
-				for(var j=0; j<proposalStrategy.get('requestColumns').length; j++) {
-					if(proposalStrategy.get('requestColumns').at(j).get('column').get('id') == fcId) {
-						json.formulaColumns[i].value = proposalStrategy.get('requestColumns').at(j).get('amount');
-					}
-				}
-				
-			}
-			
-			console.log(json);
-			this.$el.find('#input-form').html(this.inputModalTemplate(json));
-		}
-		
+		this.$el.find('.modal-body').html(this.inputAllDivTemplate(json));		
 		
 	},
 
 	renderInputALL : function() {
 		
 		var obp = new ObjectiveBudgetProposal();
+
+		obp.set('forObjective', this.objective);
 		
-		this.$el.find('.modal-body').html(this.inputAllDivTemplate(obp.toJSON()));
-		console.log("render1");
-		this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1', level: 1, parentModal: this});
-		this.budgetTypeSelectionViewL1.setCollection(mainBudgetTypeCollection);
-	    this.budgetTypeSelectionViewL1.render();
-	    			
+		if(this.objective.get('targets') != null && this.objective.get('targets').length > 0) {
+			// we have to create new target Unit for this one
+			for(var i=0; i< this.objective.get('targets').length; i++) {
+				var objTarget = this.objective.get('targets').at(i);
+				var target = new ObjectiveBudgetProposalTarget();
+				target.set('unit', objTarget.get('unit'));
+				target.set('objectiveBudgetProposal', obp);
+				if(obp.get('targets') == null) {
+					obp.set('targets', new ObjectiveBudgetProposalTargetCollection());
+				}
+				obp.get('targets').add(target);
+			}
+		}
+		
+		this.currentObjectiveBudgetProposal = obp;
+		
+
+		var budgetTypeSltCollection = _.clone(mainBudgetTypeCollection);
+		// now we go through all filterObjectiveBudgetProposal and remove the budgetType
+		this.objective.get('filterObjectiveBudgetProposals').each(function(usedObp) {
+			budgetTypeSltCollection.remove(usedObp.get('budgetType'));
+		});
+
+		console.log("budgetTypeSltCollection.length == " + budgetTypeSltCollection.length);
+		
+		if(budgetTypeSltCollection.length == 0) {
+			alert('ไม่สามารถเพิ่มรายการงบประมาณได้เนื่องจากเลือกลงข้อมูลหมดทุกหมวดแล้ว');
+		} else {
+			this.$el.find('.modal-body').html(this.inputAllDivTemplate(obp.toJSON()));
+			this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1', level: 1, parentModal: this});
+			this.budgetTypeSelectionViewL1.setCollection(budgetTypeSltCollection);
+		    this.budgetTypeSelectionViewL1.render();
+		}	    			
 	},
 	
 	render : function() {
@@ -321,8 +269,13 @@ var MainSelectionView = Backbone.View.extend({
 		var type103Id = $(e.target).val();
 		if(type103Id != 0) {
 			var obj = Objective.findOrCreate(type103Id);
-			mainCtrView.renderMainTblWithParent(obj);
-			
+			obj.url = appUrl("/Objective/loadObjectiveBudgetProposal/" + obj.get('id'));
+			obj.fetch({
+				success: function(model, xhr, option) {
+					mainCtrView.renderMainTblWithParent(obj);
+					e2=model;
+				}
+			});
 		} else {
 			mainCtrView.emptyTbl();
 		}
@@ -472,7 +425,7 @@ var MainCtrView = Backbone.View.extend({
 					this.collection.add(objectiveCollection.where({parent: this.currentParentObjective}));
 					
 					var allProposal = new ObjectiveBudgetProposalCollection(); 
-					_.each(this.collection.pluck('filterProposals'), function(bpCollection) {
+					_.each(this.collection.pluck('filterObjectiveBudgetProposals'), function(bpCollection) {
 						if(bpCollection.length > 0) {
 							bpCollection.each(function(bp) {
 								allProposal.add(bp);
@@ -482,7 +435,8 @@ var MainCtrView = Backbone.View.extend({
 					
 					var json = this.collection.toJSON();
 					json.allProposal = allProposal.toJSON();
-				
+					json.objective = this.currentParentObjective.toJSON();
+					e1=this.currentParentObjective;
 					this.$el.find('#mainTbl').html(this.mainTblTpl(json));
 					
 					this.$el.find('#mainTbl tbody td:first-child', this).each(function(i){

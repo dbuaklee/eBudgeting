@@ -276,6 +276,10 @@ public class Objective implements Serializable {
 			}
 		}
 		
+		if(this.getTargets() != null) {
+			this.getTargets().size();
+		}
+		
 		if(this.getChildren() != null) {
 			this.getChildren().size();
 			logger.debug("children size: " + this.getChildren().size());

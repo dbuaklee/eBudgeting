@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 
+import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
@@ -74,6 +77,18 @@ public class ObjectiveRestController {
 	public @ResponseBody Objective getObjectiveById(@PathVariable Long id) {
 		logger.debug("id: " + id);
 		return entityService.findOjectiveById(id); 
+	}
+	
+	@RequestMapping(value="/Objective/loadObjectiveBudgetProposal/{id}", method=RequestMethod.GET)
+	public @ResponseBody Objective getObjectiveLoadObjectiveBudgetProposalById(
+			@PathVariable Long id, 
+			@Activeuser ThaicomUserDetail currentUser) {
+		Objective o = entityService.findOjectiveById(id);
+		if(o!=null) {
+			List<ObjectiveBudgetProposal> obpList = entityService.findObjectiveBudgetproposalByObjectiveIdAndOwnerId(id, currentUser.getWorkAt().getId());
+			o.setFilterObjectiveBudgetProposals(obpList);
+		}
+		return o;  
 	}
 	
 	@RequestMapping(value="/Objective/{id}/children", method=RequestMethod.GET)
@@ -468,11 +483,14 @@ public class ObjectiveRestController {
 	}
 	
 	
+	
+	
 	@ExceptionHandler(value=Exception.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public @ResponseBody String handleException(final Exception e, final HttpServletRequest request) {
 		logger.error(e.toString());
 		e.printStackTrace();
-		return "failed";
+		return "failed: " + e.toString();
 		
 	}
 

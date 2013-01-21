@@ -140,18 +140,12 @@
 </script>
 
 <script id="budgetInputSelectionTemplate" type="text/x-handler-template">
-<form id="budgetInputFrm" class="form-horizontal">
-<div class="control-group">
-<label class="control-label">{{#if editStrategy}}<b>แก้ไขจำนวนเงิน</b>{{else}}<b>เลือกงบประมาณ</b>{{/if}}</label> 
-<div class="controls">
 <select id="budgetTypeSlt" {{#if editStrategy}} disabled {{/if}}>
 	<option value="0">กรุณาเลือกรายการ</option>
 	{{#each this}}
 	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{name}}</option>
 	{{/each}}
 </select>
-</div>
-</div>
 </script>
 
 <script id="strategySelectionTemplate" type="text/x-handler-template">
@@ -186,13 +180,18 @@
 	<tbody>
 		<tr>
 			<td></td>
-			<td style="text-align:right; padding-right: 20px;"><strong>รวมทั้งสิ้น</strong></td>
-			<td></td>
-			<td></td>
-			<td><strong>{{sumProposal allProposal}}</td>
-			<td><strong>{{sumProposalNext1Year allProposal}}</strong></td>
-			<td><strong>{{sumProposalNext2Year allProposal}}</strong></td>
-			<td><strong>{{sumProposalNext3Year allProposal}}</strong></td>
+			<td><strong>รวมกิจกรรมหลัก{{objective.type.name}}{{objective.name}}</strong></td>
+			<td><ul  style="list-style:none; margin: 0px;">
+				{{#each objective.targets}}
+					<li style="list-style:none; padding: 0px;">{{sumTargetValue unit.id ../filterObjectiveBudgetProposals}}</li>
+				{{/each}}
+				</ul>
+			</td>
+			<td><ul  style="list-style:none; margin: 0px;">{{#each objective.targets}}<li style="list-style:none; padding: 0px;">{{unit.name}} ({{#if isSumable}}นับ{{else}}ไม่นับ{{/if}})</li>{{/each}}</ul></td>
+			<td class="rightAlign"><strong>{{sumProposal allProposal}}</td>
+			<td class="rightAlign"><strong>{{sumProposalNext1Year allProposal}}</strong></td>
+			<td class="rightAlign"><strong>{{sumProposalNext2Year allProposal}}</strong></td>
+			<td class="rightAlign"><strong>{{sumProposalNext3Year allProposal}}</strong></td>
 			<td style="width:15px;padding:0px;">&nbsp;</td>
 		</tr>
 	</tbody>
@@ -242,9 +241,11 @@
 		</td>
 		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}} centerAlign">
 			<span>
-				{{#each filterTargetValues}}
-				{{#if requestedValue}}{{formatNumber requestedValue}}{{else}}0{{/if}}<br/>
-				{{/each}}
+				<ul  style="list-style:none; margin: 0px;">
+					{{#each filterTargetValues}}
+							<li style="list-style:none; padding: 0px;">{{sumTargetValue target.unit.id ../filterObjectiveBudgetProposals}}</li>
+					{{/each}}
+				</ul>
 			</span>
 		</td>
 		<td  style="width:60px;" class="{{#if this.children}}disable{{/if}} centerAlign">
@@ -274,10 +275,10 @@
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	<ul>
 	{{#each filterObjectiveBudgetProposals}}
-		<li data-id="{{id}}" proposal-id="{{../id}}">
+		<li data-id="{{id}}">
 				
-				<a href="#" class="editProposal"><i class="icon-edit icon-blue editProposal"></i></a>				
-				<a href="#" class="removeProposal"><i class="icon-trash icon-red removeProposal"></i></a>
+				<a href="#" class="editProposal"><i class="icon-edit icon-blue"></i></a>				
+				<a href="#" class="removeProposal"><i class="icon-trash icon-red"></i></a>
 				<strong>{{budgetType.name}} : </strong>	{{{formatNumber amountRequest}}} บาท
 				
 			</li>
@@ -289,11 +290,23 @@
 
 <script id="inputAllDivTemplate" type="text/x-handler-template">
 <div id="inputAll">
-	<div class="row">
-		<div class="span2" id="budgetTypeSelectionDivL1"></div>
-	</div>
 	<div id="inputDiv" class="span10">
 		<form id="input-form" style="margin-bottom:0px;" data-id="{{id}}">
+			<div id="formulaBox">
+				<div>
+					<div style="height:35px;">
+						หมวดงบประมาณ:
+					</div>
+				</div>
+				<div>
+					{{#if budgetType}}
+						<div style="padding-top: 6px; padding-left:5px;"><strong>{{budgetType.name}}</strong></div>
+					{{else}}
+						<div class="span2" id="budgetTypeSelectionDivL1"></div>		
+					{{/if}}
+				</div>
+			</div>
+			<div class="clearfix"></div>
 			<div id="formulaBox">
 				<div>
 					<div style="height:35px;">
@@ -323,6 +336,17 @@
 				</div>
 			</div>
 			<div class="clearfix"></div>
+{{#each targets}}
+			<div id="formulaBox">
+				<div>
+					<div style="margin-top:11px;"> ระบุเป้าหมาย {{unit.name}}</div>
+				</div>
+				<div style="margin: 0px 8px;">
+					<div class="input-append"><input style="width:120px;" type="text" id="targetValue{{unit.id}}" value="{{targetValue}}" data-id={{id}}/><span class="add-on">{{unit.name}}</span></div>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+{{/each}}
 		</form>
 	</div>
 </div>
@@ -351,8 +375,29 @@
 	var topBudgetList = ["งบบุคลากร","งบดำเนินงาน","งบลงทุน","งบอุดหนุน","งบรายจ่ายอื่น"];
 	var l = null;
 	var e1;
+	var e2;
 
 	var proposalListTemplate = Handlebars.compile($('#proposalListTemplate').html());
+	
+	Handlebars.registerHelper("sumTargetValue", function(unitId, proposals) {
+		// get all targetValue
+		sum=0;
+		if(proposals == null || proposals.length ==0) {
+			return sum;
+		}
+		for(var i=0; i< proposals.length; i++) {
+			if(proposals[i].targets != null) {
+				var targets = proposals[i].targets;
+				for(var j=0; j < targets.length; j++) {
+					if(targets[j].unit.id == unitId) {
+						sum += targets[j].targetValue;
+					}
+				}
+			}
+		}
+		
+		return addCommas(sum);
+	});
 	
 	Handlebars.registerHelper("listProposals", function(proposals) {
 		if(proposals == null || proposals.length == 0) return "";

@@ -659,7 +659,7 @@ $(document).ready(function() {
 				var modelToDelete = this.collection.get(objectiveId);
 				if(confirm("คุณต้องการลบรายการ " + modelToDelete.get('name'))) {
 				
-					modelToDelete.destroy({
+					modelToDelete.destroy({wait:true,
 						success: _.bind(function() {					
 							this.collection.remove(modelToDelete);
 						
@@ -669,6 +669,9 @@ $(document).ready(function() {
 							});
 							
 							this.collection.trigger('reset');
+						},this),
+						error: _.bind(function(model, xhr, options) {
+							alert("ไม่สามารถลบรายการได้ \n Error: " + xhr.responseText);
 						},this)
 					});
 				}

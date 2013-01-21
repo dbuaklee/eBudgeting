@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
@@ -29,6 +26,10 @@ import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
 import biz.thaicom.security.models.ThaicomUserDetail;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Controller
 public class BudgetProposalRestController {
@@ -71,7 +72,7 @@ public class BudgetProposalRestController {
 			@PathVariable Long id,
 			@RequestBody JsonNode node,
 			@Activeuser ThaicomUserDetail currentUser) {
-		return entityService.updateObjectiveBudgetProposal(node);
+		return entityService.saveObjectiveBudgetProposal(currentUser.getWorkAt(), node);
 	}
 	
 	@RequestMapping(value="/ObjectiveBudgetProposal", method=RequestMethod.POST)
