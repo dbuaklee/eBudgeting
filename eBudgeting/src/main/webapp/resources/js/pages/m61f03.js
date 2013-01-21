@@ -12,7 +12,6 @@ var BudgetTypeAllSelectionView = Backbone.View.extend({
 	
 	render: function(){
 		// first clear the siblings select
-		console.log("render");
 		this.$el.empty();
 		if(this.collection != null) {
 			this.$el.html(this.budgetInputSelectionTemplate(this.collection.toJSON()));
@@ -273,7 +272,6 @@ var MainSelectionView = Backbone.View.extend({
 			obj.fetch({
 				success: function(model, xhr, option) {
 					mainCtrView.renderMainTblWithParent(obj);
-					e2=model;
 				}
 			});
 		} else {

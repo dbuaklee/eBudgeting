@@ -4,7 +4,7 @@
 
 <div class="hero-unit white">
 <div id="headLine">
-	<h4>การบันทึกงบประมาณ ระดับรายการ</h4> 
+	<h4>การบันทึกงบประมาณ ระดับกิจกรรม</h4> 
 </div>
 
 <div class="row">
