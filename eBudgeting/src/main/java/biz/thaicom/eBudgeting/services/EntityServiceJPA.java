@@ -3457,7 +3457,7 @@ public class EntityServiceJPA implements EntityService {
 	
 	public List<Objective> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
 			Integer fiscalYear, long typeId, Organization organization) {
-		return objectiveRepository.findAllByTypeIdAndFiscalYearInitBudgetProposal(fiscalYear, typeId, organization);
+		return objectiveRepository.findAllByTypeIdAndFiscalYearInitBudgetProposal(fiscalYear, typeId);
 	}
 
 }

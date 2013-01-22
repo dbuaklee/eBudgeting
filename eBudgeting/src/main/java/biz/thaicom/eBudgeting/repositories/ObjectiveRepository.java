@@ -199,7 +199,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"	INNER JOIN FETCH proposal.budgetType budgetType " +
 			"WHERE objective.fiscalYear = ?1 AND objective.type.id = ?2 ")
 	public List<Objective> findAllByTypeIdAndFiscalYearInitBudgetProposal(
-			Integer fiscalYear, long typeId, Organization organization);
+			Integer fiscalYear, long typeId);
 
 
 

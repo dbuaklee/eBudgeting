@@ -426,7 +426,7 @@ $(document).ready(function() {
 				this.availableChildren.fetch({
 					url: appUrl('/ObjectiveName/findChildrenNameOfObjective/' + this.objective.get('id') ),
 					data: {
-						searchQuery: encodeURI(searchTxt)
+						searchQuery: searchTxt
 					},
 					success: _.bind(function() {
 						this.renderAvailableChildren();
