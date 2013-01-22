@@ -106,7 +106,7 @@ public interface EntityService {
 	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);
 	public Objective objectiveAddChildObjectiveName(Long parentId, Long nameId);
-	public List<Objective> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
+	public List<List<Objective>> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
 			Integer fiscalYear, long l, Organization organization);
 	
 		
@@ -247,6 +247,11 @@ public interface EntityService {
 	public ObjectiveBudgetProposal saveObjectiveBudgetProposal(
 			Organization workAt, JsonNode node);
 	public ObjectiveBudgetProposal deleteObjectiveBudgetProposal(Long id);
+
+	public List<List<Objective>> findObjectivesByFiscalyearAndTypeIdAndInitObjectiveBudgetProposal(
+			Integer fiscalYear, long typeid, Organization workAt);
+
+	
 	
 	
 	//FiscalBudgetType

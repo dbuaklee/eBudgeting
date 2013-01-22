@@ -30,7 +30,7 @@ import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.security.models.ThaicomUserDetail;
 
-public class M52R01_1XLSView extends AbstractPOIExcelView {
+public class M52R02_1XLSView extends AbstractPOIExcelView {
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:sss");
 	
@@ -55,7 +55,7 @@ public class M52R01_1XLSView extends AbstractPOIExcelView {
 
 		Row firstRow = sheet.createRow(0);
 		Cell cell11 = firstRow.createCell(0);
-		cell11.setCellValue("รายงานตรวจสอบการบันทึกเงินระดับกิจกรรม ปี " + fiscalYear + " หน่วยงาน " + currentUser.getWorkAt().getName());
+		cell11.setCellValue("รายงานตรวจสอบการบันทึกเงินระดับรายการ ปี " + fiscalYear + " หน่วยงาน " + currentUser.getWorkAt().getName());
 		cell11.setCellStyle(styles.get("title"));
 		Cell cell12 = firstRow.createCell(1);
 
@@ -203,8 +203,8 @@ public class M52R01_1XLSView extends AbstractPOIExcelView {
 
 		Set<Integer> keys = budgetSumMap.keySet();
 		
-		if(o.getFilterObjectiveBudgetProposals().size() > 0) {
-			for(ObjectiveBudgetProposal p : o.getFilterObjectiveBudgetProposals()){
+		if(o.getFilterProposals()!= null && o.getFilterProposals().size() > 0) {
+			for(BudgetProposal p : o.getFilterProposals()){
 				String parentPath = p.getBudgetType().getParentPath();
 				
 				for(Integer key: keys) {

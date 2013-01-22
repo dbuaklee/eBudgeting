@@ -3455,9 +3455,35 @@ public class EntityServiceJPA implements EntityService {
 		return bso;
 	}
 	
-	public List<Objective> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
-			Integer fiscalYear, long typeId, Organization organization) {
-		return objectiveRepository.findAllByTypeIdAndFiscalYearInitBudgetProposal(fiscalYear, typeId);
+	public List<List<Objective>> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
+			Integer fiscalYear, long typeId, Organization workAt) {
+		Objective root = objectiveRepository.findRootOfFiscalYear(fiscalYear);
+		List<Objective> allList = new ArrayList<Objective>();
+		
+		
+		allList = findFlatChildrenObjectivewithBudgetProposal(
+					fiscalYear, workAt.getId(), root.getId());
+		
+		
+		List<List<Objective>> returnList = new ArrayList<List<Objective>>();
+		returnList.add(allList);
+		return returnList;
+	}
+
+	@Override
+	public List<List<Objective>> findObjectivesByFiscalyearAndTypeIdAndInitObjectiveBudgetProposal(
+			Integer fiscalYear, long typeId, Organization workAt) {
+		Objective root = objectiveRepository.findRootOfFiscalYear(fiscalYear);
+		List<Objective> allList = new ArrayList<Objective>();
+		
+		
+		allList = findFlatChildrenObjectivewithObjectiveBudgetProposal(
+					fiscalYear, workAt.getId(), root.getId());
+		
+		
+		List<List<Objective>> returnList = new ArrayList<List<Objective>>();
+		returnList.add(allList);
+		return returnList;
 	}
 
 }

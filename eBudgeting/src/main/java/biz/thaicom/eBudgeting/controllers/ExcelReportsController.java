@@ -1,7 +1,11 @@
 package biz.thaicom.eBudgeting.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -18,12 +22,14 @@ import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.services.EntityService;
+import biz.thaicom.eBudgeting.services.EntityServiceJPA;
 import biz.thaicom.security.models.Activeuser;
 import biz.thaicom.security.models.ThaicomUserDetail;
 
 @Controller
 public class ExcelReportsController {
 
+	private static final Logger logger = LoggerFactory.getLogger(ExcelReportsController.class);
 	
 	// กำหนด entityService ไว้ใช้ในการดึง database
 	@Autowired
@@ -281,20 +287,76 @@ public class ExcelReportsController {
 	public String excelM52R01_1(@PathVariable Integer fiscalYear, Model model, 
 			@Activeuser ThaicomUserDetail currentUser) {
 		
-		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(fiscalYear, (long) 103, currentUser.getWorkAt());
+		List<List<Objective>> returnList = entityService.findObjectivesByFiscalyearAndTypeIdAndInitObjectiveBudgetProposal(fiscalYear, (long) 101, currentUser.getWorkAt());
 		
-		for(Objective o : objectiveList) {
-			for(BudgetProposal p : o.getProposals()) {
-				if(p.getOwner().getId() != currentUser.getWorkAt().getId()) {
-					o.getProposals().remove(p);
-				}
+		
+		
+		
+		List<Objective> objList = new ArrayList<Objective>();
+ 		List<Objective> allList = returnList.get(0);
+		HashMap<Long, Objective> objMap = new HashMap<Long, Objective>();		
+		for(Objective o : allList) {
+			o.setChildren(new ArrayList<Objective>());
+			objMap.put(o.getId(), o);
+			logger.debug("put " + o.getFilterObjectiveBudgetProposals().size());
+		}
+		// now connect the children
+		for(Objective obj : allList) {
+			Objective parent = objMap.get(obj.getParent().getId());
+			if(parent != null) {
+				parent.getChildren().add(obj);
+			} else {
+				if(obj.getType().getId() == 101L) 
+					objList.add(obj);
 			}
+			
 		}
 		
-		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("objectiveList", objList);
+		
+		
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m52r01_1.xls";
+	}
+	
+	@RequestMapping("/m52r02_1.xls/{fiscalYear}/file/m52r02_1.xls")
+	public String excelM52R02_1(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
+		
+		List<List<Objective>> returnList = entityService.findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(fiscalYear, (long) 101, currentUser.getWorkAt());
+		
+		
+		
+		
+		List<Objective> objList = new ArrayList<Objective>();
+ 		List<Objective> allList = returnList.get(0);
+		HashMap<Long, Objective> objMap = new HashMap<Long, Objective>();		
+		for(Objective o : allList) {
+			o.setChildren(new ArrayList<Objective>());
+			objMap.put(o.getId(), o);
+			
+		}
+		// now connect the children
+		for(Objective obj : allList) {
+			Objective parent = objMap.get(obj.getParent().getId());
+			if(parent != null) {
+				parent.getChildren().add(obj);
+			} else {
+				if(obj.getType().getId() == 101L) 
+					objList.add(obj);
+			}
+			
+		}
+		
+		model.addAttribute("objectiveList", objList);
+		
+		
+		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
+		
+		return "m52r02_1.xls";
 	}
 
 	@RequestMapping("/m52r28.xls/{fiscalYear}/file/m52r28.xls")
