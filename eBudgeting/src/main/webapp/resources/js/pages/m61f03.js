@@ -67,6 +67,46 @@ var ModalView = Backbone.View.extend({
 	},
 	
 	saveProposal: function(e) {
+		var validated1=true;
+		var validated2=true;
+		
+		this.$el.find('input:enabled').each(function(e) {
+			console.log($(this).val());
+			
+			if( isNaN( +$(this).val() ) ) {
+				$(this).parent('div').addClass('control-group error');
+				validated1 = false;
+				
+			} else {
+				$(this).parent('div').removeClass('control-group error');
+			}
+		});
+		
+		if($('#budgetTypeSlt').length > 0) {
+			if($('#budgetTypeSlt').val() == 0) {
+				validated2 = false;
+				$(this).parent('div').addClass('control-group error');
+			} else {
+				$(this).parent('div').removeClass('control-group error');
+			}
+		}
+		
+		if(validated1 == false || validated2 == false) {
+			var msg1 = "";
+			var msg2 = "";
+			if(!validated1) {
+				msg1= " -- ข้อมูลที่ใส่ต้องเป็นตัวเลข\n";
+			}
+			
+			if(!validated2) {
+				msg2 = " -- ต้องระบุหมวดงบประมาณ\n";
+			}
+			
+			alert('กรุณาตรวจสอบข้อมูล\n' + msg1 + msg2);
+			return;
+		}
+		
+		
 		this.$el.find('button.saveProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
 		
 		var obp = this.currentObjectiveBudgetProposal;
@@ -140,6 +180,9 @@ var ModalView = Backbone.View.extend({
 		this.currentObjectiveBudgetProposal = obp;
 		
 		var json=obp.toJSON();
+		json.next1Year = fiscalYear+1;
+		json.next2Year = fiscalYear+2;
+		json.next3Year = fiscalYear+3;
 		
 		this.$el.find('.modal-body').html(this.inputAllDivTemplate(json));		
 		
@@ -181,7 +224,14 @@ var ModalView = Backbone.View.extend({
 		if(budgetTypeSltCollection.length == 0) {
 			alert('ไม่สามารถเพิ่มรายการงบประมาณได้เนื่องจากเลือกลงข้อมูลหมดทุกหมวดแล้ว');
 		} else {
-			this.$el.find('.modal-body').html(this.inputAllDivTemplate(obp.toJSON()));
+			
+			var json = obp.toJSON();
+			json.next1Year = fiscalYear+1;
+			json.next2Year = fiscalYear+2;
+			json.next3Year = fiscalYear+3;
+			
+			
+			this.$el.find('.modal-body').html(this.inputAllDivTemplate(json));
 			this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1', level: 1, parentModal: this});
 			this.budgetTypeSelectionViewL1.setCollection(budgetTypeSltCollection);
 		    this.budgetTypeSelectionViewL1.render();
