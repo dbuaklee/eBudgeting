@@ -939,6 +939,8 @@
 							}
 						}
 					}
+					
+					proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
 				} else {
 					proposalStrategy.set('totalCalculatedAmount', this.$el.find('#totalInputTxt').val());	
 				}

@@ -170,10 +170,12 @@ var ModalView = Backbone.View.extend({
 
 		var budgetTypeSltCollection = _.clone(mainBudgetTypeCollection);
 		// now we go through all filterObjectiveBudgetProposal and remove the budgetType
-		this.objective.get('filterObjectiveBudgetProposals').each(function(usedObp) {
-			budgetTypeSltCollection.remove(usedObp.get('budgetType'));
-		});
-
+		var fobp = this.objective.get('filterObjectiveBudgetProposals');
+		
+		for(var i=0; i< fobp.length; i++) {
+			budgetTypeSltCollection.remove(fobp.at(i).get('budgetType'));
+		}
+		
 		console.log("budgetTypeSltCollection.length == " + budgetTypeSltCollection.length);
 		
 		if(budgetTypeSltCollection.length == 0) {

@@ -19,8 +19,8 @@ public interface ObjectiveBudgetProposalRepository extends
 			"FROM ObjectiveBudgetProposal obp " +
 			"	INNER JOIN FETCH obp.forObjective objective " +
 			"	INNER JOIN FETCH obp.budgetType type " +
-			"	INNER JOIN FETCH obp.targets target " +
-			"	INNER JOIN FETCH target.unit unit " +
+			"	LEFT OUTER JOIN FETCH obp.targets target " +
+			"	LEFT OUTER JOIN FETCH target.unit unit " +
 			"WHERE objective.id = ?1 and obp.owner.id = ?2 ")
 	List<ObjectiveBudgetProposal> findAllByForObjective_IdAndOwner_Id(
 			Long objectiveId, Long ownerId);
