@@ -1264,10 +1264,10 @@ public class EntityServiceJPA implements EntityService {
 			target.getForObjectives().size();
 			
 			for(Objective o : target.getForObjectives()) {
-				logger.debug("Adding objective target to list");
+				//logger.debug("Adding objective target to list");
 				Integer index = list.indexOf(o);
 				Objective objInlist = list.get(index);
-				logger.debug("objInList target size = " + objInlist.getTargets().size());
+				//logger.debug("objInList target size = " + objInlist.getTargets().size());
 				
 				TargetValue tv = targetValueMap.get(objInlist.getId() + "," + target.getId());
 				if(tv==null) {

@@ -174,48 +174,46 @@ public class M52R01_1XLSView extends AbstractPOIExcelView {
 	
 	private int printRow(Objective o, int i, Sheet sheet, Map<String, CellStyle> styles) {
 		if(o == null ) return i;
-		Map<Integer, Long> budgetSumMap = new HashMap<Integer, Long>();
+		Map<Long, Long> budgetSumMap = new HashMap<Long, Long>();
 		
 		//เงินเดือน
-		budgetSumMap.put(2,0L);
+		budgetSumMap.put(2L,0L);
 		//ค่าจ้างประจำ
-		budgetSumMap.put(24,0L);
+		budgetSumMap.put(24L,0L);
 		//ค่าจ้างชั่วคราว
-		budgetSumMap.put(39,0L);
+		budgetSumMap.put(39L,0L);
 		//พนักงานราชการ
-		budgetSumMap.put(44,0L);
+		budgetSumMap.put(44L,0L);
 		// ตอบแทน
-		budgetSumMap.put(48, 0L);
+		budgetSumMap.put(48L, 0L);
 		// ใช้สอย
-		budgetSumMap.put(60, 0L);
+		budgetSumMap.put(60L, 0L);
 		// วัสดุ
-		budgetSumMap.put(85, 0L);
+		budgetSumMap.put(85L, 0L);
 		// สาธารณูปโภค
-		budgetSumMap.put(108, 0L);
+		budgetSumMap.put(108L, 0L);
 		// ครุภัณฑ์
-		budgetSumMap.put(119, 0L);
+		budgetSumMap.put(119L, 0L);
 		// สิ่งก่อสร้าง
-		budgetSumMap.put(479, 0L);
+		budgetSumMap.put(479L, 0L);
 		// อุดหนุน
-		budgetSumMap.put(780, 0L);
+		budgetSumMap.put(780L, 0L);
 		// รายจ่ายอื่น
-		budgetSumMap.put(786, 0L);
+		budgetSumMap.put(786L, 0L);
 
-		Set<Integer> keys = budgetSumMap.keySet();
 		
 		if(o.getFilterObjectiveBudgetProposals().size() > 0) {
 			for(ObjectiveBudgetProposal p : o.getFilterObjectiveBudgetProposals()){
-				String parentPath = p.getBudgetType().getParentPath();
 				
-				for(Integer key: keys) {
-	//					logger.debug("*******************************" + parentPath + "  contain? " + key.toString() + " check if = " + parentPath.contains("."+key.toString()+"."));
-					if (parentPath.contains("."+key.toString()+".")) {
-						Long newSum = budgetSumMap.get(key) + p.getAmountRequest();
-						budgetSumMap.put(key, newSum);
-	//						logger.debug(" put in key "+ key + " value: " + newSum);
-						
-						break;
-					}
+				logger.debug("p.getBudgetType.getId() : " + p.getBudgetType().getId());
+				Long bId = p.getBudgetType().getId();
+				if(budgetSumMap.get(bId) != null) {
+						//logger.debug("*******************************" + parentPath + "  contain? " + key.toString() + " check if = " + parentPath.contains("."+key.toString()+"."));
+
+						Long newSum = budgetSumMap.get(bId) + p.getAmountRequest();
+						budgetSumMap.put(bId, newSum);
+							logger.debug(" put in key "+ bId + " value: " + newSum);
+					
 				}
 			}
 		}
@@ -231,51 +229,51 @@ public class M52R01_1XLSView extends AbstractPOIExcelView {
 		c01.setCellStyle(styles.get("cellleft"));
 		
 		Cell c02 = rows.createCell(1);
-		c02.setCellValue(budgetSumMap.get(2));
+		c02.setCellValue(budgetSumMap.get(2L));
 		c02.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c03 = rows.createCell(2);
-		c03.setCellValue(budgetSumMap.get(24));
+		c03.setCellValue(budgetSumMap.get(24L));
 		c03.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c04 = rows.createCell(3);
-		c04.setCellValue(budgetSumMap.get(39));
+		c04.setCellValue(budgetSumMap.get(39L));
 		c04.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c05 = rows.createCell(4);
-		c05.setCellValue(budgetSumMap.get(44));
+		c05.setCellValue(budgetSumMap.get(44L));
 		c05.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c06 = rows.createCell(5);
-		c06.setCellValue(budgetSumMap.get(48));
+		c06.setCellValue(budgetSumMap.get(48L));
 		c06.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c07 = rows.createCell(6);
-		c07.setCellValue(budgetSumMap.get(60));
+		c07.setCellValue(budgetSumMap.get(60L));
 		c07.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c08 = rows.createCell(7);
-		c08.setCellValue(budgetSumMap.get(85));
+		c08.setCellValue(budgetSumMap.get(85L));
 		c08.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c09 = rows.createCell(8);
-		c09.setCellValue(budgetSumMap.get(108));
+		c09.setCellValue(budgetSumMap.get(108L));
 		c09.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c10 = rows.createCell(9);
-		c10.setCellValue(budgetSumMap.get(119));
+		c10.setCellValue(budgetSumMap.get(119L));
 		c10.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c11 = rows.createCell(10);
-		c11.setCellValue(budgetSumMap.get(479));
+		c11.setCellValue(budgetSumMap.get(479L));
 		c11.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c12 = rows.createCell(11);
-		c12.setCellValue(budgetSumMap.get(780));
+		c12.setCellValue(budgetSumMap.get(780L));
 		c12.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c13 = rows.createCell(12);
-		c13.setCellValue(budgetSumMap.get(786));
+		c13.setCellValue(budgetSumMap.get(786L));
 		c13.setCellStyle(styles.get("cellnumber"));
 		
 		Cell c14 = rows.createCell(13);
