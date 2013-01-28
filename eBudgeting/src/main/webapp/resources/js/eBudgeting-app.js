@@ -120,7 +120,13 @@ Objective = Backbone.RelationalModel.extend({
 	    	type: Backbone.HasOne,
 	    	key: 'objectiveName', 
 	    	relatedModel: 'ObjectiveName'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'detail',
+	    	relatedModel: 'ObjectiveDetail',
+	    	collectionType: 'ObjectiveDetailCollection'
 	    }
+	    
 	    
 	],
 	urlRoot: appUrl('/Objective'),
@@ -154,6 +160,21 @@ ObjectiveName = Backbone.RelationalModel.extend({
 	}],
 	urlRoot: appUrl('/ObjectiveName/')
 	    
+});
+
+
+ObjectiveDetail = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasOne,
+		key: 'forObjective',
+		relatedModel: 'Objective'
+	},{
+		type:Backbone.HasOne,
+		key: 'owner',
+		relatedModel: 'Organization'
+	}],
+	urlRoot: appUrl('/ObjectiveDetail/')
 });
 
 ObjectiveRelations = Backbone.RelationalModel.extend({
@@ -747,6 +768,10 @@ ObjectiveBudgetProposalCollection = Backbone.Collection.extend({
 ObjectiveBudgetProposalTargetCollection = Backbone.Collection.extend({
 	model: ObjectiveBudgetProposalTarget
 });  
+
+ObjectiveDetailCollection = Backbone.Collection.extend({
+	model: ObjectiveDetail
+});
 
 //Handlebars Utils
 

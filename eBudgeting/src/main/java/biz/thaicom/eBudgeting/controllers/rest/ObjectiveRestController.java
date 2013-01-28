@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveDetail;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
@@ -482,6 +483,54 @@ public class ObjectiveRestController {
 		return entityService.removeUnitFromObjectiveName(id, targetId);
 	}
 	
+	
+	
+	@RequestMapping(value="/ObjectiveDetail/byObjective/{id}/ofCurrentUser", method=RequestMethod.GET)
+	public @ResponseBody ObjectiveDetail findOneObjectiveDetailByObjectiveAndOwner(
+			@PathVariable Long id,
+			@Activeuser ThaicomUserDetail currentUser) {
+		ObjectiveDetail detail = entityService.findOneObjectiveDetailByObjectiveIdAndOwner(id, currentUser);
+		
+		//we intentionally put forObjective to be null and let the caller save its own
+		if(detail != null) 	detail.setForObjective(null);
+		
+		return detail;
+	}
+	
+	@RequestMapping(value="/ObjectiveDetail/{id}", method=RequestMethod.GET)
+	public @ResponseBody ObjectiveDetail findOneObjectiveDetail(
+			@PathVariable Long id) {
+		return entityService.findOneObjectiveDetail(id);
+	}
+	
+	@RequestMapping(value="/ObjectiveDetail/{id}", method=RequestMethod.PUT)
+	public @ResponseBody ObjectiveDetail updateObjectiveDetail(
+			@PathVariable Long id,
+			@RequestBody JsonNode node,
+			@Activeuser ThaicomUserDetail currentUser) {
+		ObjectiveDetail detail = entityService.updateObjectiveDetail(node, currentUser.getWorkAt());
+		
+		//we intentionally put forObjective to be null and let the caller save its own
+		detail.setForObjective(null);		
+		return detail;
+	}
+	
+	@RequestMapping(value="/ObjectiveDetail/", method=RequestMethod.POST)
+	public @ResponseBody ObjectiveDetail saveObjectiveDetail(
+			@RequestBody JsonNode node, @Activeuser ThaicomUserDetail currentUser) {
+		ObjectiveDetail detail =  entityService.saveObjectiveDetail(node, currentUser.getWorkAt());
+		
+		//we intentionally put forObjective to be null and let the caller save its own
+		detail.setForObjective(null);		
+		return detail;
+	}
+	
+	@RequestMapping(value="/ObjectiveDetail/{id}", method=RequestMethod.DELETE)
+	public @ResponseBody ObjectiveDetail deleteObjectiveDetail(
+			@PathVariable Long id) {
+		return entityService.deleteObjectiveDetail(id);
+	}
+
 	
 	
 	

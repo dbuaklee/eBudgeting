@@ -3,6 +3,7 @@ package biz.thaicom.eBudgeting.models.pln;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.persistence.Basic;
@@ -94,10 +95,11 @@ public class Objective implements Serializable {
 	@JoinColumn(name="PARENT_PLN_OBJECTIVE_ID")
 	private Objective parent;
 	
-
+	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
+	private Set<ObjectiveDetail> detail;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
-	@OrderBy
+	@OrderBy("id")
 	private List<Objective> children;
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
