@@ -99,7 +99,7 @@ public class Objective implements Serializable {
 	private Set<ObjectiveDetail> detail;
 	
 	@OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
-	@OrderBy
+	@OrderBy("id")
 	private List<Objective> children;
 	
 	@OneToMany(mappedBy="forObjective", fetch=FetchType.LAZY)
