@@ -223,7 +223,7 @@ public class M52R02_1XLSView extends AbstractPOIExcelView {
 		Row rows = sheet.createRow(i);
 		Cell c01 = rows.createCell(0);
 		String s="";
-		for(int j=0;j<o.getParentLevel()-3;j++) {
+		for(int j=0;j<o.getParentLevel()-2;j++) {
 			s+= "         ";
 		}
 		

@@ -45,6 +45,7 @@ public interface EntityService {
 	public List<Integer> findObjectiveTypeRootFiscalYear();
 	public List<ObjectiveType> findObjectiveTypeByFiscalYearEager(Integer fiscalYear, Long parentId);
 	public String findObjectiveTypeChildrenNameOf(Long id);
+	public ObjectiveType findDeepObjectiveTypeById(Long id);
 	
 	public String findObjectiveChildrenTypeName(Long id);
 

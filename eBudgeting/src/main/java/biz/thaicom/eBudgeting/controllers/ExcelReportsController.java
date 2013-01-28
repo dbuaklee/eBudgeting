@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
+import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.eBudgeting.services.EntityServiceJPA;
 import biz.thaicom.security.models.Activeuser;
@@ -228,9 +230,12 @@ public class ExcelReportsController {
 	@RequestMapping("/m51r14.xls/{fiscalYear}/file/m51r14.xls")
 	public String excelM51R14(@PathVariable Integer fiscalYear, Model model) {
 		
-		List<BudgetType> type = entityService.findBudgetTypeByLevel(fiscalYear, 3);
+		ObjectiveType type = entityService.findObjectiveTypeById((long) 113);
+		
+		List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 113);
 		
 		model.addAttribute("type", type);
+		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
 		
 		return "m51r14.xls";
@@ -247,11 +252,24 @@ public class ExcelReportsController {
 		return "m51r15.xls";
 	}
 
-	@RequestMapping("/m51r17.xls/{fiscalYear}/file/m51r17.xls")
-	public String excelM51R17(@PathVariable Integer fiscalYear, Model model) {
+	@RequestMapping("/m51r16.xls/{fiscalYear}/file/m51r16.xls")
+	public String excelM51R16(@PathVariable Integer fiscalYear, Model model) {
 		
 		List<Objective> objectiveList = entityService.findAllObjectiveChildren(fiscalYear,(long) 101);
 		
+		model.addAttribute("objectiveList", objectiveList);
+		model.addAttribute("fiscalYear", fiscalYear);
+		
+		return "m51r16.xls";
+	}
+
+	@RequestMapping("/m51r17.xls/{fiscalYear}/file/m51r17.xls")
+	public String excelM51R17(@PathVariable Integer fiscalYear, Model model) {
+		
+		ObjectiveType type = entityService.findDeepObjectiveTypeById((long) 114);
+		List<Objective> objectiveList = entityService.findAllObjectiveChildren(fiscalYear,(long) 114);
+
+		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
 		

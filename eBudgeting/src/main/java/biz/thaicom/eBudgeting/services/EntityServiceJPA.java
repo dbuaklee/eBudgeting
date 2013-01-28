@@ -307,6 +307,17 @@ public class EntityServiceJPA implements EntityService {
 		
 	}
 
+	@Override
+	public ObjectiveType findDeepObjectiveTypeById(Long id) {
+		ObjectiveType  type = (ObjectiveType) objectiveTypeRepository.findOne(id);
+		
+		// now we'll have to just fill 'em up
+			deepInitObjectiveType(type);
+		
+		return type;
+		
+	}
+
 	private void deepInitObjectiveType(ObjectiveType type) {
 		if(type == null || type.getChildren() == null || type.getChildren().size() == 0) {
 			return;

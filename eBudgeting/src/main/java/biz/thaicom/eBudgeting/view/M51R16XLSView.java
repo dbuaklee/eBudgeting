@@ -19,9 +19,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
-import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 
-public class M51R17XLSView extends AbstractPOIExcelView {
+public class M51R16XLSView extends AbstractPOIExcelView {
 
 	@Override
 	protected Workbook createWorkbook() {
@@ -35,80 +34,80 @@ public class M51R17XLSView extends AbstractPOIExcelView {
 		
         Map<String, CellStyle> styles = createStyles(workbook);
 
-		ObjectiveType type = (ObjectiveType) model.get("type");
 		List<Objective> objectiveList = (List<Objective>) model.get("objectiveList");
 		Integer fiscalYear = (Integer) model.get("fiscalYear");
 		Sheet sheet = workbook.createSheet("sheet1");
 
-		Row thirdRow = sheet.createRow(2);
-		Cell cell30 = thirdRow.createCell(0);
-		cell30.setCellValue(type.getName());
-		cell30.setCellStyle(styles.get("header"));
-		int col = 1;
-		col = printHead(type, workbook, sheet, col) - 1;
-		
 		Row firstRow = sheet.createRow(0);
 		Cell cell11 = firstRow.createCell(0);
 		cell11.setCellValue("รายงานตรวจสอบการเชื่อมโยง");
 		cell11.setCellStyle(styles.get("title"));
 		Cell cell12 = firstRow.createCell(1);
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, col));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 		
 		Row secondRow = sheet.createRow(1);
 		Cell cell21 = secondRow.createCell(0);
 		cell21.setCellValue("(ทะเบียนตามปีงบประมาณ " + fiscalYear + ")");
 		cell21.setCellStyle(styles.get("title"));
 		Cell cell22 = secondRow.createCell(1);
-		sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, col));
+		sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 5));
 		
+		Row thirdRow = sheet.createRow(2);
+		Cell cellA = thirdRow.createCell(0);
+		cellA.setCellValue("แผนงาน");
+		cellA.setCellStyle(styles.get("header"));
+		Cell cellB = thirdRow.createCell(1);
+		cellB.setCellValue("ผลผลิต / โครงการ");
+		cellB.setCellStyle(styles.get("header"));
+		Cell cellC = thirdRow.createCell(2);
+		cellC.setCellValue("กิจกรรมหลัก");
+		cellC.setCellStyle(styles.get("header"));
+		Cell cellD = thirdRow.createCell(3);
+		cellD.setCellValue("กิจกรรมรอง");
+		cellD.setCellStyle(styles.get("header"));
+		Cell cellE = thirdRow.createCell(4);
+		cellE.setCellValue("กิจกรรมย่อย");
+		cellE.setCellStyle(styles.get("header"));
+		Cell cellF = thirdRow.createCell(5);
+		cellF.setCellValue("กิจกรรมเสริม");
+		cellF.setCellStyle(styles.get("header"));
+
 		int i = 3;
-		int j;
 		for (Objective o : objectiveList) {
 			Row rows = sheet.createRow(i);
 			Cell cellx = rows.createCell(0);
 			cellx.setCellValue("<" + o.getCode() + "> " + o.getName());
 			cellx.setCellStyle(styles.get("cellleft"));
+			Cell c1 = rows.createCell(1);
+			c1.setCellStyle(styles.get("cellleft"));
+			Cell c2 = rows.createCell(2);
+			c2.setCellStyle(styles.get("cellleft"));
+			Cell c3 = rows.createCell(3);
+			c3.setCellStyle(styles.get("cellleft"));
+			Cell c4 = rows.createCell(4);
+			c4.setCellStyle(styles.get("cellleft"));
+			Cell c5 = rows.createCell(5);
+			c5.setCellStyle(styles.get("cellleft"));
 			
-			for (j=1;j<=col;j++) {
-				Cell celly = rows.createCell(j);
-				celly.setCellStyle(styles.get("cellleft"));
-			}
-			
-			i = printChild(o, workbook, sheet, i, 1, col);
+			i = printChild(o, workbook, sheet, i, 1);
 
 			i++;
 		}
 		
-		for (j=0;j<=col;j++) {
-			sheet.setColumnWidth(j, 10000);	
-		}
 		
+		sheet.setColumnWidth(0, 10000);
+		sheet.setColumnWidth(1, 10000);
+		sheet.setColumnWidth(2, 10000);
+		sheet.setColumnWidth(3, 10000);
+		sheet.setColumnWidth(4, 10000);
+		sheet.setColumnWidth(5, 10000);
 	}
 	
-	private int printHead(ObjectiveType objType, Workbook workbook, Sheet sheet, int col) {
-
-        Map<String, CellStyle> styles = createStyles(workbook);
-		//logger.debug("Objective Type : " + objType.getName());
-        int i = col;
-		for (ObjectiveType o : objType.getChildren()) {
-			Row rows = sheet.getRow(2);
-			Cell cellx = rows.createCell(col);
-			cellx.setCellValue(o.getName());
-			cellx.setCellStyle(styles.get("header"));
-			//logger.debug("Objective Type : " + o.getName());
-
-			i = printHead(o, workbook, sheet, col+1);
-		}
-		
-		return (i);
-	}
-	
-	private int printChild(Objective obj, Workbook workbook, Sheet sheet, int row, int col, int maxCol) {
+	private int printChild(Objective obj, Workbook workbook, Sheet sheet, int row, int col) {
 
         Map<String, CellStyle> styles = createStyles(workbook);
 		int i = row;
 		int j = 1;
-		int k;
 		for (Objective o : obj.getChildren()) {
 			if (j==1) {
 				Row rows = sheet.getRow(i);
@@ -119,16 +118,24 @@ public class M51R17XLSView extends AbstractPOIExcelView {
 			else {
 				i++;
 				Row rows = sheet.createRow(i);
-				for (k=0;k<=maxCol;k++) {
-					Cell c = rows.createCell(k);
-					c.setCellStyle(styles.get("cellleft"));
-				}
+				Cell c0 = rows.createCell(0);
+				c0.setCellStyle(styles.get("cellleft"));
+				Cell c1 = rows.createCell(1);
+				c1.setCellStyle(styles.get("cellleft"));
+				Cell c2 = rows.createCell(2);
+				c2.setCellStyle(styles.get("cellleft"));
+				Cell c3 = rows.createCell(3);
+				c3.setCellStyle(styles.get("cellleft"));
+				Cell c4 = rows.createCell(4);
+				c4.setCellStyle(styles.get("cellleft"));
+				Cell c5 = rows.createCell(5);
+				c5.setCellStyle(styles.get("cellleft"));
 
 				Cell cellx = rows.getCell(col);
 				cellx.setCellValue("<" + o.getCode() + "> " + o.getName());
 			}
 			
-			i = printChild(o, workbook, sheet, i, col+1, maxCol);
+			i = printChild(o, workbook, sheet, i, col+1);
 			j++;
 		}
 		

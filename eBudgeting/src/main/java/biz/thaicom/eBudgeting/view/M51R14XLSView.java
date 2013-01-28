@@ -35,20 +35,21 @@ public class M51R14XLSView extends AbstractPOIExcelView {
 		
         Map<String, CellStyle> styles = createStyles(workbook);
 
-		List<BudgetType> budgetType = (List<BudgetType>) model.get("type");
+		ObjectiveType type = (ObjectiveType) model.get("type");
+		List<Objective> objectiveList = (List<Objective>) model.get("objectiveList");
 		Integer fiscalYear = (Integer) model.get("fiscalYear");
 		Sheet sheet = workbook.createSheet("sheet1");
 
 		Row firstRow = sheet.createRow(0);
 		Cell cell11 = firstRow.createCell(0);
-		cell11.setCellValue("รายงานตรวจสอบทะเบียนรายการ");
+		cell11.setCellValue("รายงานตรวจสอบทะเบียน" + type.getName());
 		cell11.setCellStyle(styles.get("title"));
 		Cell cell12 = firstRow.createCell(1);
 		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
 		
 		Row secondRow = sheet.createRow(1);
 		Cell cell21 = secondRow.createCell(0);
-		cell21.setCellValue("(ทะเบียนทั้งหมด)");
+		cell21.setCellValue("(ทะเบียนตามปีงบประมาณ " + fiscalYear + ")");
 		cell21.setCellStyle(styles.get("title"));
 		Cell cell22 = secondRow.createCell(1);
 		sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
@@ -58,39 +59,26 @@ public class M51R14XLSView extends AbstractPOIExcelView {
 		cellA.setCellValue("รหัส");
 		cellA.setCellStyle(styles.get("header"));
 		Cell cellB = thirdRow.createCell(1);
-		cellB.setCellValue("หมวด / รายการ");
+		cellB.setCellValue("ชื่อ");
 		cellB.setCellStyle(styles.get("header"));
+
 		
 		int i = 3;
-		for (BudgetType o:budgetType) {
+		for (Objective o:objectiveList) {
 			Row rows = sheet.createRow(i);
-			
 			Cell cellx = rows.createCell(0);
-			cellx.setCellValue(o.getName());
-			cellx.setCellStyle(styles.get("cell1"));
+			cellx.setCellValue(o.getCode());
+			cellx.setCellStyle(styles.get("cell2"));
+			
 			Cell celly = rows.createCell(1);
+			celly.setCellValue(o.getName());
 			celly.setCellStyle(styles.get("cell1"));
-			sheet.addMergedRegion(new CellRangeAddress(i, i, 0, 1));
 			
 			i++;
-
-			for(BudgetType child: o.getChildren()){
-				Row rows2 = sheet.createRow(i);
-				
-				Cell cellx2 = rows2.createCell(0);
-				cellx2.setCellValue(child.getCode());
-				cellx2.setCellStyle(styles.get("cell2"));
-
-				Cell celly2 = rows2.createCell(1);
-				celly2.setCellValue(child.getName());
-				celly2.setCellStyle(styles.get("cell1"));
-
-				i++;
-			}
-			
 		}
 
-		sheet.autoSizeColumn(1);
+		sheet.setColumnWidth(0, 2500);
+		sheet.setColumnWidth(1, 30000);
 	}
 	
     private static Map<String, CellStyle> createStyles(Workbook wb){
@@ -122,7 +110,7 @@ public class M51R14XLSView extends AbstractPOIExcelView {
 
         style = wb.createCellStyle();
         style.setAlignment(CellStyle.ALIGN_LEFT);
-        style.setWrapText(false);
+        style.setWrapText(true);
         style.setBorderRight(CellStyle.BORDER_THIN);
         style.setRightBorderColor(IndexedColors.BLACK.getIndex());
         style.setBorderLeft(CellStyle.BORDER_THIN);
@@ -135,6 +123,7 @@ public class M51R14XLSView extends AbstractPOIExcelView {
 
         style = wb.createCellStyle();
         style.setAlignment(CellStyle.ALIGN_CENTER);
+        style.setVerticalAlignment(CellStyle.VERTICAL_TOP);
         style.setWrapText(true);
         style.setBorderRight(CellStyle.BORDER_THIN);
         style.setRightBorderColor(IndexedColors.BLACK.getIndex());
