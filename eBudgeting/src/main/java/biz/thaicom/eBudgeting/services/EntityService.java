@@ -21,6 +21,7 @@ import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveDetail;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
@@ -271,6 +272,15 @@ public interface EntityService {
 			Organization workAt);
 	public BudgetSignOff updateBudgetSignOff(Integer fiscalYear, ThaicomUserDetail currentUser,
 			String command);
+	
+	
+	//ObjectiveDetail
+	public ObjectiveDetail findOneObjectiveDetail(Long id);
+	public ObjectiveDetail updateObjectiveDetail(JsonNode node, Organization owner);
+	public ObjectiveDetail saveObjectiveDetail(JsonNode node, Organization owner);
+	public ObjectiveDetail deleteObjectiveDetail(Long id);
+	public ObjectiveDetail findOneObjectiveDetailByObjectiveIdAndOwner(Long objectiveId,
+			ThaicomUserDetail currentUser);
 
 
 

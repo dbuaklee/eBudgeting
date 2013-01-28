@@ -1,3 +1,8 @@
+-- Database Schema changelog
+-- Recent changes are intentionally put at the end so we can 
+-- easily replay from eariler version
+
+
 -- Version 1 / initialize 
 -- Modified Date: BEFORE JAN 20, 2012 
 	create table APP_INFO (DB_VERSION number);
@@ -650,4 +655,38 @@
         references HRX_PERSON
 
     
+-- version 4
+-- Modified Date: Jan 29, 2013
+    update app_info set db_version=4;    
     
+    create table PLN_OBJECTIVEDETAIL (
+        id number(19,0) not null,
+        location varchar2(200 char),
+        email varchar2(100 char),
+        methodology1 varchar2(1000 char),
+        methodology2 varchar2(1000 char),
+        methodology3 varchar2(1000 char),
+        officerInCharge varchar2(100 char),
+        outcome varchar2(1000 char),
+        output varchar2(1000 char),
+        projectObjective varchar2(1000 char),
+        phoneNumber varchar2(30 char),
+        reason varchar2(1000 char),
+        targetArea varchar2(1000 char),
+        targetDescription varchar2(1000 char),
+        timeframe varchar2(200 char),
+        PLN_OBJECTIVE_ID number(19,0),
+        HRX_ORGANIZATION_ID number(19,0),
+        primary key (id)
+    );
+    
+   	alter table PLN_OBJECTIVEDETAIL 
+        add constraint FKEB3D863D67BD3B3B 
+        foreign key (HRX_ORGANIZATION_ID) 
+        references HRX_ORGANIZATION
+
+    alter table PLN_OBJECTIVEDETAIL 
+        add constraint FKEB3D863D5898EDD9 
+        foreign key (PLN_OBJECTIVE_ID) 
+        references PLN_OBJECTIVE
+   	create sequence PLN_OBJECTIVEDETAIL_SEQ

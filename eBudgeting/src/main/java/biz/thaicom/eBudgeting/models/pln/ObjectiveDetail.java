@@ -1,6 +1,7 @@
 package biz.thaicom.eBudgeting.models.pln;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -14,11 +15,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ManyToAny;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import biz.thaicom.eBudgeting.models.hrx.Organization;
+import biz.thaicom.eBudgeting.services.EntityServiceJPA;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Entity
 @Table(name="PLN_OBJECTIVEDETAIL")
@@ -26,10 +31,14 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class ObjectiveDetail implements Serializable {
 
+	private static final Logger logger = LoggerFactory.getLogger(ObjectiveDetail.class);
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6180654799984161197L;
+	
+	public ObjectiveDetail() {
+	}
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PLN_OBJECTIVEDETAIL_SEQ")
@@ -43,6 +52,22 @@ public class ObjectiveDetail implements Serializable {
 	private String officerInCharge;
 	
 	/**
+	 * เบอร์โทรศัพท์
+	 */
+	@Basic
+	@Column(length=30)
+	private String phoneNumber;
+	
+	/**
+	 * email
+	 */
+	@Basic
+	@Column(length=100)
+	private String email;
+	
+	
+	
+	/**
 	 * หลักการเหตุผล
 	 */
 	@Basic
@@ -54,7 +79,7 @@ public class ObjectiveDetail implements Serializable {
 	 */
 	@Basic
 	@Column(length=1000)
-	private String projectOjective;
+	private String projectObjective;
 	
 	/**
 	 * วิธีการดำเนินการ  / การรวบรวมข้อมูลทั่วไป
@@ -151,12 +176,12 @@ public class ObjectiveDetail implements Serializable {
 		this.reason = reason;
 	}
 
-	public String getProjectOjective() {
-		return projectOjective;
+	public String getProjectObjective() {
+		return projectObjective;
 	}
 
-	public void setProjectOjective(String projectOjective) {
-		this.projectOjective = projectOjective;
+	public void setProjectObjective(String projectOjective) {
+		this.projectObjective = projectOjective;
 	}
 
 	public String getMethodology1() {
@@ -245,6 +270,44 @@ public class ObjectiveDetail implements Serializable {
 
 	public void setOwner(Organization owner) {
 		this.owner = owner;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void updateField(String string, JsonNode jsonNode) {
+		try {
+			
+			Field field = ObjectiveDetail.class.getDeclaredField(string);
+			if(jsonNode != null && !jsonNode.asText().equals("null") ) {
+				field.set(this, jsonNode.asText());
+			} else {
+				field.set(this, null);
+			}
+			
+		} catch (NoSuchFieldException e) {
+			return;
+		} catch (SecurityException e) {
+			return;
+		} catch (IllegalArgumentException e) {
+			return;
+		} catch (IllegalAccessException e) {
+			return;
+		}
+		
 	}
 	
 	

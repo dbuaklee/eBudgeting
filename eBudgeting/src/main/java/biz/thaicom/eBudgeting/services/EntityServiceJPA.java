@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.hibernate.id.IdentityGenerator.GetGeneratedKeysDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,7 @@ import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveDetail;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
@@ -55,6 +55,7 @@ import biz.thaicom.eBudgeting.repositories.FiscalBudgetTypeRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaColumnRepository;
 import biz.thaicom.eBudgeting.repositories.FormulaStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveBudgetProposalRepository;
+import biz.thaicom.eBudgeting.repositories.ObjectiveDetailRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveNameRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
@@ -137,6 +138,9 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private BudgetSignOffRepository budgetSignOffRepository;
+	
+	@Autowired
+	private ObjectiveDetailRepository objectiveDetailRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -3484,6 +3488,102 @@ public class EntityServiceJPA implements EntityService {
 		List<List<Objective>> returnList = new ArrayList<List<Objective>>();
 		returnList.add(allList);
 		return returnList;
+	}
+
+	@Override
+	public ObjectiveDetail findOneObjectiveDetail(Long id) {
+		return objectiveDetailRepository.findOne(id);
+	}
+
+	@Override
+	public ObjectiveDetail updateObjectiveDetail(JsonNode node, Organization owner) {
+		return saveObjectiveDetail(node, owner);
+	}
+
+	@Override
+	public ObjectiveDetail saveObjectiveDetail(JsonNode node, Organization owner) {
+		ObjectiveDetail detail;
+		if(getJsonNodeId(node) != null) {
+			detail = objectiveDetailRepository.findOne(getJsonNodeId(node));
+		} else {
+			detail = new ObjectiveDetail();
+		}
+		
+		// now will do the dull mapping 
+		
+		if(getJsonNodeId(node.get("forObjective")) != null) {
+			Objective forObjective = objectiveRepository.findOne(getJsonNodeId(node.get("forObjective")));
+			detail.setForObjective(forObjective);
+		}
+		
+		detail.updateField("officerInCharge", node.get("officerInCharge"));
+		detail.updateField("phoneNumber", node.get("phoneNumber"));
+		detail.updateField("email", node.get("email"));
+		
+		detail.updateField("reason", node.get("reason"));
+		detail.updateField("projectObjective", node.get("projectObjective"));
+		
+		detail.updateField("methodology1", node.get("methodology1"));
+		detail.updateField("methodology2", node.get("methodology2"));
+		detail.updateField("methodology3", node.get("methodology3"));
+		
+		detail.updateField("location", node.get("location"));
+		detail.updateField("timeframe", node.get("timeframe"));
+		detail.updateField("targetDescription", node.get("targetDescription"));
+		
+		detail.updateField("outcome", node.get("outcome"));
+		
+		detail.updateField("output", node.get("output"));
+		
+		detail.updateField("targetArea", node.get("targetArea"));
+		
+		/**
+		if(node.get("officerInCharge")!=null) detail.setOfficerInCharge(node.get("officerInCharge").asText());
+		if(node.get("phoneNumber") != null) detail.setPhoneNumber(node.get("phoneNumber").asText());
+		if(node.get("email") != null) detail.setEmail(node.get("email").asText());
+		
+		if(node.get("reason") != null) detail.setReason(node.get("reason").asText());
+		if(node.get("projectObjective") != null) detail.setProjectObjective(node.get("projectObjective").asText());
+		
+		if(node.get("methodology1") != null) detail.setMethodology1(node.get("methodology1").asText());
+		if(node.get("methodology2") != null) detail.setMethodology1(node.get("methodology2").asText());
+		if(node.get("methodology3") != null) detail.setMethodology1(node.get("methodology3").asText());
+		
+		if(node.get("location") != null) detail.setLocation(node.get("location").asText());
+		if(node.get("timeframe") != null) detail.setTimeframe(node.get("timeframe").asText());
+		if(node.get("targetDescription") != null) detail.setTargetDescription(node.get("targetDescription").asText());
+		
+		if(node.get("outcome") != null) detail.setOutcome(node.get("outcome").asText());
+		
+		if(node.get("output") != null) detail.setOutput(node.get("output").asText());
+		
+		if(node.get("targetArea") != null) detail.setTargetArea(node.get("targetArea").asText());
+		**/
+		
+		
+		// lastly 
+		detail.setOwner(owner);
+		
+		
+		objectiveDetailRepository.save(detail);
+		
+		
+		return detail;
+	}
+
+	@Override
+	public ObjectiveDetail deleteObjectiveDetail(Long id) {
+		ObjectiveDetail detail = objectiveDetailRepository.findOne(id);
+		if(detail != null ) {
+			objectiveDetailRepository.delete(detail);
+		}
+		return detail;
+	}
+
+	@Override
+	public ObjectiveDetail findOneObjectiveDetailByObjectiveIdAndOwner(Long objectiveId,
+			ThaicomUserDetail currentUser) {
+		return objectiveDetailRepository.findByForObjective_IdAndOwner(objectiveId, currentUser.getWorkAt());
 	}
 
 }

@@ -231,7 +231,6 @@
 		updateProposal : function(e) {
 			var validated=true;
 			this.$el.find('input:enabled').each(function(e) {
-				console.log($(this).val());
 				
 				if( isNaN( +$(this).val() ) ) {
 					$(this).parent('div').addClass('control-group error');
@@ -329,9 +328,7 @@
 	
 		saveProposal : function(e) {
 			var validated=true;
-			console.log(this.$el);
 			this.$el.find('input:enabled').each(function(index) {
-				console.log($(this).val());
 				
 				if( isNaN( +$(this).val() ) ) {
 					$(this).parent('div').addClass('control-group error');
@@ -569,6 +566,7 @@
 		inputEditProposalTemplate: Handlebars.compile($('#inputEditProposalTemplate').html()), 
 		defaultInputTemplate : Handlebars.compile($('#defaultInputTemplate').html()),
 		inputModalTemplate : Handlebars.compile($('#inputModalTemplate').html()),
+		inputObjectiveDetailDivTemplate : Handlebars.compile($('#inputObjectiveDetailDivTemplate').html()),
 		
 		updateBudgetTypeSelectionLevelWithModel: function(level, model) {
 			//set the previos level to this model
@@ -626,7 +624,11 @@
 			"click #cancelBtn" : "cancelModal",
 			"click .close" : "cancelModal",
 			"click .backToProposal" : "backToProposal",
-			"click #addBudget" : "renderInputALL"
+			"click #addBudget" : "renderInputALL",
+			"click #addObjectiveDetail" : "renderObjectiveDetailInput",
+			"change .objectiveDetail" : "updateObjectiveDetailModel",
+			"click #saveObjectiveDetail" : "saveObjectiveDetail"
+				
 
 		},
 		backToProposal: function(e) {
@@ -759,14 +761,45 @@
 					
 				}
 				
-				console.log(json);
 				this.$el.find('#input-form').html(this.inputModalTemplate(json));
 			}
 			
 			
 		},
+		
+		renderObjectiveDetailInput : function(e) {
+			// we'll have to fetch the detail and put it back on the model
+			this.detail = new ObjectiveDetail();
+			this.detail.fetch({
+				url: appUrl('/ObjectiveDetail/byObjective/'+ this.objective.get('id') +'/ofCurrentUser'),
+				success: _.bind(function(model, xhr, options) {
+					this.detail.set('forObjective', this.objective.get('id'));
+					
+					var json = this.detail.toJSON();
+					this.$el.find('.modal-body').html(this.inputObjectiveDetailDivTemplate(json));
+				},this)
+			});
+			
+			
+		},
+		
+		updateObjectiveDetailModel : function(e) {
+			// ok we can update this.detail
+			this.detail.set(e.target.id, $(e.target).val());
+		},
+		
+		saveObjectiveDetail: function(e) {
+			if(this.detail != null) {
+				this.detail.save({
+					success: _.bind(function(model, xhr, options) {
+						this.detail.set("forObjective", this.objective);
+						alert("บันทึกข้อมูลรายละเอียดโครงการแล้ว");
+					},this)
+				});
+			}
+		},
 
-		renderInputALL : function(proposalStrategy) {
+		renderInputALL : function(e) {
 			this.$el.find('.modal-body').html(this.inputAllDivTemplate());
 			
 			var rootBudgetType = BudgetType.findOrCreate({id:0});
