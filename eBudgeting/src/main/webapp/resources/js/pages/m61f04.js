@@ -144,7 +144,7 @@
 			if( isNaN( +$(e.target).val() ) ) {
 				$(e.target).parent('div').addClass('control-group error');
 				alert('กรุณาใส่ข้อมูลเป็นตัวเลขเท่านั้น');
-				return;
+				return false;
 			} else {
 				$(e.target).parent('div').removeClass('control-group error');
 			}
@@ -156,7 +156,7 @@
 			if( isNaN( +$(e.target).val() ) ) {
 				$(e.target).parent('div').addClass('control-group error');
 				alert('กรุณาใส่ข้อมูลเป็นตัวเลขเท่านั้น');
-				return;
+				return false;
 			} else {
 				$(e.target).parent('div').removeClass('control-group');
 				$(e.target).parent('div').removeClass('error');
@@ -243,7 +243,7 @@
 			
 			if(validated == false) {
 				alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
-				return;
+				return false;
 			}
 			
 			
@@ -341,7 +341,7 @@
 			
 			if(validated == false) {
 				alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
-				return;
+				return false;
 			}
 			
 			var objective = this.parentModal.objective;
@@ -790,7 +790,7 @@
 		
 		saveObjectiveDetail: function(e) {
 			if(this.detail != null) {
-				this.detail.save({
+				this.detail.save({}, {
 					success: _.bind(function(model, xhr, options) {
 						this.detail.set("forObjective", this.objective);
 						alert("บันทึกข้อมูลรายละเอียดโครงการแล้ว");
