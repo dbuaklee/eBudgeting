@@ -31,6 +31,11 @@
  	<bean id="m51r16.xls" class="biz.thaicom.eBudgeting.view.M51R16XLSView"/>
  	<bean id="m51r17.xls" class="biz.thaicom.eBudgeting.view.M51R17XLSView"/>
  	<bean id="m51r18.xls" class="biz.thaicom.eBudgeting.view.M51R18XLSView"/>
+ 	<bean id="m51r19.xls" class="biz.thaicom.eBudgeting.view.M51R19XLSView"/>
+ 	<bean id="m51r20.xls" class="biz.thaicom.eBudgeting.view.M51R20XLSView"/>
+ 	<bean id="m51r21.xls" class="biz.thaicom.eBudgeting.view.M51R21XLSView"/>
+ 	<bean id="m51r22.xls" class="biz.thaicom.eBudgeting.view.M51R22XLSView"/>
+ 	<bean id="m51r23.xls" class="biz.thaicom.eBudgeting.view.M51R23XLSView"/>
 
  	<bean id="m52r01.xls" class="biz.thaicom.eBudgeting.view.M52R01XLSView"/>
  	<bean id="m52r01_1.xls" class="biz.thaicom.eBudgeting.view.M52R01_1XLSView"/>
