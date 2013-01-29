@@ -329,8 +329,8 @@
 			<div class="clearfix"></div>
 			<div id="formulaBox">
 				<div>
-					<div style="margin-top:11px;"> ระบุประมาณการ 3 ปี</div>
-				</div>
+					<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+				</div>	
 				<div style="margin: 0px 8px;">
 					<div><b>ปี: {{next1Year}}</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{amountRequestNext1Year}}"/><span class="add-on">บาท</span></div>
 				</div>
@@ -345,7 +345,7 @@
 {{#each targets}}
 			<div id="formulaBox">
 				<div>
-					<div style="margin-top:11px;"> ระบุเป้าหมาย {{unit.name}}</div>
+					<div style="margin-top:0px;"> ระบุเป้าหมาย </div>
 				</div>
 				<div style="margin: 0px 8px;">
 					<div class="input-append"><input style="width:120px;" type="text" id="targetValue{{unit.id}}" value="{{targetValue}}" data-id={{id}}/><span class="add-on">{{unit.name}}</span></div>

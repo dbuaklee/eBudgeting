@@ -541,8 +541,6 @@ public class ExcelReportsController {
 		return "report1.xls";
 	}
 
-
-
 	@RequestMapping("/admin/excel/report2.xls")
 	public String excelReport2 (
 		@RequestParam(required=false) String year,

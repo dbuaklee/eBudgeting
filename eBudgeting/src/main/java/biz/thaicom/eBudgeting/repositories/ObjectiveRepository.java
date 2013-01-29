@@ -49,7 +49,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"FROM Objective objective " +
 			"	LEFT OUTER JOIN objective.proposals proposal with proposal.owner.id = ?2 " +
 			"WHERE objective.parent.id = ?3 and objective.fiscalYear = ?1 " +
-			"ORDER BY objective.index asc ")
+			"ORDER BY objective.id asc ")
 	public List<Objective> findByObjectiveBudgetProposal(Integer fiscalYear, Long onwerId, Long objectiveId);
 
 	
@@ -62,7 +62,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
 			"	LEFT OUTER JOIN objective.proposals proposal with proposal.owner.id = ?2 " +
 			"WHERE objective.fiscalYear = ?1 AND (objective.parentPath like ?3 OR objective.parentPath is null) " +
-			"ORDER BY objective.index asc ")
+			"ORDER BY objective.id asc ")
 	public List<Objective> findFlatByObjectiveBudgetProposal(
 			Integer fiscalYear, Long ownerId, String parentPathLikeString);
 	
@@ -75,7 +75,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
 			"	LEFT OUTER JOIN objective.objectiveProposals proposal with proposal.owner.id = ?2 " +
 			"WHERE objective.fiscalYear = ?1 AND (objective.parentPath like ?3 OR objective.parentPath is null) " +
-			"ORDER BY objective.index asc ")	
+			"ORDER BY objective.id asc ")	
 	public List<Objective> findFlatByObjectiveObjectiveBudgetProposal(
 			Integer fiscalYear, Long ownerId, String parentPathLikeString);
 	
@@ -88,7 +88,7 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
 			"	LEFT OUTER JOIN objective.proposals proposal " +
 			"WHERE objective.fiscalYear = ?1 AND (objective.parentPath like ?2 OR objective.parentPath is null) " +
-			"ORDER BY objective.index asc ")
+			"ORDER BY objective.id asc ")
 	public List<Objective> findFlatByObjectiveBudgetProposal(
 			Integer fiscalYear, String parentPathLikeString);
 	

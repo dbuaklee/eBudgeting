@@ -627,7 +627,9 @@
 			"click #addBudget" : "renderInputALL",
 			"click #addObjectiveDetail" : "renderObjectiveDetailInput",
 			"change .objectiveDetail" : "updateObjectiveDetailModel",
-			"click #saveObjectiveDetail" : "saveObjectiveDetail"
+			"click #saveObjectiveDetail" : "saveObjectiveDetail",
+			"click #printObjectiveDetail" : "printObjectiveDetail"
+				
 				
 
 		},
@@ -780,6 +782,21 @@
 				},this)
 			});
 			
+			
+		},
+		
+		printObjectiveDetail : function(e) {
+			this.detail = new ObjectiveDetail();
+			this.detail.fetch({
+				url: appUrl('/ObjectiveDetail/byObjective/'+ this.objective.get('id') +'/ofCurrentUser'),
+				success: _.bind(function(model, xhr, options) {
+					if(this.detail.get('id') == null) {
+						alert("คุณยังไม่ได้บันทึกรายละเอียดโครงการ");
+					} else {
+						window.open(appUrl("/m61f04.docx/"+fiscalYear+"/ObejctiveDetail/"+this.detail.get('id')+"/m61f04.docx"));
+					}
+				},this) 
+			});
 			
 		},
 		

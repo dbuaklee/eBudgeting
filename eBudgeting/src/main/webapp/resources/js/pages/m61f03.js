@@ -14,6 +14,7 @@ var BudgetTypeAllSelectionView = Backbone.View.extend({
 		// first clear the siblings select
 		this.$el.empty();
 		if(this.collection != null) {
+			e1=this.collection;
 			this.$el.html(this.budgetInputSelectionTemplate(this.collection.toJSON()));
 		} else {
 			this.$el.html(this.budgetInputSelectionTemplate({}));
@@ -24,7 +25,6 @@ var BudgetTypeAllSelectionView = Backbone.View.extend({
 	
 	setCollection: function(collection) {
 		this.collection =  collection;
-		
 	}
 });
 
@@ -55,7 +55,8 @@ var ModalView = Backbone.View.extend({
 		"click #cancelBtn" : "cancelModal",
 		"click .close" : "cancelModal",
 		"click .backToProposal" : "backToProposal",
-		"click #addBudget" : "renderInputALL"
+		"click #addBudget" : "renderInputALL",
+		"click .copytoNextYear" : "copyToNextYear",
 
 	},
 	backToProposal: function(e) {
@@ -65,8 +66,14 @@ var ModalView = Backbone.View.extend({
 		this.$el.modal('hide');
 		mainCtrView.renderMainTbl();
 	},
-	
-	saveProposal: function(e) {
+	copyToNextYear : function(e) {
+		var valueToCopy = $('#totalInputTxt').val();
+		valueToCopy = valueToCopy.replace(/,/g, '');
+		this.$el.find('#amountRequestNext1Year').val(valueToCopy);
+		this.$el.find('#amountRequestNext2Year').val(valueToCopy);
+		this.$el.find('#amountRequestNext3Year').val(valueToCopy);
+	},
+ 	saveProposal: function(e) {
 		var validated1=true;
 		var validated2=true;
 		
@@ -194,10 +201,10 @@ var ModalView = Backbone.View.extend({
 
 		obp.set('forObjective', this.objective);
 		
-		if(this.objective.get('targets') != null && this.objective.get('targets').length > 0) {
+		if(this.objective.get('filterTargetValues') != null && this.objective.get('filterTargetValues').length > 0) {
 			// we have to create new target Unit for this one
-			for(var i=0; i< this.objective.get('targets').length; i++) {
-				var objTarget = this.objective.get('targets').at(i);
+			for(var i=0; i< this.objective.get('filterTargetValues').length; i++) {
+				var objTarget = this.objective.get('filterTargetValues').at(i).get('target');
 				var target = new ObjectiveBudgetProposalTarget();
 				target.set('unit', objTarget.get('unit'));
 				target.set('objectiveBudgetProposal', obp);
@@ -211,7 +218,7 @@ var ModalView = Backbone.View.extend({
 		this.currentObjectiveBudgetProposal = obp;
 		
 
-		var budgetTypeSltCollection = _.clone(mainBudgetTypeCollection);
+		var budgetTypeSltCollection = new BudgetTypeCollection(mainBudgetTypeCollection.toJSON());
 		// now we go through all filterObjectiveBudgetProposal and remove the budgetType
 		var fobp = this.objective.get('filterObjectiveBudgetProposals');
 		

@@ -3503,7 +3503,9 @@ public class EntityServiceJPA implements EntityService {
 
 	@Override
 	public ObjectiveDetail findOneObjectiveDetail(Long id) {
-		return objectiveDetailRepository.findOne(id);
+		ObjectiveDetail detail = objectiveDetailRepository.findOne(id);
+		detail.getForObjective().getId();
+		return detail;
 	}
 
 	@Override
