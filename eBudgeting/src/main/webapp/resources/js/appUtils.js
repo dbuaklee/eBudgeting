@@ -1,3 +1,9 @@
+//Globally register console
+if (typeof console === 'undefined') {
+    console = { log: function() {} };
+}
+
+
 $.fn.slideTo = function(data, callBack, right) {
 	var currentDom = this;
 	
