@@ -32,6 +32,7 @@ import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.security.models.ThaicomUserDetail;
+import biz.thaicom.security.models.User;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -282,6 +283,10 @@ public interface EntityService {
 	public ObjectiveDetail deleteObjectiveDetail(Long id);
 	public ObjectiveDetail findOneObjectiveDetailByObjectiveIdAndOwner(Long objectiveId,
 			ThaicomUserDetail currentUser);
+	
+	
+	// Security User
+	public Page<User> findUser(PageRequest pageRequest);
 
 
 

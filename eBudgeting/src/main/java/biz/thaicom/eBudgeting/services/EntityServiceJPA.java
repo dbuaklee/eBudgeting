@@ -67,7 +67,9 @@ import biz.thaicom.eBudgeting.repositories.ReservedBudgetRepository;
 import biz.thaicom.eBudgeting.repositories.TargetUnitRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueAllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueRepository;
+import biz.thaicom.eBudgeting.repositories.UserRepository;
 import biz.thaicom.security.models.ThaicomUserDetail;
+import biz.thaicom.security.models.User;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -141,6 +143,9 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private ObjectiveDetailRepository objectiveDetailRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -3597,6 +3602,11 @@ public class EntityServiceJPA implements EntityService {
 	public ObjectiveDetail findOneObjectiveDetailByObjectiveIdAndOwner(Long objectiveId,
 			ThaicomUserDetail currentUser) {
 		return objectiveDetailRepository.findByForObjective_IdAndOwner(objectiveId, currentUser.getWorkAt());
+	}
+
+	@Override
+	public Page<User> findUser(PageRequest pageRequest) {
+		return userRepository.findAll(pageRequest);
 	}
 
 }

@@ -38,391 +38,7 @@ public class GenericViewController {
 		return jspName;
 	}
 	
-	@RequestMapping("/page/m2f13/")
-	public String render_m2f13_fiscalYear(Model model) {
-		prepareRootPage(model);
-		
-		return "m2f13";
-	}
-	
-	private void prepareRootPage(Model model) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		
-	}
-
-	@RequestMapping("/page/m2f13/{fiscalYear}/{budgetTypeId}")
-	public String render_m2f13(Model model, HttpServletRequest request,
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long budgetTypeId) { 
-		
-		logger.debug("fiscalYear = {}, budgetTypeId = {}", fiscalYear, budgetTypeId);
-		
-		if(budgetTypeId == null) 
-			budgetTypeId = 0L;
-		
-		// now we just get the hold of this budgetType
-		BudgetType budgetType = entityService.findBudgetTypeById(budgetTypeId);
-		
-		if(budgetType != null) {
-			logger.debug("BudgetType found!");
-			
-			model.addAttribute("budgetType", budgetType);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbBudgetType("/page/m2f13", fiscalYear, budgetType); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("budgetType", budgetType);
-			
-		} else {
-			logger.debug("BudgetType NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m2f13/";
-		}
-		
-		return "m2f13";
-	}
-	
-
-	
-//	@RequestMapping("/page/m2f06/**")
-//	public String render_m2f06(Model model, HttpServletRequest request) {
-//		String pattern = (String)
-//		        request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE); 
-//		
-//		String searchTerm = new AntPathMatcher().extractPathWithinPattern(pattern, 
-//		        request.getServletPath());
-//
-//		String url = webAppcontext +  "/page/m2f06/";
-//		List<Map<String,String>> breadcrumb = new ArrayList<Map<String,String>>();
-//		
-//		logger.debug(searchTerm);
-//		if(searchTerm == null || searchTerm.length()==0) {
-//			model.addAttribute("url", "/eBudgeting/Objective/root");
-//			model.addAttribute("ROOT", true);
-//			HashMap<String, String> map = new HashMap<String, String>();
-//			map.put("url", url);
-//			map.put("value", "ROOT");
-//			breadcrumb.add(map);
-//			model.addAttribute("breadcrumb", breadcrumb);
-//		} else {
-//			// now tokenized the string
-//			StringTokenizer token = new StringTokenizer(searchTerm,"/");
-//			List<String> items = new ArrayList<String>();
-//			while(token.hasMoreTokens()){
-//				items.add(token.nextToken());
-//			}
-//			
-//			if(items.size() == 1) {
-//				// first part is year
-//				model.addAttribute("url", "/eBudgeting/Objective/root/"+items.get(0));
-//			} else {
-//				model.addAttribute("url", "/eBudgeting/Objective/"+items.get(items.size()-1)+"/children");
-//				model.addAttribute("lastObjectiveId", items.get(items.size()-1));
-//				// now we need all parents of this object
-//				
-//			}
-//			
-//			Objective objective = null;
-//			
-//			// here we recontruct the breadcrumb
-//			for(int i=0; i<items.size(); i++) {
-//				
-//				HashMap<String, String> map = new HashMap<String, String>();
-//				
-//				if(i > 0) {
-//					url = url  + items.get(i) + "/";
-//					map.put("url", url);
-//					int index = objective.getIndex()+1;
-//					map.put("value", objective.getType().getName() + "ที่  " + index);
-//					breadcrumb.add(map);
-//					
-//				} else {
-//					map.put("url", url);
-//					map.put("value", "ROOT");
-//					breadcrumb.add(map);
-//					
-//					map = new HashMap<String, String>();
-//					url = url + items.get(i) + "/";
-//					map.put("url", url);
-//					map.put("value", items.get(i));
-//					breadcrumb.add(map);
-//
-//				}
-//				
-//				if(i+1 < items.size()) {
-//					// do this if it's not the last one
-//					Long nextId = null;
-//					try {
-//						nextId = Long.parseLong(items.get(i+1));
-//					} catch (NumberFormatException e) {
-//						// we should just failed here! 
-//					}
-//					
-//					objective = entityService.findOjectiveById(nextId);
-//				}
-//				
-//				
-//			}
-//			model.addAttribute("breadcrumb", breadcrumb);
-//		}
-//		
-//		model.addAttribute("currentPath", url);
-//		return "m2f06";
-//	}
-	
-	
-	@RequestMapping("/page/m2f11/")
-	public String runder_m2f11(
-			Model model, HttpServletRequest request) {
-		
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		
-		return "m2f11";
-	}
-	
-	@RequestMapping("/page/m2f11/{fiscalYear}/{objectiveId}")
-	public String runder_m2f11OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m2f11", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m2f11/";
-		}
-		
-		return "m2f11";
-
-	}
-	
-	@RequestMapping("/page/m2f12/")
-	public String runder_m2f12(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m2f12";
-	}
-	
-	@RequestMapping("/page/m2f12/{fiscalYear}/{objectiveId}")
-	public String render_m2f12OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request,
-			@Activeuser ThaicomUserDetail currentUser) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m2f12", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m2f12/";
-		}
-		
-		return "m2f12";
-	}
-	
-	
-	@RequestMapping("/page/m3f01/")
-	public String runder_m3f01(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m3f01";
-	}
-	
-	@RequestMapping("/page/m3f01/{fiscalYear}/{objectiveId}")
-	public String render_m3f01OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m2f06", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m3f01/";
-		}
-		
-		return "m3f01";
-	}
-	
-	@RequestMapping("/page/m3f02/")
-	public String render_m3f02(
-			Model model, HttpServletRequest request) {
-		
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		logger.debug("htt");
-		return "m3f02";
-	}
-	
-	@RequestMapping("/page/m3f02/{fiscalYear}/{objectiveId}")
-	public String render_m3f02OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m3f02", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m3f02/";
-		}
-		
-		return "m3f02";
-	}
-	
-	@RequestMapping("/page/m3f03/")
-	public String render_m3f03(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m3f03";
-	}
-	
-	@RequestMapping("/page/m3f03/{fiscalYear}/{objectiveId}")
-	public String render_m3f03OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m3f03", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m3f01/";
-		}
-		
-		return "m3f03";
-	}
-	
-	
-	@RequestMapping("/page/m2f06/")
-	public String runder_m2f06(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
-		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m2f06";
-	}
-	
-	@RequestMapping("/page/m2f06/{fiscalYear}/{objectiveId}")
-	public String render_m2f06OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
-		// now find the one we're looking for
-		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
-			logger.debug("Objective found!");
-			
-			model.addAttribute("objective", objective);
-			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m2f06", fiscalYear, objective); 
-			
-			model.addAttribute("breadcrumb", breadcrumb.listIterator());
-			model.addAttribute("rootPage", false);
-			model.addAttribute("objective", objective);
-			
-		} else {
-			logger.debug("Objective NOT found! redirect to fiscal year selection");
-			// go to the root one!
-			return "redirect:/page/m2f06/";
-		}
-		
-		return "m2f06";
-	}
-	
+	// --------------------------------------------------------------m1f05: เพิ่มข้อมูลเริ่มต้นปีงบประมาณ
 	@RequestMapping("/page/m1f05/")
 	public String runder_m1f05(
 			Model model, HttpServletRequest request) {
@@ -431,9 +47,29 @@ public class GenericViewController {
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m1f05";
 	}
+	
+	
+	// --------------------------------------------------------------m1f06: ข้อมูลหน่วยงาน
+	
+	
 
-	@RequestMapping("/page/m3f04/")
-	public String runder_m3f04(
+	// --------------------------------------------------------------m1f07: ข้อมูลผู้ใช้งาน
+	@RequestMapping("/page/m1f07") 
+	public String render_m61f07(
+			Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		model.addAttribute("rootPage", true);
+		model.addAttribute("fiscalYears", fiscalYears);
+		return "m1f07";
+	}
+	
+	
+	
+	
+	
+	
+	@RequestMapping("/page/m63f04/")
+	public String runder_m63f04(
 			Model model, HttpServletRequest request) {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
@@ -441,8 +77,9 @@ public class GenericViewController {
 		return "m3f04";
 	}
 	
-	@RequestMapping("/page/m3f05/")
-	public String runder_m3f05(
+	// --------------------------------------------------------------m64f04: การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)
+	@RequestMapping("/page/m64f04/")
+	public String runder_m64f04(
 			Model model, HttpServletRequest request) {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
@@ -450,8 +87,9 @@ public class GenericViewController {
 		return "m3f05";
 	}
 	
-	@RequestMapping("/page/m3f06/")
-	public String runder_m3f06(
+	// --------------------------------------------------------------m65f04: การอนุมัติงบประมาณ ตาม พ.ร.บ. (m65)
+	@RequestMapping("/page/m65f04/")
+	public String runder_m65f04(
 			Model model, HttpServletRequest request) {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
 		model.addAttribute("rootPage", true);
