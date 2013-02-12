@@ -170,7 +170,7 @@ var MainTblView = Backbone.View.extend({
 	
 	mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 	tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
-	userRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
+	userRowTemplate: Handlebars.compile($("#userRowTemplate").html()),
 	
 	modalView : new ModalView(),
 	

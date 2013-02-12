@@ -35,6 +35,7 @@ import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
+import biz.thaicom.eBudgeting.models.hrx.Person;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveDetail;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
@@ -61,6 +62,7 @@ import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTargetRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
+import biz.thaicom.eBudgeting.repositories.OrganizationRepository;
 import biz.thaicom.eBudgeting.repositories.ProposalStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.RequestColumnRepositories;
 import biz.thaicom.eBudgeting.repositories.ReservedBudgetRepository;
@@ -148,10 +150,11 @@ public class EntityServiceJPA implements EntityService {
 	private UserRepository userRepository;
 	
 	@Autowired
+	private OrganizationRepository organizationRepository;
+	
+	@Autowired
 	private ObjectMapper mapper;
 	
-
-
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
 		ObjectiveType type = objectiveTypeRepository.findOne(id);
@@ -3607,6 +3610,66 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public Page<User> findUser(PageRequest pageRequest) {
 		return userRepository.findAll(pageRequest);
+	}
+
+	@Override
+	public User findOneUser(Long id) {
+		return userRepository.findOne(id);
+	}
+
+	@Override
+	public User updateUser(JsonNode node) {
+		Long id = getJsonNodeId(node);
+		if(id == null) {
+			return null;
+		}
+		User user = userRepository.findOne(id);
+		
+		user.setPassword(node.get("password").asText());
+		user.getPerson().setFirstName(node.get("person").get("firstName").asText());
+		user.getPerson().setLastName(node.get("person").get("lastName").asText());
+		
+		Long workAtId = getJsonNodeId(node.get("person").get("workAt"));
+		
+		user.getPerson().setWorkAt(organizationRepository.findOne(workAtId));
+		
+		userRepository.save(user);
+		
+		
+		return user;
+	}
+
+	@Override
+	public User saveUser(JsonNode node) {
+		
+		User user = new User();
+		user.setPassword(node.get("password").asText());
+		user.setUsername(node.get("username").asText());
+		
+		
+		user.setPerson(new Person());
+		
+		user.getPerson().setFirstName(node.get("person").get("firstName").asText());
+		user.getPerson().setLastName(node.get("person").get("lastName").asText());
+		
+		Long workAtId = getJsonNodeId(node.get("person").get("workAt"));
+		
+		user.getPerson().setWorkAt(organizationRepository.findOne(workAtId));
+		
+		userRepository.save(user);
+		
+		
+		return user;
+	}
+
+	@Override
+	public User deleteUser(Long id) {
+		
+		User user = userRepository.findOne(id);
+		
+		userRepository.delete(user);
+		
+		return user;
 	}
 
 }

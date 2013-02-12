@@ -9,9 +9,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.webui.PageUI;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.User;
@@ -33,5 +38,30 @@ public class UserRestController {
 		return entityService.findUser(pageRequest);
 	}
 	
+	
+	@RequestMapping(value="/User/{id}", method=RequestMethod.GET)
+	public @ResponseBody User findOneUser(
+			@PathVariable Long id) {
+		return entityService.findOneUser(id);
+	}
+	
+	@RequestMapping(value="/User/{id}", method=RequestMethod.PUT)
+	public @ResponseBody User updateUser(
+			@PathVariable Long id,
+			@RequestBody JsonNode node) {
+		return entityService.updateUser(node);
+	}
+	
+	@RequestMapping(value="/User/", method=RequestMethod.POST)
+	public @ResponseBody User saveUser(
+			@RequestBody JsonNode node) {
+		return entityService.saveUser(node);
+	}
+	
+	@RequestMapping(value="/User/{id}", method=RequestMethod.DELETE)
+	public @ResponseBody User deleteUser(
+			@PathVariable Long id) {
+		return entityService.deleteUser(id);
+	}
 	
 }

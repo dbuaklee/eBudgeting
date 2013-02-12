@@ -122,7 +122,7 @@
 </table>
 </script>
 
-<script id="objectiveRowTemplate" type="text/x-handelbars-template">
+<script id="userRowTemplate" type="text/x-handelbars-template">
 <td> <a href="#" class="deleteUser"><i class="icon-trash icon-red"></i></a></td>
 <td> {{username}} </td>
 <td> {{person.firstName}} </td>
