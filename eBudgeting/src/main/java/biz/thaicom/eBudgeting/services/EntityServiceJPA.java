@@ -2690,6 +2690,37 @@ public class EntityServiceJPA implements EntityService {
 		
 	}
 
+	/**
+	 * ค้นหา  Objective ด้วยปีงบประมาณ และ ชนิด โดยกำหนด PageRequest และผ่านค่า 
+	 * คำที่ต้องการค้นหาเบื้องต้น
+	 * 
+	 *  
+	 */
+	@Override
+	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId,
+			String query,   Pageable pageable) {
+		
+		logger.debug("++++ query: " + query);
+		
+		Page<Objective> page = objectiveRepository.findByFiscalYearAndType_Id(fiscalYear, typeId, query, pageable);
+		for(Objective obj : page.getContent()) {
+			obj.getTargets().size();
+			if(obj.getType().getParent() != null) {
+				obj.getType().getParent().getName();
+				if(obj.getParent() != null) {
+					obj.getParent().getName();
+					logger.debug(" +++++++++++++++++++++++++++++++++++++++++  {} ",obj.getParent().getName() );
+				}
+			}
+			obj.getUnits().size();
+			logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + obj.getTargets().size());
+			obj.getTargets().size();
+		}
+		return page;
+	}
+
+	
 	@Override
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId) {
@@ -2725,6 +2756,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		return page;
 	}
+	
+	
 	
 
 	@Override

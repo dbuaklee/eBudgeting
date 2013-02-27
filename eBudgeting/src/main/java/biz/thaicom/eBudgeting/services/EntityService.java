@@ -105,6 +105,10 @@ public interface EntityService {
 	public String initFiscalYear(Integer fiscalYear);
 	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId, Pageable pageable);
+	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId,
+			String query, Pageable pageable);
+
 	
 	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);

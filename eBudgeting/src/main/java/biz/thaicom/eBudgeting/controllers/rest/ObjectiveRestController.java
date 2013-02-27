@@ -135,12 +135,20 @@ public class ObjectiveRestController {
 	public @ResponseBody Page<Objective> getPagedObjectiveByFiscalYearAndType(
 			@PathVariable Integer fiscalYear, 
 			@PathVariable Long typeId,
-			@PathVariable Integer pageNumber) {
+			@PathVariable Integer pageNumber,
+			@RequestParam(required=false) String query) {
 		PageRequest pageRequest =
 	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "code");
 		
-		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId, pageRequest);
+		if(query != null && query.length() > 0) {
+			query = "%" + query + "%";
+		} else {
+			query = "%";
+		}
+		
+		return entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, typeId, query, pageRequest);
 	}
+
 	
 	@RequestMapping(value="/Objective/{id}/addUnit", method=RequestMethod.POST) 
 	public @ResponseBody ObjectiveTarget addUnit(@PathVariable Long id,

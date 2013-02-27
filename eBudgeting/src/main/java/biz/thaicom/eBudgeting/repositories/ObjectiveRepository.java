@@ -201,6 +201,16 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			Integer fiscalYear, long typeId);
 
 
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"WHERE fiscalYear = ?1 and type.id = ?2 and " +
+			"	(name like ?3 or code like ?3) ")
+	public Page<Objective> findByFiscalYearAndType_Id(
+			Integer fiscalYear, Long typeId, String query, Pageable pageable);
+
+
+
 
 
 
