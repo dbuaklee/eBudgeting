@@ -46,7 +46,8 @@ public class ExcelReportsController {
 	}
 
 	@RequestMapping("/m51r01.xls/{fiscalYear}/file/m51r01.xls")
-	public String excelM51R01(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R01(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 109);
 		
@@ -55,12 +56,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r01.xls";
 	}
 
 	@RequestMapping("/m51r02.xls/{fiscalYear}/file/m51r02.xls")
-	public String excelM51R02(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R02(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 121);
 		
@@ -69,12 +72,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r02.xls";
 	}
 
 	@RequestMapping("/m51r03.xls/{fiscalYear}/file/m51r03.xls")
-	public String excelM51R03(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R03(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 110);
 		
@@ -83,12 +88,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r03.xls";
 	}
 
 	@RequestMapping("/m51r04.xls/{fiscalYear}/file/m51r04.xls")
-	public String excelM51R04(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R04(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 111);
 		
@@ -97,12 +104,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r04.xls";
 	}
 
 	@RequestMapping("/m51r05.xls/{fiscalYear}/file/m51r05.xls")
-	public String excelM51R05(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R05(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 112);
 		
@@ -111,12 +120,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r05.xls";
 	}
 
 	@RequestMapping("/m51r06.xls/{fiscalYear}/file/m51r06.xls")
-	public String excelM51R06(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R06(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 101);
 		
@@ -125,12 +136,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r06.xls";
 	}
 
 	@RequestMapping("/m51r07.xls/{fiscalYear}/file/m51r07.xls")
-	public String excelM51R07(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R07(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 102);
 		
@@ -139,12 +152,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("currentUser", currentUser);
+	
 		return "m51r07.xls";
 	}
 
 	@RequestMapping("/m51r08.xls/{fiscalYear}/file/m51r08.xls")
-	public String excelM51R08(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R08(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 103);
 		
@@ -153,12 +168,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("currentUser", currentUser);
+	
 		return "m51r08.xls";
 	}
 
 	@RequestMapping("/m51r09.xls/{fiscalYear}/file/m51r09.xls")
-	public String excelM51R09(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R09(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 104);
 		
@@ -167,12 +184,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("currentUser", currentUser);
+	
 		return "m51r09.xls";
 	}
 
 	@RequestMapping("/m51r10.xls/{fiscalYear}/file/m51r10.xls")
-	public String excelM51R10(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R10(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 105);
 		
@@ -181,12 +200,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("currentUser", currentUser);
+	
 		return "m51r10.xls";
 	}
 
 	@RequestMapping("/m51r11.xls/{fiscalYear}/file/m51r11.xls")
-	public String excelM51R11(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R11(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 106);
 		
@@ -195,12 +216,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("currentUser", currentUser);
+	
 		return "m51r11.xls";
 	}
 
 	@RequestMapping("/m51r12.xls/{fiscalYear}/file/m51r12.xls")
-	public String excelM51R12(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R12(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 107);
 		
@@ -209,12 +232,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("currentUser", currentUser);
+	
 		return "m51r12.xls";
 	}
 
 	@RequestMapping("/m51r13.xls/{fiscalYear}/file/m51r13.xls")
-	public String excelM51R13(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R13(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 108);
 		
@@ -223,12 +248,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r13.xls";
 	}
 
 	@RequestMapping("/m51r14.xls/{fiscalYear}/file/m51r14.xls")
-	public String excelM51R14(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R14(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 113);
 		
@@ -237,34 +264,40 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+		model.addAttribute("currentUser", currentUser);
+	
 		return "m51r14.xls";
 	}
 
 	@RequestMapping("/m51r15.xls/{fiscalYear}/file/m51r15.xls")
-	public String excelM51R15(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R15(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		List<BudgetType> type = entityService.findBudgetTypeByLevel(fiscalYear, 3);
 		
 		model.addAttribute("type", type);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r15.xls";
 	}
 
 	@RequestMapping("/m51r16.xls/{fiscalYear}/file/m51r16.xls")
-	public String excelM51R16(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R16(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		List<Objective> objectiveList = entityService.findAllObjectiveChildren(fiscalYear,(long) 101);
 		
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r16.xls";
 	}
 
 	@RequestMapping("/m51r17.xls/{fiscalYear}/file/m51r17.xls")
-	public String excelM51R17(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R17(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findDeepObjectiveTypeById((long) 114);
 		List<Objective> objectiveList = entityService.findAllObjectiveChildren(fiscalYear,(long) 114);
@@ -272,23 +305,27 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r17.xls";
 	}
 
 	@RequestMapping("/m51r18.xls/{fiscalYear}/file/m51r18.xls")
-	public String excelM51R18(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R18(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		List<TargetUnit> unit = entityService.findAllTargetUnits();
 		
 		model.addAttribute("unit", unit);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r18.xls";
 	}
 
 	@RequestMapping("/m51r19.xls/{fiscalYear}/file/m51r19.xls")
-	public String excelM51R19(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R19(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 114);
 		
@@ -297,12 +334,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r19.xls";
 	}
 
 	@RequestMapping("/m51r20.xls/{fiscalYear}/file/m51r20.xls")
-	public String excelM51R20(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R20(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 115);
 		
@@ -311,12 +350,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r20.xls";
 	}
 
 	@RequestMapping("/m51r21.xls/{fiscalYear}/file/m51r21.xls")
-	public String excelM51R21(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R21(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 116);
 		
@@ -325,12 +366,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r21.xls";
 	}
 
 	@RequestMapping("/m51r22.xls/{fiscalYear}/file/m51r22.xls")
-	public String excelM51R22(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R22(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		ObjectiveType type = entityService.findObjectiveTypeById((long) 118);
 		
@@ -339,12 +382,14 @@ public class ExcelReportsController {
 		model.addAttribute("type", type);
 		model.addAttribute("objectiveList", objectiveList);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r22.xls";
 	}
 
 	@RequestMapping("/m51r23.xls/{fiscalYear}/file/m51r23.xls")
-	public String excelM51R23(@PathVariable Integer fiscalYear, Model model) {
+	public String excelM51R23(@PathVariable Integer fiscalYear, Model model, 
+			@Activeuser ThaicomUserDetail currentUser) {
 		
 		List<Objective> objectiveList1 = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 119);
 		List<Objective> objectiveList2 = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 120);
@@ -352,6 +397,7 @@ public class ExcelReportsController {
 		model.addAttribute("objectiveList1", objectiveList1);
 		model.addAttribute("objectiveList2", objectiveList2);
 		model.addAttribute("fiscalYear", fiscalYear);
+		model.addAttribute("currentUser", currentUser);
 		
 		return "m51r23.xls";
 	}

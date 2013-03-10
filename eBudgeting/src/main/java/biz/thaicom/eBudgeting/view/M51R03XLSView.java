@@ -1,5 +1,7 @@
 package biz.thaicom.eBudgeting.view;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +21,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.security.models.ThaicomUserDetail;
 
 public class M51R03XLSView extends AbstractPOIExcelView {
+
+	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:sss");
 
 	@Override
 	protected Workbook createWorkbook() {
@@ -31,6 +36,8 @@ public class M51R03XLSView extends AbstractPOIExcelView {
 	protected void buildExcelDocument(Map<String, Object> model,
 			Workbook workbook, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
+		
+		ThaicomUserDetail currentUser = (ThaicomUserDetail) model.get("currentUser");
 		
         Map<String, CellStyle> styles = createStyles(workbook);
 
@@ -48,21 +55,26 @@ public class M51R03XLSView extends AbstractPOIExcelView {
 		
 		Row secondRow = sheet.createRow(1);
 		Cell cell21 = secondRow.createCell(0);
-		cell21.setCellValue("(ทะเบียนตามปีงบประมาณ " + fiscalYear + ")");
+		cell21.setCellValue("(ทะเบียนตามปีงบประมาณ " + fiscalYear + " หน่วยงาน " + currentUser.getWorkAt().getName() + ")");
 		cell21.setCellStyle(styles.get("title"));
 		Cell cell22 = secondRow.createCell(1);
 		sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
 		
-		Row thirdRow = sheet.createRow(2);
-		Cell cellA = thirdRow.createCell(0);
+		Row thirdRow = sheet.createRow(3);
+		Cell cell31 = thirdRow.createCell(0);
+		cell31.setCellValue("ผู้จัดทำรายงาน " + 
+				currentUser.getPerson().getFirstName() + " " +	currentUser.getPerson().getLastName() + 
+				" เวลาที่จัดทำรายงาน " +  sdf.format(new Date()) + "น.");
+
+		Row forthRow = sheet.createRow(4);
+		Cell cellA = forthRow.createCell(0);
 		cellA.setCellValue("รหัส");
 		cellA.setCellStyle(styles.get("header"));
-		Cell cellB = thirdRow.createCell(1);
+		Cell cellB = forthRow.createCell(1);
 		cellB.setCellValue("ชื่อ");
 		cellB.setCellStyle(styles.get("header"));
-
 		
-		int i = 3;
+		int i = 5;
 		for (Objective o:objectiveList) {
 			Row rows = sheet.createRow(i);
 			Cell cellx = rows.createCell(0);
