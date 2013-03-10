@@ -18,7 +18,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import biz.thaicom.eBudgeting.models.pln.Objective;
-import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 
 public class M55R01XLSView extends AbstractPOIExcelView {
 

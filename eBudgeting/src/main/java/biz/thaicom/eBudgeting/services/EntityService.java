@@ -32,6 +32,7 @@ import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.security.models.ThaicomUserDetail;
+import biz.thaicom.security.models.User;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -104,6 +105,10 @@ public interface EntityService {
 	public String initFiscalYear(Integer fiscalYear);
 	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId, Pageable pageable);
+	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId,
+			String query, Pageable pageable);
+
 	
 	public ObjectiveTarget addUnitToObjective(Long objectiveId, Long unitId, Integer isSumable);
 	public String removeUnitFromObjective(Long objectiveId, Long targetId);
@@ -282,52 +287,14 @@ public interface EntityService {
 	public ObjectiveDetail deleteObjectiveDetail(Long id);
 	public ObjectiveDetail findOneObjectiveDetailByObjectiveIdAndOwner(Long objectiveId,
 			ThaicomUserDetail currentUser);
-
-
-
-
-
-
-
-
 	
-
-
-
-
-
 	
-
-	
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-	
-
-
-	
-
-
-	
-
+	// Security User
+	public Page<User> findUser(PageRequest pageRequest);
+	public User findOneUser(Long id);
+	public User updateUser(JsonNode node);
+	public User saveUser(JsonNode node);
+	public User deleteUser(Long id);
 	
 	
 }

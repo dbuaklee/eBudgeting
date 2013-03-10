@@ -9,6 +9,7 @@
 			
 			if(options != null) {
 				this.parentModal = options.parentModal;
+				this.span = options.span;
 			} 
 			this.displayNull=false;
 			
@@ -32,6 +33,7 @@
 			var selectionDiv = this.$el.find('#strategySelectionDiv > div:first-child');
 			if (this.currentStrategyCollection != null && this.currentStrategyCollection.length > 0) {
 				var json = this.currentStrategyCollection.toJSON();
+				json.span = this.span;
 				selectionDiv.html(this.strategySelectionTemplate(json));
 			} else {
 				if(this.displayNull) {
@@ -123,6 +125,10 @@
 						totalMulti = totalMulti * parseInt(json.formulaColumns[i].value);
 					}
 	
+					if(i==json.formulaColumns.length-1) {
+						json.formulaColumns[i].$last = true;
+					}
+					
 				}
 				json.total = totalMulti;
 				// now will go through
@@ -192,6 +198,8 @@
 			this.currentStrategy=strategy;
 			var columns = strategy.get('formulaColumns');
 			//now set the last column
+			console.log("xxx");
+			
 			columns.at(columns.length - 1).set("$last", true);
 	
 			// here we'll get the propose column
@@ -450,6 +458,7 @@
 			if(options != null) {
 				this.level = options.level;
 				this.parentModal = options.parentModal;
+				this.span = options.span;
 			} 
 			
 		},
@@ -460,9 +469,11 @@
 			
 			this.$el.empty();
 			if(this.model != null) {
-				this.$el.html(this.budgetInputSelectionTemplate(this.model.toJSON()));
+				var json = this.model.toJSON();
+				json.span=this.span;
+				this.$el.html(this.budgetInputSelectionTemplate(json));
 			} else {
-				this.$el.html(this.budgetInputSelectionTemplate({}));
+				this.$el.html(this.budgetInputSelectionTemplate({span:this.span}));
 			}
 			
 			
@@ -760,6 +771,9 @@
 							json.formulaColumns[i].value = proposalStrategy.get('requestColumns').at(j).get('amount');
 						}
 					}
+					if(i==json.formulaColumns.length-1) {
+						json.formulaColumns[i].$last = true;
+					}
 					
 				}
 				
@@ -821,11 +835,11 @@
 			
 			var rootBudgetType = BudgetType.findOrCreate({id:0});
 		    rootBudgetType.fetch({success: _.bind(function(){
-		    	this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1 > div', level: 1, parentModal: this});
-				this.budgetTypeSelectionViewL2 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL2 > div', level: 2, parentModal: this});
-				this.budgetTypeSelectionViewL3 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL3 > div', level: 3, parentModal: this});
-				this.budgetTypeSelectionViewL4 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL4 > div', level: 4, parentModal: this});
-				this.startegySelectionView = new StrategySelectionView({el: '#inputAll', parentModal: this});
+		    	this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1 > div', level: 1, parentModal: this, span:2});
+				this.budgetTypeSelectionViewL2 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL2 > div', level: 2, parentModal: this, span:3});
+				this.budgetTypeSelectionViewL3 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL3 > div', level: 3, parentModal: this, span:5});
+				this.budgetTypeSelectionViewL4 = new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL4 > div', level: 4, parentModal: this, span:5});
+				this.startegySelectionView = new StrategySelectionView({el: '#inputAll', parentModal: this, span:2});
 
 				this.budgetTypeSelectionArray = [];
 				this.budgetTypeSelectionArray.push(this.budgetTypeSelectionViewL1);

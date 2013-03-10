@@ -35,6 +35,7 @@ import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 import biz.thaicom.eBudgeting.models.hrx.Organization;
+import biz.thaicom.eBudgeting.models.hrx.Person;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveDetail;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
@@ -61,13 +62,16 @@ import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTargetRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveTypeRepository;
+import biz.thaicom.eBudgeting.repositories.OrganizationRepository;
 import biz.thaicom.eBudgeting.repositories.ProposalStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.RequestColumnRepositories;
 import biz.thaicom.eBudgeting.repositories.ReservedBudgetRepository;
 import biz.thaicom.eBudgeting.repositories.TargetUnitRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueAllocationRecordRepository;
 import biz.thaicom.eBudgeting.repositories.TargetValueRepository;
+import biz.thaicom.eBudgeting.repositories.UserRepository;
 import biz.thaicom.security.models.ThaicomUserDetail;
+import biz.thaicom.security.models.User;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -143,10 +147,14 @@ public class EntityServiceJPA implements EntityService {
 	private ObjectiveDetailRepository objectiveDetailRepository;
 	
 	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private OrganizationRepository organizationRepository;
+	
+	@Autowired
 	private ObjectMapper mapper;
 	
-
-
 	@Override
 	public ObjectiveType findObjectiveTypeById(Long id) {
 		ObjectiveType type = objectiveTypeRepository.findOne(id);
@@ -2682,6 +2690,37 @@ public class EntityServiceJPA implements EntityService {
 		
 	}
 
+	/**
+	 * ค้นหา  Objective ด้วยปีงบประมาณ และ ชนิด โดยกำหนด PageRequest และผ่านค่า 
+	 * คำที่ต้องการค้นหาเบื้องต้น
+	 * 
+	 *  
+	 */
+	@Override
+	public Page<Objective> findObjectivesByFiscalyearAndTypeId(
+			Integer fiscalYear, Long typeId,
+			String query,   Pageable pageable) {
+		
+		logger.debug("++++ query: " + query);
+		
+		Page<Objective> page = objectiveRepository.findByFiscalYearAndType_Id(fiscalYear, typeId, query, pageable);
+		for(Objective obj : page.getContent()) {
+			obj.getTargets().size();
+			if(obj.getType().getParent() != null) {
+				obj.getType().getParent().getName();
+				if(obj.getParent() != null) {
+					obj.getParent().getName();
+					logger.debug(" +++++++++++++++++++++++++++++++++++++++++  {} ",obj.getParent().getName() );
+				}
+			}
+			obj.getUnits().size();
+			logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + obj.getTargets().size());
+			obj.getTargets().size();
+		}
+		return page;
+	}
+
+	
 	@Override
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(
 			Integer fiscalYear, Long typeId) {
@@ -2717,6 +2756,8 @@ public class EntityServiceJPA implements EntityService {
 		
 		return page;
 	}
+	
+	
 	
 
 	@Override
@@ -3597,6 +3638,71 @@ public class EntityServiceJPA implements EntityService {
 	public ObjectiveDetail findOneObjectiveDetailByObjectiveIdAndOwner(Long objectiveId,
 			ThaicomUserDetail currentUser) {
 		return objectiveDetailRepository.findByForObjective_IdAndOwner(objectiveId, currentUser.getWorkAt());
+	}
+
+	@Override
+	public Page<User> findUser(PageRequest pageRequest) {
+		return userRepository.findAll(pageRequest);
+	}
+
+	@Override
+	public User findOneUser(Long id) {
+		return userRepository.findOne(id);
+	}
+
+	@Override
+	public User updateUser(JsonNode node) {
+		Long id = getJsonNodeId(node);
+		if(id == null) {
+			return null;
+		}
+		User user = userRepository.findOne(id);
+		
+		user.setPassword(node.get("password").asText());
+		user.getPerson().setFirstName(node.get("person").get("firstName").asText());
+		user.getPerson().setLastName(node.get("person").get("lastName").asText());
+		
+		Long workAtId = getJsonNodeId(node.get("person").get("workAt"));
+		
+		user.getPerson().setWorkAt(organizationRepository.findOne(workAtId));
+		
+		userRepository.save(user);
+		
+		
+		return user;
+	}
+
+	@Override
+	public User saveUser(JsonNode node) {
+		
+		User user = new User();
+		user.setPassword(node.get("password").asText());
+		user.setUsername(node.get("username").asText());
+		
+		
+		user.setPerson(new Person());
+		
+		user.getPerson().setFirstName(node.get("person").get("firstName").asText());
+		user.getPerson().setLastName(node.get("person").get("lastName").asText());
+		
+		Long workAtId = getJsonNodeId(node.get("person").get("workAt"));
+		
+		user.getPerson().setWorkAt(organizationRepository.findOne(workAtId));
+		
+		userRepository.save(user);
+		
+		
+		return user;
+	}
+
+	@Override
+	public User deleteUser(Long id) {
+		
+		User user = userRepository.findOne(id);
+		
+		userRepository.delete(user);
+		
+		return user;
 	}
 
 }

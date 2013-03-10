@@ -515,6 +515,17 @@ TargetValueAllocationRecord = Backbone.RelationalModel.extend({
 	urlRoot: appUrl('/TargetValueAllocationRecord')
 });
 
+
+
+User = Backbone.RelationalModel.extend({
+	idAttribute: 'id',
+	relation: [{
+		type: Backbone.HaseOne,
+		key: 'person',
+		relatedModel: 'Person'
+	}]
+});
+
 Person = Backbone.RelationalModel.extend({
 	idAttribute: 'id'
 });
@@ -626,6 +637,19 @@ ObjectiveCollection = Backbone.Collection.extend({
 
 ObjectiveNameCollection = Backbone.Collection.extend({
 	model: ObjectiveName
+});
+
+UserPagableCollection = PagableCollection.extend({
+	initialize: function(models, options) {
+	    this.targetPage = options.targetPage;
+	 },
+		
+	model: User,
+	
+	url: function() {
+		return appUrl('/User/page/' + this.targetPage);
+	}
+	
 });
 
 ObjectiveNamePagableCollection = PagableCollection.extend({

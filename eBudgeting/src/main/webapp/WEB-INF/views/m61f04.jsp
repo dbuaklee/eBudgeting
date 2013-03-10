@@ -77,7 +77,8 @@
 <select id="budgetType_{{this.id}}" multiple="multiple" style="height: 100px;" class="span2">
 	{{#if this}}
 	{{#each this.children}}
-		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+		
+		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}><div>{{this.name}}</div></option>
 	{{/each}}
 {{else}} {{/if}}
 </select>
@@ -334,13 +335,15 @@
 
 <script id="inputAllDivTemplate" type="text/x-handler-template">
 <div id="inputAll">
-กรอกข้อมูลใหม่
+กรุณากรอกข้อมูลใหม่
 <div class="row">
-<div class="span2" id="budgetTypeSelectionDivL1">หมวดหลัก<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL2">หมวดย่อย<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL3">รายการหลัก<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL4">รายการ<div></div></div>
-<div class="span2" id="strategySelectionDiv">รายการย่อย<div></div>
+	<div class="span3" id="budgetTypeSelectionDivL1">หมวดหลัก<div></div></div>
+	<div class="span3" id="budgetTypeSelectionDivL2">หมวดย่อย<div></div></div>
+</div>
+<div class="row">
+	<div class="span3" id="budgetTypeSelectionDivL3">รายการหลัก<div></div></div>
+	<div class="span3" id="budgetTypeSelectionDivL4">รายการ<div></div></div>
+	<div class="span3" id="strategySelectionDiv">รายการย่อย<div></div>
 </div>
 <div id="inputDiv" class="span10">
 	<form id="input-form" style="margin-bottom:0px;">

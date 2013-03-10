@@ -276,7 +276,7 @@
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
-<div class="menu">{{#unless readOnly}}<button id="addBudget" class="btn">เพิ่มรายการงบประมาณ</button>{{/unless}}
+<div class="menu">{{#unless readOnly}}<button id="addBudget" class="btn">บันทึกข้อมูลงบประมาณ</button>{{/unless}}
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	<ul>
 	{{#each filterObjectiveBudgetProposals}}
@@ -316,7 +316,7 @@
 			<div id="formulaBox">
 				<div>
 					<div style="height:35px;">
-						จำนวนขอตั้ง:
+						ระบุงบประมาณ:
 					</div>
 				</div>
 				<div>

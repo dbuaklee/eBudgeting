@@ -66,7 +66,17 @@
 </div>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<div class="controls" style="margin-bottom: 15px;">
+<div>
+	<form class="form-search" style="margin-bottom:10px;" id="objectiveSearchFrm">
+		<div class="input-append">
+    		<input type="text" class="span2 search-query" id="objectiveQueryTxt" value="{{queryTxt}}">
+    			<button class="btn" type="submit" id="objectiveSearchBtn">Search</button>
+    	</div>
+    </form>
+</div>
+
+<div class="controls" style="margin-bottom: 15px;">	
+
 	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
 	{{#if hasUnit}}<a href="#" class="btn btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> จัดการหน่วยนับ</a>{{/if}}	
 	
@@ -595,6 +605,7 @@ $(document).ready(function() {
 			"click .menuDelete" : "deleteRow",
 			"click .menuEdit"	: "editRow",
 			"click .menuEditUnit"	: "editRowUnit",
+			"click #objectiveSearchBtn" : "searchObjective",
 			
 			"click a.pageLink" : "gotoPage"
 		},
@@ -658,7 +669,15 @@ $(document).ready(function() {
 			objectiveEl.html(this.objectiveRowTemplate(json));
 			
 		},
-		
+		searchObjective: function(e) {
+			var query = this.$el.find('#objectiveQueryTxt').val();
+			
+			console.log("query:" + query);
+			this.query = query;
+			this.renderTargetPage(1, this.query);
+			return false;
+			
+		},
 		deleteRow: function(e) {
 			var objectiveId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
 			
@@ -707,14 +726,15 @@ $(document).ready(function() {
 			this.renderTargetPage(pageNumber);
 		},
 		
-		renderTargetPage: function(pageNumber) {
+		renderTargetPage: function(pageNumber, query) {
 			
 			objectiveCollection.targetPage = pageNumber;
 			
 			objectiveCollection.fetch({
+				type: 'POST',
 				silent: true,
+				data: {query: query },
 				success: function(){
-					
 					
 					if(hasRelatedType == true) {
 						//initializae o.get('relations')

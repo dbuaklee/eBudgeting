@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import biz.thaicom.eBudgeting.models.hrx.Organization;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
@@ -200,6 +199,16 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"WHERE objective.fiscalYear = ?1 AND objective.type.id = ?2 ")
 	public List<Objective> findAllByTypeIdAndFiscalYearInitBudgetProposal(
 			Integer fiscalYear, long typeId);
+
+
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"WHERE fiscalYear = ?1 and type.id = ?2 and " +
+			"	(name like ?3 or code like ?3) ")
+	public Page<Objective> findByFiscalYearAndType_Id(
+			Integer fiscalYear, Long typeId, String query, Pageable pageable);
+
 
 
 

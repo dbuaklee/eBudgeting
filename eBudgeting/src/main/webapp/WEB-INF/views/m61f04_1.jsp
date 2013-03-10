@@ -166,7 +166,7 @@
 </script>
 
 <script id="strategySelectionTemplate" type="text/x-handler-template">
-<select id="strategySlt" multiple="multiple" style="height: 100px;" class="span2" >
+<select id="strategySlt" multiple="multiple" style="height: 65px;" class="span{{span}}" >
 	{{#each this}}
 	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{name}}</option>
 	{{/each}}
@@ -317,13 +317,16 @@
 
 <script id="inputAllDivTemplate" type="text/x-handler-template">
 <div id="inputAll">
-กรอกข้อมูลใหม่
+<div id="inputAll">
+กรุณากรอกข้อมูลใหม่
 <div class="row">
-<div class="span2" id="budgetTypeSelectionDivL1">หมวดหลัก<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL2">หมวดย่อย<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL3">รายการหลัก<div></div></div>
-<div class="span2" id="budgetTypeSelectionDivL4">รายการ<div></div></div>
-<div class="span2" id="strategySelectionDiv">รายการย่อย<div></div>
+	<div class="span2" id="budgetTypeSelectionDivL1">หมวดหลัก<div></div></div>
+	<div class="span3" id="budgetTypeSelectionDivL2">หมวดย่อย<div></div></div>
+	<div class="span5" id="budgetTypeSelectionDivL3">รายการหลัก<div></div></div>
+</div>
+<div class="row">
+	<div class="span5" id="budgetTypeSelectionDivL4">รายการ<div></div></div>
+	<div class="span5" id="strategySelectionDiv">รายการย่อย<div></div>
 </div>
 <div id="inputDiv" class="span10">
 	<form id="input-form" style="margin-bottom:0px;">
@@ -441,7 +444,7 @@
 				รายการ: 
 			</div>
 			<div style="height:35px;">
-				จำนวนขอตั้ง:
+				ระบุงบประมาณ:
 			</div>
 		</div>
 		<div>
@@ -575,7 +578,7 @@
 
 
 <script id="budgetInputSelectionTemplate" type="text/x-handler-template">
-<select id="budgetType_{{this.id}}" multiple="multiple" style="height: 100px;" class="span2">
+<select id="budgetType_{{this.id}}" multiple="multiple" style="height: 65px;" class="span{{span}}">
 	{{#if this}}
 	{{#each this.children}}
 		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>

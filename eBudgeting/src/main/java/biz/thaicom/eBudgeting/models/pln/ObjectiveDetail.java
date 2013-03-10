@@ -14,13 +14,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.ManyToAny;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import biz.thaicom.eBudgeting.models.hrx.Organization;
-import biz.thaicom.eBudgeting.services.EntityServiceJPA;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
