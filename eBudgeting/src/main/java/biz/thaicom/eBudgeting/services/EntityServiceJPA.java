@@ -1205,6 +1205,8 @@ public class EntityServiceJPA implements EntityService {
 			Integer fiscalYear, Long ownerId, Long objectiveId) {
 		String parentPathLikeString = "%."+objectiveId.toString()+"%";
 		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear, ownerId, parentPathLikeString);
+	
+		
 		
 		List<BudgetProposal> proposalList = budgetProposalRepository
 				.findBudgetProposalByFiscalYearAndOwnerAndParentPath(fiscalYear, ownerId, parentPathLikeString);
@@ -1264,7 +1266,7 @@ public class EntityServiceJPA implements EntityService {
 		
 		for(Objective o : list) {
 		//get List of ObjectiveBudgetProposal
-			
+			o.getType().getId();
 			logger.debug("finding objective budget proposal of objective code: " + o.getCode() + " ");
 			List<ObjectiveBudgetProposal> obpList = objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(o.getId(), ownerId);
 			
@@ -1546,6 +1548,9 @@ public class EntityServiceJPA implements EntityService {
 			ps.setTargetUnit(unit);
 			if(psNode.get("targetValue") != null) {
 				ps.setTargetValue(psNode.get("targetValue").asLong());
+				ps.setTargetValueNext1Year(psNode.get("targetValueNext1Year").asLong());
+				ps.setTargetValueNext2Year(psNode.get("targetValueNext2Year").asLong());
+				ps.setTargetValueNext3Year(psNode.get("targetValueNext3Year").asLong());
 			} else {
 				ps.setTargetValue(0L);
 			}
@@ -3360,6 +3365,23 @@ public class EntityServiceJPA implements EntityService {
 	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
 			Integer fiscalYear, Long typeId, PageRequest pageRequest) {
 		Page<ObjectiveName> page =  objectiveNameRepository.findAllObjectiveNameByFiscalYearAndTypeId(fiscalYear, typeId, pageRequest);
+		
+		for(ObjectiveName n : page) {
+			n.getType().getId();
+			n.getTargets().size();
+		}
+		
+		return page;
+	}
+
+	
+	
+	@Override
+	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeIdWithQuery(
+			Integer fiscalYear, Long typeId, String query,
+			PageRequest pageRequest) {
+		Page<ObjectiveName> page =  objectiveNameRepository
+				.findAllObjectiveNameByFiscalYearAndTypeIdWithQuery(fiscalYear, typeId, "%"+query+"%", pageRequest);
 		
 		for(ObjectiveName n : page) {
 			n.getType().getId();

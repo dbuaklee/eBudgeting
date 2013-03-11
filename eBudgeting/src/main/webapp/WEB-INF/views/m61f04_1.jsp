@@ -264,33 +264,17 @@
 			</span>
 		</td>
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposal this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				{{sumProposal this.filterProposals}}
 		</td>
 
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext1Year this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				{{sumProposalNext1Year this.filterProposals}}
 		</td>
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext2Year this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				{{sumProposalNext2Year this.filterProposals}}
 		</td>
 		<td style="width:80px;" class="{{#if this.children}}disable{{/if}} rightAlign">
-				{{#if this.children}}
-					<span>{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</span>
-				{{else}}
-					<a href="#" id="editable2-{{this.id}} data-type="text" class="detail">{{#if this.filterProposals}}{{{sumProposalNext3Year this.filterProposals}}}{{else}}-{{/if}}</a>
-				{{/if}}
+				{{sumProposalNext3Year this.filterProposals}}
 		</td>
 	</tr>
 	{{{childrenNodeTpl this.children this.level}}}  
@@ -456,33 +440,40 @@
 			</div>
 		</div>
 	</div>
-	
-<div class="clearfix"></div>
-<div id="formulaBox">
-	<div>
-		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next1Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next2Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next3Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-</div>
-<div class="clearfix"></div>
 {{#if budgetTypeUnitName}}
+<div class="clearfix"></div>
 <div id="formulaBox">
 	<div>
 		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
 	</div>
 	<div style="margin: 0px 8px;">
-		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" value="{{targetValue}}" data-unitId="{{targetUnitId}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
+		<div class="input-append"><input style="width:80px;" type="text" id="targetValue" data-unitId="{{targetUnitId}}" value="{{targetValue}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div>
 	</div>
 </div>
 {{/if}}
+	
+<div class="clearfix"></div>
+<div id="formulaBox">
+	<div>
+		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+		<div style="text-align:right; padding-top:18px;"> ระบุค่าเป้าหมาย</div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next1Year}}:</b></div>
+		<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/><span class="add-on">บาท</span></div></div>
+		<div><div class="input-append"><input style="width:100px;" type="text" id="targetValueNext1Year" value="{{targetValueNext1Year}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next2Year}}:</b></div>
+		<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/><span class="add-on">บาท</span></div></div>
+		<div><div class="input-append"><input style="width:100px;" type="text" id="targetValueNext2Year" value="{{targetValueNext2Year}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next3Year}}:</b></div>
+		<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/><span class="add-on">บาท</span></div></div>
+		<div><div class="input-append"><input style="width:100px;" type="text" id="targetValueNext3Year" value="{{targetValueNext3Year}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div></div>
+	</div>
+</div>
 <div class="clearfix"></div>
 </script>
 
@@ -527,24 +518,8 @@
 			</div>
 		</div>
 	</div>
-	
-<div class="clearfix"></div>
-<div id="formulaBox">
-	<div>
-		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next1Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next2Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-	<div style="margin: 0px 8px;">
-		<div><b>ปี {{next3Year}}:</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/><span class="add-on">บาท</span></div>
-	</div>
-</div>
-<div class="clearfix"></div>
 {{#if budgetTypeUnitName}}
+<div class="clearfix"></div>
 <div id="formulaBox">
 	<div>
 		<div style="vertical-align:middle"> <strong>ระบุค่าเป้าหมาย:</strong></div>
@@ -554,6 +529,29 @@
 	</div>
 </div>
 {{/if}}
+	
+<div class="clearfix"></div>
+<div id="formulaBox">
+	<div>
+		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+		<div style="text-align:right; padding-top:18px;"> ระบุค่าเป้าหมาย</div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next1Year}}:</b></div>
+		<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{next1YearValue}}"/><span class="add-on">บาท</span></div></div>
+		<div><div class="input-append"><input style="width:100px;" type="text" id="targetValueNext1Year" value="{{targetValueNext1Year}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next2Year}}:</b></div>
+		<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{next2YearValue}}"/><span class="add-on">บาท</span></div></div>
+		<div><div class="input-append"><input style="width:100px;" type="text" id="targetValueNext2Year" value="{{targetValueNext2Year}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div></div>
+	</div>
+	<div style="margin: 0px 8px;">
+		<div><b>ปี {{next3Year}}:</b></div>
+		<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{next3YearValue}}"/><span class="add-on">บาท</span></div></div>
+		<div><div class="input-append"><input style="width:100px;" type="text" id="targetValueNext3Year" value="{{targetValueNext3Year}}"/><span class="add-on">{{budgetTypeUnitName}}</span></div></div>
+	</div>
+</div>
 <div class="clearfix"></div>
 </script>
 
@@ -696,7 +694,7 @@
 	Handlebars.registerHelper("sumProposal", function(proposals) {
 		var amount = 0;
 		for ( var i = 0; i < proposals.length; i++) {
-			amount += proposals[i].amountRequest;
+			amount += parseInt(proposals[i].amountRequest);
 		}
 		return addCommas(amount);
 
@@ -704,7 +702,7 @@
 	Handlebars.registerHelper("sumProposalNext1Year", function(proposals) {
 		var amount = 0;
 		for ( var i = 0; i < proposals.length; i++) {
-			amount += proposals[i].amountRequestNext1Year;
+			amount += parseInt(proposals[i].amountRequestNext1Year);
 		}
 		return addCommas(amount);
 
@@ -712,7 +710,7 @@
 	Handlebars.registerHelper("sumProposalNext2Year", function(proposals) {
 		var amount = 0;
 		for ( var i = 0; i < proposals.length; i++) {
-			amount += proposals[i].amountRequestNext2Year;
+			amount += parseInt(proposals[i].amountRequestNext2Year);
 		}
 		return addCommas(amount);
 
@@ -720,7 +718,7 @@
 	Handlebars.registerHelper("sumProposalNext3Year", function(proposals) {
 		var amount = 0;
 		for ( var i = 0; i < proposals.length; i++) {
-			amount += proposals[i].amountRequestNext3Year;
+			amount += parseInt(proposals[i].amountRequestNext3Year);
 		}
 		return addCommas(amount);
 
@@ -763,8 +761,6 @@
 		var out = '';
 		var childNodeTpl = Handlebars
 				.compile($("#childrenNodeTemplate").html());
-		var childNormalNodeTpl = Handlebars.compile($(
-				"#childrenNormalNodeTemplate").html());
 		if (level == undefined)
 			level = 0;
 		if (children != null && children.length > 0) {

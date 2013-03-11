@@ -66,6 +66,15 @@
 </div>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
+<div>
+	<form class="form-search" style="margin-bottom:10px;" id="objectiveSearchFrm">
+		<div class="input-append">
+    		<input type="text" class="span2 search-query" id="objectiveQueryTxt" value="{{queryTxt}}">
+    			<button class="btn" type="submit" id="objectiveSearchBtn">ค้นหาทะเบียน</button>
+    	</div>
+    </form>
+</div>
+
 <div class="controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
 	<a href="#" class="btn btn-primary menuEditUnit"><i class="icon icon-edit icon-white"></i> จัดการหน่วยนับ</a>	
@@ -525,13 +534,9 @@ $(document).ready(function() {
 		selectedObjective: null,
 		currentLineVal: null,
 		
-		newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
 		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 		objectiveRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
-		unitLinkSltTemplate: Handlebars.compile($("#unitLinkSltTemplate").html()),
-		linkSltTemplate: Handlebars.compile($("#linkSltTemplate").html()),
-		parentLinkSltTemplate: Handlebars.compile($("#parentLinkSltTemplate").html()),
 		
 		
 		modalView : new ModalView(),
@@ -587,10 +592,20 @@ $(document).ready(function() {
 			"click .menuDelete" : "deleteRow",
 			"click .menuEdit"	: "editRow",
 			"click .menuEditUnit"	: "editRowUnit",
+			"click #objectiveSearchBtn" : "searchObjective",
 			
 			"click a.pageLink" : "gotoPage"
 		},
 		
+		searchObjective: function(e) {
+			var query = this.$el.find('#objectiveQueryTxt').val();
+			
+			this.query = query;
+			this.renderTargetPage(1, this.query);
+			return false;
+			
+		},
+
 		newRow: function(e) {
 			
 			var newObj = new ObjectiveName();
@@ -688,12 +703,18 @@ $(document).ready(function() {
 			this.renderTargetPage(pageNumber);
 		},
 		
-		renderTargetPage: function(pageNumber) {
+		renderTargetPage: function(pageNumber, query) {
 			
 			objectiveCollection.targetPage = pageNumber;
+			if(query == null) {
+				query = "%";
+			}
 			
 			objectiveCollection.fetch({
+				type: 'POST',
 				silent: true,
+				data: {query: query },
+				
 				success: function(){
 					
 					

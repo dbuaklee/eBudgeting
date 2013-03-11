@@ -691,3 +691,237 @@
         references PLN_OBJECTIVE;
         
    	create sequence PLN_OBJECTIVEDETAIL_SEQ;
+   	
+-- version 5
+-- Modified Date: Feb 19, 2013
+    update app_info set db_version=5;    
+    
+   	alter table hrx_organization add (code varchar2(20));
+   	
+   	create table PLN_OBJECTIVEOWNERRELATION (
+        id number(19,0) not null,
+        OBJ_PLN_OBJECTIVE_ID number(19,0) not null,
+        primary key (id)
+    );
+    
+	alter table PLN_OBJECTIVEOWNERRELATION 
+        add constraint FK8F586623D66F5021 
+        foreign key (OBJ_PLN_OBJECTIVE_ID) 
+        references PLN_OBJECTIVE;
+
+	create sequence PLN_OBJOWNERRELATION_SEQ;
+
+        
+	create table PLN_OBJECTIVE_OWNER_JOIN (
+        PLN_OBJECTIVEOWNERRELATION_id number(19,0) not null,
+        owners_id number(19,0) not null
+    );
+    
+    alter table PLN_OBJECTIVE_OWNER_JOIN 
+        add constraint FK229966897ED7F2BF 
+        foreign key (owners_id) 
+        references HRX_ORGANIZATION;
+
+    alter table PLN_OBJECTIVE_OWNER_JOIN 
+        add constraint FK229966893FFF619B 
+        foreign key (PLN_OBJECTIVEOWNERRELATION_id) 
+        references PLN_OBJECTIVEOWNERRELATION;
+ 
+    create table PLN_ACTIVITY (
+        id number(19,0) not null,
+        idx number(10,0),
+        name varchar2(255 char),
+        remark varchar2(255 char),
+        targetValue number(19,0),
+        OBJ_PLN_OBJECTIVE_ID number(19,0) not null,
+        OWNER_HRX_ORGANIZATION number(19,0) not null,
+        UNIT_PLN_TARGETUNIT_ID number(19,0),
+        primary key (id)
+    );
+    
+    alter table PLN_ACTIVITY 
+        add constraint FKDB204ADC7B0190A7 
+        foreign key (OBJ_PLN_OBJECTIVE_ID) 
+        references PLN_OBJECTIVE;
+
+    alter table PLN_ACTIVITY 
+        add constraint FKDB204ADC2067F255 
+        foreign key (OWNER_HRX_ORGANIZATION) 
+        references HRX_ORGANIZATION;
+
+    alter table PLN_ACTIVITY 
+        add constraint FKDB204ADC67FA70E0 
+        foreign key (UNIT_PLN_TARGETUNIT_ID) 
+        references PLN_TARGETUNIT;
+
+    create sequence PLN_ACTIVITY_SEQ;
+
+    
+    
+-- version 6
+-- Modified Date: Feb 25, 2013
+    update app_info set db_version=6;
+    
+    alter table PLN_ACTIVITY add (PARENT_PLN_ACTIVITY_ID number(19,0));
+    
+	create table PLN_ACTIVITYPERFORMANCE (
+        id number(19,0) not null,
+        budgetAllocated double precision,
+        ACTIVITY_PLN_ACTIVITY_ID number(19,0),
+        OWNER_HRX_ORGANIZATION_ID number(19,0),
+        primary key (id)
+    );
+    
+    
+    alter table PLN_ACTIVITYPERFORMANCE 
+        add constraint FKF6E37B4C9F5A78B 
+        foreign key (ACTIVITY_PLN_ACTIVITY_ID) 
+        references PLN_ACTIVITY;
+        
+    alter table PLN_ACTIVITYPERFORMANCE 
+        add constraint FKF6E37B462A663AF 
+        foreign key (OWNER_HRX_ORGANIZATION_ID) 
+        references HRX_ORGANIZATION;
+        
+    create sequence PLN_ACTIVITYPERFORMANCE_SEQ;
+    
+    create table PLN_ACTIVITYTARGET (
+        id number(19,0) not null,
+        targetValue number(19,0),
+        ACTIVITY_PLN_ACTIVITY_ID number(19,0) not null,
+        UNIT_PLN_TARGETUNIT_ID number(19,0) not null,
+        primary key (id)
+    );
+    
+    
+    alter table PLN_ACTIVITYTARGET 
+        add constraint FK992D1B6DC9F5A78B 
+        foreign key (ACTIVITY_PLN_ACTIVITY_ID) 
+        references PLN_ACTIVITY;
+
+    alter table PLN_ACTIVITYTARGET 
+        add constraint FK992D1B6D67FA70E0 
+        foreign key (UNIT_PLN_TARGETUNIT_ID) 
+        references PLN_TARGETUNIT;
+        
+    create sequence PLN_ACTIVITYTARGET_SEQ;
+    
+
+    create table PLN_ACTIVITYTARGETREPORT (
+        id number(19,0) not null,
+        targetValue number(19,0),
+        PERFORMANCE_PLN_ACTPER_ID number(19,0),
+        TARGET_PLN_ACTTARGET_ID number(19,0),
+        primary key (id)
+    );
+    
+    alter table PLN_ACTIVITYTARGETREPORT 
+        add constraint FKA1935EE1CE2DDF80 
+        foreign key (TARGET_PLN_ACTTARGET_ID) 
+        references PLN_ACTIVITYTARGET;
+
+    alter table PLN_ACTIVITYTARGETREPORT 
+        add constraint FKA1935EE135264F66 
+        foreign key (PERFORMANCE_PLN_ACTPER_ID) 
+        references PLN_ACTIVITYPERFORMANCE;
+        
+    create sequence PLN_ACTIVITYTARGETREPORT_SEQ;
+        
+    create table PLN_MONTHLYBGTREPORT (
+        id number(19,0) not null,
+        budgetPlan number(19,0),
+        budgetResult number(19,0),
+        fiscalMonth number(10,0),
+        remark varchar2(1024 char),
+        PERFORMANCE_PLN_ACTPER_ID number(19,0),
+        OWNER_HRX_ORGANIZATION_ID number(19,0),
+        primary key (id)
+    );
+    
+	alter table PLN_MONTHLYBGTREPORT 
+        add constraint FK2CB2142335264F66 
+        foreign key (PERFORMANCE_PLN_ACTPER_ID) 
+        references PLN_ACTIVITYPERFORMANCE;
+
+    alter table PLN_MONTHLYBGTREPORT 
+        add constraint FK2CB2142362A663AF 
+        foreign key (OWNER_HRX_ORGANIZATION_ID) 
+        references HRX_ORGANIZATION;
+
+    create sequence PLN_MONTHLYBGTREPORT_SEQ;
+
+        
+    create table PLN_MONTHLYACTREPORT (
+        id number(19,0) not null,
+        activityPlan number(19,0),
+        activityResult number(19,0),
+        fiscalMonth number(10,0),
+        remark varchar2(1024 char),
+        OWNER_HRX_ORGANIZATION_ID number(19,0),
+        REPORT_PLN_ACTTARGETREPORT_ID number(19,0),
+        primary key (id)
+    );    
+    
+    alter table PLN_MONTHLYACTREPORT 
+        add constraint FKF8E8F1A6AE5B179D 
+        foreign key (REPORT_PLN_ACTTARGETREPORT_ID) 
+        references PLN_ACTIVITYTARGETREPORT;
+
+    alter table PLN_MONTHLYACTREPORT 
+        add constraint FKF8E8F1A662A663AF 
+        foreign key (OWNER_HRX_ORGANIZATION_ID) 
+        references HRX_ORGANIZATION;
+    
+    create sequence PLN_MONTHLYACTREPORT_SEQ;
+        
+-- version 7
+-- Modified Date: March 5, 2013
+    update app_info set db_version=7;
+    
+    alter table PLN_ACTIVITYTARGETREPORT 
+    	add (OWNER_HRX_ORGANIZATION_ID number(19,0));
+    	
+    alter table PLN_ACTIVITYTARGETREPORT 
+        add constraint FK2CB2142F6246358A 
+        foreign key (OWNER_HRX_ORGANIZATION_ID) 
+        references HRX_ORGANIZATION;
+        
+-- version 8
+-- Modeified Date: March 10, 2013
+	update app_info set db_version=8;
+
+    create table PLN_ACTIVITYTARGETRESULT (
+        id number(19,0) not null,
+        remark varchar2(1024 char),
+        removed number(1,0),
+        reportedResultDate date,
+        result number(19,0),
+        timestamp timestamp,
+        REPORTPERSON_HRX_PERSON_ID number(19,0),
+        TARGETREPORT_PLN_REPORT_ID number(19,0),
+        primary key (id)
+    );
+    
+    alter table PLN_ACTIVITYTARGETRESULT 
+        add constraint FKA194D1CAB697B485 
+        foreign key (REPORTPERSON_HRX_PERSON_ID) 
+        references HRX_PERSON;
+
+    alter table PLN_ACTIVITYTARGETRESULT 
+        add constraint FKA194D1CA1D131B41 
+        foreign key (TARGETREPORT_PLN_REPORT_ID) 
+        references PLN_ACTIVITYTARGETREPORT;
+        
+  	create sequence PLN_ACTIVITYTARGETSRESULT_SEQ;
+
+-- version 9
+-- Modified Date: March 12, 2013
+	update app_info set db_version=9;
+	
+	alter table bgt_proposalstrategy add (
+		targetvaluenext1year number(19,0), 
+		targetvaluenext2year number(19,0), 
+		targetvaluenext3year number(19,0)
+	);
+	
+

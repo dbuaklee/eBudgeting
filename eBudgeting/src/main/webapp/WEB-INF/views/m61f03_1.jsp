@@ -160,6 +160,96 @@
 	{{/each}}
 </select>
 </script>
+<script id="inputObjectiveDetailDivTemplate" type="text/x-handler-template">
+<div id="inputAll">
+<div class="alert alert-info"><strong>โปรดกรอกข้อมูลรายละเอียดโครงการ</strong></div>
+
+<form id="objectiveDeatilForm" class="form-horizontal">
+
+<ul class="nav nav-tabs" id="objectiveDetailTab">
+<li class="active"><a href="#detailFirstTab" data-toggle="tab">ผู้รับผิดชอบ</a></li>
+<li><a href="#detailSecondTab" data-toggle="tab">หลักการ</a></li>
+<li><a href="#detailThirdTab" data-toggle="tab">วิธีการดำเนินงาน</a></li>
+<li><a href="#detailForthTab" data-toggle="tab">ระยะเวลา/เป้าหมาย</a></li>
+<li><a href="#detailFifthTab" data-toggle="tab">ประโยชน์</a></li>
+<li><a href="#detailSixthTab" data-toggle="tab">ผลการดำเนินงาน</a></li>
+<li><a href="#detailSeventhTab" data-toggle="tab">พื้นที่เป้าหมาย</a></li>
+</ul>
+
+<div class="tab-content">
+<div class="tab-pane active" id="detailFirstTab">
+	<div style="paddign-left:15px;">
+	<div class="control-group">
+		<label class="control-label" for="officerInCharge">ผู้รับผิดชอบ</label>
+		<div class="controls">
+			<input class="span6 objectiveDetail" type="text" id="officerInCharge" placeholder="..." value="{{this.officerInCharge}}"></input>
+		</div>
+	</div>
+	<div class="control-group">
+		<label for="phoneNumber" class="control-label">เบอร์โทรศัพท์</label>
+		<div class="controls"><input type="text" id="phoneNumber" placeholder="..." class="span2 objectiveDetail" value="{{this.phoneNumber}}"></input> 
+			<span style="margin-left:58px"> Email  <input class="span3 objectiveDetail" type="text" placeholder="..." id="email" value="{{this.email}}"></span>
+		</div>
+	</div>
+	</div>
+</div>
+<div class="tab-pane" id="detailSecondTab">
+	<div style="padding-left:15px;">
+		<label for="reason">1. หลักการและเหตุผล</label>
+		<textarea class="span6 objectiveDetail" rows="3" id="reason">{{this.reason}}</textarea>
+		<br/>
+		<label style="margin-top:20px" for="reason">2. วัตถุประสงค์</label>	
+		<textarea class="span6 objectiveDetail" rows="3" id="projectObjective">{{this.projectObjective}}</textarea>
+	</div>
+</div>
+<div class="tab-pane" id="detailThirdTab">
+	<div style="padding-left:15px;">
+		<label for="methodology1">3.1 การรวบรวมข้อมูลทั่วไป</label>
+		<textarea class="span6 objectiveDetail" rows="2" id="methodology1">{{this.methodology1}}</textarea>
+		<br/>
+		<label style="margin-top:20px" for="methodology2">3.2 การรวบรวมข้อมูลทางด้านเศรษฐกิจและสังคม</label>	
+		<textarea class="span6 objectiveDetail" rows="2" id="methodology2">{{this.methodology2}}</textarea>
+		<br/>
+		<label style="margin-top:20px" for="methodology3">3.3 การนำเข้าและวิเคราะห์ข้อมูล</label>	
+		<textarea class="span6 objectiveDetail" rows="2" id="methodology3">{{this.methodology3}}</textarea>
+	</div>
+</div>
+<div class="tab-pane" id="detailForthTab">
+	<div style="padding-left:15px;">
+		<label for="location">4. สถานที่ดำเนินการ</label>
+		<textarea class="span6 objectiveDetail" rows="1" id="location">{{this.location}}</textarea>
+		<br/>
+		<label style="margin-top:20px" for="timeframe">5. ระยะเวลาดำเนินการ</label>	
+		<textarea class="span6 objectiveDetail" rows="1" id="timeframe">{{this.timeframe}}</textarea>
+		<br/>
+		<label style="margin-top:20px" for="targetDescription">6. เป้าหมายและงบประมาณ</label>	
+		<textarea class="span6 objectiveDetail" rows="1" id="targetDescription">{{this.targetDescription}}</textarea>
+	</div>
+</div>
+<div class="tab-pane" id="detailFifthTab">
+	<div style="padding-left:15px;">
+		<label for="outcome">7. ผลประโยชน์ที่คาดว่าจะได้รับ</label>
+		<textarea class="span6 objectiveDetail" rows="4" id="outcome">{{this.outcome}}</textarea>
+	</div>
+</div>
+<div class="tab-pane" id="detailSixthTab">
+	<div style="padding-left:15px;">
+		<label for="outcome">8. ผลการดำเนินงานตั้งแต่เริ่มต้นโครงการ</label>
+		<textarea class="span6 objectiveDetail" rows="4" id="output">{{this.output}}</textarea>
+	</div>
+</div>
+<div class="tab-pane" id="detailSeventhTab">
+	<div style="padding-left:15px;">
+		<label for="targetArea">9. พื้นที่เป้าหมาย</label>
+		<textarea class="span6 objectiveDetail" rows="4" id="targetArea">{{this.targetArea}}</textarea>
+	</div>
+</div>
+</div>
+
+</form>
+
+<button class="btn btn-mini btn-primary" id="saveObjectiveDetail">บันทึก</button> <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
+</script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div id="mainSelection">
@@ -235,7 +325,7 @@
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">
 						{{#unless this.children}}<a href="#" class="detail">{{/unless}}
-						<b>{{this.type.name}}</b> [{{this.code}}] {{this.name}}
+						<span class="label label-info mini">{{type.name}}</span> <br/>[{{this.code}}] {{this.name}}
 						{{#unless this.children}}</a>{{/unless}}
 					</label>
 			</div>
@@ -276,7 +366,11 @@
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
-<div class="menu">{{#unless readOnly}}<button id="addBudget" class="btn">บันทึกข้อมูลงบประมาณ</button>{{/unless}}
+<div class="menu">{{#unless readOnly}}
+<button id="addBudget" class="btn">บันทึกข้อมูลงบประมาณ</button>
+<button class="btn" id="addObjectiveDetail">บันทึกข้อมูลโครงการ</button>{{/unless}}
+<button class="btn" id="printObjectiveDetail">พิมพ์ข้อมูลโครงการ</button>
+
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	<ul>
 	{{#each filterObjectiveBudgetProposals}}
@@ -502,18 +596,19 @@
 				.compile($("#childrenNodeTemplate").html());
 		var childNormalNodeTpl = Handlebars.compile($(
 				"#childrenNormalNodeTemplate").html());
-		if (level == undefined)
+		if (level == undefined) {
 			level = 0;
+		}
 		if (children != null && children.length > 0) {
-
-			if (children[0].type.id > 0) {
+			console.log(children[0]);
+			if (children[0]) {
 				children.forEach(function(child) {
-					child["level"] = level + 1;
+					child.level = level + 1;
 					
 					
-					child["padding"] = parseInt(level) * 20;
+					child.padding = parseInt(level) * 20;
 					
-					child["nameWidth"] = 246 - 18 - child["padding"];
+					child.nameWidth = 246 - 18 - child.padding;
 					out = out + childNodeTpl(child);
 				});
 

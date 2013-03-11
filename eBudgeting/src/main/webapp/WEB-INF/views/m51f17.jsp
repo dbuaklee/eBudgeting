@@ -100,7 +100,7 @@
 		<form class="form-search">
 				<div class="input-append pull-left">
 					<input type="text" id="availableChildrenSearch" class="span2 search-query">
-					<button type="submit" id="search" class="btn">Search</button>
+					<button type="submit" id="search" class="btn">ค้นหาทะเบียน</button>
 				</div> &nbsp;
 				<button type="submit" id="searchDisplayAll" class="btn">แสดงผลทั้งหมด</button>
 		</form>

@@ -5,6 +5,7 @@ package biz.thaicom.eBudgeting.repositories;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -34,10 +35,21 @@ public interface ObjectiveNameRepository extends JpaSpecificationExecutor<Object
 	@Query("" +
 			"SELECT o " +
 			"FROM ObjectiveName o " +
+			" 	INNER JOIN o.type type " +
+			"WHERE o.fiscalYear=?1 AND o.type.id = ?2 " +
+			"	AND (o.name like ?3 or o.code like ?3) ")	
+	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeIdWithQuery(
+			Integer fiscalYear, Long typeId, String query,
+			Pageable pageable);
+	
+	@Query("" +
+			"SELECT o " +
+			"FROM ObjectiveName o " +
 			"	INNER JOIN FETCH o.type type " +
 			"WHERE o.fiscalYear=?1 AND o.type.parent.id = ?2 ")
 	public List<ObjectiveName> findAllChildrenTypeObjectiveNameByFiscalYearAndTypeId(
 			Integer fiscalYear, Long typeId);
+	
 	
 	@Query("" +
 			"SELECT o " +
@@ -55,6 +67,8 @@ public interface ObjectiveNameRepository extends JpaSpecificationExecutor<Object
 			"WHERE o.type=? AND o.fiscalYear=?2 ")
 	public String findMaxCodeOfTypeAndFiscalYear(ObjectiveType type,
 			Integer fiscalYear);
+
+
 
 
 	

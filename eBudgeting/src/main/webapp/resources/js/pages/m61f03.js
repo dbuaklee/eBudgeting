@@ -43,10 +43,8 @@ var ModalView = Backbone.View.extend({
 	
 	modalTemplate : Handlebars.compile($('#modalTemplate').html()),
 	inputAllDivTemplate : Handlebars.compile($('#inputAllDivTemplate').html()),
-	
-	inputEditProposalTemplate: Handlebars.compile($('#inputEditProposalTemplate').html()), 
-	defaultInputTemplate : Handlebars.compile($('#defaultInputTemplate').html()),
-	inputModalTemplate : Handlebars.compile($('#inputModalTemplate').html()),
+	inputObjectiveDetailDivTemplate : Handlebars.compile($('#inputObjectiveDetailDivTemplate').html()),
+
 	
 	events : {
 		"click .removeProposal" : "removeProposal",
@@ -57,7 +55,13 @@ var ModalView = Backbone.View.extend({
 		"click .backToProposal" : "backToProposal",
 		"click #addBudget" : "renderInputALL",
 		"click .copytoNextYear" : "copyToNextYear",
-
+		
+		"click #addObjectiveDetail" : "renderObjectiveDetailInput",
+		"change .objectiveDetail" : "updateObjectiveDetailModel",
+		"click #saveObjectiveDetail" : "saveObjectiveDetail",
+		"click #printObjectiveDetail" : "printObjectiveDetail"
+		
+		
 	},
 	backToProposal: function(e) {
 		this.render();
@@ -66,6 +70,54 @@ var ModalView = Backbone.View.extend({
 		this.$el.modal('hide');
 		mainCtrView.renderMainTbl();
 	},
+	
+	renderObjectiveDetailInput : function(e) {
+		// we'll have to fetch the detail and put it back on the model
+		this.detail = new ObjectiveDetail();
+		this.detail.fetch({
+			url: appUrl('/ObjectiveDetail/byObjective/'+ this.objective.get('id') +'/ofCurrentUser'),
+			success: _.bind(function(model, xhr, options) {
+				this.detail.set('forObjective', this.objective.get('id'));
+				
+				var json = this.detail.toJSON();
+				this.$el.find('.modal-body').html(this.inputObjectiveDetailDivTemplate(json));
+			},this)
+		});
+		
+		
+	},
+	
+	printObjectiveDetail : function(e) {
+		this.detail = new ObjectiveDetail();
+		this.detail.fetch({
+			url: appUrl('/ObjectiveDetail/byObjective/'+ this.objective.get('id') +'/ofCurrentUser'),
+			success: _.bind(function(model, xhr, options) {
+				if(this.detail.get('id') == null) {
+					alert("คุณยังไม่ได้บันทึกรายละเอียดโครงการ");
+				} else {
+					window.open(appUrl("/m61f04.docx/"+fiscalYear+"/ObejctiveDetail/"+this.detail.get('id')+"/m61f04.docx"));
+				}
+			},this) 
+		});
+		
+	},
+	
+	updateObjectiveDetailModel : function(e) {
+		// ok we can update this.detail
+		this.detail.set(e.target.id, $(e.target).val());
+	},
+	
+	saveObjectiveDetail: function(e) {
+		if(this.detail != null) {
+			this.detail.save({}, {
+				success: _.bind(function(model, xhr, options) {
+					this.detail.set("forObjective", this.objective);
+					alert("บันทึกข้อมูลรายละเอียดโครงการแล้ว");
+				},this)
+			});
+		}
+	},
+
 	copyToNextYear : function(e) {
 		var valueToCopy = $('#totalInputTxt').val();
 		valueToCopy = valueToCopy.replace(/,/g, '');
@@ -78,8 +130,6 @@ var ModalView = Backbone.View.extend({
 		var validated2=true;
 		
 		this.$el.find('input:enabled').each(function(e) {
-			console.log($(this).val());
-			
 			if( isNaN( +$(this).val() ) ) {
 				$(this).parent('div').addClass('control-group error');
 				validated1 = false;
@@ -225,8 +275,6 @@ var ModalView = Backbone.View.extend({
 		for(var i=0; i< fobp.length; i++) {
 			budgetTypeSltCollection.remove(fobp.at(i).get('budgetType'));
 		}
-		
-		console.log("budgetTypeSltCollection.length == " + budgetTypeSltCollection.length);
 		
 		if(budgetTypeSltCollection.length == 0) {
 			alert('ไม่สามารถเพิ่มรายการงบประมาณได้เนื่องจากเลือกลงข้อมูลหมดทุกหมวดแล้ว');
@@ -417,8 +465,6 @@ var MainCtrView = Backbone.View.extend({
 	loadingTpl : Handlebars.compile($("#loadingTemplate").html()),
 	mainCtrTemplate : Handlebars.compile($("#mainCtrTemplate").html()),
 	mainTblTpl : Handlebars.compile($("#mainTblTemplate").html()),
-	nodeRowTpl : Handlebars.compile($("#nodeRowTemplate").html()),
-	mainTbl1Tpl : Handlebars.compile($("#mainCtr1Template").html()),
 	modalView : new ModalView(),
 
 	 
@@ -466,11 +512,13 @@ var MainCtrView = Backbone.View.extend({
 			objectiveCollection.url = appUrl("/ObjectiveWithObjectiveBudgetProposal/" + fiscalYear+ "/" + this.currentParentObjective.get('id') + "/flatDescendants");
 			
 			objectiveCollection.fetch({
-				success : _.bind( function() {
+				success : _.bind( function(collection, response, options) {
+					
 					// we will now sorted out this mess!
 					var i;
 					for (i = 0; i < objectiveCollection.length; i++) {
 						var o = objectiveCollection.at(i);
+						
 						if (o.get('parent') != null) {
 							var parentId = o.get('parent').get('id');
 
@@ -495,7 +543,7 @@ var MainCtrView = Backbone.View.extend({
 					var json = this.collection.toJSON();
 					json.allProposal = allProposal.toJSON();
 					json.objective = this.currentParentObjective.toJSON();
-					e1=this.currentParentObjective;
+					e1=json;
 					this.$el.find('#mainTbl').html(this.mainTblTpl(json));
 					
 					this.$el.find('#mainTbl tbody td:first-child', this).each(function(i){

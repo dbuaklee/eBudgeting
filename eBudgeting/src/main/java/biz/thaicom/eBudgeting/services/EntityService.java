@@ -189,8 +189,12 @@ public interface EntityService {
 	//ObjectiveName
 	public ObjectiveName saveObjectiveName(JsonNode node);
 	public ObjectiveName updateObjectiveName(JsonNode node);
-	Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
+	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
 			Integer fiscalYear, Long typeId, PageRequest pageRequest);
+	public Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeIdWithQuery(
+			Integer fiscalYear, Long typeId, String query,
+			PageRequest pageRequest);
+
 	public ObjectiveName findOneObjectiveName(Long id);
 	public ObjectiveName deleteObjectiveName(Long id);
 	

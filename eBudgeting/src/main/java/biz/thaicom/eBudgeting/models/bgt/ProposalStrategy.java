@@ -71,6 +71,17 @@ public class ProposalStrategy implements Serializable {
 	@Basic
 	private Long targetValue;
 	
+	@Basic
+	private Long targetValueNext1Year;
+	
+	@Basic
+	private Long targetValueNext2Year;
+	
+	@Basic
+	private Long targetValueNext3Year;
+	
+	
+	
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="proposalStrategy",
 			cascade=CascadeType.REMOVE)
 	private List<RequestColumn> requestColumns;
@@ -194,6 +205,30 @@ public class ProposalStrategy implements Serializable {
 		this.targetValue = targetValue;
 	}
 	
+	public Long getTargetValueNext1Year() {
+		return targetValueNext1Year;
+	}
+
+	public void setTargetValueNext1Year(Long targetValueNext1Year) {
+		this.targetValueNext1Year = targetValueNext1Year;
+	}
+
+	public Long getTargetValueNext2Year() {
+		return targetValueNext2Year;
+	}
+
+	public void setTargetValueNext2Year(Long targetValueNext2Year) {
+		this.targetValueNext2Year = targetValueNext2Year;
+	}
+
+	public Long getTargetValueNext3Year() {
+		return targetValueNext3Year;
+	}
+
+	public void setTargetValueNext3Year(Long targetValueNext3Year) {
+		this.targetValueNext3Year = targetValueNext3Year;
+	}
+
 	private static Long copyLongValueNotNull(Long orig) {
 		if(orig!=null) {
 			return orig.longValue();
@@ -209,6 +244,25 @@ public class ProposalStrategy implements Serializable {
 		} else {
 			ps.setTargetValue(0L);
 		}
+		
+		if(orig != null && orig.targetValueNext1Year != null) {
+			ps.setTargetValueNext1Year(copyLongValueNotNull(orig.targetValueNext1Year));
+		} else {
+			ps.setTargetValueNext1Year(0L);
+		}
+		
+		if(orig != null && orig.targetValueNext2Year != null) {
+			ps.setTargetValueNext2Year(copyLongValueNotNull(orig.targetValueNext2Year));
+		} else {
+			ps.setTargetValueNext2Year(0L);
+		}
+		
+		if(orig != null && orig.targetValueNext3Year != null) {
+			ps.setTargetValueNext3Year(copyLongValueNotNull(orig.targetValueNext3Year));
+		} else {
+			ps.setTargetValueNext3Year(0L);
+		}
+
 		
 		if(orig != null && orig.totalCalculatedAmount != null) {
 			ps.setTotalCalculatedAmount(copyLongValueNotNull(orig.totalCalculatedAmount));
@@ -240,5 +294,5 @@ public class ProposalStrategy implements Serializable {
 		}
 		return ps;
 	}
-	
+	 
 }

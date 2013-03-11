@@ -431,15 +431,16 @@ public class ObjectiveRestController {
 	}
 	
 	
-	@RequestMapping(value="/ObjectiveName/fiscalYear/{fiscalYear}/type/{typeId}/page/{pageNumber}", method=RequestMethod.GET)
+	@RequestMapping(value="/ObjectiveName/fiscalYear/{fiscalYear}/type/{typeId}/page/{pageNumber}", method=RequestMethod.POST)
 	public @ResponseBody Page<ObjectiveName> findAllObjectiveNameByFiscalYearAndTypeId(
+			@RequestParam String query,
 			@PathVariable Integer fiscalYear, 
 			@PathVariable Long typeId,
 			@PathVariable Integer pageNumber) {
 		
 		PageRequest pageRequest =
 	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "index");
-		return entityService.findAllObjectiveNameByFiscalYearAndTypeId(fiscalYear, typeId, pageRequest);
+		return entityService.findAllObjectiveNameByFiscalYearAndTypeIdWithQuery(fiscalYear, typeId, query, pageRequest);
 		
 	}
 	

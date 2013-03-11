@@ -70,7 +70,7 @@
 	<form class="form-search" style="margin-bottom:10px;" id="objectiveSearchFrm">
 		<div class="input-append">
     		<input type="text" class="span2 search-query" id="objectiveQueryTxt" value="{{queryTxt}}">
-    			<button class="btn" type="submit" id="objectiveSearchBtn">Search</button>
+    			<button class="btn" type="submit" id="objectiveSearchBtn">ค้นหาทะเบียน</button>
     	</div>
     </form>
 </div>
@@ -541,19 +541,12 @@ $(document).ready(function() {
 		selectedObjective: null,
 		currentLineVal: null,
 		
-		newRowTemplate: Handlebars.compile($("#newRowTemplate").html()),
 		mainCtrTemplate: Handlebars.compile($("#mainCtrTemplate").html()),
 		tbodyTemplate: Handlebars.compile($("#tbodyTemplate").html()),
 		objectiveRowTemplate: Handlebars.compile($("#objectiveRowTemplate").html()),
-		unitLinkSltTemplate: Handlebars.compile($("#unitLinkSltTemplate").html()),
-		linkSltTemplate: Handlebars.compile($("#linkSltTemplate").html()),
-		parentLinkSltTemplate: Handlebars.compile($("#parentLinkSltTemplate").html()),
-		
 		
 		modalView : new ModalView(),
 		unitModalView : new UnitModalView(),
-		
-
 		
 		render: function() {
 			// first render the control

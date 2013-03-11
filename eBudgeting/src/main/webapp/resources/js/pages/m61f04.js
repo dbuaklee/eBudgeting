@@ -303,6 +303,9 @@
 				
 				
 				proposalStrategy.set('targetValue', this.$el.find("#targetValue").val());
+				proposalStrategy.set('targetValueNext1Year', this.$el.find("#targetValueNext1Year").val());
+				proposalStrategy.set('targetValueNext2Year', this.$el.find("#targetValueNext2Year").val());
+				proposalStrategy.set('targetValueNext3Year', this.$el.find("#targetValueNext3Year").val());
 				proposalStrategy.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
 				proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
 				proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
@@ -416,11 +419,15 @@
 			proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
 			proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
 			
+			
 			var unitId = this.$el.find('#targetValue').attr('data-unitId');
 			if(unitId !=null) {
 				var unit = TargetUnit.findOrCreate(unitId);
 				proposalStrategy.set('targetUnit', unit);
 				proposalStrategy.set('targetValue', this.$el.find('#targetValue').val());
+				proposalStrategy.set('targetValueNext1Year', this.$el.find('#targetValueNext1Year').val());
+				proposalStrategy.set('targetValueNext2Year', this.$el.find('#targetValueNext2Year').val());
+				proposalStrategy.set('targetValueNext3Year', this.$el.find('#targetValueNext3Year').val());
 			}
 			
 			
@@ -740,6 +747,9 @@
 			} else {
 				json = proposalStrategy.get('formulaStrategy').toJSON();
 				json.targetValue = proposalStrategy.get('targetValue');
+				json.targetValueNext1Year = proposalStrategy.get('targetValueNext1Year');
+				json.targetValueNext2Year = proposalStrategy.get('targetValueNext2Year');
+				json.targetValueNext3Year = proposalStrategy.get('targetValueNext3Year');
 				if(proposalStrategy.get('targetUnit') instanceof Backbone.Model) {
 					json.budgetTypeUnitName = proposalStrategy.get('targetUnit').get('name');
 					json.targetUnitId = proposalStrategy.get('targetUnit').get('id');	
@@ -1043,8 +1053,6 @@
 		loadingTpl : Handlebars.compile($("#loadingTemplate").html()),
 		mainCtrTemplate : Handlebars.compile($("#mainCtrTemplate").html()),
 		mainTblTpl : Handlebars.compile($("#mainTblTemplate").html()),
-		nodeRowTpl : Handlebars.compile($("#nodeRowTemplate").html()),
-		mainTbl1Tpl : Handlebars.compile($("#mainCtr1Template").html()),
 		modalView : new ModalView(),
 		
 		events : {
