@@ -283,7 +283,7 @@
 <script id="modalTemplate" type="text/x-handler-template">
 <div class="menu">{{#unless readOnly}}<button id="addBudget" class="btn">เพื่มรายการงบประมาณ</button> 
 	<button class="btn" id="addObjectiveDetail">บันทึกข้อมูลโครงการ</button>{{/unless}}
-	<button class="btn" id="printObjectiveDetail">พิมพ์ข้อมูลโครงการ</button>
+	
 </div>
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	{{{listProposalStrategies filterProposals readOnly}}}

@@ -301,7 +301,7 @@ var ModalView = Backbone.View.extend({
 			var json = this.objective.toJSON();
 			json.readOnly = readOnly;
 			var html = this.modalTemplate(json);
-			this.$el.find('.modal-header span').html(this.objective.get('name'));
+			this.$el.find('.modal-header span').html("การบันทึกข้อมูลระดับกิจกรรม<br/>"+this.objective.get('name'));
 			this.$el.find('.modal-body').html(html);
 		}
 
