@@ -78,7 +78,7 @@
 	{{#if this}}
 	{{#each this.children}}
 		
-		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}><div>{{this.name}}</div></option>
+		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}><div>{{this.code}} {{this.name}}</div></option>
 	{{/each}}
 {{else}} {{/if}}
 </select>
@@ -96,9 +96,9 @@
 </script>
 
 <script id="strategySelectionTemplate" type="text/x-handler-template">
-<select id="strategySlt" multiple="multiple" style="height: 100px;" class="span2" >
+<select id="strategySlt" "multiple" style="height: 100px;" class="span2" >
 	{{#each this}}
-	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{name}}</option>
+	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{code}} {{name}}</option>
 	{{/each}}
 </select>
 </script>

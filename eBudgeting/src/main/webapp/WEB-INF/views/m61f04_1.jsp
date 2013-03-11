@@ -168,7 +168,7 @@
 <script id="strategySelectionTemplate" type="text/x-handler-template">
 <select id="strategySlt" multiple="multiple" style="height: 65px;" class="span{{span}}" >
 	{{#each this}}
-	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{name}}</option>
+	<option value="{{id}}" {{#if selected}}selected='selected'{{/if}}>{{code}} {{name}}</option>
 	{{/each}}
 </select>
 </script>
@@ -579,7 +579,7 @@
 <select id="budgetType_{{this.id}}" multiple="multiple" style="height: 65px;" class="span{{span}}">
 	{{#if this}}
 	{{#each this.children}}
-		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.name}}</option>
+		<option value="{{this.id}}" {{#if this.selected}}selected='selected'{{/if}}>{{this.code}} {{this.name}}</option>
 	{{/each}}
 {{else}} {{/if}}
 </select>
