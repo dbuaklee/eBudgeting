@@ -3157,6 +3157,9 @@ public class EntityServiceJPA implements EntityService {
 					logger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<TARGETJPA_UNIT_ID" + targetJpa.getUnit().getId());
 					if(targetJpa.getUnit().getId() == getJsonNodeId(target.get("unit"))) {
 						targetJpa.setTargetValue(target.get("targetValue").asLong());
+						targetJpa.setTargetValueNext1Year(target.get("targetValueNext1Year").asLong());
+						targetJpa.setTargetValueNext2Year(target.get("targetValueNext2Year").asLong());
+						targetJpa.setTargetValueNext3Year(target.get("targetValueNext3Year").asLong());
 						break;
 					}
 				}

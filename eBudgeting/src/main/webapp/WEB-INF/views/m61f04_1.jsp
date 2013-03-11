@@ -242,7 +242,7 @@
 					<input class="checkbox_tree" type="checkbox" id="item_{{this.id}}"/>
 					<label class="main" for="item_{{this.id}}">
 						{{#unless this.children}}<a href="#" class="detail">{{/unless}}
-						<b>{{this.type.name}}</b> [{{this.code}}] {{this.name}}
+						<span class="label label-info mini">{{type.name}}</span> <br/> [{{this.code}}] {{this.name}}
 						{{#unless this.children}}</a>{{/unless}}
 					</label>
 			</div>

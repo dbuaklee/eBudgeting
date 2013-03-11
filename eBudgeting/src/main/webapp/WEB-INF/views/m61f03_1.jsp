@@ -419,24 +419,8 @@
 					</div>
 				</div>
 			</div>
-	
-			<div class="clearfix"></div>
-			<div id="formulaBox">
-				<div>
-					<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-				</div>	
-				<div style="margin: 0px 8px;">
-					<div><b>ปี: {{next1Year}}</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{amountRequestNext1Year}}"/><span class="add-on">บาท</span></div>
-				</div>
-				<div style="margin: 0px 8px;">
-					<div><b>ปี : {{next2Year}}</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{amountRequestNext2Year}}"/><span class="add-on">บาท</span></div>
-				</div>
-				<div style="margin: 0px 8px;">
-					<div><b>ปี: {{next3Year}}</b></div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{amountRequestNext3Year}}"/><span class="add-on">บาท</span></div>
-				</div>
-			</div>
-			<div class="clearfix"></div>
 {{#each targets}}
+			<div class="clearfix"></div>
 			<div id="formulaBox">
 				<div>
 					<div style="margin-top:0px;"> ระบุเป้าหมาย </div>
@@ -445,8 +429,36 @@
 					<div class="input-append"><input style="width:120px;" type="text" id="targetValue{{unit.id}}" value="{{targetValue}}" data-id={{id}}/><span class="add-on">{{unit.name}}</span></div>
 				</div>
 			</div>
+{{/each}}	
 			<div class="clearfix"></div>
+			<div id="formulaBox">
+				<div>
+					<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+				</div>	
+				<div style="margin: 0px 8px;">
+					<div><b>ปี: {{next1Year}}</b></div>
+					<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{amountRequestNext1Year}}"/><span class="add-on">บาท</span></div></div>
+{{#each targets}}
+					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext1Year{{unit.id}}" value="{{targetValueNext1Year}}"/><span class="add-on">{{unit.name}}</span></div></div>
 {{/each}}
+				</div>
+				<div style="margin: 0px 8px;">
+					<div><b>ปี : {{next2Year}}</b></div>
+					<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{amountRequestNext2Year}}"/><span class="add-on">บาท</span></div></div>
+{{#each targets}}
+					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext2Year{{unit.id}}" value="{{targetValueNext2Year}}"/><span class="add-on">{{unit.name}}</span></div></div>
+{{/each}}
+				</div>
+				<div style="margin: 0px 8px;">
+					<div><b>ปี: {{next3Year}}</b></div>
+					<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{amountRequestNext3Year}}"/><span class="add-on">บาท</span></div></div>
+{{#each targets}}
+					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext3Year{{unit.id}}" value="{{targetValueNext3Year}}"/><span class="add-on">{{unit.name}}</span></div></div>
+{{/each}}
+				</div>
+			</div>
+			<div class="clearfix"></div>
+
 		</form>
 	</div>
 </div>

@@ -924,4 +924,11 @@
 		targetvaluenext3year number(19,0)
 	);
 	
+	alter table BGT_OBJBGTPROPOSALTARGET add(
+		targetvaluenext1year number(19,0), 
+		targetvaluenext2year number(19,0), 
+		targetvaluenext3year number(19,0)	
+	);
+	
+	
 

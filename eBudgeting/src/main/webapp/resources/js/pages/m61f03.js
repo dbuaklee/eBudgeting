@@ -186,6 +186,9 @@ var ModalView = Backbone.View.extend({
 			for(var i=0; i<obp.get('targets').length; i++) {
 				var target = obp.get('targets').at(i);
 				target.set('targetValue', this.$el.find('input#targetValue'+target.get('unit').get('id')).val());
+				target.set('targetValueNext1Year', this.$el.find('input#targetValueNext1Year'+target.get('unit').get('id')).val());
+				target.set('targetValueNext2Year', this.$el.find('input#targetValueNext2Year'+target.get('unit').get('id')).val());
+				target.set('targetValueNext3Year', this.$el.find('input#targetValueNext3Year'+target.get('unit').get('id')).val());
 			}
 		}
 		

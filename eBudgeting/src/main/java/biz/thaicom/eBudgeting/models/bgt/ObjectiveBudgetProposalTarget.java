@@ -38,6 +38,16 @@ public class ObjectiveBudgetProposalTarget implements Serializable{
 	@Basic
 	private Long targetValue;
 	
+	
+	@Basic
+	private Long targetValueNext1Year;
+	
+	@Basic
+	private Long targetValueNext2Year;
+	
+	@Basic
+	private Long targetValueNext3Year;
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="PLN_TARGETUNIT_ID")
 	private TargetUnit unit;
@@ -77,6 +87,30 @@ public class ObjectiveBudgetProposalTarget implements Serializable{
 	public void setObjectiveBudgetProposal(
 			ObjectiveBudgetProposal objectiveBudgetProposal) {
 		this.objectiveBudgetProposal = objectiveBudgetProposal;
+	}
+
+	public Long getTargetValueNext1Year() {
+		return targetValueNext1Year;
+	}
+
+	public void setTargetValueNext1Year(Long targetValueNext1Year) {
+		this.targetValueNext1Year = targetValueNext1Year;
+	}
+
+	public Long getTargetValueNext2Year() {
+		return targetValueNext2Year;
+	}
+
+	public void setTargetValueNext2Year(Long targetValueNext2Year) {
+		this.targetValueNext2Year = targetValueNext2Year;
+	}
+
+	public Long getTargetValueNext3Year() {
+		return targetValueNext3Year;
+	}
+
+	public void setTargetValueNext3Year(Long targetValueNext3Year) {
+		this.targetValueNext3Year = targetValueNext3Year;
 	}
 	
 	
