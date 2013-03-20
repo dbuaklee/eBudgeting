@@ -264,7 +264,7 @@ public class ObjectiveRestController {
 	
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{ownerId}/{objectiveId}/children", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getChildrenbjectiveWithBudgetPorposalByOwnerId(
+	public @ResponseBody List<Objective> getChildrenbjectiveWithBudgetProposalByOwnerId(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long ownerId,
 			@PathVariable Long objectiveId,
@@ -277,7 +277,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{objectiveId}/children", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getChildrenbjectiveWithBudgetPorposal(
+	public @ResponseBody List<Objective> getChildrenbjectiveWithBudgetProposal(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
@@ -289,7 +289,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithBudgetPorposalByOwnerId(
+	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithBudgetProposalByOwnerId(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
@@ -304,7 +304,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/ObjectiveWithObjectiveBudgetProposal/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithObjectiveBudgetPorposalByOwnerId(
+	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithObjectiveBudgetProposalByOwnerId(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
@@ -319,7 +319,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposalAndAllocation/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithBudgetPorposalAndAllocation(
+	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithBudgetProposalAndAllocation(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
@@ -332,7 +332,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/ObjectiveWithObjectiveBudgetProposalAndAllocation/{fiscalYear}/{objectiveId}/flatDescendants", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithObjectiveBudgetPorposalAndAllocation(
+	public @ResponseBody List<Objective> getFlatDescendantsObjectiveWithObjectiveBudgetProposalAndAllocation(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser
@@ -349,7 +349,7 @@ public class ObjectiveRestController {
 	
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{ownerId}/{objectiveId}/descendants", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getDescendantsbjectiveWithBudgetPorposalByOwnerId(
+	public @ResponseBody List<Objective> getDescendantsbjectiveWithBudgetProposalByOwnerId(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long ownerId,
 			@PathVariable Long objectiveId,
@@ -362,7 +362,7 @@ public class ObjectiveRestController {
 	}
 	
 	@RequestMapping(value="/ObjectiveWithBudgetProposal/{fiscalYear}/{objectiveId}/descendants", method=RequestMethod.GET)
-	public @ResponseBody List<Objective> getDescendantsbjectiveWithBudgetPorposal(
+	public @ResponseBody List<Objective> getDescendantsbjectiveWithBudgetProposal(
 			@PathVariable Integer fiscalYear,
 			@PathVariable Long objectiveId,
 			@Activeuser ThaicomUserDetail currentUser

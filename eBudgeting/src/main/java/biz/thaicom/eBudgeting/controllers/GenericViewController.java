@@ -25,1031 +25,1005 @@ import biz.thaicom.security.models.ThaicomUserDetail;
 @Controller
 public class GenericViewController {
 
-	public static Logger logger = LoggerFactory.getLogger(GenericViewController.class);
-	
+	public static Logger logger = LoggerFactory
+			.getLogger(GenericViewController.class);
+
 	private static final String webAppcontext = "eBudgeting";
-	
+
 	@Autowired
 	private EntityService entityService;
-	
+
 	@RequestMapping("/jsp/{jspName}")
 	public String renderJsp(@PathVariable String jspName) {
-		
+
 		return jspName;
 	}
-	
-	// --------------------------------------------------------------m1f05: เพิ่มข้อมูลเริ่มต้นปีงบประมาณ
+
+	// --------------------------------------------------------------m1f05:
+	// เพิ่มข้อมูลเริ่มต้นปีงบประมาณ
 	@RequestMapping("/page/m1f05/")
-	public String runder_m1f05(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m1f05(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m1f05";
 	}
-	
-	
-	// --------------------------------------------------------------m1f06: ข้อมูลหน่วยงาน
-	
-	
 
-	// --------------------------------------------------------------m1f07: ข้อมูลผู้ใช้งาน
-	@RequestMapping("/page/m1f07") 
-	public String render_m61f07(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	// --------------------------------------------------------------m1f06:
+	// ข้อมูลหน่วยงาน
+
+	// --------------------------------------------------------------m1f07:
+	// ข้อมูลผู้ใช้งาน
+	@RequestMapping("/page/m1f07")
+	public String render_m61f07(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m1f07";
 	}
-	
-	
-	
-	
-	
-	
+
 	@RequestMapping("/page/m63f04/")
-	public String runder_m63f04(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m63f04(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m3f04";
 	}
-	
-	// --------------------------------------------------------------m64f04: การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)
+
+	// --------------------------------------------------------------m64f04:
+	// การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)
 	@RequestMapping("/page/m64f04/")
-	public String runder_m64f04(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m64f04(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m3f05";
 	}
-	
-	// --------------------------------------------------------------m65f04: การอนุมัติงบประมาณ ตาม พ.ร.บ. (m65)
+
+	// --------------------------------------------------------------m65f04:
+	// การอนุมัติงบประมาณ ตาม พ.ร.บ. (m65)
 	@RequestMapping("/page/m65f04/")
-	public String runder_m65f04(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m65f04(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m3f06";
 	}
-	
+
 	@RequestMapping("/page/m4f01/")
-	public String runder_m4f01(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m4f01(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m4f01";
 	}
-	
+
 	@RequestMapping("/page/m4f02/")
-	public String runder_m4f02(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m4f02(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m4f02";
 	}
-	
+
 	@RequestMapping("/page/m4f02/{fiscalYear}/{objectiveId}")
-	public String render_m4f02OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
+	public String render_m4f02OfYear(@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId, Model model,
+			HttpServletRequest request) {
+
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear,
+				objectiveId);
+
 		// now find the one we're looking for
 		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
+		if (objective != null) {
 			logger.debug("Objective found!");
-			
+
 			model.addAttribute("objective", objective);
 			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m4f02", fiscalYear, objective); 
-			
+
+			List<Breadcrumb> breadcrumb = entityService
+					.createBreadCrumbObjective("/page/m4f02", fiscalYear,
+							objective);
+
 			model.addAttribute("breadcrumb", breadcrumb.listIterator());
 			model.addAttribute("rootPage", false);
 			model.addAttribute("objective", objective);
-			
+
 		} else {
 			logger.debug("Objective NOT found! redirect to fiscal year selection");
 			// go to the root one!
 			return "redirect:/page/m4f02/";
 		}
-		
+
 		return "m4f02";
 	}
-	
 
-	
 	@RequestMapping("/page/m2f14/")
-	public String render_m2f14(
-			Model model, HttpServletRequest request) {
+	public String render_m2f14(Model model, HttpServletRequest request) {
 		model.addAttribute("rootPage", true);
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m2f14";
 	}
-	
+
 	@RequestMapping("/page/m2f14/{fiscalYear}/")
-	public String render_m2f14WithFiscalYear(
-			@PathVariable Integer fiscalYear,
+	public String render_m2f14WithFiscalYear(@PathVariable Integer fiscalYear,
 			Model model, HttpServletRequest request) {
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYear", fiscalYear);
-		
+
 		return "m2f14";
 	}
-	
-	
+
 	private Integer setFiscalYearFromSession(Model model, HttpSession session) {
-		if(session.getAttribute("currentRootFY") != null) {
-			Objective rootFy = (Objective) session.getAttribute("currentRootFY");
+		if (session.getAttribute("currentRootFY") != null) {
+			Objective rootFy = (Objective) session
+					.getAttribute("currentRootFY");
 			model.addAttribute("fiscalYear", rootFy.getFiscalYear());
 			return rootFy.getFiscalYear();
 		}
 		return null;
 	}
 
-
 	private Integer getCurrentFiscalYearFromSession(HttpSession session) {
 		Objective rootFy = (Objective) session.getAttribute("currentRootFY");
 		return rootFy.getFiscalYear();
 	}
 
-
-
-	// --------------------------------------------------------------m51f01: ทะเบียนยุทธศาสตร์การจัดสรร
+	// --------------------------------------------------------------m51f01:
+	// ทะเบียนยุทธศาสตร์การจัดสรร
 	@RequestMapping("/page/m51f01/")
-	public String render_m51f01(
-			Model model, HttpServletRequest request, HttpSession session) {
+	public String render_m51f01(Model model, HttpServletRequest request,
+			HttpSession session) {
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
-		
+
 		model.addAttribute("typeId", 109);
-		
+
 		String relatedTypeString = "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 
 		model.addAttribute("hasUnit", true);
-		
-		
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m51f02: ทะเบียนประเด็นยุทธศาสตร์
-	
-	@RequestMapping("/page/m51f02/")
-	public String render_m51f02(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f02:
+	// ทะเบียนประเด็นยุทธศาสตร์
+
+	@RequestMapping("/page/m51f02/")
+	public String render_m51f02(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
-		
+
 		setFiscalYearFromSession(model, session);
-		
-		
+
 		model.addAttribute("typeId", 121);
-		
-		String relatedTypeString = "" + ObjectiveTypeId.ยุทธศาสตร์การจัดสรรงบประมาณ.getValue() + "";
+
+		String relatedTypeString = ""
+				+ ObjectiveTypeId.ยุทธศาสตร์การจัดสรรงบประมาณ.getValue() + "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
-		String relatedTypeNameString = "" +  ObjectiveTypeId.ยุทธศาสตร์การจัดสรรงบประมาณ.getName() + "" ;
+
+		String relatedTypeNameString = ""
+				+ ObjectiveTypeId.ยุทธศาสตร์การจัดสรรงบประมาณ.getName() + "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		model.addAttribute("hasParent", "");
 		model.addAttribute("parentTypeName", "");
 		model.addAttribute("parentTypeId", "");
-		
-		
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m51f03: ทะเบียนเป้าหมายเชิงยุทธศาสตร์
-	@RequestMapping("/page/m51f03/")
-	public String render_m51f03(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f03:
+	// ทะเบียนเป้าหมายเชิงยุทธศาสตร์
+	@RequestMapping("/page/m51f03/")
+	public String render_m51f03(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 110);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getValue());
-		
+		model.addAttribute("parentTypeName",
+				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getName());
+		model.addAttribute("parentTypeId",
+				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getValue());
+
 		return "objectiveRegister";
 	}
-	
-	
-	// --------------------------------------------------------------m51f04: ทะเบียนเป้าหมายบริการกระทรวง
-	@RequestMapping("/page/m51f04/")
-	public String render_m51f04(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f04:
+	// ทะเบียนเป้าหมายบริการกระทรวง
+	@RequestMapping("/page/m51f04/")
+	public String render_m51f04(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
-		
+
 		model.addAttribute("typeId", 111);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		model.addAttribute("hasParent", "");
 		model.addAttribute("parentTypeName", "");
 		model.addAttribute("parentTypeId", "");
-		
-		String relatedTypeString = "" + ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getValue();
-				
+
+		String relatedTypeString = ""
+				+ ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getValue();
+
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
-		String relatedTypeNameString ="" +	ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getName();
+
+		String relatedTypeNameString = ""
+				+ ObjectiveTypeId.เป้าประสงค์เชิงนโยบาย.getName();
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m51f05: ทะเบียนเป้าหมายบริการหน่วยงาน
-	@RequestMapping("/page/m51f05/")
-	public String render_m51f05(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f05:
+	// ทะเบียนเป้าหมายบริการหน่วยงาน
+	@RequestMapping("/page/m51f05/")
+	public String render_m51f05(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
-		
+
 		model.addAttribute("typeId", 112);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.เป้าหมายบริการกระทรวง.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.เป้าหมายบริการกระทรวง.getValue());
-		
+		model.addAttribute("parentTypeName",
+				ObjectiveTypeId.เป้าหมายบริการกระทรวง.getName());
+		model.addAttribute("parentTypeId",
+				ObjectiveTypeId.เป้าหมายบริการกระทรวง.getValue());
+
 		return "objectiveRegister";
 	}
 
-	// --------------------------------------------------------------m51f06: ทะเบียนแผนงาน
+	// --------------------------------------------------------------m51f06:
+	// ทะเบียนแผนงาน
 	@RequestMapping("/page/m51f06/")
-	public String render_m51f06(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
+	public String render_m51f06(Model model, HttpServletRequest request,
+			HttpSession session) {
 
-				
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 101);
-		
-		String relatedTypeString = "" + ObjectiveTypeId.ประเด็นยุทธศาสตร์.getValue() + "";
+
+		String relatedTypeString = ""
+				+ ObjectiveTypeId.ประเด็นยุทธศาสตร์.getValue() + "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
-		String relatedTypeNameString = "" + ObjectiveTypeId.ประเด็นยุทธศาสตร์.getName() + "";
+
+		String relatedTypeNameString = ""
+				+ ObjectiveTypeId.ประเด็นยุทธศาสตร์.getName() + "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 
 		model.addAttribute("hasUnit", true);
-		
+
 		return "objectiveRegister";
 	}
-	
-	
-	// --------------------------------------------------------------m51f07: ทะเบียนผลผลิต/โครงการ
-	@RequestMapping("/page/m51f07/")
-	public String render_m51f07(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f07:
+	// ทะเบียนผลผลิต/โครงการ
+	@RequestMapping("/page/m51f07/")
+	public String render_m51f07(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 102);
-		
+
 		model.addAttribute("hasUnit", true);
-		
-		String relatedTypeString = "" + ObjectiveTypeId.เป้าหมายบริการหน่วยงาน.getValue() + "";
+
+		String relatedTypeString = ""
+				+ ObjectiveTypeId.เป้าหมายบริการหน่วยงาน.getValue() + "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
-		String relatedTypeNameString = "" + ObjectiveTypeId.เป้าหมายบริการหน่วยงาน.getName() + "";
-		
+
+		String relatedTypeNameString = ""
+				+ ObjectiveTypeId.เป้าหมายบริการหน่วยงาน.getName() + "";
+
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", true);
 		model.addAttribute("parentTypeName", ObjectiveTypeId.แผนงาน.getName());
 		model.addAttribute("parentTypeId", ObjectiveTypeId.แผนงาน.getValue());
-		
+
 		return "objectiveRegister";
 	}
 
-	// --------------------------------------------------------------m51f08: ทะเบียนกิจกรรมหลัก
+	// --------------------------------------------------------------m51f08:
+	// ทะเบียนกิจกรรมหลัก
 	@RequestMapping("/page/m51f08/")
-	public String render_m51f08(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
+	public String render_m51f08(Model model, HttpServletRequest request,
+			HttpSession session) {
 
-		
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 103);
-		
-		String relatedTypeString = "" + ObjectiveTypeId.กลยุทธ์หน่วยงาน.getValue() + " " +
-				ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getValue() + " " +
-				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getValue() + "";
+
+		String relatedTypeString = ""
+				+ ObjectiveTypeId.กลยุทธ์หน่วยงาน.getValue() + " "
+				+ ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getValue() + " "
+				+ ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getValue() + "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
-		String relatedTypeNameString = "" + ObjectiveTypeId.กลยุทธ์หน่วยงาน.getName() + " " +
-				ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getName() + " " +
-				ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getName() + "";
+
+		String relatedTypeNameString = ""
+				+ ObjectiveTypeId.กลยุทธ์หน่วยงาน.getName() + " "
+				+ ObjectiveTypeId.กลยุทธ์วิธีการหน่วยงาน.getName() + " "
+				+ ObjectiveTypeId.แนวทางการจัดสรรงบประมาณ.getName() + "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.ผลผลิตโครงการ.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.ผลผลิตโครงการ.getValue());
-		
+		model.addAttribute("parentTypeName",
+				ObjectiveTypeId.ผลผลิตโครงการ.getName());
+		model.addAttribute("parentTypeId",
+				ObjectiveTypeId.ผลผลิตโครงการ.getValue());
+
 		model.addAttribute("hasUnit", true);
-		
-		
+
 		return "objectiveRegister";
 	}
 
-	
-	// --------------------------------------------------------------m51f09: ทะเบียนกิจกรรมรอง
+	// --------------------------------------------------------------m51f09:
+	// ทะเบียนกิจกรรมรอง
 	@RequestMapping("/page/m51f09/")
-	public String render_m51f09(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
+	public String render_m51f09(Model model, HttpServletRequest request,
+			HttpSession session) {
 
-				
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 104);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
-		
+
 		return "objectiveNameRegister";
 	}
-	
-	
-	// --------------------------------------------------------------m51f10: ทะเบียนกิจกรรมย่อย
-	@RequestMapping("/page/m51f10/")
-	public String render_m51f10(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f10:
+	// ทะเบียนกิจกรรมย่อย
+	@RequestMapping("/page/m51f10/")
+	public String render_m51f10(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 105);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
-		
+
 		return "objectiveNameRegister";
 	}
-	
-	// --------------------------------------------------------------m51f11: ทะเบียนกิจกรรมเสริม
-	@RequestMapping("/page/m51f11/")
-	public String render_m51f11(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f11:
+	// ทะเบียนกิจกรรมเสริม
+	@RequestMapping("/page/m51f11/")
+	public String render_m51f11(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
-		
+
 		model.addAttribute("typeId", 106);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 		return "objectiveNameRegister";
 	}
-	
-	// --------------------------------------------------------------m51f12: ทะเบียนกิจกรรมสนับสนุน
-	@RequestMapping("/page/m51f12/")
-	public String render_m51f12(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f12:
+	// ทะเบียนกิจกรรมสนับสนุน
+	@RequestMapping("/page/m51f12/")
+	public String render_m51f12(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 107);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
-		
+
 		return "objectiveNameRegister";
 	}
-	
-	
-	// --------------------------------------------------------------m51f13: ทะเบียนกิจกรรมรายละเอียด
-	@RequestMapping("/page/m51f13/")
-	public String render_m51f13(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f13:
+	// ทะเบียนกิจกรรมรายละเอียด
+	@RequestMapping("/page/m51f13/")
+	public String render_m51f13(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 108);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 		return "objectiveNameRegister";
 	}
-	
-	
-	// --------------------------------------------------------------m51f14: ทะเบียนรายการและระดับรายการ
-	@RequestMapping("/page/m51f14/")
-	public String render_m51f14(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f14:
+	// ทะเบียนรายการและระดับรายการ
+	@RequestMapping("/page/m51f14/")
+	public String render_m51f14(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		return "m51f14";
 	}
-	
-	// --------------------------------------------------------------m51f15: ทะเบียนรายการกลาง
-	@RequestMapping("/page/m51f15/")
-	public String render_m51f15_fiscal(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m51f15:
+	// ทะเบียนรายการกลาง
+	@RequestMapping("/page/m51f15/")
+	public String render_m51f15_fiscal(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
-		
+
 		return "m51f15";
 	}
-	
-	// --------------------------------------------------------------	m51f16: ทะเบียนรายการหลักสำหรับบันทึกงบประมาณกิจกรรม
-	@RequestMapping("/page/m51f16/")
-	public String render_m51f16_fiscal(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// -------------------------------------------------------------- m51f16:
+	// ทะเบียนรายการหลักสำหรับบันทึกงบประมาณกิจกรรม
+	@RequestMapping("/page/m51f16/")
+	public String render_m51f16_fiscal(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		return "m51f16";
 	}
-	
-	
-	// --------------------------------------------------------------	m51f17: การเชื่อมโยงกิจกรรม
-	@RequestMapping("/page/m51f17/")
-	public String render_m51f17_fiscal(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// -------------------------------------------------------------- m51f17:
+	// การเชื่อมโยงกิจกรรม
+	@RequestMapping("/page/m51f17/")
+	public String render_m51f17_fiscal(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		return "m51f17";
 	}
-	
-	
-	// --------------------------------------------------- m51f18: ข้อมูลหน่วยนับเป้าหมาย
+
+	// --------------------------------------------------- m51f18:
+	// ข้อมูลหน่วยนับเป้าหมาย
 	@RequestMapping("/page/m51f18/")
-	public String render_m51f18(
-			Model model, HttpServletRequest request, HttpSession session) {
-		List<TargetUnit> targetUnits = entityService.findAllTargetUnits();		
+	public String render_m51f18(Model model, HttpServletRequest request,
+			HttpSession session) {
+		List<TargetUnit> targetUnits = entityService.findAllTargetUnits();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("targetUnits", targetUnits);
 		return "m51f18";
 	}
-	
-	// --------------------------------------------------------------m52f01: ทะเบียนเป้าประสงค์เชิงนโยบนาย
-	@RequestMapping("/page/m52f01/")
-	public String render_m52f01(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m52f01:
+	// ทะเบียนเป้าประสงค์เชิงนโยบนาย
+	@RequestMapping("/page/m52f01/")
+	public String render_m52f01(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 113);
-		
-		
+
 		String relatedTypeString = "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 
 		model.addAttribute("hasUnit", true);
-		
+
 		return "objectiveRegister";
 	}
-	
-	
-	// --------------------------------------------------------------m53f01: ทะเบียนยุทธศาสตร์กระทรวง
-	@RequestMapping("/page/m53f01/")
-	public String render_m53f01(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m53f01:
+	// ทะเบียนยุทธศาสตร์กระทรวง
+	@RequestMapping("/page/m53f01/")
+	public String render_m53f01(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 114);
-		
+
 		String relatedTypeString = "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 
 		model.addAttribute("hasUnit", true);
-		
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m53f02: ทะเบียนยุทธศาสตร์หน่วยงาน
-	@RequestMapping("/page/m53f02/") 
-	public String render_m53f02(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m53f02:
+	// ทะเบียนยุทธศาสตร์หน่วยงาน
+	@RequestMapping("/page/m53f02/")
+	public String render_m53f02(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 115);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
-		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getValue());
-		
-		
-		return "objectiveRegister";
-		
-	}
-	
-	
-	// --------------------------------------------------------------m53f03: ทะเบียนกลยุทธ์/วิธีการหน่วยงาน
-	@RequestMapping("/page/m53f03/")
-	public String render_m53f03(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+		model.addAttribute("hasParent", true);
+		model.addAttribute("parentTypeName",
+				ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getName());
+		model.addAttribute("parentTypeId",
+				ObjectiveTypeId.ยุทธศาสตร์กระทรวง.getValue());
+
+		return "objectiveRegister";
+
+	}
+
+	// --------------------------------------------------------------m53f03:
+	// ทะเบียนกลยุทธ์/วิธีการหน่วยงาน
+	@RequestMapping("/page/m53f03/")
+	public String render_m53f03(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 116);
-		
+
 		model.addAttribute("hasUnit", true);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", true);
-		model.addAttribute("parentTypeName", ObjectiveTypeId.กลยุทธ์หน่วยงาน.getName());
-		model.addAttribute("parentTypeId", ObjectiveTypeId.กลยุทธ์หน่วยงาน.getValue());
-		
+		model.addAttribute("parentTypeName",
+				ObjectiveTypeId.กลยุทธ์หน่วยงาน.getName());
+		model.addAttribute("parentTypeId",
+				ObjectiveTypeId.กลยุทธ์หน่วยงาน.getValue());
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m54f01: ทะเบียนแนวทางการจัดสรรงบประมาณ
-	@RequestMapping("/page/m54f01/")
-	public String render_m54f01(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m54f01:
+	// ทะเบียนแนวทางการจัดสรรงบประมาณ
+	@RequestMapping("/page/m54f01/")
+	public String render_m54f01(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 118);
-		
+
 		String relatedTypeString = "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 
 		model.addAttribute("hasUnit", true);
-		
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m55f01: ทะเบียนวิสัยทัศน์หน่วยงาน
-	@RequestMapping("/page/m55f01/")
-	public String render_m55f01(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m55f01:
+	// ทะเบียนวิสัยทัศน์หน่วยงาน
+	@RequestMapping("/page/m55f01/")
+	public String render_m55f01(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 119);
-		
+
 		String relatedTypeString = "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 
 		model.addAttribute("hasUnit", false);
-		
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m55f02: ทะเบียนพันธกิจหน่วยงาน
-	@RequestMapping("/page/m55f02/")
-	public String render_m55f02(
-			Model model,
-			HttpServletRequest request, HttpSession session) {
 
-				
+	// --------------------------------------------------------------m55f02:
+	// ทะเบียนพันธกิจหน่วยงาน
+	@RequestMapping("/page/m55f02/")
+	public String render_m55f02(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
 		setFiscalYearFromSession(model, session);
 		model.addAttribute("typeId", 120);
-		
+
 		String relatedTypeString = "";
 		model.addAttribute("relatedTypeString", relatedTypeString);
-		
+
 		String relatedTypeNameString = "";
 		model.addAttribute("relatedTypeNameString", relatedTypeNameString);
-		
+
 		model.addAttribute("hasParent", "");
 
 		model.addAttribute("hasUnit", false);
-		
+
 		return "objectiveRegister";
 	}
-	
-	// --------------------------------------------------------------m61f03: การบันทึกงบประมาณ ระดับกิจกรรมหลัก
+
+	// --------------------------------------------------------------m61f03:
+	// การบันทึกงบประมาณ ระดับกิจกรรมหลัก
 	@RequestMapping("/page/m61f03_1/")
-	public String render_m61f03(
-			Model model,
-			HttpServletRequest request, HttpSession session,
-			@Activeuser ThaicomUserDetail currentUser) {
+	public String render_m61f03(Model model, HttpServletRequest request,
+			HttpSession session, @Activeuser ThaicomUserDetail currentUser) {
 		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		Integer fy = setFiscalYearFromSession(model, session);
 		model.addAttribute("rootPage", false);
 		model.addAttribute("fiscalYears", fiscalYears);
-		
-		//check the budgetSignOff
-		BudgetSignOff bso = entityService.findBudgetSignOffByFiscalYearAndOrganization(
-				fy, currentUser.getWorkAt());
-		
-		if(bso.getLock1Person() != null) {
+
+		// check the budgetSignOff
+		BudgetSignOff bso = entityService
+				.findBudgetSignOffByFiscalYearAndOrganization(fy,
+						currentUser.getWorkAt());
+
+		if (bso.getLock1Person() != null) {
 			// should not be able to edit!
 			model.addAttribute("readOnly", true);
 		}
-		
+
 		return "m61f03_1";
 	}
-	
-	
-	// --------------------------------------------------------------m61f04: การบันทึกงบประมาณ ระดับรายการ
-//	@RequestMapping("/page/m61f04/")
-//	public String render_m61f04(
-//			Model model, HttpServletRequest request, HttpSession session,
-//			@Activeuser ThaicomUserDetail currentUser) {
-//			
-//		model.addAttribute("rootPage", false);
-//		
-//		setFiscalYearFromSession(model, session);
-//		
-//		Integer fy = getCurrentFiscalYearFromSession(session);
-//		Objective rootObjective = entityService.findOneRootObjectiveByFiscalyear(fy);
-//		
-//		model.addAttribute("objectiveId", rootObjective.getId());
-//
-//		//check the budgetSignOff
-//		BudgetSignOff bso = entityService.findBudgetSignOffByFiscalYearAndOrganization(
-//				fy, currentUser.getWorkAt());
-//		
-//		if(bso.getLock1Person() != null) {
-//			// should not be able to edit!
-//			model.addAttribute("readOnly", true);
-//		}
-//		
-//		return "m61f04";
-//	}
 
-	// --------------------------------------------------------------m61f05: การบันทึก SignOff/Release
+	// --------------------------------------------------------------m61f04:
+	// การบันทึกงบประมาณ ระดับรายการ
+	// @RequestMapping("/page/m61f04/")
+	// public String render_m61f04(
+	// Model model, HttpServletRequest request, HttpSession session,
+	// @Activeuser ThaicomUserDetail currentUser) {
+	//
+	// model.addAttribute("rootPage", false);
+	//
+	// setFiscalYearFromSession(model, session);
+	//
+	// Integer fy = getCurrentFiscalYearFromSession(session);
+	// Objective rootObjective =
+	// entityService.findOneRootObjectiveByFiscalyear(fy);
+	//
+	// model.addAttribute("objectiveId", rootObjective.getId());
+	//
+	// //check the budgetSignOff
+	// BudgetSignOff bso =
+	// entityService.findBudgetSignOffByFiscalYearAndOrganization(
+	// fy, currentUser.getWorkAt());
+	//
+	// if(bso.getLock1Person() != null) {
+	// // should not be able to edit!
+	// model.addAttribute("readOnly", true);
+	// }
+	//
+	// return "m61f04";
+	// }
+
+	// --------------------------------------------------------------m61f05:
+	// การบันทึก SignOff/Release
 	@RequestMapping("/page/m61f05/")
-	public String render_m61f05(
-			Model model, HttpServletRequest request, HttpSession session) {
-			
+	public String render_m61f05(Model model, HttpServletRequest request,
+			HttpSession session) {
+
 		model.addAttribute("rootPage", false);
-		
+
 		setFiscalYearFromSession(model, session);
-		
+
 		Integer fy = getCurrentFiscalYearFromSession(session);
-		Objective rootObjective = entityService.findOneRootObjectiveByFiscalyear(fy);
-		
+		Objective rootObjective = entityService
+				.findOneRootObjectiveByFiscalyear(fy);
+
 		model.addAttribute("objectiveId", rootObjective.getId());
-		
-		
+
 		return "m61f05";
 	}
-	
-	
-	// --------------------------------------------------------------m61f04: การบันทึกงบประมาณ ระดับรายการ
+
+	// --------------------------------------------------------------m61f04:
+	// การบันทึกงบประมาณ ระดับรายการ
 	@RequestMapping("/page/m61f04_1/")
-	public String render_m61f04_1(
-			Model model, HttpServletRequest request, HttpSession session,
-			@Activeuser ThaicomUserDetail currentUser) {
-			
+	public String render_m61f04_1(Model model, HttpServletRequest request,
+			HttpSession session, @Activeuser ThaicomUserDetail currentUser) {
+
 		model.addAttribute("rootPage", false);
-		
+
 		setFiscalYearFromSession(model, session);
-		
+
 		Integer fy = getCurrentFiscalYearFromSession(session);
-		Objective rootObjective = entityService.findOneRootObjectiveByFiscalyear(fy);
-		
+		Objective rootObjective = entityService
+				.findOneRootObjectiveByFiscalyear(fy);
+
 		model.addAttribute("objectiveId", rootObjective.getId());
-		
-		//check the budgetSignOff
-		BudgetSignOff bso = entityService.findBudgetSignOffByFiscalYearAndOrganization(
-				fy, currentUser.getWorkAt());
-		
-		if(bso.getLock1Person() != null) {
+
+		// check the budgetSignOff
+		BudgetSignOff bso = entityService
+				.findBudgetSignOffByFiscalYearAndOrganization(fy,
+						currentUser.getWorkAt());
+
+		if (bso.getLock1Person() != null) {
 			// should not be able to edit!
 			model.addAttribute("readOnly", true);
 		}
 
-		
 		return "m61f04_1";
 	}
 
-	
-	// --------------------------------------------------------------m62f01: การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม 
+	// --------------------------------------------------------------m62f01:
+	// การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม
 	@RequestMapping("/page/m62f01/")
-	public String render_m62f01(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String render_m62f01(Model model, HttpServletRequest request,
+			HttpSession session,
+			@Activeuser ThaicomUserDetail currentUser) {
 		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
+		model.addAttribute("user", currentUser);
+		setFiscalYearFromSession(model, session);
 		return "m62f01";
 	}
-	
+
 	@RequestMapping("/page/m62f01/{fiscalYear}/{objectiveId}")
-	public String render_m62f01OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request,
+	public String render_m62f01OfYear(@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId, Model model,
+			HttpServletRequest request,
 			@Activeuser ThaicomUserDetail currentUser) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
+
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear,
+				objectiveId);
+
 		// now find the one we're looking for
 		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
+		if (objective != null) {
 			logger.debug("Objective found!");
-			
+
 			model.addAttribute("objective", objective);
 			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m61f03", fiscalYear, objective); 
-			
+
+			List<Breadcrumb> breadcrumb = entityService
+					.createBreadCrumbObjective("/page/m61f03", fiscalYear,
+							objective);
+
 			model.addAttribute("breadcrumb", breadcrumb.listIterator());
 			model.addAttribute("rootPage", false);
 			model.addAttribute("objective", objective);
-			
+
 		} else {
 			logger.debug("Objective NOT found! redirect to fiscal year selection");
 			// go to the root one!
 			return "redirect:/page/m61f03/";
 		}
-		
+
 		return "m62f01";
 	}
-	
-	
-	// --------------------------------------------------------------m62f02: การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม 
+
+	// --------------------------------------------------------------m62f02:
+	// การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม
 	@RequestMapping("/page/m62f02/")
-	public String render_m62f02(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String render_m62f02(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m62f01";
 	}
-	
+
 	@RequestMapping("/page/m63f02/")
-	public String runder_m63f02(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m63f02(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m63f02";
 	}
-	
+
 	@RequestMapping("/page/m63f02/{fiscalYear}/{objectiveId}")
-	public String render_m63f02OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
+	public String render_m63f02OfYear(@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId, Model model,
+			HttpServletRequest request) {
+
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear,
+				objectiveId);
+
 		// now find the one we're looking for
 		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
+		if (objective != null) {
 			logger.debug("Objective found!");
-			
+
 			model.addAttribute("objective", objective);
 			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m63f02", fiscalYear, objective); 
-			
+
+			List<Breadcrumb> breadcrumb = entityService
+					.createBreadCrumbObjective("/page/m63f02", fiscalYear,
+							objective);
+
 			model.addAttribute("breadcrumb", breadcrumb.listIterator());
 			model.addAttribute("rootPage", false);
 			model.addAttribute("objective", objective);
-			
+
 		} else {
 			logger.debug("Objective NOT found! redirect to fiscal year selection");
 			// go to the root one!
 			return "redirect:/page/m63f02/";
 		}
-		
+
 		return "m63f02";
 	}
-	
+
 	@RequestMapping("/page/m64f02/")
-	public String render_m64f02(
-			Model model, HttpServletRequest request) {
-		
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String render_m64f02(Model model, HttpServletRequest request) {
+
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		logger.debug("htt");
 		return "m64f02";
 	}
-	
+
 	@RequestMapping("/page/m64f02/{fiscalYear}/{objectiveId}")
-	public String render_m64f02OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
+	public String render_m64f02OfYear(@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId, Model model,
+			HttpServletRequest request) {
+
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear,
+				objectiveId);
+
 		// now find the one we're looking for
 		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
+		if (objective != null) {
 			logger.debug("Objective found!");
-			
+
 			model.addAttribute("objective", objective);
 			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m64f02", fiscalYear, objective); 
-			
+
+			List<Breadcrumb> breadcrumb = entityService
+					.createBreadCrumbObjective("/page/m64f02", fiscalYear,
+							objective);
+
 			model.addAttribute("breadcrumb", breadcrumb.listIterator());
 			model.addAttribute("rootPage", false);
 			model.addAttribute("objective", objective);
-			
+
 		} else {
 			logger.debug("Objective NOT found! redirect to fiscal year selection");
 			// go to the root one!
 			return "redirect:/page/m64f02/";
 		}
-		
+
 		return "m64f02";
 	}
-	
+
 	@RequestMapping("/page/m65f02/")
-	public String render_m65f02(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String render_m65f02(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m65f02";
 	}
-	
+
 	@RequestMapping("/page/m65f02/{fiscalYear}/{objectiveId}")
-	public String render_m65f02OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
+	public String render_m65f02OfYear(@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId, Model model,
+			HttpServletRequest request) {
+
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear,
+				objectiveId);
+
 		// now find the one we're looking for
 		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
+		if (objective != null) {
 			logger.debug("Objective found!");
-			
+
 			model.addAttribute("objective", objective);
 			// now construct breadcrumb?
-			
-			List<Breadcrumb> breadcrumb = entityService.createBreadCrumbObjective("/page/m65f02", fiscalYear, objective); 
-			
+
+			List<Breadcrumb> breadcrumb = entityService
+					.createBreadCrumbObjective("/page/m65f02", fiscalYear,
+							objective);
+
 			model.addAttribute("breadcrumb", breadcrumb.listIterator());
 			model.addAttribute("rootPage", false);
 			model.addAttribute("objective", objective);
-			
+
 		} else {
 			logger.debug("Objective NOT found! redirect to fiscal year selection");
 			// go to the root one!
 			return "redirect:/page/m65f02/";
 		}
-		
+
 		return "m65f02";
 	}
-	
+
 	@RequestMapping("/page/m71f02/")
-	public String runder_m71f02(
-			Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();		
+	public String runder_m71f02(Model model, HttpServletRequest request) {
+		List<Objective> fiscalYears = entityService.findRootFiscalYear();
 		model.addAttribute("rootPage", true);
 		model.addAttribute("fiscalYears", fiscalYears);
 		return "m71f02";
 	}
-	
+
 	@RequestMapping("/page/m71f02/{fiscalYear}/{objectiveId}")
-	public String render_m71f02OfYear(
-			@PathVariable Integer fiscalYear,
-			@PathVariable Long objectiveId,
-			Model model, HttpServletRequest request) {
-		
-		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear, objectiveId);
-		
+	public String render_m71f02OfYear(@PathVariable Integer fiscalYear,
+			@PathVariable Long objectiveId, Model model,
+			HttpServletRequest request) {
+
+		logger.debug("fiscalYear = {}, objectiveId = {}", fiscalYear,
+				objectiveId);
+
 		// now find the one we're looking for
 		Objective objective = entityService.findOjectiveById(objectiveId);
-		if(objective != null ) {
+		if (objective != null) {
 			logger.debug("Objective found!");
-			
+
 			model.addAttribute("objective", objective);
 			// now construct breadcrumb?
-			
+
 			model.addAttribute("rootPage", false);
 			model.addAttribute("objective", objective);
-			
+
 		} else {
 			logger.debug("Objective NOT found! redirect to fiscal year selection");
 			// go to the root one!
 			return "redirect:/page/m71f02/";
 		}
-		
+
 		return "m71f02";
 	}
 
 }
-
-
