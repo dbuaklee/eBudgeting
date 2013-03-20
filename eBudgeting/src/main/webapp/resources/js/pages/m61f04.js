@@ -17,10 +17,9 @@
 		
 		events : {
 			"change #strategySlt" : "strategySelect",
-			"click .saveProposal" : "saveProposal",
 			"click .copytoNextYear" : "copyToNextYear",
 			"change .formulaColumnInput" : "inputChange",
-			"click .updateProposal" : "updateProposal",
+			
 			"click .backToProposal" : "backToProposal"
 			
 		},
@@ -234,226 +233,8 @@
 			this.currentStrategy = strategy;
 			this.renderInputStrategy(strategy);
 			
-		},
-	
-		updateProposal : function(e) {
-			var validated=true;
-			this.$el.find('input:enabled').each(function(e) {
-				
-				if( isNaN( +$(this).val() ) ) {
-					$(this).parent('div').addClass('control-group error');
-					validated = false;
-					
-				} else {
-					$(this).parent('div').removeClass('control-group error');
-				}
-			});
-			
-			if(validated == false) {
-				alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
-				return false;
-			}
-			
-			
-			
-			//now get the proposalId
-			var proposalStrategyId = this.$el.find('#proposalStrategyId').attr('data-id');
-			var proposalStrategy = ProposalStrategy.findOrCreate(proposalStrategyId);
-			
-			if (proposalStrategy != null) {
-				
-				// we just pick up changes
-				// loop through formulaColumns
-				if(this.currentStrategy!=null) {
-					var i;
-					calculatedAmount = this.currentStrategy.get('standardPrice');
-					var formulaColumns = this.currentStrategy.get('formulaColumns');
-					for (i = 0; i < formulaColumns.length; i++) {
-		
-						var fc = formulaColumns.at(i);
-						if (fc.get('isFixed')) {
-							var colId = fc.get('id');
-							// now find this colId in requestColumns
-							var rc = proposalStrategy.get('requestColumns');
-							var foundRC = rc.where({
-								column : FormulaColumn.findOrCreate(colId)
-							})[0];
-		
-							foundRC.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
-		
-							if (calculatedAmount == 0) {
-								calculatedAmount = foundRC.get('amount');
-							} else {
-								calculatedAmount = calculatedAmount * foundRC.get('amount');
-							}
-		
-						} else {
-							if (calculatedAmount == 0) {
-								calculatedAmount = fc.get('value');
-							} else {
-								calculatedAmount = calculatedAmount	* fc.get('value');
-							}
-						}
-					}
-					
-					proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
-				} else {
-					proposalStrategy.set('totalCalculatedAmount', this.$el.find('#totalInputTxt').val());	
-				}
-				
-				
-				proposalStrategy.set('targetValue', this.$el.find("#targetValue").val());
-				proposalStrategy.set('targetValueNext1Year', this.$el.find("#targetValueNext1Year").val());
-				proposalStrategy.set('targetValueNext2Year', this.$el.find("#targetValueNext2Year").val());
-				proposalStrategy.set('targetValueNext3Year', this.$el.find("#targetValueNext3Year").val());
-				proposalStrategy.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
-				proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
-				proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
-	
-				// now we can send changes to the server?
-				var json = proposalStrategy.toJSON();
-	
-				
-				this.$el.find('button.updateProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
-				$.ajax({
-					type : 'PUT',
-					url : appUrl('/ProposalStrategy/' + proposalStrategy.get('id')),
-					data : JSON.stringify(json),
-					contentType : 'application/json;charset=utf-8',
-					dataType : "json",
-					success : _.bind(function(data) {
-						// OK we should update our budgetProposal too
-						var proposal = proposalStrategy.get('proposal');
-						proposal.set('amountRequest', proposalStrategy.get('totalCalculatedAmount'));
-						proposal.set('amountRequestNext1Year', proposalStrategy.get('amountRequestNext1Year'));
-						proposal.set('amountRequestNext2Year', proposalStrategy.get('amountRequestNext2Year'));
-						proposal.set('amountRequestNext3Year', proposalStrategy.get('amountRequestNext3Year'));
-						
-						
-						this.parentModal.render();
-					}, this)
-				});
-			}
-	
-		},
-	
-		saveProposal : function(e) {
-			var validated=true;
-			this.$el.find('input:enabled').each(function(index) {
-				
-				if( isNaN( +$(this).val() ) ) {
-					$(this).parent('div').addClass('control-group error');
-					validated = false;
-					
-				} else {
-					$(this).parent('div').removeClass('control-group error');
-				}
-			});
-			
-			if(validated == false) {
-				alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
-				return false;
-			}
-			
-			var objective = this.parentModal.objective;
-			var budgetType = this.currentBudgetType;
-	
-			var budgetProposal = this.currentBudgetProposal;
-	
-			if (budgetProposal == null) {
-				// create new BudgetProposal
-				budgetProposal = new BudgetProposal();
-				budgetProposal.set('forObjective', objective);
-				budgetProposal.set('budgetType', budgetType);
-				// now put this proposal into objective;
-				objective.get('filterProposals').push(budgetProposal);
-			}
-	
-			
-			
-			// we will make a new ProposalStrategy
-			var proposalStrategy = new ProposalStrategy();
-			budgetProposal.get('proposalStrategies').add(proposalStrategy);
-			
-			proposalStrategy.set('formulaStrategy', this.currentStrategy);
-			var calculatedAmount = 0;
-			
-			if(this.currentStrategy == null) {
-				calculatedAmount = this.$el.find('#totalInputTxt').val();
-				proposalStrategy.set('name', this.currentBudgetType.get('name'));
-			} else{
-				// loop through formulaColumns
-				proposalStrategy.set('name', this.currentStrategy.get('name'));
-				var i;
-				calculatedAmount = this.currentStrategy.get('standardPrice');
-				var formulaColumns = this.currentStrategy.get('formulaColumns');
-				for (i = 0; i < formulaColumns.length; i++) {
-					var fc = formulaColumns.at(i);
-					if (fc.get('isFixed')) {
-						var requestColumn = new RequestColumn();
-						requestColumn.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
-						requestColumn.set('column', fc);
-						requestColumn.set('proposalStrategy', proposalStrategy);
-	
-						proposalStrategy.get('requestColumns').add(requestColumn);
-	
-						if (calculatedAmount == 0) {
-							calculatedAmount = requestColumn.get('amount');
-						} else {
-							calculatedAmount = calculatedAmount * requestColumn.get('amount');
-						}
-	
-					} else {
-						if (calculatedAmount == 0) {
-							calculatedAmount = fc.get('value');
-						} else {
-							calculatedAmount = calculatedAmount * fc.get('value');
-						}
-					}
-				}
-			}
-			proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
-			
-			proposalStrategy.set('proposal', budgetProposal);
-			proposalStrategy.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
-			proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
-			proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
-			
-			
-			var unitId = this.$el.find('#targetValue').attr('data-unitId');
-			if(unitId !=null) {
-				var unit = TargetUnit.findOrCreate(unitId);
-				proposalStrategy.set('targetUnit', unit);
-				proposalStrategy.set('targetValue', this.$el.find('#targetValue').val());
-				proposalStrategy.set('targetValueNext1Year', this.$el.find('#targetValueNext1Year').val());
-				proposalStrategy.set('targetValueNext2Year', this.$el.find('#targetValueNext2Year').val());
-				proposalStrategy.set('targetValueNext3Year', this.$el.find('#targetValueNext3Year').val());
-			}
-			
-			
-			budgetProposal.set('amountRequest', calculatedAmount);
-			budgetProposal.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
-			budgetProposal.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
-			budgetProposal.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
-	
-			// either do create or update!?
-			if (budgetProposal.get('id') == null) {
-				this.$el.find('button.saveProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
-				saveModel(budgetProposal,
-					_.bind(function(resp,status,xhr) {
-						budgetProposal.set('id', resp.id);
-						// now set id for each proposal / request column
-						if(resp.proposalStrategies != null) {
-							proposalStrategy.set('id', resp.proposalStrategies[0].id);
-						}
-						
-						this.parentModal.objective.get('filterProposals').add(budgetProposal);
-						this.parentModal.render();		
-					},this));
-
-				
-			} 	
 		}
+	
 	});
 
 	var BudgetTypeAllSelectionView = Backbone.View.extend({
@@ -579,12 +360,21 @@
 		currentFormulaStrategySelection: null,
 		
 		modalTemplate : Handlebars.compile($('#modalTemplate').html()),
+		modalBtnTemplate : Handlebars.compile($('#modalBtnTemplate').html()),
+
 		inputAllDivTemplate : Handlebars.compile($('#inputAllDivTemplate').html()),
+		inputAllDivBtnTemplate: Handlebars.compile($('#inputAllDivBtnTemplate').html()),
+
 		
 		inputEditProposalTemplate: Handlebars.compile($('#inputEditProposalTemplate').html()), 
+		inputEditProposalBtnTemplate:Handlebars.compile($('#inputEditProposalBtnTemplate').html()),
+		
 		defaultInputTemplate : Handlebars.compile($('#defaultInputTemplate').html()),
 		inputModalTemplate : Handlebars.compile($('#inputModalTemplate').html()),
+		
 		inputObjectiveDetailDivTemplate : Handlebars.compile($('#inputObjectiveDetailDivTemplate').html()),
+		inputObjectiveDetailBtnTemplate : Handlebars.compile($('#inputObjectiveDetailBtnTemplate').html()),
+
 		
 		updateBudgetTypeSelectionLevelWithModel: function(level, model) {
 			//set the previos level to this model
@@ -646,8 +436,10 @@
 			"click #addObjectiveDetail" : "renderObjectiveDetailInput",
 			"change .objectiveDetail" : "updateObjectiveDetailModel",
 			"click #saveObjectiveDetail" : "saveObjectiveDetail",
-			"click #printObjectiveDetail" : "printObjectiveDetail"
-				
+			"click #printObjectiveDetail" : "printObjectiveDetail",
+			
+			"click .updateProposal" : "updateProposal",
+			"click .saveProposal" : "saveProposal"
 				
 
 		},
@@ -668,6 +460,8 @@
 
 			// we'll begin by render the budgetTypeSelectionView
 			this.renderEditProposal(budgetProposal, proposalStrategy);
+			
+			this.currentBudgetType = budgetProposal.get('budgetType');
 
 		},
 
@@ -707,6 +501,7 @@
 		
 		renderEditProposal: function(budgetProposal, proposalStrategy) {
 			this.$el.find('.modal-body').html(this.inputEditProposalTemplate());
+			this.$el.find('.modal-footer').html(this.inputEditProposalBtnTemplate());
 			
 			this.startegySelectionView = new StrategySelectionView({el: '#inputAll', parentModal: this});
 			this.startegySelectionView.setCurrentBudgetTypeAndStrategy(budgetProposal.get('budgetType'), proposalStrategy.get('formulaStrategy'));
@@ -803,6 +598,8 @@
 					
 					var json = this.detail.toJSON();
 					this.$el.find('.modal-body').html(this.inputObjectiveDetailDivTemplate(json));
+					this.$el.find('.modal-footer').html(this.inputObjectiveDetailBtnTemplate());
+
 				},this)
 			});
 			
@@ -842,6 +639,7 @@
 
 		renderInputALL : function(e) {
 			this.$el.find('.modal-body').html(this.inputAllDivTemplate());
+			this.$el.find('.modal-footer').html(this.inputAllDivBtnTemplate());
 			
 			var rootBudgetType = BudgetType.findOrCreate({id:0});
 		    rootBudgetType.fetch({success: _.bind(function(){
@@ -890,6 +688,9 @@
 				var html = this.modalTemplate(json);
 				this.$el.find('.modal-header span').html("การบันทึกเงินระดับรายการ <br/>" + this.objective.get('name'));
 				this.$el.find('.modal-body').html(html);
+				this.$el.find('.modal-footer').html(this.modalBtnTemplate());
+
+				
 			}
 
 			
@@ -904,7 +705,226 @@
 		renderWith : function(currentObjective) {
 			this.objective = currentObjective;
 			this.render();
+		},
+		updateProposal : function(e) {
+			var validated=true;
+			this.$el.find('input:enabled').each(function(e) {
+				
+				if( isNaN( +$(this).val() ) ) {
+					$(this).parent('div').addClass('control-group error');
+					validated = false;
+					
+				} else {
+					$(this).parent('div').removeClass('control-group error');
+				}
+			});
+			
+			if(validated == false) {
+				alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
+				return false;
+			}
+			
+			
+			
+			//now get the proposalId
+			var proposalStrategyId = this.$el.find('#proposalStrategyId').attr('data-id');
+			var proposalStrategy = ProposalStrategy.findOrCreate(proposalStrategyId);
+			
+			if (proposalStrategy != null) {
+				
+				// we just pick up changes
+				// loop through formulaColumns
+				if(this.currentStrategy!=null) {
+					var i;
+					calculatedAmount = this.currentStrategy.get('standardPrice');
+					var formulaColumns = this.currentStrategy.get('formulaColumns');
+					for (i = 0; i < formulaColumns.length; i++) {
+		
+						var fc = formulaColumns.at(i);
+						if (fc.get('isFixed')) {
+							var colId = fc.get('id');
+							// now find this colId in requestColumns
+							var rc = proposalStrategy.get('requestColumns');
+							var foundRC = rc.where({
+								column : FormulaColumn.findOrCreate(colId)
+							})[0];
+		
+							foundRC.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
+		
+							if (calculatedAmount == 0) {
+								calculatedAmount = foundRC.get('amount');
+							} else {
+								calculatedAmount = calculatedAmount * foundRC.get('amount');
+							}
+		
+						} else {
+							if (calculatedAmount == 0) {
+								calculatedAmount = fc.get('value');
+							} else {
+								calculatedAmount = calculatedAmount	* fc.get('value');
+							}
+						}
+					}
+					
+					proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
+				} else {
+					proposalStrategy.set('totalCalculatedAmount', this.$el.find('#totalInputTxt').val());	
+				}
+				
+				
+				proposalStrategy.set('targetValue', this.$el.find("#targetValue").val());
+				proposalStrategy.set('targetValueNext1Year', this.$el.find("#targetValueNext1Year").val());
+				proposalStrategy.set('targetValueNext2Year', this.$el.find("#targetValueNext2Year").val());
+				proposalStrategy.set('targetValueNext3Year', this.$el.find("#targetValueNext3Year").val());
+				proposalStrategy.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
+				proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
+				proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
+	
+				// now we can send changes to the server?
+				var json = proposalStrategy.toJSON();
+	
+				
+				this.$el.find('button.updateProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
+				$.ajax({
+					type : 'PUT',
+					url : appUrl('/ProposalStrategy/' + proposalStrategy.get('id')),
+					data : JSON.stringify(json),
+					contentType : 'application/json;charset=utf-8',
+					dataType : "json",
+					success : _.bind(function(data) {
+						// OK we should update our budgetProposal too
+						var proposal = proposalStrategy.get('proposal');
+						proposal.set('amountRequest', proposalStrategy.get('totalCalculatedAmount'));
+						proposal.set('amountRequestNext1Year', proposalStrategy.get('amountRequestNext1Year'));
+						proposal.set('amountRequestNext2Year', proposalStrategy.get('amountRequestNext2Year'));
+						proposal.set('amountRequestNext3Year', proposalStrategy.get('amountRequestNext3Year'));
+						
+						
+						this.render();
+					}, this)
+				});
+			}
+	
+		},
+	
+		saveProposal : function(e) {
+			var validated=true;
+			this.$el.find('input:enabled').each(function(index) {
+				
+				if( isNaN( +$(this).val() ) ) {
+					$(this).parent('div').addClass('control-group error');
+					validated = false;
+					
+				} else {
+					$(this).parent('div').removeClass('control-group error');
+				}
+			});
+			
+			if(validated == false) {
+				alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
+				return false;
+			}
+			
+			var objective = this.objective;
+			var budgetType = this.currentBudgetTypeSelection[3];
+	
+			var budgetProposal = this.currentBudgetProposal;
+	
+			if (budgetProposal == null) {
+				// create new BudgetProposal
+				budgetProposal = new BudgetProposal();
+				budgetProposal.set('forObjective', objective);
+				budgetProposal.set('budgetType', budgetType);
+				// now put this proposal into objective;
+				objective.get('filterProposals').push(budgetProposal);
+			}
+	
+			
+			
+			// we will make a new ProposalStrategy
+			var proposalStrategy = new ProposalStrategy();
+			budgetProposal.get('proposalStrategies').add(proposalStrategy);
+			
+			proposalStrategy.set('formulaStrategy', this.currentStrategy);
+			var calculatedAmount = 0;
+			
+			if(this.currentStrategy == null) {
+				calculatedAmount = this.$el.find('#totalInputTxt').val();
+				proposalStrategy.set('name', this.currentBudgetTypeSelection[3].get('name'));
+			} else{
+				// loop through formulaColumns
+				proposalStrategy.set('name', this.currentStrategy.get('name'));
+				var i;
+				calculatedAmount = this.currentStrategy.get('standardPrice');
+				var formulaColumns = this.currentStrategy.get('formulaColumns');
+				for (i = 0; i < formulaColumns.length; i++) {
+					var fc = formulaColumns.at(i);
+					if (fc.get('isFixed')) {
+						var requestColumn = new RequestColumn();
+						requestColumn.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
+						requestColumn.set('column', fc);
+						requestColumn.set('proposalStrategy', proposalStrategy);
+	
+						proposalStrategy.get('requestColumns').add(requestColumn);
+	
+						if (calculatedAmount == 0) {
+							calculatedAmount = requestColumn.get('amount');
+						} else {
+							calculatedAmount = calculatedAmount * requestColumn.get('amount');
+						}
+	
+					} else {
+						if (calculatedAmount == 0) {
+							calculatedAmount = fc.get('value');
+						} else {
+							calculatedAmount = calculatedAmount * fc.get('value');
+						}
+					}
+				}
+			}
+			proposalStrategy.set('totalCalculatedAmount', calculatedAmount);
+			
+			proposalStrategy.set('proposal', budgetProposal);
+			proposalStrategy.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
+			proposalStrategy.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
+			proposalStrategy.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
+			
+			
+			var unitId = this.$el.find('#targetValue').attr('data-unitId');
+			if(unitId !=null) {
+				var unit = TargetUnit.findOrCreate(unitId);
+				proposalStrategy.set('targetUnit', unit);
+				proposalStrategy.set('targetValue', this.$el.find('#targetValue').val());
+				proposalStrategy.set('targetValueNext1Year', this.$el.find('#targetValueNext1Year').val());
+				proposalStrategy.set('targetValueNext2Year', this.$el.find('#targetValueNext2Year').val());
+				proposalStrategy.set('targetValueNext3Year', this.$el.find('#targetValueNext3Year').val());
+			}
+			
+			
+			budgetProposal.set('amountRequest', calculatedAmount);
+			budgetProposal.set('amountRequestNext1Year', this.$el.find('#amountRequestNext1Year').val());
+			budgetProposal.set('amountRequestNext2Year', this.$el.find('#amountRequestNext2Year').val());
+			budgetProposal.set('amountRequestNext3Year', this.$el.find('#amountRequestNext3Year').val());
+	
+			// either do create or update!?
+			if (budgetProposal.get('id') == null) {
+				this.$el.find('button.saveProposal').html('<icon class="icon-refresh icon-spin"></icon> กำลังบันทึกข้อมูล...');
+				saveModel(budgetProposal,
+					_.bind(function(resp,status,xhr) {
+						budgetProposal.set('id', resp.id);
+						// now set id for each proposal / request column
+						if(resp.proposalStrategies != null) {
+							proposalStrategy.set('id', resp.proposalStrategies[0].id);
+						}
+						
+						this.objective.get('filterProposals').add(budgetProposal);
+						this.render();		
+					},this));
+
+				
+			} 	
 		}
+
 	});
 	
 	var MainSelectionView = Backbone.View.extend({

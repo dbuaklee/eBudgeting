@@ -295,9 +295,13 @@
 <form id="input-form">
 		
 </form>
-<button class="btn btn-mini btn-primary updateProposal">บันทึก</button>  <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
 </div>
 </script>
+<script id="inputEditProposalBtnTemplate" type="text/x-handler-template">
+<button class="pull-left btn btn-primary updateProposal">บันทึก</button>  <button class="pull-left btn backToProposal">ย้อนกลับ</button>
+<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
+</script>
+
 
 <script id="inputAllDivTemplate" type="text/x-handler-template">
 <div id="inputAll">
@@ -318,8 +322,15 @@
 	</form>
 </div>
 </div>
-<button class="btn btn-mini btn-primary saveProposal">บันทึก</button> <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
 </script>
+<script id="inputAllDivBtnTemplate" type="text/x-handler-template">
+<button class="pull-left btn btn-primary saveProposal">บันทึก</button> <button class="pull-left btn backToProposal">ย้อนกลับ</button>
+<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
+</script>
+<script id="modalBtnTemplate" type="text/x-handler-template">
+<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
+</script>
+
 
 
 <script id="inputObjectiveDetailDivTemplate" type="text/x-handler-template">
@@ -409,10 +420,12 @@
 </div>
 
 </form>
-
-<button class="btn btn-mini btn-primary" id="saveObjectiveDetail">บันทึก</button> <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
 </script>
 
+<script id="inputObjectiveDetailBtnTemplate" type="text/x-handler-template">
+<button class="pull-left btn btn-primary" id="saveObjectiveDetail">บันทึก</button> <button class="pull-left btn backToProposal">ย้อนกลับ</button>
+<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
+</script>
 
 <script id="targetValueModalTemplate" type="text/x-handler-template">
 <form>
