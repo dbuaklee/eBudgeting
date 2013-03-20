@@ -116,6 +116,10 @@ public interface EntityService {
 	public List<List<Objective>> findObjectivesByFiscalyearAndTypeIdAndInitBudgetProposal(
 			Integer fiscalYear, long l, Organization organization);
 	
+	public List<Objective> findObjectiveChildrenByObjectiveIdLoadProposal(
+			Long id, Organization organization);
+
+	
 		
 	//BudgetType
 	public List<BudgetType> findRootBudgetType();
@@ -160,6 +164,8 @@ public interface EntityService {
 	public BudgetProposal saveBudgetProposal(JsonNode proposal, ThaicomUserDetail currentUser);
 	public List<BudgetProposal> findBudgetProposalByObjectiveIdAndBudgetTypeId(Long objectiveId, Long budgetTypeId);
 
+	public void copyFromProposalToObjectiveProposal(Integer fiscalYear, Organization workAt);
+	
 	
 	//ProposalStrategy
 	public List<ProposalStrategy> findProposalStrategyByBudgetProposal(
@@ -299,6 +305,7 @@ public interface EntityService {
 	public User updateUser(JsonNode node);
 	public User saveUser(JsonNode node);
 	public User deleteUser(Long id);
+	
 	
 	
 }

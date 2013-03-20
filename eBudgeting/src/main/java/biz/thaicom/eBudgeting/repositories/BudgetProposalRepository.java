@@ -76,5 +76,9 @@ public interface BudgetProposalRepository extends
 			"	AND proposal.forObjective.fiscalYear = ?1 " +
 			"	AND proposal.owner = ?2 ")
 	public Long findSumTotalOfOwner(Integer fiscalYear, Organization workAt);
+
+
+	public List<BudgetProposal> findAllByForObjectiveAndOwner(Objective obj,
+			Organization workAt);
 	
 }

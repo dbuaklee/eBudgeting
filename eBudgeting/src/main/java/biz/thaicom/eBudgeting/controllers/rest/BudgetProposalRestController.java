@@ -250,6 +250,14 @@ public class BudgetProposalRestController {
 		
 		return returnList;
 	}
+	
+	@RequestMapping(value="/BudgetProposal/{fiscalYear}/copyFromProposalToObjectiveProposal")
+	public @ResponseBody String copyFromProposalToObjectiveProposal(
+			@PathVariable Integer fiscalYear,
+			@Activeuser ThaicomUserDetail currentUser) {
+		entityService.copyFromProposalToObjectiveProposal(fiscalYear, currentUser.getWorkAt());
+		return "success";
+	}
  	
 	@RequestMapping(value="/BudgetSignOff/{fiscalYear}")
 	public @ResponseBody BudgetSignOff findBudgetSignOffByFiscalYear(

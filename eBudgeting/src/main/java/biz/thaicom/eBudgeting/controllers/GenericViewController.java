@@ -817,7 +817,8 @@ public class GenericViewController {
 			@Activeuser ThaicomUserDetail currentUser) {
 		model.addAttribute("rootPage", true);
 		model.addAttribute("user", currentUser);
-		setFiscalYearFromSession(model, session);
+		Integer fiscalYear = setFiscalYearFromSession(model, session);
+		model.addAttribute("rootObjective", entityService.findOneRootObjectiveByFiscalyear(fiscalYear));
 		return "m62f01";
 	}
 

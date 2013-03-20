@@ -2,10 +2,12 @@ package biz.thaicom.eBudgeting.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -247,13 +249,53 @@ public class EntityServiceJPA implements EntityService {
 		
 		for(Objective obj : objs){
 			obj.getTargets().size();
+			if(obj.getChildren().size() > 0) {
+				obj.setIsLeaf(false);
+			} else {
+				obj.setIsLeaf(true);
+			}
+			// assume no children!
+			obj.setChildren(null);
 		}
 		
 		return objs;
 	}
+	
+	
 
 	
 	
+	@Override
+	public List<Objective> findObjectiveChildrenByObjectiveIdLoadProposal(
+			Long id, Organization organization) {
+
+		List<Objective> objs =  objectiveRepository.findChildrenWithParentAndTypeAndBudgetType(id);
+		List<Objective> returnObjs = new ArrayList<Objective>();
+		for(Objective obj : objs){
+			obj.getTargets().size();
+			if(obj.getChildren().size() > 0) {
+				obj.setIsLeaf(false);
+			} else {
+				obj.setIsLeaf(true);
+			}
+			// assume no children!
+			obj.setChildren(null);
+			
+			obj.setFilterProposals(budgetProposalRepository.findAllByForObjectiveAndOwner(obj, organization));
+			obj.setFilterObjectiveBudgetProposals(objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(obj.getId(), organization.getId()));
+			
+			if(obj.getFilterObjectiveBudgetProposals().size() > 0 || 
+					obj.getFilterProposals().size() > 0 ) {
+				returnObjs.add(obj);
+			}
+			
+			
+		}
+		
+		return returnObjs;
+
+	}
+
 	@Override
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad) {
 		
@@ -3729,5 +3771,161 @@ public class EntityServiceJPA implements EntityService {
 		
 		return user;
 	}
+
+	@Override
+	public void copyFromProposalToObjectiveProposal(Integer fiscalYear, Organization workAt) {
+		Objective root = findOneRootObjectiveByFiscalyear(fiscalYear);
+		
+		List<BudgetType> budgetMainType = fiscalBudgetTypeRepository.findAllMainBudgetTypeByFiscalYear(fiscalYear);
+		
+		for(Objective obj : root.getChildren()) {
+			copyFromProposalToObjectiveProposal(obj.getChildren(), workAt, budgetMainType);
+			copyFromProposalToObjectiveProposal(obj, workAt, budgetMainType);
+		}
+		
+ 	}
+
+	private void copyFromProposalToObjectiveProposal(List<Objective> children,
+			Organization workAt, List<BudgetType> budgetMainType) {
+		if(children == null || children.size() == 0) {
+			return;
+		}
+		for(Objective obj : children) {
+			copyFromProposalToObjectiveProposal(obj.getChildren(), workAt, budgetMainType);
+			copyFromProposalToObjectiveProposal(obj, workAt, budgetMainType);
+		}
+	
+	}
+
+	private void copyFromProposalToObjectiveProposal(Objective obj,
+			Organization workAt, List<BudgetType> budgetMainType) {
+		// 
+		List<BudgetProposal> proposals = budgetProposalRepository.findAllByForObjectiveAndOwner(obj, workAt);
+		
+		List<ObjectiveBudgetProposal> objectiveProposals = new ArrayList<ObjectiveBudgetProposal>();
+		
+		for(BudgetProposal proposal : proposals) {
+			BudgetType mainType = null;
+			Boolean found = false;
+			
+			for(BudgetType type : budgetMainType) {
+				if(proposal.getBudgetType().getParentPath().contains("." + type.getId() +".") ) {
+					mainType = type;
+					break;
+				}
+			}
+			
+			// now find mianType in 
+			for(ObjectiveBudgetProposal budgetProposal : objectiveProposals) {
+				if(budgetProposal.getBudgetType().getId().equals(mainType.getId())) {
+					found = true;
+					budgetProposal.setAmountRequest(nullZero(proposal.getAmountRequest()) + nullZero(budgetProposal.getAmountRequest()));
+					budgetProposal.setAmountRequestNext1Year(nullZero(proposal.getAmountRequestNext1Year()) + nullZero(budgetProposal.getAmountRequestNext1Year()));
+					budgetProposal.setAmountRequestNext2Year(nullZero(proposal.getAmountRequestNext2Year()) + nullZero(budgetProposal.getAmountRequestNext2Year()));
+					budgetProposal.setAmountRequestNext3Year(nullZero(proposal.getAmountRequestNext3Year()) + nullZero(budgetProposal.getAmountRequestNext3Year()));
+					
+					for(ProposalStrategy strategy : proposal.getProposalStrategies()) {
+						for(ObjectiveTarget target: obj.getTargets()) {
+							if(target.getUnit().getId().equals(strategy.getTargetUnit().getId())) {
+								Boolean foundTarget = false;
+								if(budgetProposal.getTargets() != null) {
+									for(ObjectiveBudgetProposalTarget pTarget : budgetProposal.getTargets()) {
+										if(pTarget.getUnit().getId().equals(strategy.getTargetUnit().getId())) {
+											foundTarget  = true;
+											pTarget.setTargetValue(nullZero(pTarget.getTargetValue()) + nullZero(strategy.getTargetValue()));
+											pTarget.setTargetValueNext1Year(nullZero(pTarget.getTargetValueNext1Year()) + nullZero(strategy.getTargetValueNext1Year()));
+											pTarget.setTargetValueNext2Year(nullZero(pTarget.getTargetValueNext2Year()) + nullZero(strategy.getTargetValueNext2Year()));
+											pTarget.setTargetValueNext3Year(nullZero(pTarget.getTargetValueNext3Year()) + nullZero(strategy.getTargetValueNext3Year()));
+											break;
+										}
+									}
+								}
+								
+								if(!foundTarget) {
+									ObjectiveBudgetProposalTarget pTarget = new ObjectiveBudgetProposalTarget();
+									pTarget.setTargetValue(strategy.getTargetValue());
+									pTarget.setTargetValueNext1Year(strategy.getTargetValueNext1Year());
+									pTarget.setTargetValueNext2Year(strategy.getTargetValueNext2Year());
+									pTarget.setTargetValueNext3Year(strategy.getTargetValueNext3Year());
+									pTarget.setObjectiveBudgetProposal(budgetProposal);
+									pTarget.setUnit(strategy.getTargetUnit());
+									
+									budgetProposal.setTargets(new ArrayList<ObjectiveBudgetProposalTarget>());
+									budgetProposal.getTargets().add(pTarget);
+								}
+							}
+						}
+					}
+					
+					break;
+				}
+			}
+			
+			if(!found) {
+				ObjectiveBudgetProposal objectiveBudgetProposal = new ObjectiveBudgetProposal();
+				objectiveBudgetProposal.setOwner(workAt);
+				objectiveBudgetProposal.setForObjective(obj);
+				objectiveBudgetProposal.setAmountRequest(proposal.getAmountRequest());
+				objectiveBudgetProposal.setAmountRequestNext1Year(proposal.getAmountRequestNext1Year());
+				objectiveBudgetProposal.setAmountRequestNext2Year(proposal.getAmountRequestNext2Year());
+				objectiveBudgetProposal.setAmountRequestNext3Year(proposal.getAmountRequestNext3Year());
+				objectiveBudgetProposal.setBudgetType(mainType);
+				
+				
+				for(ProposalStrategy strategy : proposal.getProposalStrategies()) {
+					for(ObjectiveTarget target: obj.getTargets()) {
+						if(target.getUnit().getId().equals(strategy.getTargetUnit().getId())) {
+							Boolean foundTarget = false;
+							if(objectiveBudgetProposal.getTargets() != null) {
+								for(ObjectiveBudgetProposalTarget pTarget : objectiveBudgetProposal.getTargets()) {
+									if(pTarget.getUnit().getId().equals(strategy.getTargetUnit().getId())) {
+										foundTarget  = true;
+										pTarget.setTargetValue(nullZero(pTarget.getTargetValue()) + nullZero(strategy.getTargetValue()));
+										pTarget.setTargetValueNext1Year(nullZero(pTarget.getTargetValueNext1Year()) + nullZero(strategy.getTargetValueNext1Year()));
+										pTarget.setTargetValueNext2Year(nullZero(pTarget.getTargetValueNext2Year()) + nullZero(strategy.getTargetValueNext2Year()));
+										pTarget.setTargetValueNext3Year(nullZero(pTarget.getTargetValueNext3Year()) + nullZero(strategy.getTargetValueNext3Year()));
+										break;
+									}
+								}
+							}
+							
+							if(!foundTarget) {
+								ObjectiveBudgetProposalTarget pTarget = new ObjectiveBudgetProposalTarget();
+								pTarget.setTargetValue(strategy.getTargetValue());
+								pTarget.setTargetValueNext1Year(strategy.getTargetValueNext1Year());
+								pTarget.setTargetValueNext2Year(strategy.getTargetValueNext2Year());
+								pTarget.setTargetValueNext3Year(strategy.getTargetValueNext3Year());
+								pTarget.setObjectiveBudgetProposal(objectiveBudgetProposal);
+								pTarget.setUnit(strategy.getTargetUnit());
+								
+								objectiveBudgetProposal.setTargets(new ArrayList<ObjectiveBudgetProposalTarget>());
+								objectiveBudgetProposal.getTargets().add(pTarget);
+								
+								
+							}
+						}
+					}
+				}
+				objectiveProposals.add(objectiveBudgetProposal);
+			}
+		}
+		
+		//delete the old one
+		objectiveBudgetProposalRepository.delete(objectiveBudgetProposalRepository.findAllByForObjective_IdAndOwner_Id(obj.getId(), workAt.getId()));
+		
+		// now save the ObjectiveProposalarget
+		objectiveBudgetProposalRepository.save(objectiveProposals);
+	}
+
+	private Long nullZero(Long value) {
+		if(value == null ) {
+			return 0L;
+		} else {
+			return value;
+		}
+	}
+	
+	
+	
 
 }

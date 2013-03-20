@@ -99,6 +99,15 @@ public class ObjectiveRestController {
 
 		return  list;
 	}
+
+	@RequestMapping(value="/Objective/{id}/childrenWithProposals", method=RequestMethod.GET)
+	public @ResponseBody List<Objective> getChildrenObjectiveByIdAndLoadProposals(@PathVariable Long id, 
+			@Activeuser ThaicomUserDetail currentUser) {
+		logger.debug("id: " + id);
+		List<Objective> list =entityService.findObjectiveChildrenByObjectiveIdLoadProposal(id,currentUser.getWorkAt());
+
+		return  list;
+	}
 	
 	@RequestMapping(value="/Objective/{id}/availableChildren", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getAvailableChildrenObjectiveById(@PathVariable Long id) {
