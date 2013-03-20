@@ -248,7 +248,11 @@
 
 </form>
 
-<button class="btn btn-mini btn-primary" id="saveObjectiveDetail">บันทึก</button> <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
+</script>
+
+<script id="inputObjectiveDetailBtnTemplate" type="text/x-handler-template">
+<button class="pull-left btn btn-primary" id="saveObjectiveDetail">บันทึก</button> <button class="pull-left btn backToProposal">ย้อนกลับ</button>
+<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
@@ -369,7 +373,6 @@
 <div class="menu">{{#unless readOnly}}
 <button id="addBudget" class="btn">บันทึกข้อมูลงบประมาณ</button>
 <button class="btn" id="addObjectiveDetail">บันทึกข้อมูลโครงการ</button>{{/unless}}
-<button class="btn" id="printObjectiveDetail">พิมพ์ข้อมูลโครงการ</button>
 
 <div><u>รายการงบประมาณลงข้อมูลไว้แล้ว</u></div>
 	<ul>
@@ -434,6 +437,12 @@
 			<div id="formulaBox">
 				<div>
 					<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+{{#each targets}}					
+					<div>
+						<div style="margin-top:16px;"> ระบุเป้าหมาย </div>
+					</div>
+{{/each}}
+
 				</div>	
 				<div style="margin: 0px 8px;">
 					<div><b>ปี: {{next1Year}}</b></div>
@@ -462,7 +471,13 @@
 		</form>
 	</div>
 </div>
-<button class="btn btn-mini btn-primary saveProposal">บันทึก</button> <button class="btn btn-mini backToProposal">ย้อนกลับ</button>
+</script>
+<script id="inputAllDivBtnTemplate" type="text/x-handler-template">
+<button class="pull-left btn btn-primary saveProposal">บันทึก</button> <button class="pull-left btn backToProposal">ย้อนกลับ</button>
+<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
+</script>
+<script id="modalBtnTemplate" type="text/x-handler-template">
+<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
 </script>
 
 

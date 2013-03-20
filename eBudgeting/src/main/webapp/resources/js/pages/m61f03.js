@@ -42,8 +42,13 @@ var ModalView = Backbone.View.extend({
 	currentFormulaStrategySelection: null,
 	
 	modalTemplate : Handlebars.compile($('#modalTemplate').html()),
+	modalBtnTemplate : Handlebars.compile($('#modalBtnTemplate').html()),
 	inputAllDivTemplate : Handlebars.compile($('#inputAllDivTemplate').html()),
+	inputAllDivBtnTemplate: Handlebars.compile($('#inputAllDivBtnTemplate').html()),
 	inputObjectiveDetailDivTemplate : Handlebars.compile($('#inputObjectiveDetailDivTemplate').html()),
+	inputObjectiveDetailBtnTemplate : Handlebars.compile($('#inputObjectiveDetailBtnTemplate').html()),
+
+	
 
 	
 	events : {
@@ -81,6 +86,7 @@ var ModalView = Backbone.View.extend({
 				
 				var json = this.detail.toJSON();
 				this.$el.find('.modal-body').html(this.inputObjectiveDetailDivTemplate(json));
+				this.$el.find('.modal-footer').html(this.inputObjectiveDetailBtnTemplate());
 			},this)
 		});
 		
@@ -244,7 +250,9 @@ var ModalView = Backbone.View.extend({
 		json.next2Year = fiscalYear+2;
 		json.next3Year = fiscalYear+3;
 		
-		this.$el.find('.modal-body').html(this.inputAllDivTemplate(json));		
+		this.$el.find('.modal-body').html(this.inputAllDivTemplate(json));
+		this.$el.find('.modal-footer').html(this.inputAllDivBtnTemplate());
+		
 		
 	},
 
@@ -290,6 +298,7 @@ var ModalView = Backbone.View.extend({
 			
 			
 			this.$el.find('.modal-body').html(this.inputAllDivTemplate(json));
+			this.$el.find('.modal-footer').html(this.inputAllDivBtnTemplate());
 			this.budgetTypeSelectionViewL1 =  new BudgetTypeAllSelectionView({el: '#budgetTypeSelectionDivL1', level: 1, parentModal: this});
 			this.budgetTypeSelectionViewL1.setCollection(budgetTypeSltCollection);
 		    this.budgetTypeSelectionViewL1.render();
@@ -303,6 +312,7 @@ var ModalView = Backbone.View.extend({
 			var html = this.modalTemplate(json);
 			this.$el.find('.modal-header span').html("การบันทึกข้อมูลระดับกิจกรรม<br/>"+this.objective.get('name'));
 			this.$el.find('.modal-body').html(html);
+			this.$el.find('.modal-footer').html(this.modalBtnTemplate());
 		}
 
 		
