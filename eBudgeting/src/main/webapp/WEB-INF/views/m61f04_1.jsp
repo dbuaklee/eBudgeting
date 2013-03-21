@@ -468,8 +468,8 @@
 <div class="clearfix"></div>
 <div id="formulaBox">
 	<div>
-		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-		<div style="text-align:right; padding-top:18px;"> ระบุค่าเป้าหมาย</div>
+		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกงบประมาณ</button></div>
+		<div style="text-align:right; padding-top:10px;"> <button class="btn copyTargetToNextYear">คัดลอกเป้าหมาย</button></div>
 	</div>
 	<div style="margin: 0px 8px;">
 		<div><b>ปี {{next1Year}}:</b></div>
@@ -546,8 +546,8 @@
 <div class="clearfix"></div>
 <div id="formulaBox">
 	<div>
-		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
-		<div style="text-align:right; padding-top:18px;"> ระบุค่าเป้าหมาย</div>
+		<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกงบประมาณ</button></div>
+		<div style="text-align:right; padding-top:10px;"> <button class="btn copyTargetToNextYear">คัดลอกเป้าหมาย</button></div>
 	</div>
 	<div style="margin: 0px 8px;">
 		<div><b>ปี {{next1Year}}:</b></div>

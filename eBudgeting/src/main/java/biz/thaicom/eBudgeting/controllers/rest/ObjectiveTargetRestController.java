@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -83,6 +84,17 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectiveTargetRest
 		
 		return entityService.findAllTargetUnits(pageRequest);
 	}
+
+	@RequestMapping(value="/TargetUnit/page/{targetPage}", method=RequestMethod.POST)
+	public @ResponseBody Page<TargetUnit> findAllTargetUnit(@PathVariable Integer targetPage, 
+			@RequestParam String query) {
+		
+		PageRequest pageRequest =
+	            new PageRequest(targetPage - 1, PageUI.PAGE_SIZE , Sort.Direction.ASC, "name");
+		
+		return entityService.findAllTargetUnits(pageRequest, query);
+	}
+
 	
 	@RequestMapping(value="/TargetUnit/{id}", method=RequestMethod.GET)
 	public @ResponseBody TargetUnit findOneTargetUnit(

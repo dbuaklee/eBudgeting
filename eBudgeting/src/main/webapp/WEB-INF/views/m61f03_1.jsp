@@ -436,10 +436,10 @@
 			<div class="clearfix"></div>
 			<div id="formulaBox">
 				<div>
-					<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกไปประมาณการ 3 ปี</button></div>
+					<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกงบประมาณ</button></div>
 {{#each targets}}					
 					<div>
-						<div style="margin-top:16px;"> ระบุเป้าหมาย </div>
+						<div style="margin-top:10px;"> <button data-id="{{unit.id}}" class="btn copyTargetToNextYear">คัดลอกเป้าหมาย ({{unit.name}})</button> </div>
 					</div>
 {{/each}}
 

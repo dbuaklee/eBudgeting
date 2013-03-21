@@ -226,6 +226,7 @@ public interface EntityService {
 	//TargetUnit
 	public List<TargetUnit> findAllTargetUnits();
 	public Page<TargetUnit> findAllTargetUnits(PageRequest pageRequest);
+	public Page<TargetUnit> findAllTargetUnits(PageRequest pageRequest, String query);
 	public TargetUnit saveTargetUnits(TargetUnit targetUnit);
 	public TargetUnit updateTargetUnit(TargetUnit targetUnit);
 	public TargetUnit deleteTargetUnit(TargetUnit targetUnit);

@@ -83,7 +83,12 @@
 <script id="treeTRTemplate" type="text/x-handler-template">
 	<tr data-id={{id}} data-level="{{parentLevel}}">
 			<td style="padding-left: {{paddingLevel parentLevel}}px;"><span class="label label-info mini">{{type.name}}</span><br/>
-				<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"></i> [{{code}}] {{name}}</a> 
+				{{#if isLeaf}}
+					 <i class="icon icon-circle">
+				{{else}}
+					<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"> </i> </i>
+				{{/if}}
+				[{{code}}] {{name}}</a> 
 			</td>
 				<td>
 				{{#if type.unlinkable}}

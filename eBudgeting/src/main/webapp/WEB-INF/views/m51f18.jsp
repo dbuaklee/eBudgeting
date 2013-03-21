@@ -40,10 +40,22 @@
 </script>
 
 <script id="mainCtrTemplate" type="text/x-handler-template">
-<div class="controls" style="margin-bottom: 15px;">
+<div>
+<div class="pull-left controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มทะเบียน</a>
 	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
 	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
+</div>
+
+<div class="pull-right">
+	<form class="form-search" style="margin-bottom:10px;" id="targetUnitSearchFrm">
+		<div class="input-append">
+    		<input type="text" class="span2 search-query" id="queryTxt" value="{{queryTxt}}">
+    			<button class="btn" type="submit" id="targetUnitSearchBtn">ค้นหาทะเบียน</button>
+    	</div>
+    </form>
+</div>
+<div class="clearfix"></div>
 </div>
 
 	{{#if pageParams}}
@@ -176,7 +188,9 @@ $(document).ready(function() {
 			"click .menuDelete" : "deleteTargetUnit",
 			"click .lineSave" : "saveLine",
 			"click .cancelLineSave" : "cancelSaveLine",
-			"click a.pageLink" : "gotoPage"
+			"click a.pageLink" : "gotoPage",
+			"click #targetUnitSearchBtn" : "searchQuery"
+			
 		},
 		mainCtrTpl: Handlebars.compile($("#mainCtrTemplate").html()),
 		newRowTpl : Handlebars.compile($('#newRowTemplate').html()),
@@ -186,10 +200,16 @@ $(document).ready(function() {
 		
 		modalView : new ModalView(),
 		
+		searchQuery: function() {
+			this.queryTxt = this.$el.find('#queryTxt').val();
+			this.renderTargetPage(1);			
+			return false;
+		},
+		
 		render: function() {
 			var json = {};
 			json.pageParams = this.collection.toPageParamsJSON();
-			
+			json.queryTxt = this.queryTxt;
 			this.$el.html(this.mainCtrTpl(json));
 			this.$el.find('tbody').html(this.rowTpl(this.collection.toJSON()));
 		},
@@ -202,6 +222,8 @@ $(document).ready(function() {
 		renderTargetPage: function(pageNumber) {
 			this.collection.targetPage = pageNumber;
 			this.collection.fetch({
+				data: {query: this.queryTxt},
+				type: 'POST',
 				success: function() {
 					targetUnits.trigger('reset');
 				}

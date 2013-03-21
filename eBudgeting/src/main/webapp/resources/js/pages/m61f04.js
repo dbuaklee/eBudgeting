@@ -18,6 +18,8 @@
 		events : {
 			"change #strategySlt" : "strategySelect",
 			"click .copytoNextYear" : "copyToNextYear",
+			"click .copyTargetToNextYear" : "copyTargetToNextYear",
+			
 			"change .formulaColumnInput" : "inputChange",
 			
 			"click .backToProposal" : "backToProposal"
@@ -193,6 +195,14 @@
 			this.$el.find('#amountRequestNext3Year').val(valueToCopy);
 		},
 	
+		copyTargetToNextYear : function(e) {
+			var valueToCopy = $('#targetValue').val();
+			valueToCopy = valueToCopy.replace(/,/g, '');
+			this.$el.find('#targetValueNext1Year').val(valueToCopy);
+			this.$el.find('#targetValueNext2Year').val(valueToCopy);
+			this.$el.find('#targetValueNext3Year').val(valueToCopy);
+		},
+		
 		renderInputStrategy: function(strategy) {
 			this.currentStrategy=strategy;
 			var columns = strategy.get('formulaColumns');

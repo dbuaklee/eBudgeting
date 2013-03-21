@@ -60,6 +60,7 @@ var ModalView = Backbone.View.extend({
 		"click .backToProposal" : "backToProposal",
 		"click #addBudget" : "renderInputALL",
 		"click .copytoNextYear" : "copyToNextYear",
+		"click .copyTargetToNextYear" : "copyTargetToNextYear",
 		
 		"click #addObjectiveDetail" : "renderObjectiveDetailInput",
 		"change .objectiveDetail" : "updateObjectiveDetailModel",
@@ -130,6 +131,14 @@ var ModalView = Backbone.View.extend({
 		this.$el.find('#amountRequestNext1Year').val(valueToCopy);
 		this.$el.find('#amountRequestNext2Year').val(valueToCopy);
 		this.$el.find('#amountRequestNext3Year').val(valueToCopy);
+	},
+	copyTargetToNextYear : function(e) {
+		var unitId = $(e.target).attr('data-id');
+		var valueToCopy = $('#targetValue'+unitId).val();
+		this.$el.find('#targetValueNext1Year'+unitId).val(valueToCopy);
+		this.$el.find('#targetValueNext2Year'+unitId).val(valueToCopy);
+		this.$el.find('#targetValueNext3Year'+unitId).val(valueToCopy);
+		
 	},
  	saveProposal: function(e) {
 		var validated1=true;
