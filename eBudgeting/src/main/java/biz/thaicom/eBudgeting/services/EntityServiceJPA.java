@@ -1722,6 +1722,7 @@ public class EntityServiceJPA implements EntityService {
 		if(objectiveJsonNode.get("id") == null) { 
 			objective = new Objective();
 			objective.setObjectiveName(new ObjectiveName());
+			objective.setCode(objectiveJsonNode.get("code").asText());
 		} else {
 			objective = objectiveRepository.findOne(objectiveJsonNode.get("id").asLong());
 		}
@@ -1917,7 +1918,7 @@ public class EntityServiceJPA implements EntityService {
 			
 		}
 		
-		
+		logger.debug("code here : " + objective.getCode());
 		
 		objectiveRepository.save(objective);
 		
