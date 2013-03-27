@@ -84,9 +84,13 @@
 	<tr data-id={{id}} data-level="{{parentLevel}}">
 			<td style="padding-left: {{paddingLevel parentLevel}}px;"><span class="label label-info mini">{{type.name}}</span><br/>
 				{{#if isLeaf}}
-					 <i class="icon icon-circle">
+					 <a href="#" class="nextChildrenLnk"><i class="icon icon-circle nextChildrenLnk"> </i> </i>
 				{{else}}
-					<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"> </i> </i>
+					{{#if arrowDown}}
+						<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-down nextChildrenLnk"> </i> </i>
+					{{else}}
+						<a href="#" class="nextChildrenLnk"><i class="icon icon-chevron-right nextChildrenLnk"> </i> </i>
+					{{/if}}
 				{{/if}}
 				[{{code}}] {{name}}</a> 
 			</td>
@@ -260,6 +264,14 @@ $(document).ready(function() {
 					 
 				}
 				
+				//rerender parent Objective
+				var parentJSON = parentObjective.toJSON();
+				var parentHTML = this.treeTRTemplate(parentJSON);
+				parentJSON.type.unlinkable = true;
+				parentJSON.arrowDown = true;
+				parentTrEl.html(parentHTML);
+				
+				
 				
 				var json = newObjective.toJSON();
 				
@@ -271,6 +283,9 @@ $(document).ready(function() {
 				
 				var html = this.treeTRTemplate(json);
 				$(prev).after(html);
+				
+				
+				
 			},
 			
 			unlinkBtnClick : function(e) {
@@ -450,6 +465,7 @@ $(document).ready(function() {
 				
 						// now add this to current parent
 						this.objective.get('children').add(newObjective);
+						this.objective.set('isLeaf',false);
 						
 						mainCtrView.mainTreeView.renderNewRow(this.objective, newObjective);
 						
