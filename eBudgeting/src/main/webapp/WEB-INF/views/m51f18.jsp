@@ -34,7 +34,7 @@
 
 <script id="modalTemplate" type="text/x-handler-template">
 <form>
-	<label>ชื่อหน่วยนับ</label>
+	<label>ระบุชื่อหน่วยนับ</label>
 	<input type="text" id="nameTxt" value="{{name}}">
 </form>
 </script>
@@ -43,7 +43,7 @@
 <div>
 <div class="pull-left controls" style="margin-bottom: 15px;">
 	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มทะเบียน</a>
-	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไข</a>
+	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขทะเบียน</a>
 	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบ</a> 
 </div>
 
@@ -136,7 +136,11 @@ $(document).ready(function() {
 		render: function() {
 			if(this.currentTargetUnit != null) {
 				
-				this.$el.find('.modal-header span').html("เพิ่มทะเบียน");
+				if(this.currentTargetUnit.get('id') == null) {
+					this.$el.find('.modal-header span').html("เพิ่มทะเบียนหน่วยนับ");
+				} else{
+					this.$el.find('.modal-header span').html("แก้ไขทะเบียนหน่วยนับ");
+				}
 				
 				var html = this.modalTemplate(this.currentTargetUnit.toJSON());
 				this.$el.find('.modal-body').html(html);
