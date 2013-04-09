@@ -438,10 +438,10 @@
 	<div id="formulaBox">
 		<div id="proposalStrategyId" data-id="{{proposalStrategyId}}">
 			<div style="height:35px;margin-bottom:10px;">
-				รายการ: 
+				<strong>รายการ:</strong> 
 			</div>
 			<div style="height:35px;">
-				ระบุงบประมาณ:
+				<strong>ระบุงบประมาณ:</strong>
 			</div>
 		</div>
 		<div>
@@ -493,15 +493,15 @@
 
 <script id="inputModalTemplate" type="text/x-handler-template">
 	<div id="proposalStrategyId" data-id="{{proposalStrategyId}}">
-				รายการ: <strong> {{type.name}} / {{name}} </strong>
+				<strong> รายการ: {{type.name}} / {{name}} </strong>
 	</div>
 	<div id="formulaBox">
 		<div>
 			<div style="height:35px;margin-bottom:10px;">
-				เรื่อง: 
+				<strong>เรื่อง:</strong> 
 			</div>
 			<div style="height:35px;">
-				จำนวน:
+				<strong>จำนวน:</strong>
 			</div>
 		</div>
 		<div>
