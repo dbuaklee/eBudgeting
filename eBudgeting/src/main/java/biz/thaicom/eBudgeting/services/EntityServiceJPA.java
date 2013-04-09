@@ -304,6 +304,41 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
+	public List<Objective> findObjectiveAllChildrenByObjectiveIdLoadProposal(
+			Long id) {
+
+		List<Objective> objs =  objectiveRepository.findChildrenWithParentAndTypeAndBudgetType(id);
+		List<Objective> returnObjs = new ArrayList<Objective>();
+		for(Objective obj : objs){
+			obj.getTargets().size();
+			if(obj.getChildren().size() > 0) {
+				obj.setIsLeaf(false);
+			} else {
+				obj.setIsLeaf(true);
+			}
+			// assume no children!
+			obj.setChildren(null);
+			
+			obj.getProposals().size();
+			obj.getObjectiveProposals().size();
+			
+			obj.setFilterProposals(obj.getProposals());
+			obj.setFilterObjectiveBudgetProposals(obj.getObjectiveProposals());
+			
+			if(obj.getFilterObjectiveBudgetProposals().size() > 0 || 
+					obj.getFilterProposals().size() > 0 ) {
+				returnObjs.add(obj);
+			}
+			
+			
+		}
+		
+		return returnObjs;
+
+	}
+	
+	
+	@Override
 	public List<Objective> findRootObjectiveByFiscalyear(Integer fiscalYear, Boolean eagerLoad) {
 		
 		List<Objective> list = objectiveRepository.findByParentIdAndFiscalYearAndParent_Name(null, fiscalYear, "ROOT");

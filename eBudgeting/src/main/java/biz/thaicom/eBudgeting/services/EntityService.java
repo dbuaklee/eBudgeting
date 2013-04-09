@@ -120,6 +120,8 @@ public interface EntityService {
 	public List<Objective> findObjectiveChildrenByObjectiveIdLoadProposal(
 			Long id, Organization organization);
 
+	public List<Objective> findObjectiveAllChildrenByObjectiveIdLoadProposal(
+			Long id);
 	
 		
 	//BudgetType

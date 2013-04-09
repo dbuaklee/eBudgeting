@@ -33,6 +33,11 @@ Objective = Backbone.RelationalModel.extend({
 	    	collectionType: 'BudgetProposalCollection'
 	    },{
 	    	type: Backbone.HasMany,
+	    	key: 'objectiveProposals',
+	    	relatedModel: 'ObjectiveBudgetProposal',
+	    	collectionType: 'ObjectiveBudgetProposalCollection'
+	    },{
+	    	type: Backbone.HasMany,
 	    	key: 'filterProposals',
 	    	relatedModel: 'BudgetProposal',
 	    	collectionType: 'BudgetProposalCollection'

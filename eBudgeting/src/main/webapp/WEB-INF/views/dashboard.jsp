@@ -212,174 +212,205 @@ var menuJson = [{
 	    ]
 }];
 
-var menuOld = [
-{
-	name: "ระบบจัดทำคำขอตั้ง",
-	menus: [ {name: "m2f14: ข้อมูลพื้นฐานหน่วยนับ", link: "page/m2f14/"},
-	        {name: "m2f13: กำหนดงบประมาณพื้นฐาน (default) ของหมวดงบประมาณ", link: "page/m2f13/"},
-	        {name: "m2f11: การกำหนดระดับชั้นของแผนงาน", link: "page/m2f11/"},
-	        {name: "m2f06: โครงสร้างแผนงาน/กิจกรรม/ตัวชี้วัด/หน่วยงานปฏิบัติ", link: "page/m2f06/"},
-	        {name: "m2f12: บันทึกข้อมูลงบประมาณ", link: "page/m2f12/", user: true},
-	        {name: "m2f10: วิสัยทัศน์-พันธกิจ หน่วยงาน", link: "jsp/m2f10"},
-	        {name: "m2f08: กลยุทธ์หน่วยงาน", link: "jsp/m2f08", disabled: "disabled"},
-            {name: "m2f09: กลยุทธ์-วิธีการกรมฯ", link: "jsp/m2f09", disabled: "disabled"},
-	        {name: "m2f01: ยุทธศาสตร์จัดสรร (รัฐบาล)", link: "jsp/m2f01", disabled: "disabled"},
-            {name: "m2f02: ประเด็นยุทธศาสตร์ (รัฐบาล)", link: "jsp/m2f02", disabled: "disabled"},
-            {name: "m2f03: เป้าหมายเชิงยุทธศาสตร์ (รัฐบาล)", link: "jsp/m2f03", disabled: "disabled"},
-            {name: "m2f04: เป้าหมายบริการกระทรวงฯ ", link: "jsp/m2f04"},
-            {name: "m2f05: เป้าหมายบริการหน่วยงาน", link: "jsp/m2f05"},
-            {name: "m2f07: ยุทธศาสตร์กระทรวงฯ", link: "jsp/m2f07", disabled: "disabled"}
-            
-			]
-},{
-	  name: "ระบบการปรับลดบประมาณ",
-	    menus: [{name: "m3f04: ประมวลผลก่อนการปรับลดครั้งที่1",link: "page/m3f04/"},
-	            {name: "m3f01: บันทึกการปรับลดงประมาณ  ชั้น สำนักงบ (อธิบดีปรับลด)",link: "page/m3f01/"},
-	            {name: "m3f04: ประมวลผลก่อนการปรับลดครั้งที่2",link: "page/m3f05/"},
-	            {name: "m3f02: บันทึกการปรับลดงบประมาณ ชั้น กรรมาธิการ (สงป. ปรับลด)]", link: "page/m3f02/"},
-	            {name: "m3f04: ประมวลผลก่อนการปรับลดครั้งที่3",link: "page/m3f06/"},
-	            {name: "m3f03: บันทึกการปรับลดงบประมาณ ชั้น พ.ร.บ. (กมธ. ปรับลด)]", link: "page/m3f03/"}]
-},{            
-    name: "ระบบการจัดสรรงบประมาณ",
-    menus: [{name: "m4f01: ประมวลผลก่อนการจัดสรร",link: "page/m4f01/"},
-            {name: "m4f02: จัดสรรงบประมาณที่ได้รับลงหน่วยรับ",link: "page/m4f02/"}]
-},{            
-    name: "ระบบรายงาน",
-    menus: [{name: "m5r01: รายงานคำขอตั้งงบประมาณ",link: "jsp/m4f01/", disabled: "disabled", user: true},
-            {name: "m5r02: รายงานงบประมาณที่ได้รับจัดสรร", link: "jsp/m4f02/", disabled: "disabled", user: true}]
-}];
-
 
 var menuUserJson = [{
-	name: "ระบบการบันทึกเงินคำของบประมาณ (m6)",code: "m6", 
-	menus: [{
-		name: "การจัดทำคำของบประมาณ  (m61)", code: "m61", menus: 
-	         [{name: "m61f03: การบันทึกงบประมาณ ระดับกิจกรรมหลัก",code: "m61f03",  link: "page/m61f03_1/"},
-		      {name: "m61f04: การบันทึกงบประมาณ ระดับรายการ", code: "m61f04", link: "page/m61f04_1/"},
-	          {name: "m61f05: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", code: "m61f05", link: "page/m61f05/"}
-	        ]}]
-	         
-},{
-	name: "ระบบรายงาน (Report)",
-	menus: [
-		 {name: "รายงานการตรวจสอบ (m52r)", menus: 
-		    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls"},
-		     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", link: "m52r02_1.xls/"+fiscalYear+"/file/m52r02_1.xls"}]}]
+	name : "ระบบการบันทึกเงินคำของบประมาณ (m6)",
+	code : "m6",
+	menus : [{
+		name : "การจัดทำคำของบประมาณ  (m61)",
+		code : "m61",
+		menus : [{
+			name : "m61f03: การบันทึกงบประมาณ ระดับกิจกรรมหลัก",
+			code : "m61f03",
+			link : "page/m61f03_1/"
+		},{
+			name : "m61f04: การบันทึกงบประมาณ ระดับรายการ",
+			code : "m61f04",
+			link : "page/m61f04_1/"
+		},{
+			name : "m61f05: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)",
+			code : "m61f05",
+			link : "page/m61f05/"
+		}]
+	},{
+		name : "การกระทบยอดเงินงบประมาณ (m62)",
+		code : "m62",
+		menus : [ {
+			name : "m62f01: การประมวลผลการกระทบยอดเงินงบประมาณจากระดับรายการมาที่ระดับกิจกรรม",
+			code : "m62f01",
+			link : "page/m62f01/"
+		} ]
+	}]
+}, {
+	name : "ระบบรายงาน (Report)",
+	menus : [{
+		name : "รายงานการตรวจสอบ (m52r)",
+		menus : [{
+			name : "m52r01: การบันทึกงบประมาณระดับกิจกรรม",
+			link : "m52r01_1.xls/" + fiscalYear + "/file/m52r01_1.xls"
+		}, {
+			name : "m52r02: การบันทึกงบประมาณระดับรายการ",
+			link : "m52r02_1.xls/" + fiscalYear + "/file/m52r02_1.xls"
+		}]
+	}]
 }];
 
-var menuTemplate = Handlebars.compile($("#menuTemplate").html());
+	var menuTemplate = Handlebars.compile($("#menuTemplate").html());
 
-var mainview;
-var e1;
+	var mainview;
+	var e1;
 
+	$(document)
+			.ready(
+					function() {
 
-$(document).ready(function() {
-	
-	
-	var MainView = Backbone.View.extend({
-		initialize: function(options){
-	    	
-		},
-		subMenuTemplate: Handlebars.compile($("#subMenuTemplate").html()),
-		el: "body",
-		render: function() {
-			$("#main1").html(this.subMenuTemplate(this.menu));
-		},
-		
-		renderWith: function(m) {
-			this.menu = m;
-			this.render();
-		},
-		events: {
-			"click a" : "menuClick"
-		},
-		
-		menuClick: function(e) {
-			e1 = e;
-			
-			var parentDiv = $(e.target).parents('div.menu');
-			var li = $(e.target).parent();
-			
-			//e1=parentDiv;
-			var level = parentDiv.attr('data-id');
-			
-			if(level == 1) {
-				// get this index
-				var i = parentDiv.find('li').index(li);
-				
-				this.currentFirstLevelIndex  = i;
-				$("#main3").empty();
-				
-				$("#main2").html(this.subMenuTemplate(this.menu[i].menus));
-				
-				$("#navbarBreadcrumb").empty();
-				$("#navbarBreadcrumb").html("<li><a href='#'>" + $(e.target).html() +"</a></li>");
-				
-				$.ajax({
-					type: 'POST',
-					data: {
-						level: 0,
-						value: this.menu[i].name,
-						code: this.menu[i].code
-					},
-					url: appUrl('/Session/updateNavbarBreadcrumb')
-				});
-				
-				
-			} else if (level==2) {
-				// get this index
-				var i = parentDiv.find('li').index(li);
-				
-				$("#main3").html(this.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
-				
-				
-				$("#navbarBreadcrumb").empty();
-				$("#navbarBreadcrumb").html("<li><a href='#'>" + this.menu[this.currentFirstLevelIndex].name +"</a> <span class='divider'>/</span></li>");
-				$("#navbarBreadcrumb").append("<li><a href='#'>" + $(e.target).html() +"</a></li>");
-				
-				$.ajax({
-					type: 'POST',
-					data: {
-						level: 1,
-						value: this.menu[this.currentFirstLevelIndex].menus[i].name,
-						code: this.menu[this.currentFirstLevelIndex].menus[i].code
-					},
-					url: appUrl('/Session/updateNavbarBreadcrumb')
-				});
-				
-			} else if (level==3) {
-				
-			}
-		}
-	});
-	
-	mainView = new MainView();
-	
-	if (typeof ROLE_USER_PLAN != "undefined"){
-		mainView.renderWith(menuJson);
-	 	//$("#menuDiv").html(menuTemplate(menuJson));
-	 	
-	 	if(menuLevel == '0') {
-	 		var firstMenu = _.where(menuJson, {code: menuCode})[0];
-	 		$("#main2").html(mainView.subMenuTemplate(firstMenu.menus));
-	 		mainView.currentFirstLevelIndex = _.indexOf(menuJson, firstMenu);
-	 	} else if(menuLevel == '1') {
-	 		var firstMenu = _.find(menuJson, function(menu) { return _.where(menu.menus, {code: menuCode}).length > 0; });
-			mainView.currentFirstLevelIndex = _.indexOf(menuJson, firstMenu);
-			$("#main2").html(mainView.subMenuTemplate(firstMenu.menus));
-			
-			var secondMenu = _.where(firstMenu.menus, {code: menuCode})[0];
-			$("#main3").html(mainView.subMenuTemplate(secondMenu.menus));
-	 	}
-	 	
-	} else {
-		mainView.renderWith(menuUserJson);
-		//$("#menuDiv").html(menuTemplate(menuUserJson));
-		
-	}
-	
-	
-	
-});
+						var MainView = Backbone.View
+								.extend({
+									initialize : function(options) {
 
+									},
+									subMenuTemplate : Handlebars.compile($(
+											"#subMenuTemplate").html()),
+									el : "body",
+									render : function() {
+										$("#main1")
+												.html(
+														this
+																.subMenuTemplate(this.menu));
+									},
+
+									renderWith : function(m) {
+										this.menu = m;
+										this.render();
+									},
+									events : {
+										"click a" : "menuClick"
+									},
+
+									menuClick : function(e) {
+										e1 = e;
+
+										var parentDiv = $(e.target).parents(
+												'div.menu');
+										var li = $(e.target).parent();
+
+										//e1=parentDiv;
+										var level = parentDiv.attr('data-id');
+
+										if (level == 1) {
+											// get this index
+											var i = parentDiv.find('li').index(
+													li);
+
+											this.currentFirstLevelIndex = i;
+											$("#main3").empty();
+
+											$("#main2")
+													.html(
+															this
+																	.subMenuTemplate(this.menu[i].menus));
+
+											$("#navbarBreadcrumb").empty();
+											$("#navbarBreadcrumb").html(
+													"<li><a href='#'>"
+															+ $(e.target)
+																	.html()
+															+ "</a></li>");
+
+											$
+													.ajax({
+														type : 'POST',
+														data : {
+															level : 0,
+															value : this.menu[i].name,
+															code : this.menu[i].code
+														},
+														url : appUrl('/Session/updateNavbarBreadcrumb')
+													});
+
+										} else if (level == 2) {
+											// get this index
+											var i = parentDiv.find('li').index(
+													li);
+
+											$("#main3")
+													.html(
+															this
+																	.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
+
+											$("#navbarBreadcrumb").empty();
+											$("#navbarBreadcrumb")
+													.html(
+															"<li><a href='#'>"
+																	+ this.menu[this.currentFirstLevelIndex].name
+																	+ "</a> <span class='divider'>/</span></li>");
+											$("#navbarBreadcrumb").append(
+													"<li><a href='#'>"
+															+ $(e.target)
+																	.html()
+															+ "</a></li>");
+
+											$
+													.ajax({
+														type : 'POST',
+														data : {
+															level : 1,
+															value : this.menu[this.currentFirstLevelIndex].menus[i].name,
+															code : this.menu[this.currentFirstLevelIndex].menus[i].code
+														},
+														url : appUrl('/Session/updateNavbarBreadcrumb')
+													});
+
+										} else if (level == 3) {
+
+										}
+									}
+								});
+
+						mainView = new MainView();
+
+						if (typeof ROLE_USER_PLAN != "undefined") {
+							mainView.renderWith(menuJson);
+							//$("#menuDiv").html(menuTemplate(menuJson));
+
+							if (menuLevel == '0') {
+								var firstMenu = _.where(menuJson, {
+									code : menuCode
+								})[0];
+								$("#main2")
+										.html(
+												mainView
+														.subMenuTemplate(firstMenu.menus));
+								mainView.currentFirstLevelIndex = _.indexOf(
+										menuJson, firstMenu);
+							} else if (menuLevel == '1') {
+								var firstMenu = _.find(menuJson,
+										function(menu) {
+											return _.where(menu.menus, {
+												code : menuCode
+											}).length > 0;
+										});
+								mainView.currentFirstLevelIndex = _.indexOf(
+										menuJson, firstMenu);
+								$("#main2")
+										.html(
+												mainView
+														.subMenuTemplate(firstMenu.menus));
+
+								var secondMenu = _.where(firstMenu.menus, {
+									code : menuCode
+								})[0];
+								$("#main3")
+										.html(
+												mainView
+														.subMenuTemplate(secondMenu.menus));
+							}
+
+						} else {
+							mainView.renderWith(menuUserJson);
+							//$("#menuDiv").html(menuTemplate(menuUserJson));
+
+						}
+
+					});
 </script>

@@ -62,12 +62,15 @@ public class GenericViewController {
 		return "m1f07";
 	}
 
+	
+	// --------------------------------------------------------------m63f04:
+	// การประมวลผลก่อนการปรับลดครั้งที่ 1  (m63f04)
 	@RequestMapping("/page/m63f04/")
-	public String runder_m63f04(Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();
+	public String runder_m63f04(Model model, HttpSession session) {
 		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
-		return "m3f04";
+		Integer fiscalYear = setFiscalYearFromSession(model, session);
+		model.addAttribute("rootObjective", entityService.findOneRootObjectiveByFiscalyear(fiscalYear));
+		return "m63f04";
 	}
 
 	// --------------------------------------------------------------m64f04:
