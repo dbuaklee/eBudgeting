@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import biz.thaicom.eBudgeting.exception.ObjectiveHasBudgetProposalException;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetLevel;
@@ -84,6 +88,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Transactional
 public class EntityServiceJPA implements EntityService {
 	private static final Logger logger = LoggerFactory.getLogger(EntityServiceJPA.class);
+	
+	@PersistenceContext
+	private EntityManager em;
 	
 	@Autowired
 	private ObjectiveRepository objectiveRepository;
@@ -2000,9 +2007,17 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public Objective deleteObjective(Long id, Boolean nameCascade) {
+	public Objective deleteObjective(Long id, Boolean nameCascade) throws ObjectiveHasBudgetProposalException {
 		// ok we'll have to get this one first
 		Objective obj = objectiveRepository.findOne(id);
+		
+		//check first if this objective has been used in proposal!
+		List<BudgetProposal> list = budgetProposalRepository.findAllByForObjective(obj); 
+		
+		if(list.size() > 0) {
+			throw new ObjectiveHasBudgetProposalException(list);
+		}
+		
 		
 		//then get its parent
 		Objective parent = obj.getParent();
@@ -3935,5 +3950,5 @@ public class EntityServiceJPA implements EntityService {
 	
 	
 	
-
+ 
 }

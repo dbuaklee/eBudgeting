@@ -209,6 +209,14 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 	public Page<Objective> findByFiscalYearAndType_Id(
 			Integer fiscalYear, Long typeId, String query, Pageable pageable);
 
+	
+	@Query("" +
+			"SELECT objective " +
+			"FROM Objective objective " +
+			"	LEFT JOIN FETCH objective.children " +
+			"	LEFT JOIN FETCH objective.parent ")
+	public Iterable<Objective> findAllFetchChildrenParent();
+
 
 
 

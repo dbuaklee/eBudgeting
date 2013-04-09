@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import biz.thaicom.eBudgeting.exception.ObjectiveHasBudgetProposalException;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
@@ -91,7 +92,7 @@ public interface EntityService {
 	public Objective saveObjective(JsonNode objective);
 	public Objective newObjectiveWithParam(String name, String code, Long parentId,
 			Long typeId, String parentPath, Integer fiscalYear);
-	public Objective deleteObjective(Long id, Boolean nameCascade);
+	public Objective deleteObjective(Long id, Boolean nameCascade) throws ObjectiveHasBudgetProposalException;
 	public void addTargetToObjective(Long id, Long targetId);
 	
 	public List<Objective> findObjectivesByFiscalyearAndTypeId(
@@ -306,6 +307,8 @@ public interface EntityService {
 	public User updateUser(JsonNode node);
 	public User saveUser(JsonNode node);
 	public User deleteUser(Long id);
+	
+
 	
 	
 	

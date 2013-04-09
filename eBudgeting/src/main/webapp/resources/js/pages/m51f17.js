@@ -68,20 +68,25 @@ var MainTreeView = Backbone.View.extend({
 		console.log(clickunLinkObjectiveId);
 		var clickunLinkObjective = Objective.findOrCreate(clickunLinkObjectiveId);
 		var parentObjective = clickunLinkObjective.get('parent');
+		console.log(parentObjective);
 		
 		if(clickunLinkObjective != null) {
 			clickunLinkObjective.url = appUrl('/Objective/'+ clickunLinkObjectiveId);
 			
 			clickunLinkObjective.destroy({wait:true,
-				success: function() {
+				success: _.bind(function() {
 					$(e.target).parents("tr").remove();
 					
-					if(parentObjective.get('isLeaf') == true) {
+					
+					if(parentObjective.get('children').length == 0) {
+					
 						var parentTrEl = this.$el.find('tr[data-id='+ parentObjective.get('id') +']');
+					
 						parentTrEl.find('a.nextChildrenLnk').find('i').removeClass('icon-chevron-down');
 						parentTrEl.find('a.nextChildrenLnk').find('i').addClass('icon-circle');
 					}
-				},
+					
+				},this),
 				error: function(model, xhr, options) {
 					alert("ไม่สามารถลบรายการได้ \n Error: " + xhr.responseText);
 				}
@@ -123,6 +128,9 @@ var MainTreeView = Backbone.View.extend({
 				url: appUrl('/Objective/' + selectedObjective.get('id') + '/children'),
 				success: _.bind(function() {
 					selectedObjective.set('children', children);
+					children.each(function(child) {
+						child.set('parent', selectedObjective);
+					});
 					
 					
 					
@@ -248,6 +256,7 @@ var ChildrenSltView = Backbone.View.extend({
 		newObjective.fetch({
 			success: _.bind(function(response) {
 		
+				
 				// now add this to current parent
 				this.objective.get('children').add(newObjective);
 				this.objective.set('isLeaf',false);

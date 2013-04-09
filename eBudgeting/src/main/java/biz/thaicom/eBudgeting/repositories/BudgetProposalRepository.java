@@ -80,5 +80,10 @@ public interface BudgetProposalRepository extends
 
 	public List<BudgetProposal> findAllByForObjectiveAndOwner(Objective obj,
 			Organization workAt);
+
+
+
+
+	public List<BudgetProposal> findAllByForObjective(Objective obj);
 	
 }

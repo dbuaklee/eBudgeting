@@ -32,9 +32,7 @@ public class Role implements Serializable {
 	
 	@Basic
 	private String roleName;
-	
-	@OneToMany
-	private List<Program> programAllowList;
+
 
 	public Long getId() {
 		return id;

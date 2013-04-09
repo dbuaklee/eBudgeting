@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.fasterxml.jackson.databind.JsonNode;
 
 
+import biz.thaicom.eBudgeting.exception.ObjectiveHasBudgetProposalException;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveDetail;
@@ -34,6 +35,7 @@ import biz.thaicom.eBudgeting.models.pln.ObjectiveName;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveRelations;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveTarget;
 import biz.thaicom.eBudgeting.models.webui.PageUI;
+import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.ObjectiveRelationsRepository;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
@@ -46,6 +48,7 @@ public class ObjectiveRestController {
 	@Autowired
 	private EntityService entityService;
 
+	
 	@RequestMapping(value="/Objective/root", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getRootFiscalYear() {
 		return entityService.findRootFiscalYear();
@@ -230,9 +233,10 @@ public class ObjectiveRestController {
 	
 	@RequestMapping(value="/Objective/{id}", method=RequestMethod.DELETE) 
 	public @ResponseBody Objective deleteObjective(
-			@PathVariable Long id) {
+			@PathVariable Long id) throws ObjectiveHasBudgetProposalException {
 
 		Boolean cascadeNameDelete = false;
+		
 		
 		return entityService.deleteObjective(id, cascadeNameDelete);
 	}
