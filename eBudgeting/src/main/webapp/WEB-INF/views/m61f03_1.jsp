@@ -398,7 +398,7 @@
 			<div id="formulaBox">
 				<div>
 					<div style="height:35px;">
-						หมวดงบประมาณ:
+						<strong>หมวดงบประมาณ:</strong>
 					</div>
 				</div>
 				<div>
@@ -413,7 +413,7 @@
 			<div id="formulaBox">
 				<div>
 					<div style="height:35px;">
-						ระบุงบประมาณ:
+						<strong>ระบุงบประมาณ:</strong>
 					</div>
 				</div>
 				<div>
@@ -426,7 +426,7 @@
 			<div class="clearfix"></div>
 			<div id="formulaBox">
 				<div>
-					<div style="margin-top:0px;"> ระบุเป้าหมาย </div>
+					<div style="margin-top:0px;"> <strong>ระบุเป้าหมาย</strong> </div>
 				</div>
 				<div style="margin: 0px 8px;">
 					<div class="input-append"><input style="width:120px;" type="text" id="targetValue{{unit.id}}" value="{{targetValue}}" data-id={{id}}/><span class="add-on">{{unit.name}}</span></div>
@@ -439,30 +439,30 @@
 					<div style="margin-top:11px;"> <button class="btn copytoNextYear">คัดลอกงบประมาณ</button></div>
 {{#each targets}}					
 					<div>
-						<div style="margin-top:10px;"> <button data-id="{{unit.id}}" class="btn copyTargetToNextYear">คัดลอกเป้าหมาย ({{unit.name}})</button> </div>
+						<div style="margin-top:10px;"> <button data-id="{{unit.id}}" class="btn copyTargetToNextYear">คัดลอกเป้าหมาย</button> </div>
 					</div>
 {{/each}}
 
 				</div>	
-				<div style="margin: 0px 8px;">
+				<div style="margin: 0px 5px;">
 					<div><b>ปี: {{next1Year}}</b></div>
 					<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext1Year" value="{{amountRequestNext1Year}}"/><span class="add-on">บาท</span></div></div>
 {{#each targets}}
-					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext1Year{{unit.id}}" value="{{targetValueNext1Year}}"/><span class="add-on">{{unit.name}}</span></div></div>
+					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext1Year{{unit.id}}" value="{{targetValueNext1Year}}"/><span class="add-on" style="{{smallText unit.name}}">{{unit.name}}</span></div></div>
 {{/each}}
 				</div>
-				<div style="margin: 0px 8px;">
+				<div style="margin: 0px 5px;">
 					<div><b>ปี : {{next2Year}}</b></div>
 					<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext2Year" value="{{amountRequestNext2Year}}"/><span class="add-on">บาท</span></div></div>
 {{#each targets}}
-					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext2Year{{unit.id}}" value="{{targetValueNext2Year}}"/><span class="add-on">{{unit.name}}</span></div></div>
+					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext2Year{{unit.id}}" value="{{targetValueNext2Year}}"/><span class="add-on" style="{{smallText unit.name}}">{{unit.name}}</span></div></div>
 {{/each}}
 				</div>
-				<div style="margin: 0px 8px;">
+				<div style="margin: 0px 5px;">
 					<div><b>ปี: {{next3Year}}</b></div>
 					<div><div class="input-append"><input style="width:120px;" type="text" id="amountRequestNext3Year" value="{{amountRequestNext3Year}}"/><span class="add-on">บาท</span></div></div>
 {{#each targets}}
-					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext3Year{{unit.id}}" value="{{targetValueNext3Year}}"/><span class="add-on">{{unit.name}}</span></div></div>
+					<div><div class="input-append"><input style="width:120px;" type="text" id="targetValueNext3Year{{unit.id}}" value="{{targetValueNext3Year}}"/><span class="add-on" style="{{smallText unit.name}}">{{unit.name}}</span></div></div>
 {{/each}}
 				</div>
 			</div>
@@ -507,6 +507,14 @@
 	var readOnly = "${readOnly}";
 
 	var proposalListTemplate = Handlebars.compile($('#proposalListTemplate').html());
+	
+	Handlebars.registerHelper("smallText", function(str) {
+		if(str.length > 7) {
+			return "font-size:9px;";
+		} else {
+			return "";
+		}
+	});
 	
 	Handlebars.registerHelper("sumTargetValue", function(unitId, proposals) {
 		// get all targetValue

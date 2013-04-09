@@ -438,10 +438,10 @@
 	<div id="formulaBox">
 		<div id="proposalStrategyId" data-id="{{proposalStrategyId}}">
 			<div style="height:35px;margin-bottom:10px;">
-				รายการ: 
+				<b>รายการ:</b> 
 			</div>
 			<div style="height:35px;">
-				ระบุงบประมาณ:
+				<b>ระบุงบประมาณ:</b>
 			</div>
 		</div>
 		<div>
