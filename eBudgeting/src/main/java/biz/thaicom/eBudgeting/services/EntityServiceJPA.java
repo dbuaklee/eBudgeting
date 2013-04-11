@@ -1223,6 +1223,7 @@ public class EntityServiceJPA implements EntityService {
 			Integer fiscalYear, Long objectiveId, Boolean isFindObjectiveBudget) {
 		String parentPathLikeString = "%."+objectiveId.toString()+"%";
 		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear, parentPathLikeString);
+		Objective parent = objectiveRepository.findOne(objectiveId);
 		
 		List<BudgetProposal> proposalList = budgetProposalRepository
 				.findBudgetProposalByFiscalYearAndParentPath(fiscalYear, parentPathLikeString);
@@ -1269,8 +1270,20 @@ public class EntityServiceJPA implements EntityService {
 			
 		}
 		
+		List<Objective> returnList = new ArrayList<Objective>();
+		
 		// oh not yet!
 		for(Objective o : list) {
+			if(o.getParent().getId().equals(parent.getId())) {
+				logger.debug("---------------------adding {}", o.getId() );
+				returnList.add(o); 
+			}
+			if(o.getChildren().size() >0) {
+				o.setIsLeaf(false);
+			} else {
+				o.setIsLeaf(true);
+			}
+			
 			o.getTargetValueAllocationRecords().size();
 			o.getTargetValues().size();
 			for(TargetValue tv : o.getTargetValues()) {
@@ -1280,7 +1293,7 @@ public class EntityServiceJPA implements EntityService {
 			
 		}
 		
-		return list;
+		return returnList;
 	}
 	
 	

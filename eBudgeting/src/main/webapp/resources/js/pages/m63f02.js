@@ -356,42 +356,44 @@ var MainCtrView = Backbone.View.extend({
 	},
 	renderMainTbl: function() {
 		
-		this.objectiveCollection = new ObjectiveCollection();
+		this.collection = new ObjectiveCollection();
 		this.rootCollection = new ObjectiveCollection();
 		
-		this.objectiveCollection.url = appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + this.currentParentObjective.get('id') +"/flatDescendants");
+		this.collection.url = appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + this.currentParentObjective.get('id') +"/flatDescendants");
 		
-		this.objectiveCollection.fetch({
-			success: function(){
+		this.collection.fetch({
+			success: _.bind(function(){
+
+				var json= this.collection.toJSON();
 				
-			}
-		});
-		
-		var json= this.collection.toJSON();
-		
-		var allProposal = new BudgetProposalCollection(); 
-		_.each(rootCollection.pluck('sumBudgetTypeProposals'), function(bpCollection) {
-			if(bpCollection.length > 0) {
-				bpCollection.each(function(bp) {
-					allProposal.add(bp);
+				var allProposal = new BudgetProposalCollection(); 
+				_.each(this.rootCollection.pluck('sumBudgetTypeProposals'), function(bpCollection) {
+					if(bpCollection.length > 0) {
+						bpCollection.each(function(bp) {
+							allProposal.add(bp);
+						});
+					}
 				});
-			}
-		});
-		
-		
-		var allAllocationRecordsR1 = new AllocationRecordCollection(); 
-		_.each(rootCollection.pluck('allocationRecordsR1'), function(ar1Collection) {
-			if(ar1Collection.length > 0) {
-				ar1Collection.each(function(ar) {
-					ar1Collection.add(ar);
+				
+				
+				var allAllocationRecordsR1 = new AllocationRecordCollection(); 
+				_.each(this.rootCollection.pluck('allocationRecordsR1'), function(ar1Collection) {
+					if(ar1Collection.length > 0) {
+						ar1Collection.each(function(ar) {
+							ar1Collection.add(ar);
+						});
+					}
 				});
-			}
+				
+				json.allProposal = allProposal.toJSON();
+				json.allAllocationRecordsR1 = allAllocationRecordsR1.toJSON();
+				
+				this.$el.html(this.mainTblTpl(json));
+				
+			},this)
 		});
 		
-		json.allProposal = allProposal.toJSON();
-		json.allAllocationRecordsR1 = allAllocationRecordsR1.toJSON();
-		
-		this.$el.html(this.mainTblTpl(json));
+
 		
 	},
 	

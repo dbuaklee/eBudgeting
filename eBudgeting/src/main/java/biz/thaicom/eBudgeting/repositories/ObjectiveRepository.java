@@ -83,8 +83,9 @@ public interface ObjectiveRepository extends PagingAndSortingRepository<Objectiv
 			"SELECT distinct objective " +
 			"FROM Objective objective" +
 			"	LEFT OUTER JOIN FETCH objective.parent parent " +
+			"	LEFT OUTER JOIN FETCH objective.children" +
 			"	INNER JOIN FETCH objective.type type " +
-			"	LEFT OUTER JOIN FETCH objective.budgetTypes budgetTypes " +
+			"	LEFT OUTER JOIN objective.budgetTypes budgetTypes " +
 			"	LEFT OUTER JOIN objective.proposals proposal " +
 			"WHERE objective.fiscalYear = ?1 AND (objective.parentPath like ?2 OR objective.parentPath is null) " +
 			"ORDER BY objective.id asc ")
