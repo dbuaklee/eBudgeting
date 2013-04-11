@@ -870,10 +870,10 @@ public class GenericViewController {
 	}
 
 	@RequestMapping("/page/m63f02/")
-	public String runder_m63f02(Model model, HttpServletRequest request) {
-		List<Objective> fiscalYears = entityService.findRootFiscalYear();
+	public String runder_m63f02(Model model, HttpSession session) {
 		model.addAttribute("rootPage", true);
-		model.addAttribute("fiscalYears", fiscalYears);
+		setFiscalYearFromSession(model, session);
+
 		return "m63f02";
 	}
 

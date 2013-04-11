@@ -36,25 +36,7 @@
 		</div>
 	
 		<div id="mainCtr">
-		<c:choose>
-		<c:when test="${rootPage}">
-			<table class="table table-bordered" id="mainTbl">
-				<thead>
-					<tr>
-						<td>เลือกปีงบประมาณ</td>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${fiscalYears}" var="fiscalYear">
-						<tr>
-						
-							<td><a href="./${fiscalYear.fiscalYear}/${fiscalYear.id}/" class="nextChildrenLnk">${fiscalYear.fiscalYear} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>			
-		</c:when>
-		</c:choose>
+
 		</div>
 		
 	</div>
@@ -72,6 +54,13 @@
 <div id="strategySelectionDiv"></div>
 </script>
 
+<script id="mainCtrTemplate" type="text/x-handler-template">
+<div id="mainSelection">
+</div>
+<div id="mainTbl">
+</div>
+</script>
+
 <script id="strategySelectionTemplate" type="text/x-handler-template">
 <select id="strategySlt" {{#if editStrategy}} disabled {{/if}}>
 	<option value="0">กรุณาเลือกรายการ</option>
@@ -84,7 +73,7 @@
 	</form></div>
 </script>
 
-<script id="mainCtrTemplate" type="text/x-handler-template">
+<script id="mainTblTemplate" type="text/x-handler-template">
 <table class="table table-bordered" id="mainTbl" style="margin-bottom:0px; width:720px; table-layout:fixed;">
 	<thead>
 		<tr>
@@ -223,13 +212,15 @@
 
 
 <script id="selectionTemplate" type="text/x-handler-template">
-<select id="budgetType_{{this.id}}">
-	<option value="0">กรุณาเลือกรายการ</option>
-	{{#each this.children}}
-	<option value="{{this.id}}">{{this.name}}</option>
-	{{/each}}
-</select>
-<div></div>
+<div class="control-group"  style="margin-bottom:5px;">
+	<label class="control-label">{{type.name}} :</label>
+	<div class="controls">
+		<select id="type{{type.id}}Slt" class="span5">
+			<option>กรุณาเลือก...</option>
+			{{#each this}}<option value={{id}}>[{{code}}] {{name}}</option>{{/each}}
+		</select>
+	</div> 
+</div>
 </script>
 
 
@@ -304,6 +295,7 @@ var fiscalYear = "${fiscalYear}";
 
 var pageUrl = "/page/m63f02/";
 var mainTblView  = null;
+var mainCtrView = null;
 var objectiveCollection = null;
 var budgetTypeSelectionView = null;
 var rootCollection;
@@ -451,7 +443,10 @@ Handlebars.registerHelper('next', function(val, next) {
 
 
 $(document).ready(function() {
+	mainCtrView = new MainCtrView();
+	mainCtrView.render();
 	
+	/* 
 	if(objectiveId != null && objectiveId.length >0 ) {
 		objectiveCollection = new ObjectiveCollection();
 		rootCollection = new ObjectiveCollection();
@@ -506,7 +501,9 @@ $(document).ready(function() {
 				});
 			}
 		});
-	}
+	} 
+	
+	*/
 	
 });
 </script>
