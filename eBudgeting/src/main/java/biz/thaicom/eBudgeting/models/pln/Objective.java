@@ -139,6 +139,15 @@ public class Objective implements Serializable {
 	private List<ObjectiveBudgetProposal> filterObjectiveBudgetProposals;
 	
 	@Transient
+	private List<AllocationRecord> allocationRecordsR1;
+
+	@Transient
+	private List<AllocationRecord> allocationRecordsR2;
+	
+	@Transient
+	private List<AllocationRecord> allocationRecordsR3;
+	
+	@Transient
 	private List<TargetValue> filterTargetValues;
 	
 	@Transient
@@ -254,6 +263,34 @@ public class Objective implements Serializable {
 			this.units = new ArrayList<TargetUnit>();
 		}
 		this.units.add(unit);
+	}
+	
+	public List<AllocationRecord> getAllocationRecordsR1() {
+		if(allocationRecordsR1 == null) {
+			allocationRecordsR1 = new ArrayList<AllocationRecord>();
+		}
+		return allocationRecordsR1;
+	}
+	public void setAllocationRecordsR1(List<AllocationRecord> allocationRecordsR1) {
+		this.allocationRecordsR1 = allocationRecordsR1;
+	}
+	public List<AllocationRecord> getAllocationRecordsR2() {
+		if(allocationRecordsR2 == null) {
+			allocationRecordsR2 = new ArrayList<AllocationRecord>();
+		}
+		return allocationRecordsR2;
+	}
+	public void setAllocationRecordsR2(List<AllocationRecord> allocationRecordsR2) {
+		this.allocationRecordsR2 = allocationRecordsR2;
+	}
+	public List<AllocationRecord> getAllocationRecordsR3() {
+		if(allocationRecordsR3 == null) {
+			allocationRecordsR3 = new ArrayList<AllocationRecord>();
+		}
+		return allocationRecordsR3;
+	}
+	public void setAllocationRecordsR3(List<AllocationRecord> allocationRecordsR3) {
+		this.allocationRecordsR3 = allocationRecordsR3;
 	}
 	
 	// loading barebone information about the entity

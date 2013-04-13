@@ -18,8 +18,8 @@ public interface AllocationRecordRepository extends
 			"FROM AllocationRecord record " +
 			"	LEFT JOIN FETCH record.budgetType budgetType " +
 			"	INNER JOIN FETCH record.forObjective objective " +
-			" " +
-			"WHERE objective.fiscalYear =?1 and objective.parentPath like ?2 ")
+			"WHERE objective.fiscalYear =?1 and objective.parentPath like ?2 " +
+			"ORDER BY record.budgetType.id asc")
 	public List<AllocationRecord> findBudgetProposalByFiscalYearAndOwnerAndParentPath(
 			Integer fiscalYear,  String parentPathLikeString);
 

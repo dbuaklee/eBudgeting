@@ -1254,6 +1254,14 @@ public class EntityServiceJPA implements EntityService {
 				o.setAllocationRecords(new ArrayList<AllocationRecord>());
 			}
 			
+			if(record.getIndex() == 0) {
+				o.getAllocationRecordsR1().add(record);
+			} else if(record.getIndex() == 1) {
+				o.getAllocationRecordsR2().add(record);
+			} else if(record.getIndex() == 2) {
+				o.getAllocationRecordsR3().add(record);
+			}
+			
 			//o.getProposals().add(record);
 			logger.debug("proposal size is " + o.getAllocationRecords().size());
 		}
