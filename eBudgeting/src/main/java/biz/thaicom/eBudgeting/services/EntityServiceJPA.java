@@ -3953,7 +3953,8 @@ public class EntityServiceJPA implements EntityService {
 				
 				for(ProposalStrategy strategy : proposal.getProposalStrategies()) {
 					for(ObjectiveTarget target: obj.getTargets()) {
-						if(target.getUnit().getId().equals(strategy.getTargetUnit().getId())) {
+						if(target.getUnit() != null && strategy.getTargetUnit() != null && 
+								target.getUnit().getId().equals(strategy.getTargetUnit().getId())) {
 							Boolean foundTarget = false;
 							if(objectiveBudgetProposal.getTargets() != null) {
 								for(ObjectiveBudgetProposalTarget pTarget : objectiveBudgetProposal.getTargets()) {

@@ -9,7 +9,7 @@
 <div class="row">
 	<div class="span11">
 		
-		<div id="detailModal" class="modal hide fade">
+		<div id="detailModal" class="modal wideModal hide fade">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<span style="font-weight: bold;"></span>
@@ -197,11 +197,8 @@
 
 <script id="detailModalTemplate" type="text/x-handler-template">
 <div><u>รายการขอตั้งงบประมาณของกิจกรรม</u></div>
-<ul>
-{{#each this.sumBudgetTypeProposals}}
-	 <li> {{budgetType.name}} - {{{formatNumber amountRequest}}} บาท</li>
-{{/each}}
-</ul>
+<table id="detailModalTbl">
+</table>
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">

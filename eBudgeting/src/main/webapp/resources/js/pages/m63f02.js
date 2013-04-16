@@ -1,6 +1,6 @@
 var DetailModalView = Backbone.View.extend({
 	/**
-	 * @memeberOf DetailModalView
+	 * @memberOf DetailModalView
 	 */
 	initialize: function() {
 		
@@ -25,7 +25,16 @@ var DetailModalView = Backbone.View.extend({
 		var html = this.detailModalTemplate(json);
 		this.$el.find('.modal-body').html(html);
 		
+		
 		this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+		// now render table
+		this.$el.find('#detailModalTbl').datagrid({
+		    data: json.sumBudgetTypeProposals,
+		    columns:[[  
+		        {field:'budgetType',title:'รายการงบประมาณ',width:100, formatter:function(value, row, index) {return row.budgetType.name;}},  
+		        {field:'amountRequest',title:'งบที่ขอตั้ง',width:100, formatter:function(value,row,index) {return addCommas(row.amountRequest);}}
+		    ]]  
+		});		
 		
 		return this;
 	}
