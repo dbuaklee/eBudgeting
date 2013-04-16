@@ -1,3 +1,36 @@
+var DetailModalView = Backbone.View.extend({
+	/**
+	 * @memeberOf DetailModalView
+	 */
+	initialize: function() {
+		
+	},
+	
+	el: '#detailModal',
+	
+	detailModalTemplate : Handlebars.compile($('#detailModalTemplate').html()),
+	
+	
+	renderWithObjective : function(objective) {
+		this.currentObjective = objective;
+		this.render();
+	},
+	render: function() {
+		
+		this.$el.find('.modal-header span').html(this.currentObjective.get('name'));
+		
+		var json = this.currentObjective.toJSON();
+		
+		
+		var html = this.detailModalTemplate(json);
+		this.$el.find('.modal-body').html(html);
+		
+		this.$el.modal({show: true, backdrop: 'static', keyboard: false});
+		
+		return this;
+	}
+});
+
 var ModalView = Backbone.View.extend({
 	/**
      *  @memberOf ModalView
@@ -160,6 +193,7 @@ var MainSelectionView = Backbone.View.extend({
 	type102DisabledSelectionTemplate : Handlebars.compile($("#type102DisabledSelection").html()),
 	type103DisabledSelectionTemplate : Handlebars.compile($("#type103DisabledSelection").html()),
 	
+	
 	initialize: function() {
 		
 		this.type102Collection = new ObjectiveCollection();
@@ -294,13 +328,18 @@ var MainCtrView = Backbone.View.extend({
 	el: "#mainCtr",
 	mainCtrTemplate : Handlebars.compile($("#mainCtrTemplate").html()),
 	mainTblTpl : Handlebars.compile($("#mainTblTemplate").html()),
+	easyuiTreegridTemplate : Handlebars.compile($("#easyuiTreegridTemplate").html()),
+	loadingTemplate : Handlebars.compile($("#loadingTemplate").html()),
+	
+	detailModalVeiw: new DetailModalView(),
 	modalView : new ModalView(),
 	targetValueModalView : new TargetValueModalView(),
+	
 	
 	events:  {
 		"click input[type=checkbox].bullet" : "toggle",
 		"click .detail" : "detailModal",
-		"click .targetValueModal" : "targetValueModal"
+		"click .targetValueModal" : "targetValueModal",
 	},
 	
 	targetValueModal: function(e) {
@@ -361,35 +400,104 @@ var MainCtrView = Backbone.View.extend({
 		
 		this.collection.url = appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + this.currentParentObjective.get('id') +"/flatDescendants");
 		
+		this.$el.find('#mainTbl').html(this.loadingTemplate());
+		
+		//console.profile("a");
+//		$('#treegrid').treegrid({  
+//	        url: appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + this.currentParentObjective.get('id') +"/flatDescendants"),
+//	        method: 'GET',
+//	        idField:'id',  
+//	        treeField:'code',
+//	        nowrap: false,
+//	        columns:[[{
+//	            title:'code',field:'code',width:160, 
+//	            formatter: function(value,row,index) {
+//	            	var type = ObjectiveType.findOrCreate({id: row.type});
+//	            	if(type.get('name') == null) {
+//	            		type.fetch();
+//	            	}
+//	            	return type.get('name') + "[" +row.code + "]";
+//	            } 
+//	        }, {
+//	           	title:'name',field:'name',width:250, formatter: function(value,row,index) {return row.name;} 
+//	        }]]  
+//	    });
+		//console.profileEnd("a");
+		
 		this.collection.fetch({
 			success: _.bind(function(){
-
-				var json= this.collection.toJSON();
+				this.$el.find('#mainTbl').html(this.easyuiTreegridTemplate());
 				
-				var allProposal = new BudgetProposalCollection(); 
-				_.each(this.rootCollection.pluck('sumBudgetTypeProposals'), function(bpCollection) {
-					if(bpCollection.length > 0) {
-						bpCollection.each(function(bp) {
-							allProposal.add(bp);
-						});
-					}
-				});
+			    $('#treegrid').treegrid({  
+			        data:this.collection.toJSON(),
+			        method: 'GET',
+			        idField:'id',  
+			        treeField:'code',
+			        nowrap: false,
+			        title: 'รายละเอียดงบประมาณ',
+			        width: 825,
+			        columns:[[{
+			            title:'รหัสกิจกรรม',field:'code',width:180,
+			            formatter: function(value,row,index) {return row.type.name + "[" +row.code + "]";},
+			            styler: function(value,row,index) {return 'vertical-align:top;padding-top: 2px;'; }
+			        },{
+			        	title:'ชื่อกิจกรรม',field:'name',width:390, formatter: function(value,row,index) {return row.name;}
+			        },{
+			        	title:'งบประมาณที่ขอตั้ง', field: 'sumBudgetProposal',width: 100,
+			        	formatter: function(value,row,index) {
+			        		var amount = 0;
+			        		for(var i=0; i<row.proposals.length; i++ ){
+			        			amount += row.proposals[i].amountRequest;
+			        		}
+			        		return addCommas(amount);
+			        	},
+			        	styler: function(value, row, index){return 'text-align:right;vertical-align:top;padding-top: 2px;';}
+			        },{
+			        	title:'งบประมาณที่เสนอปรับลด', field: 'allocationR1',width: 130,
+			        	formatter: function(value,row,index) {
+			        		var amount = 0;
+			        		
+			        		for(var i=0; i<row.allocationRecordsR1.length; i++ ){
+			        			amount += row.allocationRecordsR1[i].amountAllocated;
+			        		}
+			        		return '<a href="#" class="detail" data-id="">' + addCommas(amount) + '</a>';
+			        	},
+			        	styler: function(value, row, index){return 'text-align:right;vertical-align:top;padding-top: 2px;';}
+			        }]],
+			        onClickCell: _.bind(function(field, row) {
+			        	if(field == 'allocationR1'){
+			        		this.detailModalVeiw.renderWithObjective(Objective.findOrCreate({id: row.id}));
+			        	}
+			        },this)
+			    });
 				
-				
-				var allAllocationRecordsR1 = new AllocationRecordCollection(); 
-				_.each(this.rootCollection.pluck('allocationRecordsR1'), function(ar1Collection) {
-					if(ar1Collection.length > 0) {
-						ar1Collection.each(function(ar) {
-							ar1Collection.add(ar);
-						});
-					}
-				});
-				
-				json.allProposal = allProposal.toJSON();
-				json.allAllocationRecordsR1 = allAllocationRecordsR1.toJSON();
-				
-				this.$el.html(this.mainTblTpl(json));
-				
+//
+//				var json= this.collection.toJSON();
+//				
+//				var allProposal = new BudgetProposalCollection(); 
+//				_.each(this.rootCollection.pluck('sumBudgetTypeProposals'), function(bpCollection) {
+//					if(bpCollection.length > 0) {
+//						bpCollection.each(function(bp) {
+//							allProposal.add(bp);
+//						});
+//					}
+//				});
+//				
+//				
+//				var allAllocationRecordsR1 = new AllocationRecordCollection(); 
+//				_.each(this.rootCollection.pluck('allocationRecordsR1'), function(ar1Collection) {
+//					if(ar1Collection.length > 0) {
+//						ar1Collection.each(function(ar) {
+//							ar1Collection.add(ar);
+//						});
+//					}
+//				});
+//				
+//				json.allProposal = allProposal.toJSON();
+//				json.allAllocationRecordsR1 = allAllocationRecordsR1.toJSON();
+//				
+//				this.$el.html(this.mainTblTpl(json));
+//				
 			},this)
 		});
 		

@@ -9,6 +9,20 @@
 <div class="row">
 	<div class="span11">
 		
+		<div id="detailModal" class="modal hide fade">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<span style="font-weight: bold;"></span>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn" id="cancelBtn">Close</a> 
+				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+			</div>
+		</div>
+		
 		<div id="modal" class="modal hide fade">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -105,6 +119,10 @@
 </div>
 </script>
 
+<script id="easyuiTreegridTemplate" type="text/x-handler-template">
+    <table id="treegrid" style="height:400px"></table>  
+</script>
+
 <script id="childrenNormalNodeTemplate" type="text/x-handler-template">
 		<tr>
 			<td stlye="width:400px;"><a href="../{{this.id}}/" class="nextChildrenLnk">{{this.name}} <i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
@@ -175,6 +193,15 @@
 			</td>
 	</tr>
 	{{{childrenNodeTpl this.children this.level}}}
+</script>
+
+<script id="detailModalTemplate" type="text/x-handler-template">
+<div><u>รายการขอตั้งงบประมาณของกิจกรรม</u></div>
+<ul>
+{{#each this.sumBudgetTypeProposals}}
+	 <li> {{budgetType.name}} - {{{formatNumber amountRequest}}} บาท</li>
+{{/each}}
+</ul>
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">

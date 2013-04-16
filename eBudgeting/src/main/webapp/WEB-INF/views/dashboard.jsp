@@ -5,15 +5,15 @@
 <div class="hero-unit white">
 
 <div class="row">
-	<div class="span3 menu" id="main1" data-id="1">
+	<div class="span3 mainMenu" id="main1" data-id="1">
 		
 	</div>
 	
-	<div class="span3 menu" id="main2" data-id="2">
+	<div class="span3 mainMenu" id="main2" data-id="2">
 		
 	</div>
 	
-	<div class="span4 menu" id="main3" data-id="3">
+	<div class="span4 mainMenu" id="main3" data-id="3">
 		
 	</div>
 </div>
@@ -260,157 +260,127 @@ var menuUserJson = [{
 	var mainview;
 	var e1;
 
-	$(document)
-			.ready(
-					function() {
+	$(document).ready(function() {
+	var MainView = Backbone.View.extend({
+		initialize : function(options) {
 
-						var MainView = Backbone.View
-								.extend({
-									initialize : function(options) {
+		},
+		subMenuTemplate : Handlebars.compile($("#subMenuTemplate").html()),
+		el : "body",
+		render : function() {
+			$("#main1").html(this.subMenuTemplate(this.menu));
+		},
 
-									},
-									subMenuTemplate : Handlebars.compile($(
-											"#subMenuTemplate").html()),
-									el : "body",
-									render : function() {
-										$("#main1")
-												.html(
-														this
-																.subMenuTemplate(this.menu));
-									},
+		renderWith : function(m) {
+			this.menu = m;
+			this.render();
+		},
+		events : {
+			"click a" : "menuClick"
+		},
 
-									renderWith : function(m) {
-										this.menu = m;
-										this.render();
-									},
-									events : {
-										"click a" : "menuClick"
-									},
+		menuClick : function(e) {
+			e1 = e;
 
-									menuClick : function(e) {
-										e1 = e;
+			var parentDiv = $(e.target).parents('div.mainMenu');
+			var li = $(e.target).parent();
 
-										var parentDiv = $(e.target).parents(
-												'div.menu');
-										var li = $(e.target).parent();
+			//e1=parentDiv;
+			var level = parentDiv.attr('data-id');
 
-										//e1=parentDiv;
-										var level = parentDiv.attr('data-id');
+			if (level == 1) {
+				// get this index
+				var i = parentDiv.find('li').index(li);
 
-										if (level == 1) {
-											// get this index
-											var i = parentDiv.find('li').index(
-													li);
+				this.currentFirstLevelIndex = i;
+				$("#main3").empty();
 
-											this.currentFirstLevelIndex = i;
-											$("#main3").empty();
+				$("#main2").html(this.subMenuTemplate(this.menu[i].menus));
 
-											$("#main2")
-													.html(
-															this
-																	.subMenuTemplate(this.menu[i].menus));
+				$("#navbarBreadcrumb").empty();
+				$("#navbarBreadcrumb").html(
+						"<li><a href='#'>" + 
+						$(e.target).html() +
+						"</a></li>");
 
-											$("#navbarBreadcrumb").empty();
-											$("#navbarBreadcrumb").html(
-													"<li><a href='#'>"
-															+ $(e.target)
-																	.html()
-															+ "</a></li>");
+				$.ajax({
+					type : 'POST',
+					data : {
+						level : 0,
+						value : this.menu[i].name,
+						code : this.menu[i].code
+					},
+					url : appUrl('/Session/updateNavbarBreadcrumb')
+				});
 
-											$
-													.ajax({
-														type : 'POST',
-														data : {
-															level : 0,
-															value : this.menu[i].name,
-															code : this.menu[i].code
-														},
-														url : appUrl('/Session/updateNavbarBreadcrumb')
-													});
+			} else if (level == 2) {
+				// get this index
+				var i = parentDiv.find('li').index(
+						li);
 
-										} else if (level == 2) {
-											// get this index
-											var i = parentDiv.find('li').index(
-													li);
+				$("#main3").html(this.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
 
-											$("#main3")
-													.html(
-															this
-																	.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
+				$("#navbarBreadcrumb").empty();
+				$("#navbarBreadcrumb").html(
+						"<li><a href='#'>" + 
+						this.menu[this.currentFirstLevelIndex].name + 
+						"</a> <span class='divider'>/</span></li>");
+				$("#navbarBreadcrumb").append(
+						"<li><a href='#'>" + 
+						$(e.target).html() +
+						"</a></li>");
 
-											$("#navbarBreadcrumb").empty();
-											$("#navbarBreadcrumb")
-													.html(
-															"<li><a href='#'>"
-																	+ this.menu[this.currentFirstLevelIndex].name
-																	+ "</a> <span class='divider'>/</span></li>");
-											$("#navbarBreadcrumb").append(
-													"<li><a href='#'>"
-															+ $(e.target)
-																	.html()
-															+ "</a></li>");
+				$.ajax({
+					type : 'POST',
+					data : {
+						level : 1,
+						value : this.menu[this.currentFirstLevelIndex].menus[i].name,
+						code : this.menu[this.currentFirstLevelIndex].menus[i].code
+					},
+					url : appUrl('/Session/updateNavbarBreadcrumb')
+				});
 
-											$
-													.ajax({
-														type : 'POST',
-														data : {
-															level : 1,
-															value : this.menu[this.currentFirstLevelIndex].menus[i].name,
-															code : this.menu[this.currentFirstLevelIndex].menus[i].code
-														},
-														url : appUrl('/Session/updateNavbarBreadcrumb')
-													});
+			} else if (level == 3) {
 
-										} else if (level == 3) {
+			}
+		}
+	});
 
-										}
-									}
-								});
+	mainView = new MainView();
 
-						mainView = new MainView();
+	if (typeof ROLE_USER_PLAN != "undefined") {
+		mainView.renderWith(menuJson);
+		//$("#menuDiv").html(menuTemplate(menuJson));
 
-						if (typeof ROLE_USER_PLAN != "undefined") {
-							mainView.renderWith(menuJson);
-							//$("#menuDiv").html(menuTemplate(menuJson));
-
-							if (menuLevel == '0') {
-								var firstMenu = _.where(menuJson, {
-									code : menuCode
-								})[0];
-								$("#main2")
-										.html(
-												mainView
-														.subMenuTemplate(firstMenu.menus));
-								mainView.currentFirstLevelIndex = _.indexOf(
-										menuJson, firstMenu);
-							} else if (menuLevel == '1') {
-								var firstMenu = _.find(menuJson,
-										function(menu) {
-											return _.where(menu.menus, {
-												code : menuCode
-											}).length > 0;
-										});
-								mainView.currentFirstLevelIndex = _.indexOf(
-										menuJson, firstMenu);
-								$("#main2")
-										.html(
-												mainView
-														.subMenuTemplate(firstMenu.menus));
-
-								var secondMenu = _.where(firstMenu.menus, {
-									code : menuCode
-								})[0];
-								$("#main3")
-										.html(
-												mainView
-														.subMenuTemplate(secondMenu.menus));
-							}
-
-						} else {
-							mainView.renderWith(menuUserJson);
-							//$("#menuDiv").html(menuTemplate(menuUserJson));
-
-						}
-
+		if (menuLevel == '0') {
+			var firstMenu = _.where(menuJson, {
+				code : menuCode
+			})[0];
+			$("#main2").html(mainView.subMenuTemplate(firstMenu.menus));
+			mainView.currentFirstLevelIndex = _.indexOf(
+					menuJson, firstMenu);
+		} else if (menuLevel == '1') {
+			var firstMenu = _.find(menuJson,
+					function(menu) {
+						return _.where(menu.menus, {
+							code : menuCode
+						}).length > 0;
 					});
+			mainView.currentFirstLevelIndex = _.indexOf(
+					menuJson, firstMenu);
+			$("#main2").html(mainView.subMenuTemplate(firstMenu.menus));
+
+			var secondMenu = _.where(firstMenu.menus, {
+				code : menuCode
+			})[0];
+			$("#main3").html(mainView.subMenuTemplate(secondMenu.menus));
+		}
+
+	} else {
+		mainView.renderWith(menuUserJson);
+		//$("#menuDiv").html(menuTemplate(menuUserJson));
+
+	}
+
+});
 </script>

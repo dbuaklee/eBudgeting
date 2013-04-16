@@ -17,21 +17,26 @@
       <script src="<c:url value='/resources/jslibs/html5shiv-printshiv.js'/>"></script>
     <![endif]-->	
 
+	<link href="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/themes/default/easyui.css'/>" rel="stylesheet">
+	<link href="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/themes/icon.css'/>" rel="stylesheet">
+
+
 	<link href="<c:url value='/resources/jslibs/jqueryui-1.9.2/css/redmond/jquery-ui-1.9.2.custom.css'/>" rel="stylesheet">
-	<link href="<c:url value='/resources/jslibs/jqGrid-4.4.1/css/ui.jqgrid.css'/>" rel="stylesheet">	
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.3.1/css/bootstrap.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.3.1/css/font-awesome-3.0.min.css'/>" rel="stylesheet">
 	
-	<link href="<c:url value='/resources/jslibs/bootstrap-editable-1.1.4/css/bootstrap-editable.css'/>" rel="stylesheet">
 
 	<link href="<c:url value='/resources/css/app.css'/>" rel="stylesheet">
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-1.8.3.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-ui-1.9.2.custom.min.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/jquery.easyui.min.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/datagrid-detailview.js'/>"></script>
+	
 	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.4.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.3.1/js/bootstrap.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-editable-1.1.4/js/bootstrap-editable.min.js'/>"></script>
-	<script src="<c:url value='/resources/jslibs/backbone-0.9.2.js'/>"></script>
-	<script src="<c:url value='/resources/jslibs/backbone-relational-0.6.0.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/backbone-1.0.0.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/backbone-relational-0.8.5.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/handlebars-1.0.0.beta.6.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/moment-1.7.2.min.js'/>"></script>	
 		
