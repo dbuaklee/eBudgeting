@@ -35,7 +35,8 @@ public interface BudgetProposalRepository extends
 			"FROM BudgetProposal proposal " +
 			"	INNER JOIN FETCH proposal.forObjective objective " +
 			"	INNER JOIN FETCH proposal.owner owner " +
-			"WHERE objective.fiscalYear =?1 and objective.parentPath like ?2 ")
+			"WHERE objective.fiscalYear =?1 and objective.parentPath like ?2 " +
+			"ORDER BY proposal.budgetType.id asc")
 	public List<BudgetProposal> findBudgetProposalByFiscalYearAndParentPath(
 			Integer fiscalYear, String parentPathLikeString);
 
