@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
+import biz.thaicom.eBudgeting.models.pln.ObjectiveTypeId;
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 import biz.thaicom.eBudgeting.services.EntityService;
 import biz.thaicom.security.models.Activeuser;
@@ -487,6 +488,59 @@ public class ExcelReportsController {
 		return "m52r02_1.xls";
 	}
 
+	@RequestMapping("/m52r08.xls/{fiscalYear}/file/m52r08.xls")
+	public String excelM52R08(@PathVariable Integer fiscalYear, Model model, 
+		@Activeuser ThaicomUserDetail currentUser) {
+	
+	
+	ObjectiveType type = entityService.findObjectiveTypeById(ObjectiveTypeId.เป้าหมายบริการหน่วยงาน.getValue());
+	
+	//List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 112);
+	List<Objective> objectiveList = entityService.findAllObjectiveChildren(fiscalYear,(long) 111);
+
+	model.addAttribute("type", type);
+	model.addAttribute("objectiveList", objectiveList);
+	
+	model.addAttribute("fiscalYear", fiscalYear);
+	model.addAttribute("currentUser", currentUser);
+	
+	return "m52r08.xls";
+	}
+
+	@RequestMapping("/m52r11.xls/{fiscalYear}/file/m52r11.xls")
+	public String excelM52R11(@PathVariable Integer fiscalYear, Model model, 
+		@Activeuser ThaicomUserDetail currentUser) {
+	
+	//115 = กลยุทธ์หน่วยงาน  , 114 = ยูทธศาสตร์กระทรวง		
+	ObjectiveType type = entityService.findObjectiveTypeById((long) 115);
+	
+	//List<Objective> objectiveList = entityService.findObjectivesByFiscalyearAndTypeId(fiscalYear, (long) 115);
+	List<Objective> objectiveList = entityService.findAllObjectiveChildren(fiscalYear,(long) 114);	
+	
+	for(Objective objective114 : objectiveList) {
+		List<Objective> objective115List = objective114.getChildren();
+		
+		for(Objective objective115 : objective115List) {
+			/**
+			 * ต้องหา relation ของ objective115 
+			 * แล้วหามาใส่กับ objective
+			 * 
+			 */
+			
+			
+		}
+		
+	}
+
+	model.addAttribute("type", type);
+	model.addAttribute("objectiveList", objectiveList);
+	
+	model.addAttribute("fiscalYear", fiscalYear);
+	model.addAttribute("currentUser", currentUser);
+	
+	return "m52r11.xls";
+	}
+
 	@RequestMapping("/m52r28.xls/{fiscalYear}/file/m52r28.xls")
 	public String excelM52R28(@PathVariable Integer fiscalYear, Model model) {
 		
@@ -499,6 +553,7 @@ public class ExcelReportsController {
 		
 		return "m52r28.xls";
 	}
+
 
 	@RequestMapping("/m53r01.xls/{fiscalYear}/file/m53r01.xls")
 	public String excelM53R01(@PathVariable Integer fiscalYear, Model model) {
@@ -527,6 +582,7 @@ public class ExcelReportsController {
 		
 		return "m53r02.xls";
 	}
+
 
 	@RequestMapping("/m53r03.xls/{fiscalYear}/file/m53r03.xls")
 	public String excelM53R03(@PathVariable Integer fiscalYear, Model model) {

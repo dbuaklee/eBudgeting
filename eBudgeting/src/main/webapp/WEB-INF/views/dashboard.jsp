@@ -192,7 +192,10 @@ var menuJson = [{
 		     ]},
 	  {name: "รายงานการตรวจสอบ (m52r)", menus: 
 				    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls"},
-				     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", link: "m52r02_1.xls/"+fiscalYear+"/file/m52r02_1.xls"}]},		 
+				     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", link: "m52r02_1.xls/"+fiscalYear+"/file/m52r02_1.xls"},		 
+				     {name: "m52r08: ความเชื่อมโยงกับแผนบริหารรราชการแผ่นดิน", link: "m52r08.xls/"+fiscalYear+"/file/m52r08.xls"},		 
+				     {name: "m52r11: ความเชื่อมโยงระหว่างยุทธศาสตร์กระทรวงกับกลยุทธ์หน่วยงานและแนวทางการจัดสรรงบประมาณ", link: "m52r11.xls/"+fiscalYear+"/file/m52r11.xls"}
+				     ]},		 
 	     {name: "รายงานตามแบบแผนปฏิบัติราชการ] (m83)", code: "m83",  menus: 
 			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", link: "page/m2f14/", disabled: "disabled"},
 			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", link: "page/m2f14/", disabled: "disabled"},
