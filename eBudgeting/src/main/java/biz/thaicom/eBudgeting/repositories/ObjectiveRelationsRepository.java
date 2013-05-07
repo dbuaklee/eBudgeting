@@ -26,13 +26,13 @@ public interface ObjectiveRelationsRepository extends JpaSpecificationExecutor<O
 			"SELECT relation " +
 			"FROM ObjectiveRelations relation " +
 			"WHERE relation.fiscalYear=?1 AND relation.parentType=?2 AND relation.childType=?3 ")
-	public List<ObjectiveRelationsRepository> findAllByFiscalYearAndParentTypeAndChildType(Integer fiscalYear, ObjectiveType parentType, ObjectiveType childType);
+	public List<ObjectiveRelations> findAllByFiscalYearAndParentTypeAndChildType(Integer fiscalYear, ObjectiveType parentType, ObjectiveType childType);
 	
 	@Query("" +
 			"SELECT relation " +
 			"FROM ObjectiveRelations relation " +
 			"WHERE relation.fiscalYear=?1 AND relation.parentType=?2 ")
-	public List<ObjectiveRelationsRepository> findAllByFiscalYearAndParentType(Integer fiscalYear, ObjectiveType parentType);
+	public List<ObjectiveRelations> findAllByFiscalYearAndParentType(Integer fiscalYear, ObjectiveType parentType);
 	
 	@Query("" +
 			"SELECT relation " +
@@ -41,7 +41,7 @@ public interface ObjectiveRelationsRepository extends JpaSpecificationExecutor<O
 			"	LEFT OUTER JOIN FETCH objective.parent parent " +
 			"	LEFT OUTER JOIN FETCH objective.units unit " +
 			"WHERE relation.fiscalYear=?1 AND relation.childType=?2 ")
-	public List<ObjectiveRelationsRepository> findAllByFiscalYearAndChildType(Integer fiscalYear, ObjectiveType childType);
+	public List<ObjectiveRelations> findAllByFiscalYearAndChildType(Integer fiscalYear, ObjectiveType childType);
 	
 	@Query("" +
 			"SELECT relation " +
@@ -50,7 +50,7 @@ public interface ObjectiveRelationsRepository extends JpaSpecificationExecutor<O
 			"	LEFT OUTER JOIN FETCH objective.parent parent " +
 			"	LEFT OUTER JOIN FETCH objective.targets targets " +
 			"WHERE relation.fiscalYear=?1 AND relation.childType=?2 AND objective.id in (?3) ")
-	public List<ObjectiveRelationsRepository> findAllByFiscalYearAndChildTypeWithIds(Integer fiscalYear, ObjectiveType childType, List<Long> ids);
+	public List<ObjectiveRelations> findAllByFiscalYearAndChildTypeWithIds(Integer fiscalYear, ObjectiveType childType, List<Long> ids);
 
 	@Modifying
 	@Query("" +

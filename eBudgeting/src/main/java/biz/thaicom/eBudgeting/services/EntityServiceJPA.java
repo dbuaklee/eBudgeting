@@ -2936,7 +2936,7 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelation(
+	public List<ObjectiveRelations> findObjectiveRelationsByFiscalYearAndChildTypeRelation(
 			Integer fiscalYear, Long childTypeId) {
 		
 		ObjectiveType childType = objectiveTypeRepository.findOne(childTypeId);
@@ -2945,7 +2945,7 @@ public class EntityServiceJPA implements EntityService {
 	}
 
 	@Override
-	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
+	public List<ObjectiveRelations> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
 			Integer fiscalYear, Long childTypeId, List<Long> ids) {
 		
 		ObjectiveType childType = objectiveTypeRepository.findOne(childTypeId);

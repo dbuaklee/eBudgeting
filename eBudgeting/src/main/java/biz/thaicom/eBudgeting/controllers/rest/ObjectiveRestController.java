@@ -398,13 +398,13 @@ public class ObjectiveRestController {
 	
 	
 	@RequestMapping(value="/ObjectiveRelations/{fiscalYear}/relation/{parentTypeId}/all") 
-	public @ResponseBody List<ObjectiveRelationsRepository> getObjectiveByFiscalYearAndparentRelation(
+	public @ResponseBody List<ObjectiveRelations> getObjectiveByFiscalYearAndparentRelation(
 			@PathVariable Integer fiscalYear, @PathVariable Long parentTypeId){
 		return entityService.findObjectiveRelationsByFiscalYearAndChildTypeRelation(fiscalYear, parentTypeId);
 	}
 	
 	@RequestMapping(value="/ObjectiveRelations/{fiscalYear}/relation/{parentTypeId}", method=RequestMethod.GET) 
-	public @ResponseBody List<ObjectiveRelationsRepository> getObjectiveByFiscalYearAndparentRelationWithObjectiveIds(
+	public @ResponseBody List<ObjectiveRelations> getObjectiveByFiscalYearAndparentRelationWithObjectiveIds(
 			@PathVariable Integer fiscalYear, @PathVariable Long parentTypeId,
 			@RequestParam(required=false, value="ids[]") String[] ids){
 		

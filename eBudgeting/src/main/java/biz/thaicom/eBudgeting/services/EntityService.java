@@ -100,7 +100,7 @@ public interface EntityService {
 	public Objective updateObjectiveParent(Long id, Long parentId);
 	public Objective objectiveAddReplaceUnit(Long id, Long unitId);
 	
-	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelation(
+	public List<ObjectiveRelations> findObjectiveRelationsByFiscalYearAndChildTypeRelation(
 			Integer fiscalYear, Long childTypeId);
 	
 	public String initFiscalYear(Integer fiscalYear);
@@ -250,7 +250,7 @@ public interface EntityService {
 	public ObjectiveRelations saveObjectiveRelations(JsonNode relation);
 	public ObjectiveRelations updateObjectiveRelations(Long id,
 			JsonNode relation);
-	public List<ObjectiveRelationsRepository> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
+	public List<ObjectiveRelations> findObjectiveRelationsByFiscalYearAndChildTypeRelationWithObjectiveIds(
 			Integer fiscalYear, Long parentTypeId, List<Long> ids);
 	public String mappedUnit();
 	
