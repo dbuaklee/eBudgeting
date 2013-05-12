@@ -362,8 +362,8 @@ var MainCtrView = Backbone.View.extend({
 	},
 	
 	detailModal: function(e) {
-		var currentObjectiveId = $(e.target).parents('tr').attr('data-id');
-		var currentObjective = Objective.findOrCreate(currentObjectiveId);
+		var currentObjectiveId = $(e.target).parents('tr').attr('data-recordid');
+		var currentObjective = Objective.findOrCreate({id: currentObjectiveId});
 		
 		var currentAllocationRecordId = $(e.target).attr('data-id');
 		var currentAllocationRecord = AllocationRecord.findOrCreate(currentAllocationRecordId);
@@ -379,6 +379,7 @@ var MainCtrView = Backbone.View.extend({
 			},this)
 		});
 		
+		return false;
 		
 	},
 	render : function() {
@@ -404,12 +405,108 @@ var MainCtrView = Backbone.View.extend({
 	},
 	renderMainTbl: function() {
 		
-		this.collection = new ObjectiveCollection();
-		this.rootCollection = new ObjectiveCollection();
+		//this.collection = new ObjectiveCollection();
+		//this.rootCollection = new ObjectiveCollection();
 		
-		this.collection.url = appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + this.currentParentObjective.get('id') +"/flatDescendants");
+		//this.collection.url = appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + this.currentParentObjective.get('id') +"/flatDescendants");
 		
-		this.$el.find('#mainTbl').html(this.loadingTemplate());
+		//this.$el.find('#mainTbl').html(this.loadingTemplate());
+		this.$el.find('#mainTbl').empty();
+		
+		treeStore = Ext.create('Ext.data.TreeStore', {
+	        model: 'data.Model.Objective',
+	        proxy: {
+	            type: 'ajax',
+	            //the store will get the content from the .json file
+	            url: appUrl("/ObjectiveWithBudgetProposalAndAllocation/"+ fiscalYear + "/" + this.currentParentObjective.get('id') +"/flatDescendants")
+	        },
+	        folderSort: false
+	    });
+		
+		if(this.tree !=null) {
+			this.tree.destroy();
+		}
+		
+		this.tree = Ext.create('Ext.tree.Panel', {
+			id: 'treeGrid',
+	        title: 'การของบประมาณ',
+	        width: 820,
+	        height: 300,
+	        renderTo: Ext.getElementById('mainTbl'),
+	        collapsible: false,
+	        rootVisible: false,
+	        store: treeStore,
+	        columnLines: true, 
+	        rowLines: true,
+	        multiSelect: true,
+	        frame: true,
+	        columns: [{
+	             //this is so we know which column will show the tree
+	        	xtype: 'treecolumn',
+	            text: 'กิจกรรม',
+	            sortable: true,
+	            dataIndex: 'codeAndName',
+	        	width: 300,
+	            locked: true,
+	            renderer: function(value, metaData, record, rowIdx, colIdx, store) {
+	                metaData.tdAttr = 'data-qtip="' + value + '"';
+	                if(record.data.children == null || record.data.children.length == 0) {
+	                	return "<a href='#' class='detail'>"+ value + "</a>";	
+	                }
+	                return value;
+	            }
+	        }, {
+	        	text: 'เป้าหมาย',
+	        	width: 80,
+	        	sortable: false,
+	        	align: 'center'
+	        }, {
+	        	text: 'ขอตั้งปี ' + fiscalYear,
+	        	width: 120,
+	        	sortable : false,
+	        	dataIndex: 'sumProposals',
+	        	align: 'right',
+	        	renderer: function(value) {
+	        		return addCommas(value);
+	        	}
+	        	
+	        }, {
+	        	text: 'ขอตั้งปี ' + (parseInt(fiscalYear)+1),
+	        	width: 120,
+	        	sortable : false,
+	        	dataIndex: 'sumProposalsNext1year',
+	        	align: 'right',
+	        	renderer: function(value) {
+	        		return addCommas(value);
+	        	}
+	        	
+	        }, {
+	        	text: 'ขอตั้งปี ' + (parseInt(fiscalYear)+2),
+	        	width: 120,
+	        	sortable : false,
+	        	dataIndex: 'sumProposalsNext2year',
+	        	align: 'right',
+	        	renderer: function(value) {
+	        		return addCommas(value);
+	        	}
+	        	
+	        }, {
+	        	text: 'ขอตั้งปี ' + (parseInt(fiscalYear)+3),
+	        	width: 120,
+	        	sortable : false,
+	        	dataIndex: 'sumProposalsNext3year',
+	        	align: 'right',
+	        	renderer: function(value) {
+	        		return addCommas(value);
+	        	}
+	        	
+	        }, {
+	        	text: 'ปรับลดครั้งที่ 1',
+	        	width: 120,
+	        	sortable : false
+	        		
+	        }]
+		});
 		
 		//console.profile("a");
 //		$('#treegrid').treegrid({  
@@ -433,52 +530,10 @@ var MainCtrView = Backbone.View.extend({
 //	    });
 		//console.profileEnd("a");
 		
-		this.collection.fetch({
-			success: _.bind(function(){
-				this.$el.find('#mainTbl').html(this.easyuiTreegridTemplate());
+//		this.collection.fetch({
+//			success: _.bind(function(){
+//				this.$el.find('#mainTbl').html(this.easyuiTreegridTemplate());
 				
-			    $('#treegrid').treegrid({  
-			        data:this.collection.toJSON(),
-			        method: 'GET',
-			        idField:'id',  
-			        treeField:'code',
-			        nowrap: false,
-			        title: 'รายละเอียดงบประมาณ',
-			        width: 825,
-			        columns:[[{
-			            title:'รหัสกิจกรรม',field:'code',width:180,
-			            formatter: function(value,row,index) {return row.type.name + "[" +row.code + "]";},
-			            styler: function(value,row,index) {return 'vertical-align:top;padding-top: 2px;'; }
-			        },{
-			        	title:'ชื่อกิจกรรม',field:'name',width:390, formatter: function(value,row,index) {return row.name;}
-			        },{
-			        	title:'งบประมาณที่ขอตั้ง', field: 'sumBudgetProposal',width: 100,
-			        	formatter: function(value,row,index) {
-			        		var amount = 0;
-			        		for(var i=0; i<row.proposals.length; i++ ){
-			        			amount += row.proposals[i].amountRequest;
-			        		}
-			        		return addCommas(amount);
-			        	},
-			        	styler: function(value, row, index){return 'text-align:right;vertical-align:top;padding-top: 2px;';}
-			        },{
-			        	title:'งบประมาณที่เสนอปรับลด', field: 'allocationR1',width: 130,
-			        	formatter: function(value,row,index) {
-			        		var amount = 0;
-			        		
-			        		for(var i=0; i<row.allocationRecordsR1.length; i++ ){
-			        			amount += row.allocationRecordsR1[i].amountAllocated;
-			        		}
-			        		return '<a href="#" class="detail" data-id="">' + addCommas(amount) + '</a>';
-			        	},
-			        	styler: function(value, row, index){return 'text-align:right;vertical-align:top;padding-top: 2px;';}
-			        }]],
-			        onClickCell: _.bind(function(field, row) {
-			        	if(field == 'allocationR1'){
-			        		this.detailModalVeiw.renderWithObjective(Objective.findOrCreate({id: row.id}));
-			        	}
-			        },this)
-			    });
 				
 //
 //				var json= this.collection.toJSON();
@@ -507,8 +562,8 @@ var MainCtrView = Backbone.View.extend({
 //				
 //				this.$el.html(this.mainTblTpl(json));
 //				
-			},this)
-		});
+//			},this)
+//		});
 		
 
 		
