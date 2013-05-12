@@ -40,7 +40,7 @@
 	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/datagrid-detailview.js'/>"></script>
 	 -->
 	 
-	<script src="<c:url value='/resources/jslibs/ext-4.2.0.663/ext-all-dev.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/ext-4.2.0.663/ext-all.js'/>"></script>
 	
 	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.4.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.3.1/js/bootstrap.js'/>"></script>
