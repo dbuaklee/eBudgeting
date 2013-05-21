@@ -1,5 +1,6 @@
 package biz.thaicom.eBudgeting.view;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,9 +27,10 @@ import biz.thaicom.eBudgeting.models.pln.Objective;
 import biz.thaicom.eBudgeting.models.pln.ObjectiveType;
 import biz.thaicom.security.models.ThaicomUserDetail;
 
-public class M52R11XLSView extends AbstractExcelView {
+public class M52R07XLSView extends AbstractExcelView {
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:sss");
+	private static DecimalFormat df = new DecimalFormat("#,###,##0.0000");
 	
 	@Override
 	protected void buildExcelDocument(Map<String, Object> model,
@@ -39,82 +41,126 @@ public class M52R11XLSView extends AbstractExcelView {
 
 		Map<String, CellStyle> styles = createStyles(workbook);
 
-		ObjectiveType type = (ObjectiveType) model.get("type");
-		List<Objective> objectiveList = (List<Objective>) model.get("objectiveList");
 
+		Long    sumYearOfObjective1 = (Long) model.get("sumYearOfObjective1");
+		Long    sumYearOfObjective2 = (Long) model.get("sumYearOfObjective2");
+
+		List<Objective> objectiveListobjectiveType119 = (List<Objective>) model.get("objectiveType119");
+		List<Objective> objectiveListobjectiveType120 = (List<Objective>) model.get("objectiveType120");
+
+        Integer fiscalYear1 = (Integer) model.get("fiscalYear1");
+		Integer fiscalYear2 = (Integer) model.get("fiscalYear2");
 		
-		Integer fiscalYear = (Integer) model.get("fiscalYear");
+
 		Sheet sheet = workbook.createSheet("sheet1");
 
 		Row Row11 = sheet.createRow(0);
 		Cell cell11 = Row11.createCell(0);
-		cell11.setCellValue("ปี "+fiscalYear+" หน่วยงาน "+ currentUser.getPerson().getWorkAt().getName());
-		cell11.setCellStyle(styles.get("cell1"));
+		cell11.setCellValue("(ผู้พิมพ์รายงาน " + " หน่วยงาน " + currentUser.getPerson().getWorkAt().getName() +
+				currentUser.getPerson().getFirstName() + " " +	currentUser.getPerson().getLastName() + 
+				" เวลาที่จัดทำรายงาน " +  sdf.format(new Date()) + "น.)");
 
 		Row Row21 = sheet.createRow(1);
 		Cell cell21 = Row21.createCell(0);
-		cell21.setCellValue("ผู้พิมพ์รายงาน " +" หน่วยงาน "+ currentUser.getPerson().getWorkAt()+
-				currentUser.getPerson().getFirstName() + " " +	currentUser.getPerson().getLastName() + 
-				" เวลาที่จัดทำรายงาน " +  sdf.format(new Date()) + "น.");
+		cell21.setCellValue("แบบสรุปงบประมาณรายจ่ายประจำปีงบประมาณ  พ.ศ." + fiscalYear2);
+		cell21.setCellStyle(styles.get("title"));
 
+		
 		Row Row31 = sheet.createRow(2);
 		Cell cell31 = Row31.createCell(0);
-		cell31.setCellValue("ความเชื่อมโยงระหว่างยุทธศาสตร์กระทรวงกับกลยุทธ์หน่วยงานและแนวทางการจัดสรรงบประมา๊ณ");
-		cell31.setCellStyle(styles.get("title"));
-
-		
-		//ประเภท Objective
+		cell31.setCellValue("กระทรวง  : กระทรวงเกษตรและสหกรณ์");
 		Row Row41 = sheet.createRow(3);
 		Cell cell41 = Row41.createCell(0);
-		cell41.setCellValue(type.getParent().getName() + " - "+type.getName());
-		cell41.setCellStyle(styles.get("header"));
-		
-		
-		int i = 4;
-		for (Objective o:objectiveList) {
-			
-			Row rows = sheet.createRow(i);
-			Cell cell51 = rows.createCell(0);
-			cell51.setCellValue(o.getName());
-			cell51.setCellStyle(styles.get("cell1"));
-			
-            i++;
-			for (Objective child:o.getChildren()){
-				Row rowChilds = sheet.createRow(i);
-				Cell cell61 = rowChilds.createCell(0);
-				cell61.setCellValue("     - "+child.getName());
-				cell61.setCellStyle(styles.get("cell1"));
-				
-				i++;
-			//	if(gname!=null) {
-			//		cell51.setCellValue(o.getName());
-				//	cell51.setCellStyle(styles.get("cell1"));
-					
-		//		}
-			//	else {
-				//	cell41.setCellStyle(styles.get("cell1"));
-			//	} 
+		cell41.setCellValue("กรม  : กรมพัฒนาที่ดิน");
+		Row Row51 = sheet.createRow(4);
+		Cell cell51 = Row51.createCell(0);
+		cell51.setCellValue("หน่วยงาน  : " + currentUser.getPerson().getWorkAt().getName());
 
-				//Cell cell42 = rows.createCell(1);
-				//cell42.setCellValue(child.getName());
-				//if (gname!=null) {
-				//cell42.setCellStyle(styles.get("cell1"));
-			//	}
-				//else {
-				//	cell42.setCellStyle(styles.get("cell1"));
-				//}
-			//	i++;
-				//gname = null;
-				}
+		Row Row61 = sheet.createRow(5);
+		Cell cell61 = Row61.createCell(2);
+		cell61.setCellValue("ล้านบาท(ทศนิยม 4 ตำแหน่ง) ");
+		
+		
+			Row Row71 = sheet.createRow(6);
+			Cell cell71 = Row71.createCell(0);
+			cell71.setCellValue("งบประมาณประจำปี  " + fiscalYear1);
+			Cell cell72 = Row71.createCell(1);
+			Double sumYearOfObj1 = 0.0;
+			if (sumYearOfObjective1 != null){
+
+				sumYearOfObj1 = sumYearOfObjective1/1000000.0;
+			}
+			cell72.setCellValue(df.format(sumYearOfObj1));
+			Cell cell73 = Row71.createCell(2);
+			cell73.setCellValue("ล้านบาท  ");
 			
+	      
+		    Row Row81 = sheet.createRow(7);
+		    Cell cell81 = Row81.createCell(0);
+		    cell81.setCellValue("งบประมาณประจำปี  " + fiscalYear2);
+		    Cell cell82 = Row81.createCell(1);
+			Double sumYearOfObj2 = 0.0;
+		    if (sumYearOfObjective2 != null){
+				sumYearOfObj2 = sumYearOfObjective2/1000000.0;
+			}
+			cell82.setCellValue(df.format(sumYearOfObj2));
+	   	    Cell cell83 = Row81.createCell(2);
+		    cell83.setCellValue("ล้านบาท  ");
+		
+		    Double   diffAmount = 0.0;
+            
+		    diffAmount = sumYearOfObj2 - sumYearOfObj1;
+            
+		    Row Row91 = sheet.createRow(8);
+		    Cell cell91 = Row91.createCell(0);
+		    cell91.setCellValue("เพิ่มขึ้น - ลดลง จากปี (" + fiscalYear1 + ")");
+		    Cell cell92 = Row91.createCell(1);
+		    cell92.setCellValue(df.format(diffAmount));
+		    Cell cell93 = Row91.createCell(2);
+		    cell93.setCellValue("ล้านบาท  ");
+		
+		    Double  diffPerc;
+		    if (sumYearOfObj1 == 0){
+		    	diffPerc = 100.0;
+		    }
+		    else
+		    {
+		    	diffPerc = diffAmount/sumYearOfObjective1*100;
+		    }
+		    
+		    Row Row101 = sheet.createRow(9);
+		    Cell cell101 = Row101.createCell(0);
+		    cell101.setCellValue("ร้อยละ");
+		    Cell cell102 = Row101.createCell(1);
+		    cell102.setCellValue(df.format(diffPerc));
+		
+
+
+		Row Row131 = sheet.createRow(12);
+		Cell cell132 = Row131.createCell(1);
+		cell132.setCellValue("1. วิสัยทัศน์ :");
+
+		int i = 13;
+		for (Objective o:objectiveListobjectiveType119) {
+			Row Row119 = sheet.createRow(i);
+			Cell cell119 = Row119.createCell(1);
+			cell119.setCellValue(o.getName());
+			i++;
 		}
 		
-		sheet.autoSizeColumn(0);
-	//	sheet.autoSizeColumn(1);
-		
-		
-		
+		i++;
+		Row Rows = sheet.createRow(i);
+		Cell cellxy = Rows.createCell(1);
+		cellxy.setCellValue("2. พันธกิจ :");
+		i++;
 
+		for (Objective o:objectiveListobjectiveType120) {
+			Row Row120 = sheet.createRow(i);
+			Cell cell120 = Row120.createCell(1);
+			cell120.setCellValue(o.getName());
+			i++;
+		}
+		
 	}
 	
     private static Map<String, CellStyle> createStyles(Workbook wb){
@@ -144,9 +190,6 @@ public class M52R11XLSView extends AbstractExcelView {
         style.setWrapText(true);
         styles.put("header", style);
 
-        Font cellFont = wb.createFont();
-        cellFont.setFontHeightInPoints((short)12);
-        cellFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
         style = wb.createCellStyle();
         style.setAlignment(CellStyle.ALIGN_LEFT);
         style.setWrapText(true);
