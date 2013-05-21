@@ -326,6 +326,7 @@ var rootCollection;
 var l = null;
 var e1;
 var e2;
+var treeStore;
 
 Handlebars.registerHelper("sumTargetValue", function(allocated, values) {
 	retStr = "";
@@ -467,8 +468,70 @@ Handlebars.registerHelper('next', function(val, next) {
 
 
 $(document).ready(function() {
+	Ext.QuickTips.init();
+
+	Ext.define('data.Model.Objective', {
+        extend: 'Ext.data.Model',
+        fields: [{
+        	name: 'name', type: 'string'
+        }, {
+        	name: 'code', type: 'string'
+        }, {
+        	name: 'codeAndName', 
+            convert: function(v, rec) {
+            	return '['+ rec.data.code + '] ' + rec.data.name;
+            }
+		},{
+			name: 'proposals', mapping: 'proposals'
+		},{
+			name: 'sumProposals', 
+            convert: function(v, rec) {
+            	var sum = 0;
+            	_.forEach(rec.data.proposals, function(proposal) {
+            		sum += proposal.amountRequest;
+            	});
+            	return sum;		
+            }
+        },{
+			name: 'sumProposalsNext1year', 
+            convert: function(v, rec) {
+            	var sum = 0;
+            	_.forEach(rec.data.proposals, function(proposal) {
+            		if(!isNaN(proposal.amountRequestNext1Year)){
+            			sum += proposal.amountRequestNext1Year;
+            		}
+            	});
+            	return sum;		
+            }
+        },{
+			name: 'sumProposalsNext2year', 
+            convert: function(v, rec) {
+            	var sum = 0;
+            	_.forEach(rec.data.proposals, function(proposal) {
+            		if(!isNaN(proposal.amountRequestNext2Year)){
+            			sum += proposal.amountRequestNext2Year;
+            		}
+            	});
+            	return sum;		
+            }
+        },{
+			name: 'sumProposalsNext3year', 
+            convert: function(v, rec) {
+            	var sum = 0;
+            	_.forEach(rec.data.proposals, function(proposal) {
+            		if(!isNaN(proposal.amountRequestNext3Year)){
+            			sum += proposal.amountRequestNext3Year;
+            		}
+            	});
+            	return sum;		
+            }
+        }]
+    });
+	
+    
 	mainCtrView = new MainCtrView();
 	mainCtrView.render();
+	
 	
 	/* 
 	if(objectiveId != null && objectiveId.length >0 ) {

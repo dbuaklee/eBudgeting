@@ -86,5 +86,16 @@ public interface BudgetProposalRepository extends
 
 
 	public List<BudgetProposal> findAllByForObjective(Objective obj);
+
+
+
+	@Query("" +
+			"SELECT proposal " +
+			"FROM BudgetProposal proposal " +
+			"	INNER JOIN FETCH proposal.owner owner " +
+			"	INNER JOIN FETCH proposal.forObjective objective " +
+			"	INNER JOIN FETCH proposal.budgetType type " +
+			"WHERE proposal.forObjective.id = ?1 ")
+	public List<BudgetProposal> findByForObjective_id(Long objectiveId);
 	
 }

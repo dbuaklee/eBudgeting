@@ -17,20 +17,30 @@
       <script src="<c:url value='/resources/jslibs/html5shiv-printshiv.js'/>"></script>
     <![endif]-->	
 
+	<!-- 
 	<link href="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/themes/default/easyui.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/themes/icon.css'/>" rel="stylesheet">
+ 	-->
+ 	
+ 	
 
-
+	<link href="<c:url value='/resources/jslibs/ext-4.2.0.663/resources/ext-theme-neptune/ext-theme-neptune-all.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/jqueryui-1.9.2/css/redmond/jquery-ui-1.9.2.custom.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.3.1/css/bootstrap.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.3.1/css/font-awesome-3.0.min.css'/>" rel="stylesheet">
+	<link href="<c:url value='/resources/css/app.css'/>" rel="stylesheet">
 	
 
-	<link href="<c:url value='/resources/css/app.css'/>" rel="stylesheet">
+	
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-1.8.3.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-ui-1.9.2.custom.min.js'/>"></script>
+	
+	<!-- 
 	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/jquery.easyui.min.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/datagrid-detailview.js'/>"></script>
+	 -->
+	 
+	<script src="<c:url value='/resources/jslibs/ext-4.2.0.663/ext-all.js'/>"></script>
 	
 	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.4.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.3.1/js/bootstrap.js'/>"></script>
@@ -70,6 +80,21 @@
 	<div id="container-footer" class="container">
 		<tiles:insertAttribute name="footer" />
 	</div>
-
+	
+<script type="text/javascript">
+$(document).ready(function() {
+   // register Global error handling here .. if there isn't one
+   
+	$(document).ajaxError( function(event, jqXHR, ajaxSettings, thrownError){
+		if(jqXHR.status == 403) {
+			alert('Session Timeout,  Please Log in again');
+			window.location.reload();
+		} else {
+			alert("Error Status Code: " + jqXHR.status + " " + jqXHR.statusText + "\n" + jqXHR.responseText);	
+		}
+		
+	});
+ });
+</script>	
 </body>
 </html>

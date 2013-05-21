@@ -2278,6 +2278,13 @@ public class EntityServiceJPA implements EntityService {
 		return budgetProposalRepository.findByForObjective_idAndBudgetType_id(objectiveId, budgetTypeId);
 	}
 
+	
+	
+	@Override
+	public List<BudgetProposal> findBudgetProposalByObjectiveId(Long objectiveId) {
+		return budgetProposalRepository.findByForObjective_id(objectiveId);
+	}
+
 	@Override
 	public Boolean updateBudgetProposalAndReservedBudget(JsonNode data) {
 		//deal with BudgetReseved first
