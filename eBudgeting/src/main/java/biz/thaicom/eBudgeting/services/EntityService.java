@@ -168,7 +168,7 @@ public interface EntityService {
 	public List<BudgetProposal> findBudgetProposalByObjectiveIdAndBudgetTypeId(Long objectiveId, Long budgetTypeId);
 
 	public void copyFromProposalToObjectiveProposal(Integer fiscalYear, Organization workAt);
-	
+	public List<BudgetProposal> findBudgetProposalByObjectiveId(Long objectiveId);
 	
 	//ProposalStrategy
 	public List<ProposalStrategy> findProposalStrategyByBudgetProposal(
@@ -309,6 +309,7 @@ public interface EntityService {
 	public User updateUser(JsonNode node);
 	public User saveUser(JsonNode node);
 	public User deleteUser(Long id);
+
 	
 
 	

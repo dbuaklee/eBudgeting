@@ -362,20 +362,14 @@ var MainCtrView = Backbone.View.extend({
 	},
 	
 	detailModal: function(e) {
-		var currentObjectiveId = $(e.target).parents('tr').attr('data-recordid');
-		var currentObjective = Objective.findOrCreate({id: currentObjectiveId});
-		
-		var currentAllocationRecordId = $(e.target).attr('data-id');
-		var currentAllocationRecord = AllocationRecord.findOrCreate(currentAllocationRecordId);
-		
-		var currentBudgetTypeId = currentAllocationRecord.get('budgetType').get('id');
-		var currentBudgetType = BudgetType.findOrCreate(currentBudgetTypeId);
+		e1=e;
+		var currentObjectiveId = $(e.target).attr('data-objectiveId');
 		
 		var budgetProposalCollection = new BudgetProposalCollection();
 		budgetProposalCollection.fetch({
-			url: appUrl('/BudgetProposal/find/' + fiscalYear +'/'+ currentObjective.get('id') + '/' + currentBudgetTypeId),
+			url: appUrl('/BudgetProposal/find/' + fiscalYear +'/'+ currentObjectiveId),
 			success: _.bind(function() {
-				this.modalView.renderWith(currentObjective,  currentAllocationRecord, currentBudgetType, budgetProposalCollection);		
+				this.modalView.renderWith(currentObjectiveId, budgetProposalCollection);		
 			},this)
 		});
 		
@@ -451,7 +445,7 @@ var MainCtrView = Backbone.View.extend({
 	            renderer: function(value, metaData, record, rowIdx, colIdx, store) {
 	                metaData.tdAttr = 'data-qtip="' + value + '"';
 	                if(record.data.children == null || record.data.children.length == 0) {
-	                	return "<a href='#' class='detail'>"+ value + "</a>";	
+	                	return "<a href='#' data-objectiveId=" + record.data.id +  " class='detail'>"+ value + "</a>";	
 	                }
 	                return value;
 	            }
