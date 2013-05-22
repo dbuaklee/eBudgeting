@@ -417,9 +417,7 @@ public class ExcelReportsController {
 			@Activeuser ThaicomUserDetail currentUser) {
 		
 		List<List<Objective>> returnList = entityService.findObjectivesByFiscalyearAndTypeIdAndInitObjectiveBudgetProposal(fiscalYear, (long) 101, currentUser.getWorkAt());
-		
-		
-		
+
 		
 		List<Objective> objList = new ArrayList<Objective>();
  		List<Objective> allList = returnList.get(0);
@@ -488,6 +486,35 @@ public class ExcelReportsController {
 		return "m52r02_1.xls";
 	}
 
+	@RequestMapping("/m52r07.xls/{fiscalYear}/file/m52r07.xls")
+	public String excelM52R07(@PathVariable Integer fiscalYear, Model model, 
+		@Activeuser ThaicomUserDetail currentUser) {
+	
+	
+   Long sumYearOfObjective1 = entityService.findSumTotalBudgetProposalOfOwner(fiscalYear-1,currentUser.getWorkAt());		
+
+   
+   Long sumYearOfObjective2 = entityService.findSumTotalBudgetProposalOfOwner(fiscalYear,currentUser.getWorkAt());		
+
+	model.addAttribute("sumYearOfObjective1", sumYearOfObjective1);
+	model.addAttribute("sumYearOfObjective2", sumYearOfObjective2);
+//	model.addAttribute("sumYearOfOwner2", sumYearOfOwner2);
+	//model.addAttribute("objectiveFsYear2", objectiveFsYear2);
+	
+    List<Objective> objectiveType119 = entityService.findAllObjectiveChildren(fiscalYear,ObjectiveTypeId.วิสัยทัศน์.getValue());
+    List<Objective> objectiveType120 = entityService.findAllObjectiveChildren(fiscalYear,ObjectiveTypeId.พันธกิจ.getValue());
+    
+    model.addAttribute("objectiveType119", objectiveType119);
+	model.addAttribute("objectiveType120", objectiveType120);
+	
+	model.addAttribute("fiscalYear1", fiscalYear-1);
+	model.addAttribute("fiscalYear2", fiscalYear);
+	model.addAttribute("currentUser", currentUser);
+	
+	return "m52r07.xls";
+	}
+
+	
 	@RequestMapping("/m52r08.xls/{fiscalYear}/file/m52r08.xls")
 	public String excelM52R08(@PathVariable Integer fiscalYear, Model model, 
 		@Activeuser ThaicomUserDetail currentUser) {

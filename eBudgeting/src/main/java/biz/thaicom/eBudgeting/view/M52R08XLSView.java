@@ -48,7 +48,7 @@ public class M52R08XLSView extends AbstractExcelView {
 
 		Row Row11 = sheet.createRow(0);
 		Cell cell11 = Row11.createCell(0);
-		cell11.setCellValue("(ผู้พิมพ์รายงาน " + " หน่วยงาน " + currentUser.getPerson().getWorkAt() +
+		cell11.setCellValue("(ผู้พิมพ์รายงาน " + " หน่วยงาน " + currentUser.getPerson().getWorkAt().getName() +
 				currentUser.getPerson().getFirstName() + " " +	currentUser.getPerson().getLastName() + 
 				" เวลาที่จัดทำรายงาน " +  sdf.format(new Date()) + "น.)");
 
@@ -111,12 +111,12 @@ public class M52R08XLSView extends AbstractExcelView {
 		Row rowx1 = sheet.createRow(i);
 		Cell cellx1 = rowx1.createCell(0);
 		cellx1.setCellValue("หมายเหตุ * แต่ละเป้าหมายการให้บริการกระทรวงมีความสัมพันธ์กับเป้าหมายการให้บริการหน่วยงานชัดเจน(ในลักษณะหนึ่งต่อหลาย)");
-		cellx1.setCellStyle(styles.get("cell1"));
+		//cellx1.setCellStyle(styles.get("cell1"));
 		i++;
 		Row rowxx1 = sheet.createRow(i);
 		Cell cellxx1 = rowxx1.createCell(0);
 		cellxx1.setCellValue("       ** กลยุทธ์หน่วยงาน สามารถกำหนดให้มีความสัมพันธ์ซ้ำกันระหว่างเป้าหมายการให้บริการหน่วยงานได้(หลายต่อหลาย)");
-		cellxx1.setCellStyle(styles.get("cell1"));
+		//cellxx1.setCellStyle(styles.get("cell1"));
 		
 		
 		
