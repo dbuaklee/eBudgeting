@@ -140,18 +140,18 @@ var menuJson = [{
 	       	]},
 		 {name: "การพิจารณากรอบวงเงินเพื่อตั้งคำของบประมาณ (เข้าระบบ e-Budgeting) (m63)",code: "m63",  menus: 
 		    [{name: "m63f04: การประมวลผลก่อนการปรับลดรอบที่ 1", code: "m63f04", link: "page/m63f04/"},
-		     {name: "m63f01: การบันทึกงบประมาณระดับกิจกรรม",code: "m63f01",  link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m63f02: การบันทึกงบประมาณระดับรายการ", code: "m63f02", link: "page/m63f02/"},  
+		     {name: "m63f01: การปรับลดงบประมาณระดับกิจกรรมรอบที่ 1",code: "m63f01",  link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m63f02: การปรับลดงบประมาณระดับรายการรอบที่ 1", code: "m63f02", link: "page/m63f02/"},  
 		     {name: "m63f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", code: "m63f03", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)", code: "m64", menus: 
 		    [{name: "m64f04: การประมวลผลก่อนการปรับลดรอบที่ 2", code: "m64f04", link: "page/m64f04/"},
-		     {name: "m64f01: การบันทึกงบประมาณระดับกิจกรรม", code: "m64f01", link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m64f02: การบันทึกงบประมาณระดับรายการ", code: "m64f02", link: "page/m64f02/"},
+		     {name: "m64f01: การปรับลดงบประมาณระดับกิจกรรมรอบที่ 2", code: "m64f01", link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m64f02: การปรับลดงบประมาณระดับรายการรอบที่ 2", code: "m64f02", link: "page/m64f02/"},
 		     {name: "m64f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", code: "m64f03", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "การอนุมัติงบประมาณ ตาม พ.ร.บ. (m65)",code: "m65",  menus: 
 		    [{name: "m65f04: การประมวลผลก่อนการปรับลดรอบที่ 3", code: "m65f04", link: "page/m65f04/"},
-		     {name: "m65f01: การบันทึกงบประมาณระดับกิจกรรม", code: "m65f01", link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m65f02: การบันทึกงบประมาณระดับรายการ", code: "m65f02", link: "page/m65f02/"},
+		     {name: "m65f01: การปรับลดงบประมาณระดับกิจกรรมรอบที่ 3", code: "m65f01", link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m65f02: การปรับลดงบประมาณระดับรายการรอบที่ 3", code: "m65f02", link: "page/m65f02/"},
 		     {name: "m65f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", code: "m65f03", link: "page/m2f14/", disabled: "disabled"}]}
 		]
 },{
@@ -159,12 +159,12 @@ var menuJson = [{
 	menus: [
 		 {name: "การจัดสรรงบประมาณ (m71)",code: "m71",  menus: 
 		    [{name: "m3f04: การประมวลผลก่อนการจัดสรรงบประมาณ", code: "m3f04", link: "page/m4f01/"},
-		     {name: "m71f01: การบันทึกงบประมาณระดับกิจกรรม", code: "m71f01", link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m71f02: การบันทึกงบประมาณระดับรายการ", code: "m71f02", link: "page/m71f02/"},  
+		     {name: "m71f01: การจัดสรรงบประมาณระดับกิจกรรม", code: "m71f01", link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m71f02: การบจัดสรรงบประมาณระดับรายการ", code: "m71f02", link: "page/m71f02/"},  
 		     {name: "m71f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", code: "m71f03", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "การจัดสรรเพิมเติม (m72)",code: "m72",  menus: 
-		    [{name: "m72f01: การบันทึกงบประมาณระดับกิจกรรม",code: "m72f01",  link: "page/m2f14/", disabled: "disabled"},
-		     {name: "m72f02: การบันทึกงบประมาณระดับรายการ", code: "m72f02", link: "page/m2f14/", disabled: "disabled"},
+		    [{name: "m72f01: การบจัดสรรงบประมาณเพิ่มเติมระดับกิจกรรม",code: "m72f01",  link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m72f02: การจัดสรรงบประมาณเพิ่มเติมระดับรายการ", code: "m72f02", link: "page/m2f14/", disabled: "disabled"},
 		     {name: "m72f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)",code: "m72f03",  link: "page/m2f14/", disabled: "disabled"}]}
 		   ]
 },{

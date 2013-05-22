@@ -18,8 +18,8 @@
 				
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn" id="cancelBtn">Close</a> 
-				<a href="#"	class="btn btn-primary" id="saveBtn">Save changes</a>
+				<a href="#" class="btn" id="cancelBtn">กลับหน้าหลัก</a> 
+				
 			</div>
 		</div>
 		
@@ -119,8 +119,25 @@
 </div>
 </script>
 
-<script id="easyuiTreegridTemplate" type="text/x-handler-template">
-    <table id="treegrid" style="height:400px"></table>  
+<script id="detailViewTableTemplate" type="text/x-handler-template">
+<table class="table table-bordered" id="detailViewTbl">
+	<thead>
+		<tr>
+			<td>รายการงบประมาณ</td>
+			<td>ขอตั้ง</td>
+			<td>ปรับลดครั้งที่1</td>
+		</tr>
+	</thead>
+	<tbody>
+		{{#each sumBudgetTypeProposals}}
+		<tr>
+			<td>{{budgetType.name}}</td>
+			<td>{{formatNumber amountRequest}}</td>
+			<td><a href="#" data-allocationId={{allocationId}} class="amountAllocatedInput">{{formatNumber amountAllocated}}</a></td>
+		</tr>
+		{{/each}}
+	</tbody>
+</table>
 </script>
 
 <script id="childrenNormalNodeTemplate" type="text/x-handler-template">
@@ -197,8 +214,7 @@
 
 <script id="detailModalTemplate" type="text/x-handler-template">
 <div><u>รายการขอตั้งงบประมาณของกิจกรรม</u></div>
-<table id="detailModalTbl">
-</table>
+<div id="detailModalDiv"></div>
 </script>
 
 <script id="modalTemplate" type="text/x-handler-template">
@@ -484,11 +500,15 @@ $(document).ready(function() {
 		},{
 			name: 'proposals', mapping: 'proposals'
 		},{
+			name: 'allocationRecords', mapping: 'allocationRecords'
+		},{
 			name: 'sumProposals', 
             convert: function(v, rec) {
             	var sum = 0;
             	_.forEach(rec.data.proposals, function(proposal) {
             		sum += proposal.amountRequest;
+            		BudgetType.findOrCreate(proposal.budgetType);
+            		Organization.findOrCreate(proposal.owner);
             	});
             	return sum;		
             }
@@ -525,6 +545,18 @@ $(document).ready(function() {
             	});
             	return sum;		
             }
+        }, {
+        	name: 'sumAllocationR1',
+        	convert: function(v, rec) {
+        		var sum=0;
+        		_.forEach(rec.data.allocationRecords, function(record) {
+        			if(record.index == 0) {
+        				
+        				sum += record.amountAllocated;
+        			}	
+        		});
+        		return sum;
+        	}
         }]
     });
 	

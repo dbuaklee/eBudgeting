@@ -46,9 +46,14 @@ var DetailModalView = Backbone.View.extend({
 			// search the allocationR1 
 			var allocationRecord = this.currentObjective.get('allocationRecordsR1').findWhere({budgetType:budgetType});
 			if(allocationRecord  != null) {
-				proposal.amountAllocated = allocationRecord.get('amountAllocated');
+				proposal.amountAllocatedR1 = allocationRecord.get('amountAllocated');
+			}
+			allocationRecord = this.currentObjective.get('allocationRecordsR2').findWhere({budgetType:budgetType});
+			if(allocationRecord  != null) {
+				proposal.amountAllocatedR2 = allocationRecord.get('amountAllocated');
 				proposal.allocationId = allocationRecord.get('id');
 			}
+			
 			
 		},this));
 		
@@ -60,7 +65,7 @@ var DetailModalView = Backbone.View.extend({
 	amountAllocatedInput : function(e) {
 		var allocationRecord = AllocationRecord.findOrCreate($(e.target).attr('data-allocationId'));
 		this.currentEditedAllocationRecord = allocationRecord;
-		Ext.MessageBox.prompt('ระบุค่างบประมาณที่ปรับลดครั้งที่ 1', allocationRecord.get('budgetType').get('name'),
+		Ext.MessageBox.prompt('ระบุค่างบประมาณที่ปรับลดครั้งที่ 2', allocationRecord.get('budgetType').get('name'),
 				this.showResultText, this, false, allocationRecord.get('amountAllocated'));
 	},
 	showResultText: function(btn, text){
@@ -535,6 +540,16 @@ var MainCtrView = Backbone.View.extend({
 	        	width: 120,
 	        	sortable : false,
 	        	dataIndex: 'sumAllocationR1',
+	        	align: 'right',
+	        	renderer: function(value) {
+	        		return addCommas(value);
+	        	}
+	        		
+	        }, {
+	        	text: 'ปรับลดครั้งที่ 2',
+	        	width: 120,
+	        	sortable : false,
+	        	dataIndex: 'sumAllocationR2',
 	        	align: 'right',
 	        	renderer: function(value) {
 	        		return addCommas(value);
