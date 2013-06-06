@@ -1,5 +1,6 @@
 package biz.thaicom.eBudgeting.models.pln;
 
+import java.io.Console;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.ObjectiveBudgetProposal;
 import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
+import biz.thaicom.eBudgeting.models.bgt.RequestColumn;
 import biz.thaicom.eBudgeting.models.bgt.ReservedBudget;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -414,7 +416,7 @@ public class Objective implements Serializable {
 				p.setAmountRequestNext3Year(p.getAmountRequestNext3Year() + proposal.getAmountRequestNext3Year());
 				return;
 			} else{
-				logger.debug(">>>>>>>>>>>>>>>>>p.budgetType.Id: {}", p.getBudgetType().getId());
+				// logger.debug(">>>>>>>>>>>>>>>>>p.budgetType.Id: {}", p.getBudgetType().getId());
 				if(p.getBudgetType().getId() == proposal.getBudgetType().getId()) {
 			
 					
@@ -432,28 +434,79 @@ public class Objective implements Serializable {
 					p.setAmountRequestNext2Year(p.getAmountRequestNext2Year() + proposal.getAmountRequestNext2Year());
 					p.setAmountRequestNext3Year(p.getAmountRequestNext3Year() + proposal.getAmountRequestNext3Year());
 					
-	//				for(ProposalStrategy ps : proposal.getProposalStrategies()) {
-	//					for(ProposalStrategy proposalStrategy: p.getProposalStrategies()) {
-	//						if(ps.getFormulaStrategy().getId() == proposalStrategy.getFormulaStrategy().getId()) {
-	//							// update TotalCalculated
-	//							proposalStrategy.setTotalCalculatedAmount(proposalStrategy.getTotalCalculatedAmount() + ps.getTotalCalculatedAmount());
-	//							proposalStrategy.setAmountRequestNext1Year(proposalStrategy.getAmountRequestNext1Year() + ps.getAmountRequestNext1Year());
-	//							proposalStrategy.setAmountRequestNext2Year(proposalStrategy.getAmountRequestNext2Year() + ps.getAmountRequestNext2Year());
-	//							proposalStrategy.setAmountRequestNext3Year(proposalStrategy.getAmountRequestNext3Year() + ps.getAmountRequestNext3Year());
-	//							
-	//							// now we begin update RequestColumn
-	//							for(RequestColumn rc : ps.getRequestColumns()) {
-	//								//loop thourgh our own rc for matching columns!
-	//								for(RequestColumn requestColumn : proposalStrategy.getRequestColumns()) {
-	//									if(rc.getColumn().getId() == requestColumn.getColumn().getId()) {
-	//										requestColumn.setAmount(requestColumn.getAmount() + rc.getAmount());
-	//									}
-	//								}
-	//							}
-	//							
-	//						}
-	//					}
-	//				}
+					if(proposal.getProposalStrategies() != null) {
+						if(p.getProposalStrategies() == null) {
+							p.setProposalStrategies(new ArrayList<ProposalStrategy>());
+						}
+						
+						for(ProposalStrategy ps : proposal.getProposalStrategies()) {
+							Boolean found = false;
+							
+							for(ProposalStrategy proposalStrategy: p.getProposalStrategies()) {
+								//logger.debug("proposal id : " + ps.getId() );
+								if(proposalStrategy.getFormulaStrategy() != null && 
+										ps.getFormulaStrategy() != null &&
+										ps.getFormulaStrategy().getId() == proposalStrategy.getFormulaStrategy().getId()) {
+									found = true;
+									
+									// update TotalCalculated
+									proposalStrategy.setTotalCalculatedAmount(proposalStrategy.getTotalCalculatedAmount() + ps.getTotalCalculatedAmount());
+									proposalStrategy.setAmountRequestNext1Year(proposalStrategy.getAmountRequestNext1Year() + ps.getAmountRequestNext1Year());
+									proposalStrategy.setAmountRequestNext2Year(proposalStrategy.getAmountRequestNext2Year() + ps.getAmountRequestNext2Year());
+									proposalStrategy.setAmountRequestNext3Year(proposalStrategy.getAmountRequestNext3Year() + ps.getAmountRequestNext3Year());
+									
+									// now we begin update RequestColumn
+									for(RequestColumn rc : ps.getRequestColumns()) {
+										//loop thourgh our own rc for matching columns!
+										if(proposalStrategy.getRequestColumns()!=null) {
+											for(RequestColumn requestColumn : proposalStrategy.getRequestColumns()) {
+												//logger.debug("xxxx rc: "  + rc.getId());
+												if(rc.getColumn().getId() == requestColumn.getColumn().getId()) {
+													requestColumn.setAmount(requestColumn.getAmount() + rc.getAmount());
+												}
+											}
+										} else {
+											proposalStrategy.setRequestColumns(new ArrayList<RequestColumn>());
+											//loop thourgh our own rc for matching columns!
+											RequestColumn newRc = new RequestColumn();
+											newRc.setProposalStrategy(proposalStrategy);
+											newRc.setAllocatedAmount(rc.getAllocatedAmount());
+											newRc.setAmount(rc.getAmount());
+											newRc.setColumn(rc.getColumn());
+											
+											proposalStrategy.getRequestColumns().add(newRc);
+										}
+										
+									}
+								}
+							}
+							
+							if(!found) {
+								// we create a new one
+								ProposalStrategy newPs=new ProposalStrategy();
+								newPs.setFormulaStrategy(ps.getFormulaStrategy());
+								newPs.setName(ps.getName());
+								newPs.setTargetValue(ps.getTargetValue());
+								newPs.setTotalCalculatedAmount(ps.getTotalCalculatedAmount());
+								newPs.setAmountRequestNext1Year(ps.getAmountRequestNext1Year());
+								newPs.setAmountRequestNext2Year(ps.getAmountRequestNext2Year());
+								newPs.setAmountRequestNext3Year(ps.getAmountRequestNext3Year());
+								newPs.setRequestColumns(new ArrayList<RequestColumn>());
+								
+								for(RequestColumn rc : ps.getRequestColumns()) {
+									//loop thourgh our own rc for matching columns!
+									RequestColumn newRc = new RequestColumn();
+									newRc.setProposalStrategy(newPs);
+									newRc.setAllocatedAmount(rc.getAllocatedAmount());
+									newRc.setAmount(rc.getAmount());
+									newRc.setColumn(rc.getColumn());
+									
+									newPs.getRequestColumns().add(newRc);
+								}
+								
+							}
+						}
+					}
 					return;
 				}
 				
@@ -475,32 +528,32 @@ public class Objective implements Serializable {
 		p.setAmountRequestNext2Year(proposal.getAmountRequestNext2Year());
 		p.setAmountRequestNext3Year(proposal.getAmountRequestNext3Year());
 		
-//		List<ProposalStrategy> proposalStrategies = new ArrayList<ProposalStrategy>();
-//		for(ProposalStrategy ps : proposal.getProposalStrategies()) {
-//			ProposalStrategy proposalStrategy = new ProposalStrategy();
-//			proposalStrategy.setFormulaStrategy(ps.getFormulaStrategy());
-//			proposalStrategy.setTotalCalculatedAmount(ps.getTotalCalculatedAmount());
-//			proposalStrategy.setAmountRequestNext1Year(ps.getAmountRequestNext1Year());
-//			proposalStrategy.setAmountRequestNext2Year(ps.getAmountRequestNext2Year());
-//			proposalStrategy.setAmountRequestNext3Year(ps.getAmountRequestNext3Year());
-//			
-//			
-//			List<RequestColumn> requestColumns = new ArrayList<RequestColumn>();
-//			for(RequestColumn rc : ps.getRequestColumns()) {
-//				RequestColumn requestColumn = new RequestColumn();
-//				requestColumn.setAmount(rc.getAmount());
-//				requestColumn.setColumn(rc.getColumn());
-//				requestColumn.setProposalStrategy(proposalStrategy);
-//				
-//				requestColumns.add(requestColumn);
-//			}
-//		
-//			proposalStrategy.setRequestColumns(requestColumns);
-//			
-//			proposalStrategies.add(proposalStrategy);
-//		}
-//		
-//		p.setProposalStrategies(proposalStrategies);
+		List<ProposalStrategy> proposalStrategies = new ArrayList<ProposalStrategy>();
+		for(ProposalStrategy ps : proposal.getProposalStrategies()) {
+			ProposalStrategy proposalStrategy = new ProposalStrategy();
+			proposalStrategy.setFormulaStrategy(ps.getFormulaStrategy());
+			proposalStrategy.setTotalCalculatedAmount(ps.getTotalCalculatedAmount());
+			proposalStrategy.setAmountRequestNext1Year(ps.getAmountRequestNext1Year());
+			proposalStrategy.setAmountRequestNext2Year(ps.getAmountRequestNext2Year());
+			proposalStrategy.setAmountRequestNext3Year(ps.getAmountRequestNext3Year());
+			
+			
+			List<RequestColumn> requestColumns = new ArrayList<RequestColumn>();
+			for(RequestColumn rc : ps.getRequestColumns()) {
+				RequestColumn requestColumn = new RequestColumn();
+				requestColumn.setAmount(rc.getAmount());
+				requestColumn.setColumn(rc.getColumn());
+				requestColumn.setProposalStrategy(proposalStrategy);
+				
+				requestColumns.add(requestColumn);
+			}
+		
+			proposalStrategy.setRequestColumns(requestColumns);
+			
+			proposalStrategies.add(proposalStrategy);
+		}
+		
+		p.setProposalStrategies(proposalStrategies);
 		
 		
 		this.sumBudgetTypeProposals.add(p);

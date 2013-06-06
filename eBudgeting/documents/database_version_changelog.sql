@@ -931,4 +931,116 @@
 	);
 	
 	
+-- version 10
+-- Modifed Date: May 5, 2013
+	update app_info set db_version = 10;
+	
+	 create table BGT_ALLOCSTDPRICE (
+        id number(19,0) not null,
+        idx number(10,0),
+        standardPrice number(10,0),
+        primary key (id)
+    );
+    
+    create sequence BGT_ALLOCSTDPRICE_SEQ;
+    
+    create table BGT_ALLOCRECORDSTRATEGY (
+        id number(19,0) not null,
+        totalCalculatedAmount number(19,0),
+        ALLOCATIONRECORD_ID number(19,0),
+        strategy_id number(19,0),
+        primary key (id)
+    );
+    
+    create sequence BGT_ALLOCRECORDSTRATEGY_SEQ;
 
+    
+    
+   	alter table BGT_ALLOCRECORDSTRATEGY 
+        add constraint FKE59589F84B854F 
+        foreign key (strategy_id) 
+        references BGT_FORMULASTRATEGY;
+        
+    alter table BGT_ALLOCRECORDSTRATEGY 
+        add constraint FKE595899FB0652B 
+        foreign key (ALLOCATIONRECORD_ID) 
+        references BGT_ALLOCATIONRECORD;
+
+    
+    
+    create table BGT_ALLOCREC_PROPOSALSTRGY (
+        BGT_ALLOCRECORDSTRATEGY_id number(19,0) not null,
+        proposalStrategies_id number(19,0) not null,
+        unique (proposalStrategies_id)
+    );
+    
+    alter table BGT_ALLOCREC_PROPOSALSTRGY 
+        add constraint FK95550C9DCCFE9B26 
+        foreign key (BGT_ALLOCRECORDSTRATEGY_id) 
+        references BGT_ALLOCRECORDSTRATEGY;
+
+    alter table BGT_ALLOCREC_PROPOSALSTRGY 
+        add constraint FK95550C9D2F60B08D 
+        foreign key (proposalStrategies_id) 
+        references BGT_PROPOSALSTRATEGY ;
+    
+   
+    
+    alter table BGT_REQUESTCOLUMN add(
+		BGT_ALLOCRECORDSTRATEGY_ID number(19,0)
+	);
+	
+	 alter table BGT_FORMULASTRATEGY add(
+		ALLOCATIONSTANDARDPRICE number(19,0)
+	);
+	
+	alter table BGT_REQUESTCOLUMN 
+        add constraint FKD0F5EAF5CCFE9B26 
+        foreign key (BGT_ALLOCRECORDSTRATEGY_ID) 
+        references BGT_ALLOCRECORDSTRATEGY;
+        
+        
+   	create table BGT_FMSTRGY_ALLOCSTDPRICE (
+        BGT_FORMULASTRATEGY_id number(19,0) not null,
+        allocationStandPriceMap_id number(19,0) not null,
+        primary key (BGT_FORMULASTRATEGY_id, allocationStandPriceMap_id),
+        unique (allocationStandPriceMap_id)
+    );
+    
+    alter table BGT_FMSTRGY_ALLOCSTDPRICE 
+        add constraint FKBB76F2E82C387A2C 
+        foreign key (allocationStandPriceMap_id) 
+        references BGT_ALLOCSTDPRICE;
+
+    alter table BGT_FMSTRGY_ALLOCSTDPRICE 
+        add constraint FKBB76F2E895B31999 
+        foreign key (BGT_FORMULASTRATEGY_id) 
+        references BGT_FORMULASTRATEGY;
+    
+    create table BGT_ALLOCFMCOLVALUE (
+        id number(19,0) not null,
+        allocatedValue number(19,0),
+        idx number(10,0),
+        primary key (id)
+    );
+    
+    create sequence BGT_ALLOCFMCOLVALUE_SEQ;
+    
+    create table BGT_FMCOLUMN_ALLOCVALUE (
+        BGT_FORMULACOLUMN_id number(19,0) not null,
+        FMCOLUMNVALUE_ID number(19,0) not null,
+        primary key (BGT_FORMULACOLUMN_id, FMCOLUMNVALUE_ID),
+        unique (FMCOLUMNVALUE_ID)
+    );
+    
+    alter table BGT_FMCOLUMN_ALLOCVALUE 
+        add constraint FK4A4A6E6E4E5F0E79 
+        foreign key (BGT_FORMULACOLUMN_id) 
+        references BGT_FORMULACOLUMN;
+
+    alter table BGT_FMCOLUMN_ALLOCVALUE 
+        add constraint FK4A4A6E6E9F54CE91 
+        foreign key (FMCOLUMNVALUE_ID) 
+        references BGT_ALLOCFMCOLVALUE;
+    
+    

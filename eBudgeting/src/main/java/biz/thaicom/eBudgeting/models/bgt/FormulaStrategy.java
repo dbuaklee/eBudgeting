@@ -1,7 +1,9 @@
 package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -12,7 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
@@ -52,6 +57,14 @@ public class FormulaStrategy  implements Serializable{
 	
 	@Basic
 	private Integer standardPrice;
+	
+	@OneToMany(cascade = CascadeType.ALL)
+	@MapKey(name="index")
+	@JoinTable(name="BGT_FMSTRGY_ALLOCSTDPRICE")
+	private Map<Integer,AllocationStandardPrice> allocationStandardPriceMap = new HashMap<Integer, AllocationStandardPrice>();
+	
+	@Basic
+	private Integer allocationStandardPrice;
 	
 	@Basic
 	private Boolean isStandardItem;
@@ -166,6 +179,23 @@ public class FormulaStrategy  implements Serializable{
 
 	public void setStandardPrice(Integer standardPrice) {
 		this.standardPrice = standardPrice;
+	}
+
+	public Integer getAllocationStandardPrice() {
+		return allocationStandardPrice;
+	}
+
+	public void setAllocationStandardPrice(Integer allocationStandardPrice) {
+		this.allocationStandardPrice = allocationStandardPrice;
+	}
+
+	public Map<Integer, AllocationStandardPrice> getAllocationStandardPriceMap() {
+		return allocationStandardPriceMap;
+	}
+
+	public void setAllocationStandardPriceMap(
+			Map<Integer, AllocationStandardPrice> allocationStandPriceMap) {
+		this.allocationStandardPriceMap = allocationStandPriceMap;
 	}
 	
 	

@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import biz.thaicom.eBudgeting.exception.ObjectiveHasBudgetProposalException;
+import biz.thaicom.eBudgeting.models.bgt.AllocatedFormulaColumnValue;
 import biz.thaicom.eBudgeting.models.bgt.AllocationRecord;
+import biz.thaicom.eBudgeting.models.bgt.AllocationRecordStrategy;
+import biz.thaicom.eBudgeting.models.bgt.AllocationStandardPrice;
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
 import biz.thaicom.eBudgeting.models.bgt.BudgetLevel;
 import biz.thaicom.eBudgeting.models.bgt.BudgetProposal;
@@ -54,6 +57,7 @@ import biz.thaicom.eBudgeting.models.pln.TargetValue;
 import biz.thaicom.eBudgeting.models.pln.TargetValueAllocationRecord;
 import biz.thaicom.eBudgeting.models.webui.Breadcrumb;
 import biz.thaicom.eBudgeting.repositories.AllocationRecordRepository;
+import biz.thaicom.eBudgeting.repositories.AllocationRecordStrategyRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetCommonTypeRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetProposalRepository;
 import biz.thaicom.eBudgeting.repositories.BudgetSignOffRepository;
@@ -160,6 +164,9 @@ public class EntityServiceJPA implements EntityService {
 	
 	@Autowired
 	private OrganizationRepository organizationRepository;
+	
+	@Autowired
+	private AllocationRecordStrategyRepository allocationRecordStrategyRepository;
 	
 	@Autowired
 	private ObjectMapper mapper;
@@ -1122,6 +1129,36 @@ public class EntityServiceJPA implements EntityService {
 				
 			}
 			
+			// then update all FormulaStrategy & FormulaColumn
+			List<FormulaStrategy> formulaStrategies = formulaStrategyRepository.findAllByFiscalYear(fiscalYear);
+			for(FormulaStrategy fs: formulaStrategies) {
+				AllocationStandardPrice stdPrice = fs.getAllocationStandardPriceMap().get(round-1);
+				if(stdPrice == null) {
+					stdPrice = new AllocationStandardPrice();
+					stdPrice.setIndex(round-1);
+				}
+				stdPrice.setStandardPrice(fs.getStandardPrice());
+				fs.getAllocationStandardPriceMap().put(round-1, stdPrice);
+				
+				// now forEach formularColumn
+				for(FormulaColumn fc: fs.getFormulaColumns()) {
+					AllocatedFormulaColumnValue fcValue = fc.getAllocatedFormulaColumnValueMap().get(round-1);
+					if(fcValue == null) {
+						fcValue = new AllocatedFormulaColumnValue();
+						fcValue.setIndex(round-1);
+					}
+					fcValue.setAllocatedValue(fc.getValue());
+					
+					fc.getAllocatedFormulaColumnValueMap().put(round-1, fcValue);
+					formulaColumnRepository.save(fc);
+				}
+				
+				formulaStrategyRepository.save(fs);
+			}
+			
+			// and then remove the allocationRecordStrategy
+			List<AllocationRecordStrategy> strategies = allocationRecordStrategyRepository.findAllByIndexAndFiscalYear(round-1, fiscalYear);
+			allocationRecordStrategyRepository.delete(strategies);
 			
 			
 			// now loop through the Objective
@@ -1133,16 +1170,42 @@ public class EntityServiceJPA implements EntityService {
 						if(allocationRecord != null) {
 							allocationRecord.setAmountAllocated(b.getAmountRequest());
 						} else {
-							
-							
 							allocationRecord = new AllocationRecord();
 							allocationRecord.setAmountAllocated(b.getAmountRequest());
 							allocationRecord.setBudgetType(b.getBudgetType());
 							allocationRecord.setForObjective(o);
 							allocationRecord.setIndex(round-1);
-							
-							allocationRecordRepository.save(allocationRecord);
 						}
+						
+						List<AllocationRecordStrategy> recordStrgies = new ArrayList<AllocationRecordStrategy>();
+						allocationRecord.setAllocationRecordStrategies(recordStrgies);
+						
+						
+						if(b.getProposalStrategies()!=null) {
+							for(ProposalStrategy ps : b.getProposalStrategies()) {
+								AllocationRecordStrategy strgy = new AllocationRecordStrategy();
+								strgy.setAllocationRecord(allocationRecord);
+								strgy.setStrategy(ps.getFormulaStrategy());
+								strgy.setTotalCalculatedAmount(ps.getTotalCalculatedAmount());
+								
+								allocationRecordStrategyRepository.save(strgy);
+											
+								// now deal with RequestColumn
+								for(RequestColumn rc : ps.getRequestColumns()) {
+									RequestColumn allocRc = new RequestColumn();
+									allocRc.setColumn(rc.getColumn());
+									allocRc.setAmount(rc.getAmount());
+									allocRc.setAllocationRecordStrategy(strgy);
+									
+									requestColumnRepositories.save(allocRc);
+								}
+								
+								recordStrgies.add(strgy);
+							}
+						}
+						
+						allocationRecordRepository.save(allocationRecord);
+						
 					}
 				}
 				

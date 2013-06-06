@@ -71,7 +71,7 @@
 <script id="mainCtrTemplate" type="text/x-handler-template">
 <div id="mainSelection">
 </div>
-<div id="mainTbl">
+<div id="mainTbl" class="x-border-box">
 </div>
 </script>
 

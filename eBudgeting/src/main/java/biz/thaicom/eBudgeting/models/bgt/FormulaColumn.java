@@ -1,15 +1,21 @@
 package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -53,6 +59,13 @@ public class FormulaColumn implements Serializable {
 	
 	@Basic
 	private Long allocatedValue;
+	
+	@OneToMany(cascade = CascadeType.ALL)
+	@MapKey(name="index")
+	@JoinTable(name="BGT_FMCOLUMN_ALLOCVALUE",
+			inverseJoinColumns = @JoinColumn(name = "FMCOLUMNVALUE_ID"))
+	private Map<Integer,AllocatedFormulaColumnValue> allocatedFormulaColumnValueMap = new HashMap<Integer, AllocatedFormulaColumnValue>();
+	
 
 	public Long getId() {
 		return id;
@@ -124,6 +137,19 @@ public class FormulaColumn implements Serializable {
 
 	public void setAllocatedValue(Long allocatedValue) {
 		this.allocatedValue = allocatedValue;
+	}
+
+
+
+	public Map<Integer, AllocatedFormulaColumnValue> getAllocatedFormulaColumnValueMap() {
+		return allocatedFormulaColumnValueMap;
+	}
+
+
+
+	public void setAllocatedFormulaColumnValueMap(
+			Map<Integer, AllocatedFormulaColumnValue> allocatedFormulaColumnValueMap) {
+		this.allocatedFormulaColumnValueMap = allocatedFormulaColumnValueMap;
 	}
 	
 

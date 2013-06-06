@@ -41,6 +41,10 @@ public class RequestColumn implements Serializable {
 	@JoinColumn(name="BGT_PROPOSALSTRATEGY_ID")
 	private ProposalStrategy proposalStrategy;
 			
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="BGT_ALLOCRECORDSTRATEGY_ID")
+	private AllocationRecordStrategy allocationRecordStrategy;
+	
 	
 	@Basic
 	private Integer amount;
@@ -86,6 +90,15 @@ public class RequestColumn implements Serializable {
 
 	public void setAllocatedAmount(Integer allocatedAmount) {
 		this.allocatedAmount = allocatedAmount;
+	}
+
+	public AllocationRecordStrategy getAllocationRecordStrategy() {
+		return allocationRecordStrategy;
+	}
+
+	public void setAllocationRecordStrategy(
+			AllocationRecordStrategy allocationRecordStrategy) {
+		this.allocationRecordStrategy = allocationRecordStrategy;
 	}
 
 

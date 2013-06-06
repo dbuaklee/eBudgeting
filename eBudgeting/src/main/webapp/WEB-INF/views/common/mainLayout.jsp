@@ -22,9 +22,8 @@
 	<link href="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/themes/icon.css'/>" rel="stylesheet">
  	-->
  	
- 	
 
-	<link href="<c:url value='/resources/jslibs/ext-4.2.0.663/resources/ext-theme-neptune/ext-theme-neptune-all.css'/>" rel="stylesheet">
+	<link href="<c:url value='/resources/jslibs/ext-4.2.1.883/resources/ext-theme-neptune/ext-theme-neptune-all.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/jqueryui-1.9.2/css/redmond/jquery-ui-1.9.2.custom.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.3.1/css/bootstrap.css'/>" rel="stylesheet">
 	<link href="<c:url value='/resources/jslibs/bootstrap-2.3.1/css/font-awesome-3.0.min.css'/>" rel="stylesheet">
@@ -40,7 +39,7 @@
 	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/datagrid-detailview.js'/>"></script>
 	 -->
 	 
-	<script src="<c:url value='/resources/jslibs/ext-4.2.0.663/ext-all.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/ext-4.2.1.883/ext-all.js'/>"></script>
 	
 	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.4.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.3.1/js/bootstrap.js'/>"></script>

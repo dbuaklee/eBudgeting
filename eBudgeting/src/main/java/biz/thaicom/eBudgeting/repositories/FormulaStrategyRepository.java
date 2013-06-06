@@ -64,6 +64,13 @@ public interface FormulaStrategyRepository extends
 	public List<FormulaStrategy> findOnlyNonStandardByfiscalYearAndType_id(
 			Integer fiscalYear, Long budgetTypeId);
 
+	@Query("" +
+			"SELECT fs " +
+			"FROM FormulaStrategy fs " +
+			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
+			"WHERE fs.fiscalYear = ?1 ")
+	public List<FormulaStrategy> findAllByFiscalYear(Integer fiscalYear);
+
 
 	
 }
