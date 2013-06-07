@@ -14,6 +14,8 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:component-scan base-package="biz.thaicom.eBudgeting.services" />
+	<context:component-scan base-package="biz.thaicom.eBudgeting.view"/>
+	
 	<context:annotation-config/>
 	
 	<tx:annotation-driven transaction-manager="transactionManager"/>
@@ -33,6 +35,16 @@
 		<property name="username" value="${datasource.jdbc.username}"/>
 		<property name="password" value="${datasource.jdbc.password}"/>
 	</bean>
+	
+ 	
+	<bean id="sessionFactory"
+	   	factory-bean="myEmf" 
+   		factory-method="getSessionFactory" /> 
+
+   
+   
+
+	
 
 	<!-- <context:property-placeholder location="jdbc.properties"/> -->
 
@@ -42,7 +54,7 @@
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="showSql" value="true"/>
 				<property name="generateDdl" value="false"/>
-
+				
 				<property name="databasePlatform" value="${hibernate.dialect}" />
 			</bean>
         </property>

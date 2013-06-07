@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,6 @@ public class ObjectiveRestController {
 	
 	@Autowired
 	private EntityService entityService;
-
 	
 	@RequestMapping(value="/Objective/root", method=RequestMethod.GET)
 	public @ResponseBody List<Objective> getRootFiscalYear() {
@@ -64,7 +64,6 @@ public class ObjectiveRestController {
 	@RequestMapping(value="/Objective/ROOT/{fiscalYear}", method=RequestMethod.GET)
 	public @ResponseBody Objective getOneROOTObjectiveByFiscalYear(
 			@PathVariable Integer fiscalYear) {
-		
 		return entityService.findOneRootObjectiveByFiscalyear(fiscalYear);
 	};
 	
