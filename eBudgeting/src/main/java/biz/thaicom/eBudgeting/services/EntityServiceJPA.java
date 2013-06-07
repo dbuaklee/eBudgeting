@@ -1119,7 +1119,7 @@ public class EntityServiceJPA implements EntityService {
 				Objective o = list.get(index);
 				o.getProposals().size();
 				
-				o.addToSumBudgetTypeProposals(proposal);
+				o.addToSumBudgetTypeProposals(proposal,true);
 				
 				logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
 				
@@ -1297,7 +1297,7 @@ public class EntityServiceJPA implements EntityService {
 			Objective o = list.get(index);
 			o.getProposals().size();
 			
-			o.addToSumBudgetTypeProposals(proposal);
+			o.addToSumBudgetTypeProposalsOnlyAmount(proposal);
 			
 			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
 			
@@ -1309,6 +1309,9 @@ public class EntityServiceJPA implements EntityService {
 		List<AllocationRecord> recordList = allocationRecordRepository
 				.findBudgetProposalByFiscalYearAndOwnerAndParentPath(fiscalYear, parentPathLikeString);
 		for(AllocationRecord record : recordList) {
+			
+			record.getAllocationRecordStrategies().size();
+			
 			Integer index = list.indexOf(record.getForObjective());
 			Objective o = list.get(index);
 			logger.debug("AAding Allocation {} to objective: {}", record.getId(), o.getId());

@@ -473,7 +473,7 @@ var MainCtrView = Backbone.View.extend({
 	        columns: [{
 	             //this is so we know which column will show the tree
 	        	xtype: 'treecolumn',
-	            text: 'กิจกรรม',
+	            text: 'กิจกรรมรอง',
 	            sortable: true,
 	            dataIndex: 'codeAndName',
 	        	width: 300,

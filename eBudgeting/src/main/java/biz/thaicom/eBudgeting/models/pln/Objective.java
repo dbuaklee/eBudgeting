@@ -393,7 +393,12 @@ public class Objective implements Serializable {
 			List<BudgetProposal> sumBudgetTypeProposals) {
 		this.sumBudgetTypeProposals = sumBudgetTypeProposals;
 	}
-	public void addToSumBudgetTypeProposals(BudgetProposal proposal){
+	
+	public void addToSumBudgetTypeProposalsOnlyAmount(BudgetProposal proposal) {
+		this.addToSumBudgetTypeProposals(proposal, false);
+	}
+	
+	public void addToSumBudgetTypeProposals(BudgetProposal proposal, Boolean addRequestColumn){
 		logger.debug("++++++++++++++++++++++objective.id: {} and proposal.budgetType.id: {}", this.id, proposal.getBudgetType()==null?"null":proposal.getBudgetType().getId());
 		
 		// find if there is one 
@@ -455,28 +460,32 @@ public class Objective implements Serializable {
 									proposalStrategy.setAmountRequestNext2Year(proposalStrategy.getAmountRequestNext2Year() + ps.getAmountRequestNext2Year());
 									proposalStrategy.setAmountRequestNext3Year(proposalStrategy.getAmountRequestNext3Year() + ps.getAmountRequestNext3Year());
 									
-									// now we begin update RequestColumn
-									for(RequestColumn rc : ps.getRequestColumns()) {
-										//loop thourgh our own rc for matching columns!
-										if(proposalStrategy.getRequestColumns()!=null) {
-											for(RequestColumn requestColumn : proposalStrategy.getRequestColumns()) {
-												//logger.debug("xxxx rc: "  + rc.getId());
-												if(rc.getColumn().getId() == requestColumn.getColumn().getId()) {
-													requestColumn.setAmount(requestColumn.getAmount() + rc.getAmount());
-												}
-											}
-										} else {
-											proposalStrategy.setRequestColumns(new ArrayList<RequestColumn>());
+									
+									if(addRequestColumn == true) {
+									
+										// now we begin update RequestColumn
+										for(RequestColumn rc : ps.getRequestColumns()) {
 											//loop thourgh our own rc for matching columns!
-											RequestColumn newRc = new RequestColumn();
-											newRc.setProposalStrategy(proposalStrategy);
-											newRc.setAllocatedAmount(rc.getAllocatedAmount());
-											newRc.setAmount(rc.getAmount());
-											newRc.setColumn(rc.getColumn());
+											if(proposalStrategy.getRequestColumns()!=null) {
+												for(RequestColumn requestColumn : proposalStrategy.getRequestColumns()) {
+													//logger.debug("xxxx rc: "  + rc.getId());
+													if(rc.getColumn().getId() == requestColumn.getColumn().getId()) {
+														requestColumn.setAmount(requestColumn.getAmount() + rc.getAmount());
+													}
+												}
+											} else {
+												proposalStrategy.setRequestColumns(new ArrayList<RequestColumn>());
+												//loop thourgh our own rc for matching columns!
+												RequestColumn newRc = new RequestColumn();
+												newRc.setProposalStrategy(proposalStrategy);
+												newRc.setAllocatedAmount(rc.getAllocatedAmount());
+												newRc.setAmount(rc.getAmount());
+												newRc.setColumn(rc.getColumn());
+												
+												proposalStrategy.getRequestColumns().add(newRc);
+											}
 											
-											proposalStrategy.getRequestColumns().add(newRc);
 										}
-										
 									}
 								}
 							}
@@ -491,17 +500,21 @@ public class Objective implements Serializable {
 								newPs.setAmountRequestNext1Year(ps.getAmountRequestNext1Year());
 								newPs.setAmountRequestNext2Year(ps.getAmountRequestNext2Year());
 								newPs.setAmountRequestNext3Year(ps.getAmountRequestNext3Year());
-								newPs.setRequestColumns(new ArrayList<RequestColumn>());
 								
-								for(RequestColumn rc : ps.getRequestColumns()) {
-									//loop thourgh our own rc for matching columns!
-									RequestColumn newRc = new RequestColumn();
-									newRc.setProposalStrategy(newPs);
-									newRc.setAllocatedAmount(rc.getAllocatedAmount());
-									newRc.setAmount(rc.getAmount());
-									newRc.setColumn(rc.getColumn());
+								if(addRequestColumn == true) {
+								
+									newPs.setRequestColumns(new ArrayList<RequestColumn>());
 									
-									newPs.getRequestColumns().add(newRc);
+									for(RequestColumn rc : ps.getRequestColumns()) {
+										//loop thourgh our own rc for matching columns!
+										RequestColumn newRc = new RequestColumn();
+										newRc.setProposalStrategy(newPs);
+										newRc.setAllocatedAmount(rc.getAllocatedAmount());
+										newRc.setAmount(rc.getAmount());
+										newRc.setColumn(rc.getColumn());
+										
+										newPs.getRequestColumns().add(newRc);
+									}
 								}
 								
 							}
@@ -537,18 +550,19 @@ public class Objective implements Serializable {
 			proposalStrategy.setAmountRequestNext2Year(ps.getAmountRequestNext2Year());
 			proposalStrategy.setAmountRequestNext3Year(ps.getAmountRequestNext3Year());
 			
+			if(addRequestColumn == true) {
+				List<RequestColumn> requestColumns = new ArrayList<RequestColumn>();
+				for(RequestColumn rc : ps.getRequestColumns()) {
+					RequestColumn requestColumn = new RequestColumn();
+					requestColumn.setAmount(rc.getAmount());
+					requestColumn.setColumn(rc.getColumn());
+					requestColumn.setProposalStrategy(proposalStrategy);
+					
+					requestColumns.add(requestColumn);
+				}
 			
-			List<RequestColumn> requestColumns = new ArrayList<RequestColumn>();
-			for(RequestColumn rc : ps.getRequestColumns()) {
-				RequestColumn requestColumn = new RequestColumn();
-				requestColumn.setAmount(rc.getAmount());
-				requestColumn.setColumn(rc.getColumn());
-				requestColumn.setProposalStrategy(proposalStrategy);
-				
-				requestColumns.add(requestColumn);
+				proposalStrategy.setRequestColumns(requestColumns);
 			}
-		
-			proposalStrategy.setRequestColumns(requestColumns);
 			
 			proposalStrategies.add(proposalStrategy);
 		}

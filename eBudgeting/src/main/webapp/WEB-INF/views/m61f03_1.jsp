@@ -267,8 +267,8 @@
 		<tr>
 			<td style="width:20px;">#</td>
 			<td style="width:246px;"><strong>แผนงาน/กิจกรรม ประจำปี {{this.0.fiscalYear}}</strong></td>
-			<td style="width:60px;">เป้าหมาย</td>
 			<td style="width:60px;">หน่วยนับ</td>
+			<td style="width:60px;">เป้าหมาย</td>
 			<td style="width:80px;">งบประมาณปี  {{this.0.fiscalYear}}</td>
 			<td style="width:80px;">ปี  {{next this.0.fiscalYear 1}}</td>
 			<td style="width:80px;">ปี  {{next this.0.fiscalYear 2}}</td>
