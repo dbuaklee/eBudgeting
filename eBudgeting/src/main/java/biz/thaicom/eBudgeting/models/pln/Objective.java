@@ -399,7 +399,7 @@ public class Objective implements Serializable {
 	}
 	
 	public void addToSumBudgetTypeProposals(BudgetProposal proposal, Boolean addRequestColumn){
-		logger.debug("++++++++++++++++++++++objective.id: {} and proposal.budgetType.id: {}", this.id, proposal.getBudgetType()==null?"null":proposal.getBudgetType().getId());
+		//logger.debug("++++++++++++++++++++++objective.id: {} and proposal.budgetType.id: {}", this.id, proposal.getBudgetType()==null?"null":proposal.getBudgetType().getId());
 		
 		// find if there is one 
 		if(this.sumBudgetTypeProposals == null) {
@@ -530,7 +530,7 @@ public class Objective implements Serializable {
 		// otherwise add ths to new proposal
 		BudgetProposal p = new BudgetProposal();
 		
-		logger.debug("************************************************proposal.getBugetType() : {}", proposal.getBudgetType()==null?"null":proposal.getBudgetType().getId()) ;
+		//logger.debug("************************************************proposal.getBugetType() : {}", proposal.getBudgetType()==null?"null":proposal.getBudgetType().getId()) ;
 		
 		p.setBudgetType(proposal.getBudgetType());
 		p.setForObjective(proposal.getForObjective());

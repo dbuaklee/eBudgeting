@@ -130,7 +130,11 @@
 	<tbody>
 		{{#each allocationRecordStrategies}}
 		<tr>
-			<td><a href="#" data-allocationStrategyId={{id}} class="detailAllocationStrategy">{{strategy.name}}</a></td>
+			{{#if strategy}}
+			<td><a href="#" data-allocationStrategyId="{{id}}" class="detailAllocationStrategy">{{strategy.name}}</a></td>
+			{{else}}
+			<td><a href="#" data-allocationStrategyId="{{id}}" class="detailAllocationStrategy">default</a></td>
+			{{/if}}
 			<td>{{formatNumber totalCalculatedAmount}}</td>
 		</tr>
 		{{/each}}
@@ -331,7 +335,7 @@
 				<strong>ระบุงบประมาณ:</strong>
 			</div>
 		</div>
-		<div>
+		<div id="allocRecStrgy" data-id="{{id}}">
 			<div style="height:35px;margin-bottom:5px;padding-top:5px;">
 				<strong>{{budgetType.name}}</strong>
 			</div>

@@ -220,31 +220,37 @@ var DetailModalView = Backbone.View.extend({
 	detailAllocationStrategy: function(e) {
 		var allocRecStrgy = AllocationRecordStrategy.findOrCreate($(e.target).attr('data-allocationStrategyId'));
 		this.$el.find('.modal-footer').html(this.detailAllocationRecordStrategyFooterTemplate());
+		var json, html;
 		
-		var json = allocRecStrgy.get('strategy').toJSON();
-		
-		
-		
-		json.total = allocRecStrgy.get('totalCalculatedAmount');
-		
-		json.allocStrategyId = allocRecStrgy.get('id');
-	
-		
-		// now fill in value from request columns
-		for(var i=0; i< json.formulaColumns.length; i++) {
-			var fcId = json.formulaColumns[i].id;
-			for(var j=0; j<allocRecStrgy.get('requestColumns').length; j++) {
-				if(allocRecStrgy.get('requestColumns').at(j).get('column').get('id') == fcId) {
-					json.formulaColumns[i].allocatedFormulaColumnValueMap[0].allocatedValue = allocRecStrgy.get('requestColumns').at(j).get('amount');
+		if(allocRecStrgy.get('strategy') != null) {
+			json = allocRecStrgy.get('strategy').toJSON();
+			json.total = allocRecStrgy.get('totalCalculatedAmount');
+			
+			json.allocStrategyId = allocRecStrgy.get('id');
+			
+			// now fill in value from request columns
+			for(var i=0; i< json.formulaColumns.length; i++) {
+				var fcId = json.formulaColumns[i].id;
+				for(var j=0; j<allocRecStrgy.get('requestColumns').length; j++) {
+					if(allocRecStrgy.get('requestColumns').at(j).get('column').get('id') == fcId) {
+						json.formulaColumns[i].allocatedFormulaColumnValueMap[0].allocatedValue = allocRecStrgy.get('requestColumns').at(j).get('amount');
+					}
 				}
-			}
-			if(i==json.formulaColumns.length-1) {
-				json.formulaColumns[i].$last = true;
+				if(i==json.formulaColumns.length-1) {
+					json.formulaColumns[i].$last = true;
+				}
+				
 			}
 			
+			html = this.detailAllocationRecordStrategyTemplate(json);
+		} else {
+			json = allocRecStrgy.toJSON();
+			json.budgetType = {};
+			json.budgetType.name = allocRecStrgy.get('allocationRecord').get('budgetType').get('name');
+			html = this.detailAllocationBasicTemplate(json);
 		}
 		
-		var html = this.detailAllocationRecordStrategyTemplate(json);
+		
 		this.$el.find('.modal-body').html(html);
 		
 	},

@@ -1002,14 +1002,14 @@
         
    	create table BGT_FMSTRGY_ALLOCSTDPRICE (
         BGT_FORMULASTRATEGY_id number(19,0) not null,
-        allocationStandPriceMap_id number(19,0) not null,
-        primary key (BGT_FORMULASTRATEGY_id, allocationStandPriceMap_id),
-        unique (allocationStandPriceMap_id)
+        allocationStandardPriceMap_id number(19,0) not null,
+        primary key (BGT_FORMULASTRATEGY_id, allocationStandardPriceMap_id),
+        unique (allocationStandardPriceMap_id)
     );
     
     alter table BGT_FMSTRGY_ALLOCSTDPRICE 
         add constraint FKBB76F2E82C387A2C 
-        foreign key (allocationStandPriceMap_id) 
+        foreign key (allocationStandardPriceMap_id) 
         references BGT_ALLOCSTDPRICE;
 
     alter table BGT_FMSTRGY_ALLOCSTDPRICE 

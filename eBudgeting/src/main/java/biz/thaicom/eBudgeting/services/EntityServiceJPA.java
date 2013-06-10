@@ -1160,12 +1160,16 @@ public class EntityServiceJPA implements EntityService {
 			
 			
 			for(Objective o : list) {
-				HashMap<BudgetType, AllocationRecord> budgetTypeMap = new HashMap<BudgetType, AllocationRecord>();
+				HashMap<Long, AllocationRecord> budgetTypeMap = new HashMap<Long, AllocationRecord>();
 				HashMap<FormulaStrategy, AllocationRecordStrategy> formulaStrategyMap = new HashMap<FormulaStrategy, AllocationRecordStrategy>();
+				HashMap<BudgetType, AllocationRecordStrategy> allocStrgyBudgetTypeMap = new HashMap<BudgetType, AllocationRecordStrategy>();
 				HashMap<FormulaColumn, RequestColumn> columnMap = new HashMap<FormulaColumn, RequestColumn>();
 				
 				for(BudgetProposal p : o.getProposals()) {
-					AllocationRecord ar = budgetTypeMap.get(p.getBudgetType());
+					AllocationRecord ar = budgetTypeMap.get(p.getBudgetType().getId());
+					if(p.getId().equals(2887L)) {
+						logger.debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+					} 
 					if(ar == null) {
 						ar = new AllocationRecord();
 						ar.setIndex(0);
@@ -1173,7 +1177,7 @@ public class EntityServiceJPA implements EntityService {
 						ar.setBudgetType(p.getBudgetType());
 						ar.setAmountAllocated(p.getAmountRequest());
 						
-						budgetTypeMap.put(p.getBudgetType(), ar);
+						budgetTypeMap.put(p.getBudgetType().getId(), ar);
 
 					} else {						
 						ar.setAmountAllocated(ar.getAmountAllocated() + p.getAmountRequest());
@@ -1183,7 +1187,13 @@ public class EntityServiceJPA implements EntityService {
 					// now for Each ps
 					for(ProposalStrategy ps : p.getProposalStrategies()) {
 						ar.setAllocationRecordStrategies(new ArrayList<AllocationRecordStrategy>());
-						AllocationRecordStrategy ars = formulaStrategyMap.get(ps.getFormulaStrategy());
+						AllocationRecordStrategy ars;
+						if(ps.getFormulaStrategy() == null) {
+							ars = allocStrgyBudgetTypeMap.get(ar.getBudgetType());
+							
+						} else {
+							ars = formulaStrategyMap.get(ps.getFormulaStrategy());
+						}
 						if(ars == null) {
 							ars = new AllocationRecordStrategy();
 							ars.setAllocationRecord(ar);
@@ -1215,6 +1225,7 @@ public class EntityServiceJPA implements EntityService {
 								allocRc.setAmount(allocRc.getAmount() + rc.getAmount());
 							}
 						}
+					
 					}
 				}
 				// now we can save all this
@@ -1414,10 +1425,10 @@ public class EntityServiceJPA implements EntityService {
 			
 			o.addToSumBudgetTypeProposalsOnlyAmount(proposal);
 			
-			logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
+			//logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
 			
 			//o.getProposals().add(proposal);
-			logger.debug("proposal size is " + o.getProposals().size());
+			//logger.debug("proposal size is " + o.getProposals().size());
 		}
 		
 		//now loop through allocationRecord
@@ -1429,7 +1440,7 @@ public class EntityServiceJPA implements EntityService {
 			
 			Integer index = list.indexOf(record.getForObjective());
 			Objective o = list.get(index);
-			logger.debug("AAding Allocation {} to objective: {}", record.getId(), o.getId());
+			//logger.debug("AAding Allocation {} to objective: {}", record.getId(), o.getId());
 			
 			if(o.getAllocationRecords()==null) {
 				o.setAllocationRecords(new ArrayList<AllocationRecord>());
@@ -1444,13 +1455,13 @@ public class EntityServiceJPA implements EntityService {
 			}
 			
 			//o.getProposals().add(record);
-			logger.debug("proposal size is " + o.getAllocationRecords().size());
+			//logger.debug("proposal size is " + o.getAllocationRecords().size());
 		}
 		
 		// And lastly loop through reservedBudget
 		List<ReservedBudget> reservedBudgets = reservedBudgetRepository.findAllByFiscalYearAndParentPathLike(fiscalYear, parentPathLikeString);
 		for(ReservedBudget rb : reservedBudgets) {
-			logger.debug("reservedBuget: {} ", rb.getForObjective().getId());
+			//logger.debug("reservedBuget: {} ", rb.getForObjective().getId());
 			Integer index = list.indexOf(rb.getForObjective());
 			Objective o = list.get(index);
 			
@@ -1463,10 +1474,11 @@ public class EntityServiceJPA implements EntityService {
 		
 		// oh not yet!
 		for(Objective o : list) {
-			if(o.getParent().getId().equals(parent.getId())) {
-				logger.debug("---------------------adding {}", o.getId() );
+			if(o.getParent().getId().equals(parent.getId()) && o.getProposals().size() > 0) {
+				//logger.debug("---------------------adding {}", o.getId() );
 				returnList.add(o); 
-			}
+			} 
+			
 			if(o.getChildren().size() >0) {
 				o.setIsLeaf(false);
 			} else {
@@ -4258,7 +4270,7 @@ public class EntityServiceJPA implements EntityService {
 		ar.getAllocationRecordStrategies().size();
 		for(AllocationRecordStrategy ars : ar.getAllocationRecordStrategies()) {
 			ars.getRequestColumns().size();
-			if(ars.getStrategy().getAllocationStandardPriceMap()!=null) {
+			if(ars.getStrategy()!= null && ars.getStrategy().getAllocationStandardPriceMap()!=null) {
 				ars.getStrategy().getAllocationStandardPriceMap().size();
 				for(FormulaColumn fc: ars.getStrategy().getFormulaColumns()) {
 					fc.getAllocatedFormulaColumnValueMap().size();
