@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
 
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
     <resetJUL>true</resetJUL>
   </contextListener>
+  
+  <consolePlugin/>
 
   <!-- To enable JMX Management -->
   <jmxConfigurator/>
@@ -33,7 +35,11 @@
   <logger name="biz.thaicom" level="debug" />
   
   <logger name="org.springframework" level="info" />
-
+  
+<!--   
+  <logger name="org.hiberbate.SQL" level="trace"/>
+  <logger name="org.hibernate.type" level="trace"/>
+ -->
   <root level="info">
     <appender-ref ref="console" />
   </root>

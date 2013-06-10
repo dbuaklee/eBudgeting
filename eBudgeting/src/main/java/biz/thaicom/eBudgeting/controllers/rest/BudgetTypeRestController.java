@@ -297,6 +297,12 @@ public class BudgetTypeRestController {
 		return strategy;
 		
 	};
+	
+	@RequestMapping(value="/FormulaStrategy/{id}")
+	public @ResponseBody FormulaStrategy findFormulaStrategy(
+			@PathVariable Long id) {
+		return entityService.findFormulaStrategy(id);
+	}
 
 	@RequestMapping(value="/FormulaStrategy/searchIsNotStandardItem/{fiscalYear}/rootBudgetType/{budgetTypeId}")
 	public @ResponseBody List<FormulaStrategy> getBudgetTypeFormulaStrategyIsNotStandardFromRootBudgetType(

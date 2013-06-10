@@ -299,6 +299,12 @@ FiscalBudgetType =  Backbone.RelationalModel.extend({
 
 FormulaColumn = Backbone.RelationalModel.extend({
 	idAttribute: 'id',
+	relations: [{
+		type: Backbone.HasMany,
+		key: 'allocatedFormulaColumnValueMap',
+		relatedModel: 'AllocatedFormulaColumnValue'
+	
+	}],
 
 	urlRoot: appUrl('/FormulaColumn')
 });
@@ -327,13 +333,23 @@ FormulaStrategy = Backbone.RelationalModel.extend({
 	    	type: Backbone.HasOne,
 	    	key: 'unit',
 	    	relatedModel: 'TargetUnit'
+	    }, {
+	    	type: Backbone.HasMany,
+	    	key: 'allocationStandardPriceMap',
+	    	relatedModel: 'AllocationStandardPrice'
 	    }
 	],
 	urlRoot: appUrl('/FormulaStrategy')
 
 });
 
+AllocationStandardPrice = Backbone.RelationalModel.extend({
+	idAtrribute: 'id'
+});
 
+AllocatedFormulaColumnValue = Backbone.RelationalModel.extend({
+	idAtrribute: 'id'
+}); 
 
 RequestColumn = Backbone.RelationalModel.extend({
 	idAtrribute: 'id',
@@ -355,8 +371,34 @@ AllocationRecord = Backbone.RelationalModel.extend({
 		type: Backbone.HasOne,
 		key: 'budgetType',
 		relatedModel : 'BudgetType'
+	}, {
+		type: Backbone.HasMany,
+		key: 'allocationRecordStrategies',
+		relatedModel: 'AllocationRecordStrategy'
 	}],
 	urlRoot: appUrl('/AllocationRecord')
+});
+
+AllocationRecordStrategy = Backbone.RelationalModel.extend({
+	idAttribute: 'id', 
+	relations: [{
+		type: Backbone.HasMany,
+		key: 'proposalStrategies',
+		relatedModel: 'ProposalStrategy'
+	}, {
+		type: Backbone.HasOne,
+		key: 'strategy',
+		relatedModel: 'FormulaStrategy'
+	}, {
+		type: Backbone.HasOne,
+		key: 'allocationRecord',
+		relatedModel: 'AllocationRecord'
+	}, {
+		type: Backbone.HasMany,
+		key: 'requestColumns',
+		relatedModel: 'RequestColumn'
+	}],
+	urlRoot: appUrl('/AllocationRecordStrategy')
 });
 
 BudgetProposal = Backbone.RelationalModel.extend({

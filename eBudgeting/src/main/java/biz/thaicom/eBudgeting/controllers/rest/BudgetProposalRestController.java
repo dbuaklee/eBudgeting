@@ -145,6 +145,16 @@ public class BudgetProposalRestController {
 		return entityService.updateProposalStrategy(id, data);		
 		
 	}
+	
+	@RequestMapping(value="/AllocationRecordStrategy/{id}", method=RequestMethod.PUT) 
+	public @ResponseBody ProposalStrategy updateAllocationRecordStrategy(
+			@PathVariable Long id,
+			@RequestBody JsonNode data) throws JsonParseException, JsonMappingException, IOException{
+		
+		// we just pass this to entityJPA
+		return entityService.updateAllocationRecordStrategy(id, data);		
+		
+	}
 
 
 	@RequestMapping(value="/BudgetProposal", method=RequestMethod.POST)
@@ -167,6 +177,12 @@ public class BudgetProposalRestController {
 //		//return entityService.saveBudgetProposal(proposal);
 //		
 //	}
+	
+	@RequestMapping(value="/AllocationRecord/{id}", method=RequestMethod.GET)
+	public @ResponseBody AllocationRecord findAllocationRecord(
+			@PathVariable Long id) {
+		return entityService.findAllocationRecordById(id);
+	}
 	
 	@RequestMapping(value="/AllocationRecord/{fiscalYear}/R{round}", method=RequestMethod.GET)
 	public @ResponseBody String initAllocationRecord(

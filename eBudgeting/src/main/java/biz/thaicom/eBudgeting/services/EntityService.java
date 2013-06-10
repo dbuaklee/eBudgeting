@@ -153,9 +153,16 @@ public interface EntityService {
 			Integer fiscalYear, String parentPath);
 	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(
 			Integer fiscalYear, Boolean isStandardItem, Long budgetTypeId, String parentPath);
-
+	public FormulaStrategy findFormulaStrategy(Long id);
 
 	
+	// AllocationRecord
+	public AllocationRecord findAllocationRecordById(Long id);
+	
+	// AllocationRecordStrategy
+	public ProposalStrategy updateAllocationRecordStrategy(Long id,
+			JsonNode data);
+
 	
 	//FormulaColumn
 	public void deleteFormulaColumn(Long id);
@@ -309,6 +316,8 @@ public interface EntityService {
 	public User updateUser(JsonNode node);
 	public User saveUser(JsonNode node);
 	public User deleteUser(Long id);
+
+
 
 	
 

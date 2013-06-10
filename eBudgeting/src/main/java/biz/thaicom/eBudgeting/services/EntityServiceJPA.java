@@ -84,6 +84,7 @@ import biz.thaicom.security.models.ThaicomUserDetail;
 import biz.thaicom.security.models.User;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1109,173 +1110,283 @@ public class EntityServiceJPA implements EntityService {
 		String parentPathLikeString = "%."+root.getId()+"%";		
 		List<Objective> list = objectiveRepository.findFlatByObjectiveBudgetProposal(fiscalYear,parentPathLikeString);
 		
-		List<BudgetProposal> proposalList = budgetProposalRepository
-				.findBudgetProposalByFiscalYearAndParentPath(fiscalYear, parentPathLikeString);
+//		List<BudgetProposal> proposalList = budgetProposalRepository
+//				.findBudgetProposalByFiscalYearAndParentPath(fiscalYear, parentPathLikeString);
 		
 		if(round == 1) {
-			//loop through proposalList
-			for(BudgetProposal proposal : proposalList) {
-				Integer index = list.indexOf(proposal.getForObjective());
-				Objective o = list.get(index);
-				o.getProposals().size();
-				
-				o.addToSumBudgetTypeProposals(proposal,true);
-				
-				logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
-				
-				
-				//o.getProposals().add(proposal);
-				logger.debug("proposal size is " + o.getProposals().size());
-				
-			}
-			
-			// then update all FormulaStrategy & FormulaColumn
-			List<FormulaStrategy> formulaStrategies = formulaStrategyRepository.findAllByFiscalYear(fiscalYear);
-			for(FormulaStrategy fs: formulaStrategies) {
-				AllocationStandardPrice stdPrice = fs.getAllocationStandardPriceMap().get(round-1);
-				if(stdPrice == null) {
-					stdPrice = new AllocationStandardPrice();
-					stdPrice.setIndex(round-1);
+			// we update all formulaStrategy here
+			List<FormulaStrategy> formulaList = formulaStrategyRepository.findAllByFiscalYear(fiscalYear);
+			for(FormulaStrategy fs : formulaList) {
+				AllocationStandardPrice asp;
+				if(fs.getAllocationStandardPriceMap()==null) {
+					fs.setAllocationStandardPriceMap(new ArrayList<AllocationStandardPrice>());
 				}
-				stdPrice.setStandardPrice(fs.getStandardPrice());
-				fs.getAllocationStandardPriceMap().put(round-1, stdPrice);
 				
-				// now forEach formularColumn
+				if(fs.getAllocationStandardPriceMap().size() < round ){
+					asp = new AllocationStandardPrice();
+					asp.setIndex(round-1);
+					
+					fs.getAllocationStandardPriceMap().add(round-1, asp);
+				} else{
+					asp = fs.getAllocationStandardPriceMap().get(round-1);	
+				}
+				 
+				
+				asp.setStandardPrice(fs.getStandardPrice());
 				for(FormulaColumn fc: fs.getFormulaColumns()) {
-					AllocatedFormulaColumnValue fcValue = fc.getAllocatedFormulaColumnValueMap().get(round-1);
-					if(fcValue == null) {
-						fcValue = new AllocatedFormulaColumnValue();
-						fcValue.setIndex(round-1);
-					}
-					fcValue.setAllocatedValue(fc.getValue());
-					
-					fc.getAllocatedFormulaColumnValueMap().put(round-1, fcValue);
-					formulaColumnRepository.save(fc);
-				}
-				
-				formulaStrategyRepository.save(fs);
-			}
-			
-			// and then remove the allocationRecordStrategy
-			List<AllocationRecordStrategy> strategies = allocationRecordStrategyRepository.findAllByIndexAndFiscalYear(round-1, fiscalYear);
-			allocationRecordStrategyRepository.delete(strategies);
-			
-			
-			// now loop through the Objective
-			for(Objective o : list) {
-				if(o.getSumBudgetTypeProposals() != null) {
-					for(BudgetProposal b : o.getSumBudgetTypeProposals()) {
-						// now get this on
-						AllocationRecord allocationRecord = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(b.getBudgetType(), o ,round-1);  
-						if(allocationRecord != null) {
-							allocationRecord.setAmountAllocated(b.getAmountRequest());
-						} else {
-							allocationRecord = new AllocationRecord();
-							allocationRecord.setAmountAllocated(b.getAmountRequest());
-							allocationRecord.setBudgetType(b.getBudgetType());
-							allocationRecord.setForObjective(o);
-							allocationRecord.setIndex(round-1);
-						}
-						
-						List<AllocationRecordStrategy> recordStrgies = new ArrayList<AllocationRecordStrategy>();
-						allocationRecord.setAllocationRecordStrategies(recordStrgies);
-						
-						
-						if(b.getProposalStrategies()!=null) {
-							for(ProposalStrategy ps : b.getProposalStrategies()) {
-								AllocationRecordStrategy strgy = new AllocationRecordStrategy();
-								strgy.setAllocationRecord(allocationRecord);
-								strgy.setStrategy(ps.getFormulaStrategy());
-								strgy.setTotalCalculatedAmount(ps.getTotalCalculatedAmount());
-								
-								allocationRecordStrategyRepository.save(strgy);
-											
-								// now deal with RequestColumn
-								for(RequestColumn rc : ps.getRequestColumns()) {
-									RequestColumn allocRc = new RequestColumn();
-									allocRc.setColumn(rc.getColumn());
-									allocRc.setAmount(rc.getAmount());
-									allocRc.setAllocationRecordStrategy(strgy);
-									
-									requestColumnRepositories.save(allocRc);
-								}
-								
-								recordStrgies.add(strgy);
-							}
-						}
-						
-						allocationRecordRepository.save(allocationRecord);
-						
-					}
-				}
-				
-				// now the targetValue
-				for(ObjectiveTarget target: o.getTargets()) {
-					List<TargetValue> targetvalues = targetValueRepository.findAllByTargetIdAndObjectiveId(target.getId(), o.getId());
-					
-					logger.debug("----------------------------- {} / {} ", o.getId(), target.getId());
-					
-					Long sum = 0L;
-					for(TargetValue tv : targetvalues) {
-						sum += tv.getRequestedValue();
-					}
-					
-					// now we can add 
-					TargetValueAllocationRecord tvar = targetValueAllocationRecordRepository.findOneByIndexAndForObjectiveAndTarget(round-1, o, target);
-					if(tvar == null) {
-						logger.debug("+++++++++++++++++++++++++++++++++++++++++ {} / {} ", o.getId(), target.getId());
-						tvar = new TargetValueAllocationRecord();
-						tvar.setIndex(round-1);
-						tvar.setForObjective(o);
-						tvar.setTarget(target);
+					AllocatedFormulaColumnValue afcv;
+					if(fc.getAllocatedFormulaColumnValueMap() == null) {
+						fc.setAllocatedFormulaColumnValueMap(new ArrayList<AllocatedFormulaColumnValue>());
 					} 
 					
-					tvar.setAmountAllocated(sum);
+					if(fc.getAllocatedFormulaColumnValueMap().size() < round) {
+						afcv = new AllocatedFormulaColumnValue();
+						afcv.setIndex(round-1);
+						
+						fc.getAllocatedFormulaColumnValueMap().add(round-1, afcv);
+					} else {
+						 afcv = fc.getAllocatedFormulaColumnValueMap().get(round-1);	
+					}
 					
-					targetValueAllocationRecordRepository.save(tvar);
+					afcv.setAllocatedValue(fc.getValue());
+				}
+				formulaColumnRepository.save(fs.getFormulaColumns());
+			}
+			formulaStrategyRepository.save(formulaList);
+			
+			
+			for(Objective o : list) {
+				HashMap<BudgetType, AllocationRecord> budgetTypeMap = new HashMap<BudgetType, AllocationRecord>();
+				HashMap<FormulaStrategy, AllocationRecordStrategy> formulaStrategyMap = new HashMap<FormulaStrategy, AllocationRecordStrategy>();
+				HashMap<FormulaColumn, RequestColumn> columnMap = new HashMap<FormulaColumn, RequestColumn>();
+				
+				for(BudgetProposal p : o.getProposals()) {
+					AllocationRecord ar = budgetTypeMap.get(p.getBudgetType());
+					if(ar == null) {
+						ar = new AllocationRecord();
+						ar.setIndex(0);
+						ar.setForObjective(o);
+						ar.setBudgetType(p.getBudgetType());
+						ar.setAmountAllocated(p.getAmountRequest());
+						
+						budgetTypeMap.put(p.getBudgetType(), ar);
+
+					} else {						
+						ar.setAmountAllocated(ar.getAmountAllocated() + p.getAmountRequest());
+					}
+					allocationRecordRepository.save(ar);
 					
+					// now for Each ps
+					for(ProposalStrategy ps : p.getProposalStrategies()) {
+						ar.setAllocationRecordStrategies(new ArrayList<AllocationRecordStrategy>());
+						AllocationRecordStrategy ars = formulaStrategyMap.get(ps.getFormulaStrategy());
+						if(ars == null) {
+							ars = new AllocationRecordStrategy();
+							ars.setAllocationRecord(ar);
+							ars.setStrategy(ps.getFormulaStrategy());
+							if(ars.getProposalStrategies() == null) {
+								ars.setProposalStrategies(new ArrayList<ProposalStrategy>());
+							}
+							
+							ars.getProposalStrategies().add(ps);
+							ars.setTotalCalculatedAmount(ps.getTotalCalculatedAmount());
+							
+							formulaStrategyMap.put(ps.getFormulaStrategy(), ars);
+							allocationRecordStrategyRepository.save(ars);
+						} else {
+							ars.setTotalCalculatedAmount(ars.getTotalCalculatedAmount() + ps.getTotalCalculatedAmount());
+							ars.getProposalStrategies().add(ps);
+						}
+						
+						for(RequestColumn rc : ps.getRequestColumns()) {
+							RequestColumn allocRc = columnMap.get(rc.getColumn());
+							if(allocRc == null) {
+								allocRc = new RequestColumn();
+								allocRc.setAllocationRecordStrategy(ars);
+								allocRc.setAmount(rc.getAmount());
+								allocRc.setColumn(rc.getColumn());
+								
+								columnMap.put(rc.getColumn(), allocRc);
+							} else {
+								allocRc.setAmount(allocRc.getAmount() + rc.getAmount());
+							}
+						}
+					}
 				}
-				
+				// now we can save all this
+				allocationRecordRepository.save(budgetTypeMap.values());
+				allocationRecordStrategyRepository.save(formulaStrategyMap.values());
+				requestColumnRepositories.save(columnMap.values());
 			}
-		} else {
-			// we will copy from the previous round...
-			List<AllocationRecord> allocationRecordList = allocationRecordRepository
-					.findAllByForObjective_fiscalYearAndIndex(fiscalYear, round-2);
 			
-			// go through this one
-			for(AllocationRecord record: allocationRecordList) {
-				AllocationRecord dbRecord = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(record.getBudgetType(), record.getForObjective(), round-1);
-				
-				if(dbRecord == null) {
-					dbRecord = new AllocationRecord();
-				}
-				dbRecord.setAmountAllocated(record.getAmountAllocated());
-				dbRecord.setBudgetType(record.getBudgetType());
-				dbRecord.setForObjective(record.getForObjective());
-				dbRecord.setIndex(round-1);
-				
-				allocationRecordRepository.save(dbRecord);
-			}
-			
-			List<TargetValueAllocationRecord> tvarList = targetValueAllocationRecordRepository
-					.findAllByForObjective_FiscalYearAndIndex(fiscalYear, round-2);
-			for(TargetValueAllocationRecord rvar : tvarList) {
-				TargetValueAllocationRecord dbRecord = targetValueAllocationRecordRepository
-						.findOneByTargetAndForObjectiveAndIndex(rvar.getTarget(), rvar.getForObjective(), round-1);
-				
-				logger.debug("objectiveid: {}", rvar.getForObjective().getId());
-				
-				if(dbRecord == null) {
-					dbRecord = new TargetValueAllocationRecord();
-					dbRecord.setIndex(round-1);
-					dbRecord.setForObjective(rvar.getForObjective());
-					dbRecord.setTarget(rvar.getTarget());
-				}
-				
-				dbRecord.setAmountAllocated(rvar.getAmountAllocated());
-				targetValueAllocationRecordRepository.save(dbRecord);
-			}
 		}
+//			//loop through proposalList
+//			for(BudgetProposal proposal : proposalList) {
+//				Integer index = list.indexOf(proposal.getForObjective());
+//				Objective o = list.get(index);
+//				o.getProposals().size();
+//				
+//				o.addToSumBudgetTypeProposals(proposal,true);
+//				
+//				logger.debug("AAding proposal {} to objective: {}", proposal.getId(), o.getId());
+//				
+//				
+//				//o.getProposals().add(proposal);
+//				logger.debug("proposal size is " + o.getProposals().size());
+//				
+//			}
+//			
+//			// then update all FormulaStrategy & FormulaColumn
+//			List<FormulaStrategy> formulaStrategies = formulaStrategyRepository.findAllByFiscalYear(fiscalYear);
+//			for(FormulaStrategy fs: formulaStrategies) {
+//				AllocationStandardPrice stdPrice = fs.getAllocationStandardPriceMap().get(round-1);
+//				if(stdPrice == null) {
+//					stdPrice = new AllocationStandardPrice();
+//					stdPrice.setIndex(round-1);
+//				} else {
+//					fs.getAllocationStandardPriceMap().remove(stdPrice);
+//				}
+//				stdPrice.setStandardPrice(fs.getStandardPrice());
+//				fs.getAllocationStandardPriceMap().add(round-1, stdPrice);
+//				
+//				// now forEach formularColumn
+//				for(FormulaColumn fc: fs.getFormulaColumns()) {
+//					AllocatedFormulaColumnValue fcValue = fc.getAllocatedFormulaColumnValueMap().get(round-1);
+//					if(fcValue == null) {
+//						fcValue = new AllocatedFormulaColumnValue();
+//						fcValue.setIndex(round-1);
+//					} else {
+//						fc.getAllocatedFormulaColumnValueMap().remove(fcValue);
+//					}
+//					fcValue.setAllocatedValue(fc.getValue());
+//					
+//					fc.getAllocatedFormulaColumnValueMap().add(round-1, fcValue);
+//					formulaColumnRepository.save(fc);
+//				}
+//				
+//				formulaStrategyRepository.save(fs);
+//			}
+//			
+//			// and then remove the allocationRecordStrategy
+//			List<AllocationRecordStrategy> strategies = allocationRecordStrategyRepository.findAllByIndexAndFiscalYear(round-1, fiscalYear);
+//			allocationRecordStrategyRepository.delete(strategies);
+//			
+//			
+//			// now loop through the Objective
+//			for(Objective o : list) {
+//				if(o.getSumBudgetTypeProposals() != null) {
+//					for(BudgetProposal b : o.getSumBudgetTypeProposals()) {
+//						// now get this on
+//						AllocationRecord allocationRecord = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(b.getBudgetType(), o ,round-1);  
+//						if(allocationRecord != null) {
+//							allocationRecord.setAmountAllocated(b.getAmountRequest());
+//						} else {
+//							allocationRecord = new AllocationRecord();
+//							allocationRecord.setAmountAllocated(b.getAmountRequest());
+//							allocationRecord.setBudgetType(b.getBudgetType());
+//							allocationRecord.setForObjective(o);
+//							allocationRecord.setIndex(round-1);
+//						}
+//						
+//						List<AllocationRecordStrategy> recordStrgies = new ArrayList<AllocationRecordStrategy>();
+//						allocationRecord.setAllocationRecordStrategies(recordStrgies);
+//						
+//						
+//						if(b.getProposalStrategies()!=null) {
+//							for(ProposalStrategy ps : b.getProposalStrategies()) {
+//								AllocationRecordStrategy strgy = new AllocationRecordStrategy();
+//								strgy.setAllocationRecord(allocationRecord);
+//								strgy.setStrategy(ps.getFormulaStrategy());
+//								strgy.setTotalCalculatedAmount(ps.getTotalCalculatedAmount());
+//								
+//								allocationRecordStrategyRepository.save(strgy);
+//											
+//								// now deal with RequestColumn
+//								for(RequestColumn rc : ps.getRequestColumns()) {
+//									RequestColumn allocRc = new RequestColumn();
+//									allocRc.setColumn(rc.getColumn());
+//									allocRc.setAmount(rc.getAmount());
+//									allocRc.setAllocationRecordStrategy(strgy);
+//									
+//									requestColumnRepositories.save(allocRc);
+//								}
+//								
+//								recordStrgies.add(strgy);
+//							}
+//						}
+//						
+//						allocationRecordRepository.save(allocationRecord);
+//						
+//					}
+//				}
+//				
+//				// now the targetValue
+//				for(ObjectiveTarget target: o.getTargets()) {
+//					List<TargetValue> targetvalues = targetValueRepository.findAllByTargetIdAndObjectiveId(target.getId(), o.getId());
+//					
+//					logger.debug("----------------------------- {} / {} ", o.getId(), target.getId());
+//					
+//					Long sum = 0L;
+//					for(TargetValue tv : targetvalues) {
+//						sum += tv.getRequestedValue();
+//					}
+//					
+//					// now we can add 
+//					TargetValueAllocationRecord tvar = targetValueAllocationRecordRepository.findOneByIndexAndForObjectiveAndTarget(round-1, o, target);
+//					if(tvar == null) {
+//						logger.debug("+++++++++++++++++++++++++++++++++++++++++ {} / {} ", o.getId(), target.getId());
+//						tvar = new TargetValueAllocationRecord();
+//						tvar.setIndex(round-1);
+//						tvar.setForObjective(o);
+//						tvar.setTarget(target);
+//					} 
+//					
+//					tvar.setAmountAllocated(sum);
+//					
+//					targetValueAllocationRecordRepository.save(tvar);
+//					
+//				}
+//				
+//			}
+//		} else {
+//			// we will copy from the previous round...
+//			List<AllocationRecord> allocationRecordList = allocationRecordRepository
+//					.findAllByForObjective_fiscalYearAndIndex(fiscalYear, round-2);
+//			
+//			// go through this one
+//			for(AllocationRecord record: allocationRecordList) {
+//				AllocationRecord dbRecord = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(record.getBudgetType(), record.getForObjective(), round-1);
+//				
+//				if(dbRecord == null) {
+//					dbRecord = new AllocationRecord();
+//				}
+//				dbRecord.setAmountAllocated(record.getAmountAllocated());
+//				dbRecord.setBudgetType(record.getBudgetType());
+//				dbRecord.setForObjective(record.getForObjective());
+//				dbRecord.setIndex(round-1);
+//				
+//				allocationRecordRepository.save(dbRecord);
+//			}
+//			
+//			List<TargetValueAllocationRecord> tvarList = targetValueAllocationRecordRepository
+//					.findAllByForObjective_FiscalYearAndIndex(fiscalYear, round-2);
+//			for(TargetValueAllocationRecord rvar : tvarList) {
+//				TargetValueAllocationRecord dbRecord = targetValueAllocationRecordRepository
+//						.findOneByTargetAndForObjectiveAndIndex(rvar.getTarget(), rvar.getForObjective(), round-1);
+//				
+//				logger.debug("objectiveid: {}", rvar.getForObjective().getId());
+//				
+//				if(dbRecord == null) {
+//					dbRecord = new TargetValueAllocationRecord();
+//					dbRecord.setIndex(round-1);
+//					dbRecord.setForObjective(rvar.getForObjective());
+//					dbRecord.setTarget(rvar.getTarget());
+//				}
+//				
+//				dbRecord.setAmountAllocated(rvar.getAmountAllocated());
+//				targetValueAllocationRecordRepository.save(dbRecord);
+//			}
+//		}
 		return "success";
 		
 	}
@@ -2336,6 +2447,52 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		return record;
+	}
+	
+	
+
+	@Override
+	public ProposalStrategy updateAllocationRecordStrategy(Long id,
+			JsonNode data) {
+		
+		AllocationRecordStrategy ars = allocationRecordStrategyRepository.findOne(id);
+		if(ars != null) {
+			Long amountUpdate = data.get("totalCalculatedAmount").asLong();
+			Long oldAmount = ars.getTotalCalculatedAmount();
+			Long adjustedAmount = oldAmount - amountUpdate;
+			
+			ars.setTotalCalculatedAmount(amountUpdate);
+			
+			for(JsonNode rcNode : data.get("requestColumns")) {
+				RequestColumn rc = requestColumnRepositories.findOne(rcNode.get("id").asLong());
+				rc.setAmount(rcNode.get("amount").asInt());
+				
+				requestColumnRepositories.save(rc);
+			}
+			allocationRecordStrategyRepository.save(ars);
+			
+			// then we update the allocation!
+			AllocationRecord record = ars.getAllocationRecord();
+			record.setAmountAllocated(amountUpdate);
+			allocationRecordRepository.save(record);
+			
+			// now looking back
+			Objective parent = record.getForObjective().getParent();
+			while(parent.getParent() != null) {
+				logger.debug("parent.id: {}", parent.getId());
+				AllocationRecord temp = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(record.getBudgetType(), parent, 0);
+				
+				temp.adjustAmountAllocated(adjustedAmount);
+				
+				allocationRecordRepository.save(temp);
+				
+				parent = parent.getParent();
+				logger.debug("parent.id--: {}", parent.getId());
+			}
+			
+		}
+		
+		return null;
 	}
 
 	@Override
@@ -4076,6 +4233,37 @@ public class EntityServiceJPA implements EntityService {
 		} else {
 			return value;
 		}
+	}
+
+	@Override
+	public FormulaStrategy findFormulaStrategy(Long id) {
+		FormulaStrategy fs = formulaStrategyRepository.findOne(id);
+		fs.getAllocationStandardPriceMap().size();
+		
+		for(FormulaColumn fc: fs.getFormulaColumns()) {
+			fc.getAllocatedFormulaColumnValueMap().size();
+		}
+		
+		return fs;
+	}
+
+	@Override
+	public AllocationRecord findAllocationRecordById(Long id) {
+		AllocationRecord ar = allocationRecordRepository.findOne(id);
+		
+		ar.getAllocationRecordStrategies().size();
+		for(AllocationRecordStrategy ars : ar.getAllocationRecordStrategies()) {
+			ars.getRequestColumns().size();
+			if(ars.getStrategy().getAllocationStandardPriceMap()!=null) {
+				ars.getStrategy().getAllocationStandardPriceMap().size();
+				for(FormulaColumn fc: ars.getStrategy().getFormulaColumns()) {
+					fc.getAllocatedFormulaColumnValueMap().size();
+				}
+			}
+			
+		}
+		
+		return ar;
 	}
 	
 	

@@ -1,7 +1,9 @@
 package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Basic;
@@ -61,10 +63,9 @@ public class FormulaColumn implements Serializable {
 	private Long allocatedValue;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	@MapKey(name="index")
 	@JoinTable(name="BGT_FMCOLUMN_ALLOCVALUE",
 			inverseJoinColumns = @JoinColumn(name = "FMCOLUMNVALUE_ID"))
-	private Map<Integer,AllocatedFormulaColumnValue> allocatedFormulaColumnValueMap = new HashMap<Integer, AllocatedFormulaColumnValue>();
+	private List<AllocatedFormulaColumnValue> allocatedFormulaColumnValueMap = new ArrayList<AllocatedFormulaColumnValue>();
 	
 
 	public Long getId() {
@@ -141,14 +142,14 @@ public class FormulaColumn implements Serializable {
 
 
 
-	public Map<Integer, AllocatedFormulaColumnValue> getAllocatedFormulaColumnValueMap() {
+	public List<AllocatedFormulaColumnValue> getAllocatedFormulaColumnValueMap() {
 		return allocatedFormulaColumnValueMap;
 	}
 
 
 
 	public void setAllocatedFormulaColumnValueMap(
-			Map<Integer, AllocatedFormulaColumnValue> allocatedFormulaColumnValueMap) {
+			List<AllocatedFormulaColumnValue> allocatedFormulaColumnValueMap) {
 		this.allocatedFormulaColumnValueMap = allocatedFormulaColumnValueMap;
 	}
 	

@@ -9,10 +9,32 @@ var DetailModalView = Backbone.View.extend({
 	el: '#detailModal',
 	
 	detailModalTemplate : Handlebars.compile($('#detailModalTemplate').html()),
+	detailModalMainFooterTemplate: Handlebars.compile($('#detailModalMainFooterTemplate ').html()),
+	detailAllocationRecordFooterTemplate: Handlebars.compile($('#detailAllocationRecordFooterTemplate ').html()),
+	
+	detailAllocationRecordStrategyTemplate: Handlebars.compile($('#detailAllocationRecordStrategyTemplate ').html()),
+	detailAllocationRecordStrategyFooterTemplate: Handlebars.compile($('#detailAllocationRecordStrategyFooterTemplate ').html()),
+	
+	detailAllocationBasicFooterTemplate: Handlebars.compile($('#detailAllocationBasicFooterTemplate').html()),
+	detailAllocationBasicTemplate : Handlebars.compile($('#detailAllocationBasicTemplate').html()),
+	
 	detailViewTableTemplate: Handlebars.compile($('#detailViewTableTemplate').html()),
+	detailAllocationRecordTemplate: Handlebars.compile($('#detailAllocationRecordTemplate').html()),
+	
+	detailAllocationRecordBasicTemplate: Handlebars.compile($('#detailAllocationRecordBasicTemplate').html()),
 	events: {
-		"click .amountAllocatedInput" : "amountAllocatedInput",
-		"click #cancelBtn" : "cancelBtn"
+		"click .detailAllocation" : "detailAllocation",
+		"click #cancelBtn" : "cancelBtn",
+		"click .backToProposal" : "backToProposal",
+		
+		"click .detailBasicAllocation" : "detailBasicAllocation",
+		"click .detailAllocationStrategy" : "detailAllocationStrategy",
+		
+		"click .updateAllocRec" : "updateAllocRec",
+		"click .updateAllocRecStrgy" : "updateAllocRecStrgy",
+		
+		"change .formulaColumnInput" : "formulaInputChange"
+			
 	},
 	setParentView: function(view) {
 		this.parentView = view;
@@ -22,6 +44,9 @@ var DetailModalView = Backbone.View.extend({
 		this.parentView.reloadTable();
 		
 	},
+	backToProposal : function(e) {
+		this.render();
+	},
 	renderWithObjective : function(objective) {
 		this.currentObjective = objective;
 		this.render();
@@ -29,6 +54,7 @@ var DetailModalView = Backbone.View.extend({
 	render: function() {
 		
 		this.$el.find('.modal-header span').html(this.currentObjective.get('name'));
+		this.$el.find('.modal-footer').html(this.detailModalMainFooterTemplate());
 		
 		var json = this.currentObjective.toJSON();
 		
@@ -57,23 +83,202 @@ var DetailModalView = Backbone.View.extend({
 		
 		return this;
 	},
-	amountAllocatedInput : function(e) {
+	detailAllocation: function(e) {
 		var allocationRecord = AllocationRecord.findOrCreate($(e.target).attr('data-allocationId'));
-		this.currentEditedAllocationRecord = allocationRecord;
-		Ext.MessageBox.prompt('ระบุค่างบประมาณที่ปรับลดครั้งที่ 1', allocationRecord.get('budgetType').get('name'),
-				this.showResultText, this, false, allocationRecord.get('amountAllocated'));
+		allocationRecord.fetch({
+			success: _.bind(function(model, response, options) {
+				this.$el.find('.modal-footer').html(this.detailAllocationRecordFooterTemplate());
+				e1=model;
+				var json = model.toJSON();
+				var html;
+				if(model.get('allocationRecordStrategies') != null && 
+						model.get('allocationRecordStrategies').length > 0) {
+					html = this.detailAllocationRecordTemplate(json);
+				} else {
+					html = this.detailAllocationRecordBasicTemplate(json);
+				}
+				
+				
+				
+				this.$el.find('.modal-body').html(html);
+			},this)
+		});
 	},
-	showResultText: function(btn, text){
-		if(this.currentEditedAllocationRecord != null) {
-			this.currentEditedAllocationRecord.set('amountAllocated', parseInt(text));
-			this.currentEditedAllocationRecord.save(null, {
-				success: _.bind(function() {
-					alert('บันทึกข้อมูลเรียบร้อยแล้ว');
-					this.render();
-				},this)
-			});
+	detailBasicAllocation : function(e) {
+		var allocRec = AllocationRecord.findOrCreate($(e.target).attr('data-allocationId'));
+		this.$el.find('.modal-footer').html(this.detailAllocationBasicFooterTemplate());
+		
+		var json = allocRec.toJSON();
+		
+		var html = this.detailAllocationBasicTemplate(json);
+		
+		this.$el.find('.modal-body').html(html);
+	},
+	
+	updateAllocRec: function(e) {
+		
+		var validated = true;
+		this.$el.find('input:enabled').each(function(e) {
+			
+			if( isNaN( +$(this).val() ) ) {
+				$(this).parent('div').addClass('control-group error');
+				validated = false;
+				
+			} else {
+				$(this).parent('div').removeClass('control-group error');
+			}
+		});
+		
+		if(validated == false) {
+			alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
+			return false;
 		}
-	}
+		
+		var allocRec = AllocationRecord.findOrCreate(this.$el.find('#allocRecId').attr('data-id'));
+		var totalInputTxt = this.$el.find('#totalInputTxt').val();
+		
+		// now see to its change!
+		allocRec.set('amountAllocated', parseInt(totalInputTxt));
+		
+		// and we can save
+		allocRec.save(null, {
+			success:function(model, response, options) {
+				alert('บันทึกเรียบร้อยแล้ว');
+			}
+		});
+		
+		
+	},
+	
+	updateAllocRecStrgy: function(e) {
+		var validated = true;
+		this.$el.find('input:enabled').each(function(e) {
+			
+			if( isNaN( +$(this).val() ) ) {
+				$(this).parent('div').addClass('control-group error');
+				validated = false;
+				
+			} else {
+				$(this).parent('div').removeClass('control-group error');
+			}
+		});
+		
+		if(validated == false) {
+			alert('กรุณาใส่ข้อมูลที่เป็นตัวเลขเท่านั้น');
+			return false;
+		}
+		
+		var allocRecStrgy = AllocationRecordStrategy.findOrCreate(this.$el.find('#allocRecStrgy').attr('data-id'));
+		var i;
+		var strgy = allocRecStrgy.get('strategy');
+		calculatedAmount = strgy.get('allocationStandardPriceMap').at(0).get('standardPrice');
+		var formulaColumns = strgy.get('formulaColumns');
+		for (i = 0; i < formulaColumns.length; i++) {
+
+			var fc = formulaColumns.at(i);
+			if (fc.get('isFixed')) {
+				var colId = fc.get('id');
+				// now find this colId in requestColumns
+				var rc = allocRecStrgy.get('requestColumns');
+				var foundRC = rc.where({
+					column : FormulaColumn.findOrCreate(colId)
+				})[0];
+
+				foundRC.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
+
+				if (calculatedAmount == 0) {
+					calculatedAmount = foundRC.get('amount');
+				} else {
+					calculatedAmount = calculatedAmount * foundRC.get('amount');
+				}
+
+			} else {
+				if (calculatedAmount == 0) {
+					calculatedAmount = fc.get('allocatedFormulaColumnValueMap').at(0).get('allocatedValue');
+				} else {
+					calculatedAmount = calculatedAmount	* fc.get('allocatedFormulaColumnValueMap')[0].get('allocatedValue');
+				}
+			}
+		}
+		
+		allocRecStrgy.set('totalCalculatedAmount', calculatedAmount);
+		
+		// now we update allocRec
+		var record = allocRecStrgy.get('allocationRecord');
+		record.set('amountAllocated', calculatedAmount);
+		
+		// then save!
+		allocRecStrgy.save(null, {
+			success:function(model, response, options) {
+				alert('บันทึกเรียบร้อยแล้ว');
+			}
+		});
+		
+		
+	},
+	
+	detailAllocationStrategy: function(e) {
+		var allocRecStrgy = AllocationRecordStrategy.findOrCreate($(e.target).attr('data-allocationStrategyId'));
+		this.$el.find('.modal-footer').html(this.detailAllocationRecordStrategyFooterTemplate());
+		
+		var json = allocRecStrgy.get('strategy').toJSON();
+		
+		
+		
+		json.total = allocRecStrgy.get('totalCalculatedAmount');
+		
+		json.allocStrategyId = allocRecStrgy.get('id');
+	
+		
+		// now fill in value from request columns
+		for(var i=0; i< json.formulaColumns.length; i++) {
+			var fcId = json.formulaColumns[i].id;
+			for(var j=0; j<allocRecStrgy.get('requestColumns').length; j++) {
+				if(allocRecStrgy.get('requestColumns').at(j).get('column').get('id') == fcId) {
+					json.formulaColumns[i].allocatedFormulaColumnValueMap[0].allocatedValue = allocRecStrgy.get('requestColumns').at(j).get('amount');
+				}
+			}
+			if(i==json.formulaColumns.length-1) {
+				json.formulaColumns[i].$last = true;
+			}
+			
+		}
+		
+		var html = this.detailAllocationRecordStrategyTemplate(json);
+		this.$el.find('.modal-body').html(html);
+		
+	},
+	formulaInputChange : function(e) {
+		// validate the box
+		if( isNaN( +$(e.target).val() ) ) {
+			$(e.target).parent('div').addClass('control-group error');
+			alert('กรุณาใส่ข้อมูลเป็นตัวเลขเท่านั้น');
+			return false;
+		} else {
+			$(e.target).parent('div').removeClass('control-group');
+			$(e.target).parent('div').removeClass('error');
+			
+		}
+		
+		// OK we'll go through all td value
+		var allocRecStrgy = AllocationRecordStrategy.findOrCreate(this.$el.find('#allocRecStrgy').attr('data-id'));
+		var strgy = allocRecStrgy.get('strategy');
+		var standardPrice = strgy.get('allocationStandardPriceMap').at(0).get('standardPrice');
+		
+		 if(isNaN(standardPrice) || standardPrice == null) {
+			standardPrice = 1;
+		}
+		var amount = standardPrice;
+		
+		var allInput = this.$el.find('.formulaColumnInput');
+		for(var i=0; i<allInput.length; i++ ) {
+			amount = amount * allInput[i].value;
+		}
+		
+		// now put amount back amount
+		this.$el.find('#totalInputTxt').val(addCommas(amount));
+	},
+	
 });
 
 var ModalView = Backbone.View.extend({

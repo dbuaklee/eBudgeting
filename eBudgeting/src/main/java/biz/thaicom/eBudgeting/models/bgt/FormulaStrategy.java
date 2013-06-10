@@ -1,6 +1,7 @@
 package biz.thaicom.eBudgeting.models.bgt;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +60,9 @@ public class FormulaStrategy  implements Serializable{
 	private Integer standardPrice;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	@MapKey(name="index")
+	
 	@JoinTable(name="BGT_FMSTRGY_ALLOCSTDPRICE")
-	private Map<Integer,AllocationStandardPrice> allocationStandardPriceMap = new HashMap<Integer, AllocationStandardPrice>();
+	private List<AllocationStandardPrice> allocationStandardPriceMap = new ArrayList<AllocationStandardPrice>();
 	
 	@Basic
 	private Integer allocationStandardPrice;
@@ -189,12 +190,12 @@ public class FormulaStrategy  implements Serializable{
 		this.allocationStandardPrice = allocationStandardPrice;
 	}
 
-	public Map<Integer, AllocationStandardPrice> getAllocationStandardPriceMap() {
+	public List<AllocationStandardPrice> getAllocationStandardPriceMap() {
 		return allocationStandardPriceMap;
 	}
 
 	public void setAllocationStandardPriceMap(
-			Map<Integer, AllocationStandardPrice> allocationStandPriceMap) {
+			List<AllocationStandardPrice> allocationStandPriceMap) {
 		this.allocationStandardPriceMap = allocationStandPriceMap;
 	}
 	
