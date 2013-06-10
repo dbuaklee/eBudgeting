@@ -1154,6 +1154,10 @@ public class EntityServiceJPA implements EntityService {
 			}
 			formulaStrategyRepository.save(formulaList);
 			
+			// here we have to remove allocationRecord and its associated 
+			List<AllocationRecord> arList = allocationRecordRepository.findAllByForObjective_fiscalYearAndIndex(fiscalYear, round-1);
+			allocationRecordRepository.delete(arList);
+			
 			
 			for(Objective o : list) {
 				HashMap<BudgetType, AllocationRecord> budgetTypeMap = new HashMap<BudgetType, AllocationRecord>();
