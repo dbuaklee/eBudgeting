@@ -72,6 +72,17 @@ public class GenericViewController {
 		model.addAttribute("rootObjective", entityService.findOneRootObjectiveByFiscalyear(fiscalYear));
 		return "m63f04";
 	}
+	
+	// --------------------------------------------------------------m63f05:
+	// ทะเบียนรายการและระดับรายการ
+	@RequestMapping("/page/m63f05/")
+	public String render_m63f05(Model model, HttpServletRequest request,
+			HttpSession session) {
+
+		model.addAttribute("rootPage", false);
+		setFiscalYearFromSession(model, session);
+		return "m63f05";
+	}
 
 	// --------------------------------------------------------------m64f04:
 	// การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)

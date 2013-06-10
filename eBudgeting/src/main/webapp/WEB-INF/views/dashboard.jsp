@@ -141,6 +141,7 @@ var menuJson = [{
 		 {name: "การพิจารณากรอบวงเงินเพื่อตั้งคำของบประมาณ (เข้าระบบ e-Budgeting) (m63)",code: "m63",  menus: 
 		    [{name: "m63f04: การประมวลผลก่อนการปรับลดรอบที่ 1", code: "m63f04", link: "page/m63f04/"},
 		     {name: "m63f01: การปรับลดงบประมาณระดับกิจกรรมรอบที่ 1",code: "m63f01",  link: "page/m2f14/", disabled: "disabled"},
+		     {name: "m63f05: การปรับลดทะเบียนรายการ",code: "m63f05",  link: "page/m63f05/"},
 		     {name: "m63f02: การปรับลดงบประมาณระดับรายการรอบที่ 1", code: "m63f02", link: "page/m63f02/"},  
 		     {name: "m63f03: การนำส่งคำของบประมาณ (Sign off) / ถอนนำส่ง (Release)", code: "m63f03", link: "page/m2f14/", disabled: "disabled"}]},
 		 {name: "การพิจารณาตามชั้นกรรมาธิการ (วาระที่ 1 - 3) (m64)", code: "m64", menus: 

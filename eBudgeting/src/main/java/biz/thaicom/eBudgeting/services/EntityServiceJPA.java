@@ -1479,18 +1479,22 @@ public class EntityServiceJPA implements EntityService {
 				returnList.add(o); 
 			} 
 			
-			if(o.getChildren().size() >0) {
-				o.setIsLeaf(false);
+			if(o.getProposals().size() > 0 ) {
+			
+				if(o.getChildren().size() >0) {
+					o.setIsLeaf(false);
+				} else {
+					o.setIsLeaf(true);
+				}
+				
+				o.getTargetValueAllocationRecords().size();
+				o.getTargetValues().size();
+				for(TargetValue tv : o.getTargetValues()) {
+					tv.getOwner().getId();
+				}
 			} else {
-				o.setIsLeaf(true);
+				
 			}
-			
-			o.getTargetValueAllocationRecords().size();
-			o.getTargetValues().size();
-			for(TargetValue tv : o.getTargetValues()) {
-				tv.getOwner().getId();
-			}
-			
 			
 		}
 		
