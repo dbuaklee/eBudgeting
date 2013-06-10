@@ -2489,7 +2489,7 @@ public class EntityServiceJPA implements EntityService {
 			
 			// then we update the allocation!
 			AllocationRecord record = ars.getAllocationRecord();
-			record.setAmountAllocated(amountUpdate);
+			record.adjustAmountAllocated(adjustedAmount);
 			allocationRecordRepository.save(record);
 			
 			// now looking back

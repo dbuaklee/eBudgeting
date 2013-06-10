@@ -169,43 +169,53 @@ var DetailModalView = Backbone.View.extend({
 		}
 		
 		var allocRecStrgy = AllocationRecordStrategy.findOrCreate(this.$el.find('#allocRecStrgy').attr('data-id'));
-		var i;
+		var i, calculatedAmount, adjustedAmount;
 		var strgy = allocRecStrgy.get('strategy');
-		calculatedAmount = strgy.get('allocationStandardPriceMap').at(0).get('standardPrice');
-		var formulaColumns = strgy.get('formulaColumns');
-		for (i = 0; i < formulaColumns.length; i++) {
-
-			var fc = formulaColumns.at(i);
-			if (fc.get('isFixed')) {
-				var colId = fc.get('id');
-				// now find this colId in requestColumns
-				var rc = allocRecStrgy.get('requestColumns');
-				var foundRC = rc.where({
-					column : FormulaColumn.findOrCreate(colId)
-				})[0];
-
-				foundRC.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
-
-				if (calculatedAmount == 0) {
-					calculatedAmount = foundRC.get('amount');
+		
+		if(strgy == null) {
+			calculatedAmount = parseInt(this.$el.find('#totalInputTxt').val());
+			adjustedAmount = allocRecStrgy.get('totalCalculatedAmount') - calculatedAmount;
+			
+			allocRecStrgy.set('totalCalculatedAmount', calculatedAmount);
+			
+		} else {
+		
+			calculatedAmount = strgy.get('allocationStandardPriceMap').at(0).get('standardPrice');
+			var formulaColumns = strgy.get('formulaColumns');
+			for (i = 0; i < formulaColumns.length; i++) {
+	
+				var fc = formulaColumns.at(i);
+				if (fc.get('isFixed')) {
+					var colId = fc.get('id');
+					// now find this colId in requestColumns
+					var rc = allocRecStrgy.get('requestColumns');
+					var foundRC = rc.where({
+						column : FormulaColumn.findOrCreate(colId)
+					})[0];
+	
+					foundRC.set('amount', this.$el.find('#formulaColumnId-' + fc.get('id')).val());
+	
+					if (calculatedAmount == 0) {
+						calculatedAmount = foundRC.get('amount');
+					} else {
+						calculatedAmount = calculatedAmount * foundRC.get('amount');
+					}
+	
 				} else {
-					calculatedAmount = calculatedAmount * foundRC.get('amount');
-				}
-
-			} else {
-				if (calculatedAmount == 0) {
-					calculatedAmount = fc.get('allocatedFormulaColumnValueMap').at(0).get('allocatedValue');
-				} else {
-					calculatedAmount = calculatedAmount	* fc.get('allocatedFormulaColumnValueMap')[0].get('allocatedValue');
+					if (calculatedAmount == 0) {
+						calculatedAmount = fc.get('allocatedFormulaColumnValueMap').at(0).get('allocatedValue');
+					} else {
+						calculatedAmount = calculatedAmount	* fc.get('allocatedFormulaColumnValueMap')[0].get('allocatedValue');
+					}
 				}
 			}
+			adjustedAmount = allocRecStrgy.get('totalCalculatedAmount') - calculatedAmount;
+			allocRecStrgy.set('totalCalculatedAmount', calculatedAmount);
+		
 		}
-		
-		allocRecStrgy.set('totalCalculatedAmount', calculatedAmount);
-		
 		// now we update allocRec
 		var record = allocRecStrgy.get('allocationRecord');
-		record.set('amountAllocated', calculatedAmount);
+		record.set('amountAllocated', record.get('amountAllocated') - adjustedAmount);
 		
 		// then save!
 		allocRecStrgy.save(null, {
@@ -247,6 +257,7 @@ var DetailModalView = Backbone.View.extend({
 			json = allocRecStrgy.toJSON();
 			json.budgetType = {};
 			json.budgetType.name = allocRecStrgy.get('allocationRecord').get('budgetType').get('name');
+			json.amountAllocated = allocRecStrgy.get('totalCalculatedAmount');
 			html = this.detailAllocationBasicTemplate(json);
 		}
 		
