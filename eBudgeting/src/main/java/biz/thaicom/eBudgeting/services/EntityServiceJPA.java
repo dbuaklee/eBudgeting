@@ -468,6 +468,9 @@ public class EntityServiceJPA implements EntityService {
 			}
 			b.setStrategies(formulaStrategyRepository.findOnlyNonStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
 			b.setStandardStrategy(formulaStrategyRepository.findOnlyStandardByfiscalYearAndType_id(fiscalYear, b.getId()));
+			
+			
+			
 			b.setCurrentFiscalYear(fiscalYear);
 		}
 		

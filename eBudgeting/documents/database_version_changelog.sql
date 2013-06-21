@@ -1042,5 +1042,13 @@
         add constraint FK4A4A6E6E9F54CE91 
         foreign key (FMCOLUMNVALUE_ID) 
         references BGT_ALLOCFMCOLVALUE;
-    
+
+        
+-- version 10
+-- Modifed Date: June 21, 2013
+	update app_info set db_version = 11;
+	
+	alter table BGT_FMSTRGY_ALLOCSTDPRICE add (IDX number(4));
+	
+	alter table BGT_FMCOLUMN_ALLOCVALUE add(IDX number(4));
     

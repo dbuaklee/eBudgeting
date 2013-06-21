@@ -148,14 +148,9 @@
 <div style="height:35px;">
 	<input type="text" style="width:70px;" value="<ขอตั้งระบุ>" disabled="disabled"/> 
 	{{#unless noTimesSign}}
-		<span class="times">{{#if lastColumn}}<button type="button" id="timesAddBtn"> &times;</button>{{else}} &times;{{/if}}</span>
+		<span class="times">{{#if lastColumn}} {{else}} &times;{{/if}}</span>
 	{{/unless}}
 </div>
-{{#unless noTimesSign}}
-<div style="text-align: center;">
-	<a href="#" class="deleteFormulaColumn" style="color:#BD362F;"><span><i class="icon-trash"></i> ลบ</span></a>
-</div>
-{{/unless}}
 </script>
 
 <script id="formulaColumnFormTemplate" type="text/x-handlebars-template">
@@ -219,11 +214,6 @@
 	    {{/each}}
     </div>
 {{/if}}
-<div class="controls" style="margin-bottom: 15px;">
-	<a href="#" class="btn btn-info menuNew"><i class="icon icon-file icon-white"></i> เพิ่มชื่อทะเบียน</a>
-	<a href="#" class="btn btn-primary menuEdit"><i class="icon icon-edit icon-white"></i> แก้ไขทะเบียน</a>
-	<a href="#" class="btn btn-danger menuDelete"><i class="icon icon-trash icon-white"></i> ลบรายการ</a> 
-</div>
 <div id="newRowCtr">
 </div>
 <table class="table table-bordered" id="mainTbl">
@@ -257,7 +247,7 @@
 			<div><u>รายการย่อย</u></div>
 			<ul>
 				{{#each strategies}}
-				<li data-id="{{id}}"><a href="#" class="deleteStrategy" style="color:#BD362F;"><span><i class="icon-trash"></i></span></a><a href="#" class="editStrategy">{{name}} = {{formatNumber standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}</a></li>
+				<li data-id="{{id}}"><a href="#" class="editStrategy">{{name}} = {{formatNumber standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}</a></li>
 				{{/each}}
 			</ul>
 		{{/if}}
@@ -271,9 +261,7 @@
 			= {{formatNumber standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}
   		{{/with}} {{/if}} </a>
 </strong> <br/>
-<button class='btn btn-mini btn-info addFormula'>เพิ่มรายการย่อย</button>
 <button class='btn btn-mini btn-info addDefaultFormula'>กำหนดราคา</button>
-<button class='btn btn-mini btn-danger deleteDefaultFormula'>ลบการกำหนดราคา</button>
 <button class='btn btn-mini btn-danger cancelFormula'>กลับ</button>
 
 </script>

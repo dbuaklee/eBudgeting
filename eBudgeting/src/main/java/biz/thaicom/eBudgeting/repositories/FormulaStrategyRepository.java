@@ -27,8 +27,10 @@ public interface FormulaStrategyRepository extends
 			"SELECT fs  " +
 			"FROM FormulaStrategy fs " +
 			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
+			"	LEFT OUTER JOIN FETCH columns.allocatedFormulaColumnValueMap allocFormulaColumns " +
 			"	INNER JOIN FETCH fs.type type " +
 			"	LEFT OUTER JOIN FETCH type.parent parent " +
+			"	LEFT OUTER JOIN FETCH fs.allocationStandardPriceMap allocStdPrice " +
 			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 AND fs.isStandardItem = true " +
 			"ORDER BY fs.id ")
 	public FormulaStrategy findOnlyStandardByfiscalYearAndType_id(
@@ -57,8 +59,10 @@ public interface FormulaStrategyRepository extends
 			"SELECT fs  " +
 			"FROM FormulaStrategy fs " +
 			"	LEFT OUTER JOIN FETCH fs.formulaColumns columns " +
+			"	LEFT OUTER JOIN FETCH columns.allocatedFormulaColumnValueMap allocFormulaColumns " +
 			"	INNER JOIN FETCH fs.type type " +
 			"	LEFT OUTER JOIN FETCH type.parent parent " +
+			"	LEFT OUTER JOIN FETCH fs.allocationStandardPriceMap allocStdPrice " +
 			"WHERE fs.fiscalYear = ?1 AND fs.type.id = ?2 AND fs.isStandardItem = false " +
 			"ORDER BY fs.id ")
 	public List<FormulaStrategy> findOnlyNonStandardByfiscalYearAndType_id(

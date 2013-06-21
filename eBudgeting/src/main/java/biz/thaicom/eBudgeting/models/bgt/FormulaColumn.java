@@ -21,6 +21,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.IndexColumn;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -65,6 +67,7 @@ public class FormulaColumn implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name="BGT_FMCOLUMN_ALLOCVALUE",
 			inverseJoinColumns = @JoinColumn(name = "FMCOLUMNVALUE_ID"))
+	@IndexColumn(name="IDX")
 	private List<AllocatedFormulaColumnValue> allocatedFormulaColumnValueMap = new ArrayList<AllocatedFormulaColumnValue>();
 	
 

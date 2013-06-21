@@ -24,6 +24,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.IndexColumn;
+
 import biz.thaicom.eBudgeting.models.pln.TargetUnit;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -60,8 +62,8 @@ public class FormulaStrategy  implements Serializable{
 	private Integer standardPrice;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	
 	@JoinTable(name="BGT_FMSTRGY_ALLOCSTDPRICE")
+	@IndexColumn(name="IDX")
 	private List<AllocationStandardPrice> allocationStandardPriceMap = new ArrayList<AllocationStandardPrice>();
 	
 	@Basic
