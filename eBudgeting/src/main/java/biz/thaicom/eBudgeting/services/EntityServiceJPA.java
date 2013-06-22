@@ -2329,8 +2329,16 @@ public class EntityServiceJPA implements EntityService {
 		return proposalStrategyRepository.findAllByObjectiveIdAndfiscalYearAndOwnerId(fiscalYear, objectiveId);
 	}
 
+	
 
 	
+	@Override
+	public ProposalStrategy updateProposalStrategyStandardPriceRound(
+			Integer round, Long id, JsonNode data) {
+		
+		return null;
+	}
+
 	@Override
 	public ProposalStrategy updateProposalStrategy(Long id,
 			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException {

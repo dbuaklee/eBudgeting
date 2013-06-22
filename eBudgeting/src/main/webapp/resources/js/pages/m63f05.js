@@ -204,7 +204,8 @@ var FormulaLineModalView = Backbone.View.extend({
 		} else {
 			this.currentStrategy.set('name', nameTxt);
 		}
-		this.currentStrategy.set('standardPrice', standardPriceTxt);
+		//this.currentStrategy.set('standardPrice', standardPriceTxt);
+		this.currentStrategy.get('allocationStandardPriceMap').at(0).set('standardPrice', standardPriceTxt);
 		this.currentStrategy.set('fiscalYear', fiscalYear);
 		this.currentStrategy.set('isStandardItem', this.isStandardItem == null ? false : this.isStandardItem);
 		
@@ -217,6 +218,7 @@ var FormulaLineModalView = Backbone.View.extend({
 		}
 		
 		this.currentStrategy.save(null, {
+			url: appUrl('/ProposalStrategy/updateStandardPrice/R1/' + this.currentStrategy.get('id')),
 			success: _.bind(function() {
 				if(newStrategy) {
 					if(this.currentStrategy.get('isStandardItem') == true) {
