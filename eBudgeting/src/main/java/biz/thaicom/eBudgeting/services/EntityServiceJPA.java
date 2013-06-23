@@ -2333,9 +2333,13 @@ public class EntityServiceJPA implements EntityService {
 
 	
 	@Override
-	public ProposalStrategy updateProposalStrategyStandardPriceRound(
+	public FormulaStrategy updateFormulaStrategyStandardPriceRound(
 			Integer round, Long id, JsonNode data) {
-		
+		FormulaStrategy fs = formulaStrategyRepository.findOne(id);
+		List<AllocationStandardPrice> list = fs.getAllocationStandardPriceMap();
+		AllocationStandardPrice asp = list.get(round-1);
+		asp.setStandardPrice(data.get("allocationStandardPriceMap").get(round-1).get("standardPrice").asInt());
+		formulaStrategyRepository.save(fs);		
 		return null;
 	}
 

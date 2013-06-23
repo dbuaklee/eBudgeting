@@ -218,7 +218,7 @@ var FormulaLineModalView = Backbone.View.extend({
 		}
 		
 		this.currentStrategy.save(null, {
-			url: appUrl('/ProposalStrategy/updateStandardPrice/R1/' + this.currentStrategy.get('id')),
+			url: appUrl('/FormulaStrategy/updateStandardPrice/R1/' + this.currentStrategy.get('id')),
 			success: _.bind(function() {
 				if(newStrategy) {
 					if(this.currentStrategy.get('isStandardItem') == true) {

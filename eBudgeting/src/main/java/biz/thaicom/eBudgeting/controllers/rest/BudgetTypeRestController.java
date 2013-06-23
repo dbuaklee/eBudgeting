@@ -1,5 +1,6 @@
 package biz.thaicom.eBudgeting.controllers.rest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import biz.thaicom.eBudgeting.models.bgt.BudgetCommonType;
@@ -31,6 +34,7 @@ import biz.thaicom.eBudgeting.models.bgt.BudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FiscalBudgetType;
 import biz.thaicom.eBudgeting.models.bgt.FormulaColumn;
 import biz.thaicom.eBudgeting.models.bgt.FormulaStrategy;
+import biz.thaicom.eBudgeting.models.bgt.ProposalStrategy;
 import biz.thaicom.eBudgeting.models.webui.PageUI;
 
 import biz.thaicom.eBudgeting.services.EntityService;
@@ -223,6 +227,18 @@ public class BudgetTypeRestController {
 		return entityService.saveFormulaColumn(budgetTypeFormulaColumn);
 		
 	}
+	
+	@RequestMapping(value="/FormulaStrategy/updateStandardPrice/R{round}/{id}", method=RequestMethod.PUT) 
+	public @ResponseBody FormulaStrategy updateProposalStrategyStandardPriceMap(
+			@PathVariable Integer round,
+			@PathVariable Long id,
+			@RequestBody JsonNode data) throws JsonParseException, JsonMappingException, IOException{
+		
+		// we just pass this to entityJPA
+		return entityService.updateFormulaStrategyStandardPriceRound(round, id, data);		
+		
+	}
+
 	
 	@RequestMapping(value="/FormulaColumn/{id}", method=RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)

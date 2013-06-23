@@ -154,6 +154,8 @@ public interface EntityService {
 	public List<FormulaStrategy> findAllFormulaStrategyByfiscalYearAndIsStandardItemAndBudgetType_ParentPathLike(
 			Integer fiscalYear, Boolean isStandardItem, Long budgetTypeId, String parentPath);
 	public FormulaStrategy findFormulaStrategy(Long id);
+	public FormulaStrategy updateFormulaStrategyStandardPriceRound(
+			Integer round, Long id, JsonNode data);
 
 	
 	// AllocationRecord
@@ -187,8 +189,7 @@ public interface EntityService {
 	public ProposalStrategy deleteProposalStrategy(Long id);
 	public ProposalStrategy updateProposalStrategy(Long id,
 			JsonNode rootNode) throws JsonParseException, JsonMappingException, IOException;
-	public ProposalStrategy updateProposalStrategyStandardPriceRound(
-			Integer round, Long id, JsonNode data);
+
 	
 	//RequestColumn
 	public RequestColumn saveRequestColumn(RequestColumn requestColumn);
@@ -317,6 +318,7 @@ public interface EntityService {
 	public User updateUser(JsonNode node);
 	public User saveUser(JsonNode node);
 	public User deleteUser(Long id);
+
 
 
 

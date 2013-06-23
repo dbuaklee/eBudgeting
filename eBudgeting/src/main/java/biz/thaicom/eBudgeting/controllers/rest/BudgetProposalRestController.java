@@ -145,18 +145,7 @@ public class BudgetProposalRestController {
 		return entityService.updateProposalStrategy(id, data);		
 		
 	}
-	
-	@RequestMapping(value="/ProposalStrategy/updateStandardPrice/R{round}/{id}", method=RequestMethod.PUT) 
-	public @ResponseBody ProposalStrategy updateProposalStrategyStandardPriceMap(
-			@PathVariable Integer round,
-			@PathVariable Long id,
-			@RequestBody JsonNode data) throws JsonParseException, JsonMappingException, IOException{
 		
-		// we just pass this to entityJPA
-		return entityService.updateProposalStrategyStandardPriceRound(round, id, data);		
-		
-	}
-	
 	@RequestMapping(value="/AllocationRecordStrategy/{id}", method=RequestMethod.PUT) 
 	public @ResponseBody ProposalStrategy updateAllocationRecordStrategy(
 			@PathVariable Long id,

@@ -97,7 +97,7 @@
 				<input type="text" style="width:70px;" value="ราคา (บาท)" disabled="disabled"/>
 			</div>
 			<div style="height:35px;">
-				<input type="text" id="standardPriceTxt" style="width:70px;" value="{{standardPrice}}"></input> &times;
+				<input type="text" id="standardPriceTxt" style="width:70px;" value="{{allocationStandardPriceMap.0.standardPrice}}"></input> &times;
 			</div>
 		</div>
 	</div>
@@ -131,7 +131,7 @@
 				<input type="text" style="width:70px;" value="ราคา (บาท)" disabled="disabled"/>
 			</div>
 			<div style="height:35px;">
-				<input type="text" id="standardPriceTxt" style="width:70px;" value="{{standardPrice}}"></input> &times;
+				<input type="text" id="standardPriceTxt" style="width:70px;" value="{{allocationStandardPriceMap.0.standardPrice}}"></input> &times;
 			</div>
 		</div>
 	</div>
@@ -241,13 +241,13 @@
 	<td> {{budgetTypeName parentIds.[3]}} </td>
 	<td> <a href="#" class="showFormulaToolBar">[{{code}}] {{name}} 
 		{{#if standardStrategy}} {{#with  standardStrategy}}
-			= {{formatNumber standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}
+			= {{formatNumber allocationStandardPriceMap.0.standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}
   		{{/with}} {{/if}} </a>
 		{{#if strategies}}
 			<div><u>รายการย่อย</u></div>
 			<ul>
 				{{#each strategies}}
-				<li data-id="{{id}}"><a href="#" class="editStrategy">{{name}} = {{formatNumber standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}</a></li>
+				<li data-id="{{id}}"><a href="#" class="editStrategy">{{name}} = {{formatNumber allocationStandardPriceMap.0.standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}</a></li>
 				{{/each}}
 			</ul>
 		{{/if}}
@@ -258,7 +258,7 @@
 
 <script id="formulaCellTemplate" type="text/x-handlebars-template">
 <strong>[{{code}}] {{name}} {{#if standardStrategy}} {{#with  standardStrategy}}
-			= {{formatNumber standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}
+			= {{formatNumber allocationStandardPriceMap.0.standardPrice}} บาท &times; {{{formulaLine formulaColumns false}}}
   		{{/with}} {{/if}} </a>
 </strong> <br/>
 <button class='btn btn-mini btn-info addDefaultFormula'>กำหนดราคา</button>
