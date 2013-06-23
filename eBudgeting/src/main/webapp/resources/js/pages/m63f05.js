@@ -235,6 +235,7 @@ var FormulaLineModalView = Backbone.View.extend({
 				this.currentStrategy.get('formulaColumns').sort();
 				
 				this.render();
+				alert("ปรับปรุงข้อมูลเรียบร้อย");
 			},this)
 		});
 		

@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javassist.expr.NewArray;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -2339,7 +2341,55 @@ public class EntityServiceJPA implements EntityService {
 		List<AllocationStandardPrice> list = fs.getAllocationStandardPriceMap();
 		AllocationStandardPrice asp = list.get(round-1);
 		asp.setStandardPrice(data.get("allocationStandardPriceMap").get(round-1).get("standardPrice").asInt());
-		formulaStrategyRepository.save(fs);		
+		formulaStrategyRepository.save(fs);	
+		
+		// now we we'll have to update the allocRecord
+		
+		List<AllocationRecordStrategy> allocStrgyList = allocationRecordStrategyRepository.findAllByStrategy(fs);
+		for(AllocationRecordStrategy ars : allocStrgyList) {
+			
+			Long newTotal = 1L;
+			for(RequestColumn rc : ars.getRequestColumns()) {
+				if(rc.getAmount() != null) {
+					newTotal = newTotal * rc.getAmount();
+				}
+			}
+			newTotal = newTotal * asp.getStandardPrice();
+			
+			// now we can update the totalCalculatedAmount
+			Long adjustedAmount = ars.getTotalCalculatedAmount() - newTotal;
+			ars.setTotalCalculatedAmount(newTotal);
+			
+			// then we'll have to update all the way to the parent!
+			ars.getAllocationRecord().adjustAmountAllocated(adjustedAmount);
+			allocationRecordRepository.save(ars.getAllocationRecord());
+			
+			// now update parent
+			Objective parent = ars.getAllocationRecord().getForObjective().getParent();
+			while(parent != null) {
+				
+				
+				AllocationRecord ar = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(
+						fs.getType(), parent, round-1);
+				
+				AllocationRecordStrategy parentArs = allocationRecordStrategyRepository
+						.findOneByAllocationRecordAndStrategy(ar, fs);
+				
+				if(parentArs != null) {
+					parentArs.adjustTotalCalculatedAmount(adjustedAmount);
+					allocationRecordStrategyRepository.save(parentArs);
+					
+					ar.adjustAmountAllocated(adjustedAmount);
+					allocationRecordRepository.save(ar);
+				
+				}
+				
+				parent = parent.getParent();
+				
+			}
+			
+		}
+		
 		return null;
 	}
 
