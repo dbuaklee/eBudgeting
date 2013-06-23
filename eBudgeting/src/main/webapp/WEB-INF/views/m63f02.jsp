@@ -218,16 +218,16 @@
 	<thead>
 		<tr>
 			<td>รายการงบประมาณ</td>
-			<td>ขอตั้ง</td>
 			<td>ปรับลดครั้งที่1</td>
+			<td>ขอตั้ง</td>
 		</tr>
 	</thead>
 	<tbody>
 		{{#each sumBudgetTypeProposals}}
 		<tr>
 			<td><a href="#" data-allocationId={{allocationId}} class="detailAllocation">{{budgetType.name}}</a></td>
-			<td>{{formatNumber amountRequest}}</td>
 			<td>{{formatNumber amountAllocated}}</td>
+			<td>{{formatNumber amountRequest}}</td>
 		</tr>
 		{{/each}}
 	</tbody>
