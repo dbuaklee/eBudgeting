@@ -1,6 +1,7 @@
 package biz.thaicom.eBudgeting.services;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1987,7 +1988,7 @@ public class EntityServiceJPA implements EntityService {
 		if(objectiveJsonNode.get("id") == null) { 
 			objective = new Objective();
 			objective.setObjectiveName(new ObjectiveName());
-			objective.setCode(objectiveJsonNode.get("code").asText());
+			
 		} else {
 			objective = objectiveRepository.findOne(objectiveJsonNode.get("id").asLong());
 		}
@@ -2012,6 +2013,20 @@ public class EntityServiceJPA implements EntityService {
 			objective.getObjectiveName().setType(ot);
 			
 		}
+		
+		if(objective.getCode() == null || objective.getCode().length() == 0) {
+			
+			// now find the max code and put this one as the next
+			String maxCode = objectiveRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
+			
+			if(maxCode == null || maxCode.length() == 0) {
+				maxCode = "0";
+			}
+			Integer nextCode = Integer.parseInt(maxCode) + 1;
+			objective.setCode(String.format("%0" + objective.getType().getCodeLength() + "d", nextCode));
+		}
+		
+		
 		
 		//lastly the unit
 		if(objectiveJsonNode.get("units") != null ) {
@@ -3764,15 +3779,18 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		// now find the maximum number in this type
+	
 		Integer maxIndex = objectiveNameRepository.findMaxIndexOfTypeAndFiscalYear(
 				on.getType(), on.getFiscalYear());
 		
 		if(maxIndex == null) {
-			on.setIndex(11);
-		} else {
-			on.setIndex(maxIndex+1);
+			maxIndex = 0;
 		}
-		on.setCode(on.getIndex().toString());
+		
+		Integer nextCode = maxIndex + 1;
+		logger.debug("nextCode:" + nextCode);
+		on.setCode(String.format("%0" + on.getType().getCodeLength() + "d", nextCode));
+	
 		
 		objectiveNameRepository.save(on);
 		return on;

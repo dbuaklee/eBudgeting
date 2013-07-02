@@ -1044,11 +1044,22 @@
         references BGT_ALLOCFMCOLVALUE;
 
         
--- version 10
+-- version 11
 -- Modifed Date: June 21, 2013
 	update app_info set db_version = 11;
 	
 	alter table BGT_FMSTRGY_ALLOCSTDPRICE add (IDX number(4));
 	
 	alter table BGT_FMCOLUMN_ALLOCVALUE add(IDX number(4));
+	
+	
+-- version 12
+-- Modifed Date: July 2, 2013
+	
+	update app_info set db_version = 12;
+	
+	alter table pln_objectivetype add (codelength number(2)); 
+	
+	
+	
     
