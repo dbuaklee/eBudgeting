@@ -546,6 +546,9 @@ public class EntityServiceJPA implements EntityService {
 			logger.debug("level " + level.getId());
 			Integer maxCode = budgetTypeRepository.findMaxCodeAtLevel(level);
 			logger.debug("maxCode" +maxCode);
+			if(maxCode == null) {
+				maxCode = 0;
+			}
 			budgetType.setCode(maxCode+1);
 			
 			
