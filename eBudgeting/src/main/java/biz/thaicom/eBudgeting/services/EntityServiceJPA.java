@@ -2184,13 +2184,11 @@ public class EntityServiceJPA implements EntityService {
 		if(objective.getCode() == null || objective.getCode().length() == 0) {
 			String maxCode = objectiveNameRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
 			
-			Integer nextCode = 0;
-			if(maxCode == null) {
-				nextCode=10;
-			} else {
-				nextCode = Integer.parseInt(maxCode) + 1;
+			if(maxCode == null || maxCode.length() == 0) {
+				maxCode = "0";
 			}
-		
+			Integer nextCode = Integer.parseInt(maxCode) + 1;
+			objective.setCode(String.format("%0" + objective.getType().getCodeLength() + "d", nextCode));
 		
 			objective.setCode(nextCode.toString());
 			objective.getObjectiveName().setCode(nextCode.toString());
@@ -3780,14 +3778,17 @@ public class EntityServiceJPA implements EntityService {
 		
 		// now find the maximum number in this type
 	
-		Integer maxIndex = objectiveNameRepository.findMaxIndexOfTypeAndFiscalYear(
+		String maxCode = objectiveNameRepository.findMaxCodeOfTypeAndFiscalYear(
 				on.getType(), on.getFiscalYear());
 		
-		if(maxIndex == null) {
-			maxIndex = 0;
+		Integer max;
+		if(maxCode == null) {
+			max = 0;
+		} else {
+			max = Integer.parseInt(maxCode);
 		}
 		
-		Integer nextCode = maxIndex + 1;
+		Integer nextCode = max + 1;
 		logger.debug("nextCode:" + nextCode);
 		on.setCode(String.format("%0" + on.getType().getCodeLength() + "d", nextCode));
 	

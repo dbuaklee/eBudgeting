@@ -18,7 +18,7 @@ public interface ObjectiveNameRepository extends JpaSpecificationExecutor<Object
 		PagingAndSortingRepository<ObjectiveName, Long> {
 	
 	@Query("" +
-			"SELECT max(o.index) " +
+			"SELECT max(o.code) " +
 			"FROM ObjectiveName o " +
 			"WHERE o.type=?1 AND o.fiscalYear=?2 ")
 	public Integer findMaxIndexOfTypeAndFiscalYear(ObjectiveType type,

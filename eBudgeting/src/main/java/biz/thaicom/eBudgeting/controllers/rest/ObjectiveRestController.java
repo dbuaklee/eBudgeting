@@ -461,7 +461,7 @@ public class ObjectiveRestController {
 			@PathVariable Integer pageNumber) {
 		
 		PageRequest pageRequest =
-	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "index");
+	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "code");
 		return entityService.findAllObjectiveNameByFiscalYearAndTypeIdWithQuery(fiscalYear, typeId, query, pageRequest);
 		
 	}
