@@ -63,7 +63,7 @@ public interface ObjectiveNameRepository extends JpaSpecificationExecutor<Object
 	
 	@Query("" +
 			"SELECT max(o.code) " +
-			"FROM Objective o " +
+			"FROM ObjectiveName o " +
 			"WHERE o.type=? AND o.fiscalYear=?2 ")
 	public String findMaxCodeOfTypeAndFiscalYear(ObjectiveType type,
 			Integer fiscalYear);
