@@ -22,8 +22,7 @@ public interface TargetUnitRepository extends JpaSpecificationExecutor<TargetUni
 	@Query("" +
 			"SELECT unit " +
 			"FROM TargetUnit unit " +
-			"WHERE unit.name like ?1 " +
-			"ORDER BY name asc ")
+			"WHERE unit.name like ?1 ")
 	Page<TargetUnit> findAllByNameLike(String query, Pageable pageRequest);
 
 }

@@ -206,6 +206,9 @@ $(document).ready(function() {
 		
 		searchQuery: function() {
 			this.queryTxt = this.$el.find('#queryTxt').val();
+			if(this.queryTxt == null || this.queryTxt.length == 0) {
+				this.queryTxt = '';
+			}
 			this.renderTargetPage(1);			
 			return false;
 		},
@@ -220,6 +223,10 @@ $(document).ready(function() {
 		
 		gotoPage: function(e) {
 			var pageNumber = $(e.target).attr('data-id');
+			this.queryTxt = this.$el.find('#queryTxt').val();
+			if(this.queryTxt == null || this.queryTxt.length == 0) {
+				this.queryTxt = '';
+			}
 			this.renderTargetPage(pageNumber);
 		},
 		

@@ -2753,7 +2753,11 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public Page<TargetUnit> findAllTargetUnits(PageRequest pageRequest,
 			String query) {
-		query = "%" + query + "%";
+		if(query.length() == 0 ) {
+			query = "%";
+		} else {
+			query = "%" + query + "%";
+		}
 		return (Page<TargetUnit>) targetUnitRepository.findAllByNameLike( query, pageRequest);
 	}
 
