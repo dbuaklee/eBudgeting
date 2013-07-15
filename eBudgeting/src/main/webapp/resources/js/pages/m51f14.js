@@ -652,13 +652,14 @@ var MainTblView = Backbone.View.extend({
 		
 		
 		newBudgetType.save(null, {
-			success: function() {
-				
-			}
+			success: _.bind(function() {
+				this.$el.find('a.btn').toggleClass('disabled');
+				this.collection.add(newBudgetType);
+				this.collection.trigger("reset");
+			},this)
 		});
 		
-		this.$el.find('a.btn').toggleClass('disabled');
-		this.collection.trigger("reset");
+
 	
 	},
 	
@@ -674,9 +675,8 @@ var MainTblView = Backbone.View.extend({
 				
 					modelToDelete.destroy({
 						success: _.bind(function() {					
-							this.collection.remove(modelToDelete);
-						
 							this.collection.fetch();
+							this.collection.trigger("reset");
 						},this)
 					});
 			} 
