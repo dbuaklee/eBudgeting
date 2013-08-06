@@ -467,7 +467,9 @@ $(document).ready(function() {
 	if(fiscalYear!= null && fiscalYear.length > 0 ) {
 		headLineStr += 	' ปีงบประมาณ ' + fiscalYear;
 	
+		
 		rootBudgetType.fetch({
+			url: appUrl('/BudgetType/'+ 0 + '/'),
 			success: function() {
 				budgetTypeRootCollection = rootBudgetType.get('children');
 				budgetTypeSltView = new BudgetSltView({collection: budgetTypeRootCollection});
