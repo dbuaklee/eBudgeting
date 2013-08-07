@@ -313,9 +313,7 @@ var MainTblView = Backbone.View.extend({
 		
 		this.collection.fetch({
 			type: 'POST',
-			data: {
-				query: this.searchTxt
-			},
+			data: {query: this.searchTxt},
 			success: _.bind(function() {
 				this.render();
 			},this)
@@ -505,13 +503,17 @@ var MainTblView = Backbone.View.extend({
 		
 		//now populate the budgetTypeSlt
 	    var budgetTypeSlt = BudgetType.findOrCreate({id: currentBudgetTypeId});
-	    budgetTypeSlt.fetch({success: _.bind(function(){
-	    	if(budgetTypeSlt.get('children').length > 0) {
-	    		this.budgetTypeSelection = new BudgetTypeSelectionView({
-	    			model: budgetTypeSlt, el:'.budgetTypeSlt', mainTblView: this});
-	    		this.budgetTypeSelection.render();
-	    	}
-    	},this)});
+	    budgetTypeSlt.fetch({
+	    	url: appUrl('/BudgetType/'+ currentBudgetTypeId + '/'),
+	    	success: _.bind(function(){
+		    	if(budgetTypeSlt.get('children').length > 0) {
+		    		this.budgetTypeSelection = new BudgetTypeSelectionView({
+		    			model: budgetTypeSlt, el:'.budgetTypeSlt', mainTblView: this
+		    		});
+		    		this.budgetTypeSelection.render();
+		    	}
+		    	},this)
+    	});
 		
 		
 		    $('#budgetTypeModal').modal({show: true, backdrop: 'static', keyboard: false});
