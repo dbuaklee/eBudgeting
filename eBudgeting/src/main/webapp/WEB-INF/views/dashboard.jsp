@@ -51,7 +51,7 @@
 					{{#if disabled}} 
 						{{name}}
 					{{else}}
-						<a {{#if link}}href="{{link}}"{{else}}href="#"{{/if}}>{{name}}</a>
+						<a data-type="{{type}}" {{#if link}}href="{{link}}"{{else}}href="#"{{/if}}>{{name}}</a>
 					{{/if}}
 
 			</li>
@@ -177,31 +177,31 @@ var menuJson = [{
 	name: "ระบบรายงาน (r)", code: "m8", 
 	menus: [
 		 {name: "รายงานทะเบียน (m51r)", code: "m81", menus: 
-		    [{name: "m51r01: ทะเบียนยุทธศาสตร์จัดสรร", code: 'm51r01', link: "m51r01.xls/"+fiscalYear+"/file/m51r01.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r02: ทะเบียนประเด็นยุทธศาสตร์", code: 'm51r01', link: "m51r02.xls/"+fiscalYear+"/file/m51r02.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r03: ทะเบียนเป้าหมายเชิงยุทธศาสตร์", code: 'm51r01', link: "m51r03.xls/"+fiscalYear+"/file/m51r03.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r04: ทะเบียนเป้าหมายบริการกระทรวง",  code: 'm51r01',link: "m51r04.xls/"+fiscalYear+"/file/m51r04.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r05: ทะเบียนเป้าหมายบริการหน่วยงาน",  code: 'm51r01',link: "m51r05.xls/"+fiscalYear+"/file/m51r05.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r06: ทะเบียนแผนงาน",  code: 'm51r01',link: "m51r06.xls/"+fiscalYear+"/file/m51r06.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r07: ทะเบียนผลผลิต-โครงการ และรายละเอียดประกอบ",  code: 'm51r01',link: "m51r07.xls/"+fiscalYear+"/file/m51r07.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r08: ทะเบียนกิจกรรมหลัก", code: 'm51r01', link: "m51r08.xls/"+fiscalYear+"/file/m51r08.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r09: ทะเบียนกิจกรรมรอง",  code: 'm51r01',link: "m51r09.xls/"+fiscalYear+"/file/m51r09.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r10: ทะเบียนกิจกรรมย่อย",  code: 'm51r01',link: "m51r10.xls/"+fiscalYear+"/file/m51r10.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r11: ทะเบียนกิจกรรมเสริม", code: 'm51r01', link: "m51r11.xls/"+fiscalYear+"/file/m51r11.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r12: ทะเบียนกิจกรรมสนับสนุน", code: 'm51r01', link: "m51r12.xls/"+fiscalYear+"/file/m51r12.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r13: ทะเบียนกิจกรรมรายละเอียด", code: 'm51r01', link: "m51r13.xls/"+fiscalYear+"/file/m51r13.xls", group: "BGT_BGT_ADMIN"},
+		    [{name: "m51r01: ทะเบียนยุทธศาสตร์จัดสรร", code: 'm51r01', link: "m51r01.xls/"+fiscalYear+"/file/m51r01.xls",  type: "download", type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r02: ทะเบียนประเด็นยุทธศาสตร์", code: 'm51r01', link: "m51r02.xls/"+fiscalYear+"/file/m51r02.xls",  type: "download", type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r03: ทะเบียนเป้าหมายเชิงยุทธศาสตร์", code: 'm51r01', link: "m51r03.xls/"+fiscalYear+"/file/m51r03.xls",  type: "download", type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r04: ทะเบียนเป้าหมายบริการกระทรวง",  code: 'm51r01',link: "m51r04.xls/"+fiscalYear+"/file/m51r04.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r05: ทะเบียนเป้าหมายบริการหน่วยงาน",  code: 'm51r01',link: "m51r05.xls/"+fiscalYear+"/file/m51r05.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r06: ทะเบียนแผนงาน",  code: 'm51r01',link: "m51r06.xls/"+fiscalYear+"/file/m51r06.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r07: ทะเบียนผลผลิต-โครงการ และรายละเอียดประกอบ",  code: 'm51r01',link: "m51r07.xls/"+fiscalYear+"/file/m51r07.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r08: ทะเบียนกิจกรรมหลัก", code: 'm51r01', link: "m51r08.xls/"+fiscalYear+"/file/m51r08.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r09: ทะเบียนกิจกรรมรอง",  code: 'm51r01',link: "m51r09.xls/"+fiscalYear+"/file/m51r09.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r10: ทะเบียนกิจกรรมย่อย",  code: 'm51r01',link: "m51r10.xls/"+fiscalYear+"/file/m51r10.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r11: ทะเบียนกิจกรรมเสริม", code: 'm51r01', link: "m51r11.xls/"+fiscalYear+"/file/m51r11.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r12: ทะเบียนกิจกรรมสนับสนุน", code: 'm51r01', link: "m51r12.xls/"+fiscalYear+"/file/m51r12.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r13: ทะเบียนกิจกรรมรายละเอียด", code: 'm51r01', link: "m51r13.xls/"+fiscalYear+"/file/m51r13.xls",  type: "download", group: "BGT_BGT_ADMIN"},
 		
-		     {name: "m51r15: ทะเบียนประเภทรายการกลาง", code: 'm51r01', link: "m51r15.xls/"+fiscalYear+"/file/m51r15.xls", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r16: ตรวจสอบสายการเชื่อมโยงข้อมูล", code: 'm51r01', link: "m51r16.xls/"+fiscalYear+"/file/m51r16.xls", disabled: "disabled", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r17: ตรวจสอบสายการเชื่อมโยงข้อมูล (สายยุทธศาสตร์กระทรวงฯ-กลยุทธ์หน่วยงาน)", code: 'm51r01', link: "m51r17.xls/"+fiscalYear+"/file/m51r17.xls",disabled: "disabled", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r17: ทะเบียนหน่วยนับ", code: 'm51r01', link: "m51r18.xls/"+fiscalYear+"/file/m51r18.xls", group: "BGT_BGT_ADMIN"}
+		     {name: "m51r15: ทะเบียนประเภทรายการกลาง", code: 'm51r01', link: "m51r15.xls/"+fiscalYear+"/file/m51r15.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r16: ตรวจสอบสายการเชื่อมโยงข้อมูล", code: 'm51r01', link: "m51r16.xls/"+fiscalYear+"/file/m51r16.xls",  type: "download", disabled: "disabled", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r17: ตรวจสอบสายการเชื่อมโยงข้อมูล (สายยุทธศาสตร์กระทรวงฯ-กลยุทธ์หน่วยงาน)", code: 'm51r01', link: "m51r17.xls/"+fiscalYear+"/file/m51r17.xls",  type: "download",disabled: "disabled", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r17: ทะเบียนหน่วยนับ", code: 'm51r01', link: "m51r18.xls/"+fiscalYear+"/file/m51r18.xls",  type: "download", group: "BGT_BGT_ADMIN"}
 		     ]},
 	  {name: "รายงานการตรวจสอบ (m52r)", menus: 
-				    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", code: 'm51r01', link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls", group: "BGT_USER"},
-				     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", code: 'm51r01', link: "m52r02_1.xls/"+fiscalYear+"/file/m52r02_1.xls", group: "BGT_USER"},		 
-				     {name: "m52r07: แบบสรุปงบประมาณรายจ่ายประจำปีงบประมาณ(วิสัยทัศน์ - พันธกิจ)", code: 'm51r01', link: "m52r07.xls/"+fiscalYear+"/file/m52r07.xls", group: "BGT_BGT_ADMIN"},		 
-				     {name: "m52r08: ความเชื่อมโยงกับแผนบริหารรราชการแผ่นดิน", code: 'm51r01', link: "m52r08.xls/"+fiscalYear+"/file/m52r08.xls", group: "BGT_BGT_ADMIN"},		 
-				     {name: "m52r11: ความเชื่อมโยงระหว่างยุทธศาสตร์กระทรวงกับกลยุทธ์หน่วยงานและแนวทางการจัดสรรงบประมาณ", code: 'm51r01', link: "m52r11.xls/"+fiscalYear+"/file/m52r11.xls", group: "BGT_BGT_ADMIN"}
+				    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", code: 'm51r01', link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls",  type: "download", group: "BGT_USER"},
+				     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", code: 'm51r01', link: "m52r02_1.xls/"+fiscalYear+"/file/m52r02_1.xls",  type: "download", group: "BGT_USER"},		 
+				     {name: "m52r07: แบบสรุปงบประมาณรายจ่ายประจำปีงบประมาณ(วิสัยทัศน์ - พันธกิจ)", code: 'm51r01', link: "m52r07.xls/"+fiscalYear+"/file/m52r07.xls",  type: "download", group: "BGT_BGT_ADMIN"},		 
+				     {name: "m52r08: ความเชื่อมโยงกับแผนบริหารรราชการแผ่นดิน", code: 'm51r01', link: "m52r08.xls/"+fiscalYear+"/file/m52r08.xls",  type: "download", group: "BGT_BGT_ADMIN"},		 
+				     {name: "m52r11: ความเชื่อมโยงระหว่างยุทธศาสตร์กระทรวงกับกลยุทธ์หน่วยงานและแนวทางการจัดสรรงบประมาณ", code: 'm51r01', link: "m52r11.xls/"+fiscalYear+"/file/m52r11.xls",  type: "download", group: "BGT_BGT_ADMIN"}
 				     ]},		 
 	     {name: "รายงานตามแบบแผนปฏิบัติราชการ] (m83)", code: "m83",  menus: 
 			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", code: 'm51r01', link: "page/m2f14/", disabled: "disabled", group: "BGT_BGT_ADMIN"},
@@ -273,7 +273,6 @@ var menuUserJson = [{
 
 	//	find only the last menu of our right!
 	var l2Menu = _.flatten(_.flatten(menuJson, 'menus'), 'menus').filter(function(menu) {
-		console.log(menu.code + ": " + userGroups.indexOf(menu.group));
 		return  userGroups.indexOf(menu.group) >= 0;
 	});
 	
@@ -322,68 +321,73 @@ var menuUserJson = [{
 			},
 	
 			menuClick : function(e) {
-				e1 = e;
-	
-				var parentDiv = $(e.target).parents('div.mainMenu');
-				var li = $(e.target).parent();
-	
-				//e1=parentDiv;
-				var level = parentDiv.attr('data-id');
-	
-				if (level == 1) {
-					// get this index
-					var i = parentDiv.find('li').index(li);
-	
-					this.currentFirstLevelIndex = i;
-					$("#main3").empty();
-	
-					$("#main2").html(this.subMenuTemplate(this.menu[i].menus));
-	
-					$("#navbarBreadcrumb").empty();
-					$("#navbarBreadcrumb").html(
-							"<li><a href='#'>" + 
-							$(e.target).html() +
-							"</a></li>");
-	
-					$.ajax({
-						type : 'POST',
-						data : {
-							level : 0,
-							value : this.menu[i].name,
-							code : this.menu[i].code
-						},
-						url : appUrl('/Session/updateNavbarBreadcrumb')
-					});
-	
-				} else if (level == 2) {
-					// get this index
-					var i = parentDiv.find('li').index(
-							li);
-	
-					$("#main3").html(this.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
-	
-					$("#navbarBreadcrumb").empty();
-					$("#navbarBreadcrumb").html(
-							"<li><a href='#'>" + 
-							this.menu[this.currentFirstLevelIndex].name + 
-							"</a> <span class='divider'>/</span></li>");
-					$("#navbarBreadcrumb").append(
-							"<li><a href='#'>" + 
-							$(e.target).html() +
-							"</a></li>");
-	
-					$.ajax({
-						type : 'POST',
-						data : {
-							level : 1,
-							value : this.menu[this.currentFirstLevelIndex].menus[i].name,
-							code : this.menu[this.currentFirstLevelIndex].menus[i].code
-						},
-						url : appUrl('/Session/updateNavbarBreadcrumb')
-					});
-	
-				} else if (level == 3) {
-	
+				if ( $(e.target).attr('data-type') !=  "download" ) {
+					e1 = e;
+		
+					var parentDiv = $(e.target).parents('div.mainMenu');
+					var li = $(e.target).parent();
+		
+					//e1=parentDiv;
+					var level = parentDiv.attr('data-id');
+		
+					if (level == 1) {
+						// get this index
+						var i = parentDiv.find('li').index(li);
+		
+						this.currentFirstLevelIndex = i;
+						$("#main3").empty();
+		
+						$("#main2").html(this.subMenuTemplate(this.menu[i].menus));
+		
+						$("#navbarBreadcrumb").empty();
+						$("#navbarBreadcrumb").html(
+								"<li><a href='#'>" + 
+								$(e.target).html() +
+								"</a></li>");
+		
+						$.ajax({
+							type : 'POST',
+							data : {
+								level : 0,
+								value : this.menu[i].name,
+								code : this.menu[i].code
+							},
+							url : appUrl('/Session/updateNavbarBreadcrumb')
+						});
+		
+					} else if (level == 2) {
+						// get this index
+						var i = parentDiv.find('li').index(
+								li);
+		
+						$("#main3").html(this.subMenuTemplate(this.menu[this.currentFirstLevelIndex].menus[i].menus));
+		
+						$("#navbarBreadcrumb").empty();
+						$("#navbarBreadcrumb").html(
+								"<li><a href='#'>" + 
+								this.menu[this.currentFirstLevelIndex].name + 
+								"</a> <span class='divider'>/</span></li>");
+						$("#navbarBreadcrumb").append(
+								"<li><a href='#'>" + 
+								$(e.target).html() +
+								"</a></li>");
+		
+						$.ajax({
+							type : 'POST',
+							data : {
+								level : 1,
+								value : this.menu[this.currentFirstLevelIndex].menus[i].name,
+								code : this.menu[this.currentFirstLevelIndex].menus[i].code
+							},
+							url : appUrl('/Session/updateNavbarBreadcrumb')
+						});
+		
+					} else if (level == 3) {
+		
+					}
+				} else {
+					loadReport($(e.target).attr('href'));
+					return false;
 				}
 			}
 		});

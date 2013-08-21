@@ -33,6 +33,9 @@
 	
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-1.8.3.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-ui-1.9.2.custom.min.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery.ui.datepicker-th.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery.ui.datepicker.ext.be.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery.fileDownload-1.4.2.js'/>"></script>
 	
 	<!-- 
 	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/jquery.easyui.min.js'/>"></script>

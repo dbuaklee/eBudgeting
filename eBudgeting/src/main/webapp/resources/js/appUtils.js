@@ -137,3 +137,46 @@ function saveModel(model, success, error) {
 		error: error
 	});
 }
+
+
+function loadReport(url) {
+	showLoadingReportModal();
+	//here we'll sleep for like 1.5 second to be able to show our nice UI 
+	
+	setTimeout(function() {
+		$.fileDownload(url,{
+			successCallback: function (url) {
+				hideLoadingReportModal();
+			}
+	    });
+	}, 1500);
+	
+	
+	
+}
+
+function showLoadingReportModal(){
+	if($("div#showLoadingReportModal").length == 0) {
+		// insert the modal html
+		
+		$("body").append("" +
+				"<div id='showLoadingReportModal' class='modal hide fade'>" +
+				"	<div class='modal-header'>" + 
+				"	<button type='button' class='close' data-dismiss='modal'>&times;</button> " +
+				"	<span style='font-weight: bold;'>แสดงรายงาน</span> "  +
+				"</div> " +
+				"<div class='modal-body'> "+
+				"<img src='" + appUrl('/resources/graphics/loading.gif') + "'/>"+ " กรุณารอสักครู่ ระบบกำลังสร้างรายงาน... " + 
+				"</div> "+
+				"");
+		
+	}
+	
+	
+	$('div#showLoadingReportModal').modal('show');
+}
+
+function hideLoadingReportModal(){
+	$('div#showLoadingReportModal').modal('hide');
+}
+
