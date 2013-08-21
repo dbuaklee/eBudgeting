@@ -759,9 +759,11 @@ var BudgetTypeSelectionView = Backbone.View.extend({
 	selectionChange: function(e) {
 		var selectedBudgetTypeId = $(e.target).val();
 		// now try to get this model
-		var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
+		var budgetType = BudgetType.findOrCreate({_id : selectedBudgetTypeId});
 		e1 = budgetType;
-		budgetType.fetch({success: _.bind(function(model, response){
+		Backbone.sync('GET',budgetType, {
+			url: appUrl('/BudgetType/' + selectedBudgetTypeId),
+			success: _.bind(function(model, response){
 			var fetchedBudgetType = response;
 			if(fetchedBudgetType.parentLevel < 3) {
 				
