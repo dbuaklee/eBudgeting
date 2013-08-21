@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import biz.thaicom.eBudgeting.repositories.UserRepository;
+import biz.thaicom.security.models.Group;
 import biz.thaicom.security.models.ThaicomUserDetail;
 import biz.thaicom.security.models.User;
 
@@ -31,7 +32,21 @@ public class ThaicomUserDetailService implements UserDetailsService {
 		User user = userRepository.findByUsername(userName);
 		
 		if(user != null) {
+			
+			List<Group> groups = userRepository.findGroupsByUser(user);
+			logger.debug("user.groups size: " + groups.size());
+			
+			user.setGroups(groups);
+			
 			List<GrantedAuthority> AUTHORITIES = new ArrayList<GrantedAuthority>();
+			
+			logger.debug("user.groups size: " + user.getGroups().size());
+			for(Group g : user.getGroups()) {
+				logger.debug(g.getName());
+				AUTHORITIES.add(new SimpleGrantedAuthority(g.getName()));	
+			}
+			
+			
 	        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_USER"));
 	        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 	        

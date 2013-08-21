@@ -41,7 +41,11 @@
 	 
 	<script src="<c:url value='/resources/jslibs/ext-4.2.1.883/ext-all.js'/>"></script>
 	
-	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.4.js'/>"></script>
+		<script src="<c:url value='/resources/jslibs/lodash-1.3.1.min.js'/>"></script>
+	<!-- 
+	<script src="<c:url value='/resources/jslibs/underscore-1.5.1.min.js'/>"></script>
+	 -->
+	 
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.3.1/js/bootstrap.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-editable-1.1.4/js/bootstrap-editable.min.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/backbone-1.0.0.js'/>"></script>

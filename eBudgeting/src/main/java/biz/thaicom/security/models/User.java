@@ -1,6 +1,7 @@
 package biz.thaicom.security.models;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -15,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import biz.thaicom.eBudgeting.models.hrx.Person;
 
@@ -47,6 +49,9 @@ public class User implements Serializable {
 	@JoinColumn(name="PERSON_HRX_PERSON_ID")
 	private Person person;
 	
+	@Transient
+	private List<Group> groups;
+	
 	public Long getId() {
 		return id;
 	}
@@ -77,6 +82,14 @@ public class User implements Serializable {
 
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+
+	public List<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
 	}
 
 	
