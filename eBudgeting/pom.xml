@@ -8,7 +8,7 @@
 	<packaging>war</packaging>
 	<version>0.0.1-BUILD-SNAPSHOT</version>
 	<scm>
-    	<connection>scm:git:https://github.com/dbuaklee/eBudgeting.git</connection>
+		<connection>scm:git:https://github.com/dbuaklee/eBudgeting.git</connection>
     	<url>https://github.com/dbuaklee/eBudgeting</url>
 	</scm>
 	<properties>

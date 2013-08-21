@@ -47,17 +47,11 @@ public class ThaicomUserDetailService implements UserDetailsService {
 			}
 			
 			
-	        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_USER"));
-	        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-	        
 			ThaicomUserDetail userDetail = new ThaicomUserDetail(
 					user.getUsername(), user.getPassword(), AUTHORITIES);
 			
 			userDetail.setWorkAt(user.getPerson().getWorkAt());
 			userDetail.setPerson(user.getPerson());
-			if(user.getPerson().getWorkAt().getId() == 7) {
-				AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_USER_PLAN"));
-			}
 			
 			return userDetail;
 		} else {
