@@ -37,26 +37,7 @@
 		</div>
 
 
-		<div class="control-group" id="mainCtr">
-			
-			<c:choose>
-			<c:when test="${rootPage}">
-				<table class="table table-bordered" id="mainTbl">
-					<thead>
-						<tr>
-							<td>เลือกปีงบประมาณ</td>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach items="${fiscalYears}" var="fiscalYear">
-						<tr>
-								<td> <a href="./${fiscalYear.fiscalYear}/" class="nextChildrenLnk">${fiscalYear.fiscalYear}<i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-						</tr>
-						</c:forEach>
-					</tbody>
-				</table>			
-			</c:when>
-			</c:choose>	
+		<div class="control-group" id="mainCtr">	
 		</div>
 
 
@@ -78,9 +59,9 @@
 	<form class="form-search">
 		<div class="input-append pull-left">
 			<input type="text" id="availableChildrenSearch" class="span2 search-query">
-			<button type="submit" id="search" class="btn">ค้นหา</button>
+			<button id="search" class="btn">ค้นหา</button>
 		</div> &nbsp;
-		<button type="submit" id="searchDisplayAll" class="btn">แสดงผลทั้งหมด</button>
+		<button id="searchDisplayAll" class="btn">แสดงทั้งหมด</button>
 	
 	</form>	
 	</div>
@@ -186,16 +167,8 @@ var e1;
 
 
 $(document).ready(function() {
-
-	
 	mainTblView = new MainTblView({collection: userCollection});
-
-			
 	mainTblView.renderTargetPage(1);
-	
-	
-
-
 });
 
 //-->

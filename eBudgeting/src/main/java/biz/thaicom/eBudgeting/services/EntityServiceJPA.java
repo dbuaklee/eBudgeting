@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -4130,6 +4131,14 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public Page<User> findUser(PageRequest pageRequest) {
 		return userRepository.findAll(pageRequest);
+	}
+	
+	
+
+	@Override
+	public Page<User> findUser(PageRequest pageRequest, String query) {
+		logger.debug("QUERY :  " + query);
+		return userRepository.findAll(User.UserHasNameLike(query), pageRequest);
 	}
 
 	@Override

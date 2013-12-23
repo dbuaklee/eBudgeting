@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,11 +32,19 @@ public class UserRestController {
 	
 	@RequestMapping(value="/User/page/{pageNumber}") 
 	public @ResponseBody Page<User> getPagedObjectiveByFiscalYearAndType(
-			@PathVariable Integer pageNumber) {
+			@PathVariable Integer pageNumber,
+			@RequestParam (required=false) String query) {
+		
+		if(query == null || query.length() == 0) {
+			query = "%";
+		} else {
+			query = "%" + query + "%";
+		}
+		
 		PageRequest pageRequest =
 	            new PageRequest(pageNumber - 1, PageUI.PAGE_SIZE, Sort.Direction.ASC, "username");
 		
-		return entityService.findUser(pageRequest);
+		return entityService.findUser(pageRequest, query);
 	}
 	
 	

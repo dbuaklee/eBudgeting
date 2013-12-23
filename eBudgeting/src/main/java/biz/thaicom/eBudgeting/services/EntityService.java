@@ -314,10 +314,12 @@ public interface EntityService {
 	
 	// Security User
 	public Page<User> findUser(PageRequest pageRequest);
+	public Page<User> findUser(PageRequest pageRequest, String query);
 	public User findOneUser(Long id);
 	public User updateUser(JsonNode node);
 	public User saveUser(JsonNode node);
 	public User deleteUser(Long id);
+
 
 
 

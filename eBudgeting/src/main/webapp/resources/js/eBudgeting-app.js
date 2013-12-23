@@ -692,9 +692,14 @@ UserPagableCollection = PagableCollection.extend({
 	 },
 		
 	model: User,
+	query: '',
 	
 	url: function() {
-		return appUrl('/User/page/' + this.targetPage);
+		if(this.query  == null || this.query.length == 0 ) {
+			return appUrl('/User/page/' + this.targetPage);
+		}  else {
+			return appUrl('/User/page/' + this.targetPage + '?query=' + this.query);
+		}
 	}
 	
 });

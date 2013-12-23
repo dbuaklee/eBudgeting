@@ -17,6 +17,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.omg.PortableInterceptor.USER_EXCEPTION;
+import org.springframework.data.jpa.domain.Specification;
 
 import biz.thaicom.eBudgeting.models.hrx.Person;
 
@@ -92,6 +99,14 @@ public class User implements Serializable {
 		this.groups = groups;
 	}
 
-	
+	public static Specification<User> UserHasNameLike(final String name) {
+	    return new Specification<User>() {
+			@Override
+			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query,
+					CriteriaBuilder cb) {
+				return cb.like(root.get(User_.username), name);
+			}
+		};
+	  }
 	
 }
