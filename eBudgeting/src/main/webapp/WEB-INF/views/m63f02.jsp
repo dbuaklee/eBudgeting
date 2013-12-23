@@ -218,16 +218,16 @@
 	<thead>
 		<tr>
 			<td>รายการงบประมาณ</td>
-			<td>ขอตั้ง</td>
 			<td>ปรับลดครั้งที่1</td>
+			<td>ขอตั้ง</td>
 		</tr>
 	</thead>
 	<tbody>
 		{{#each sumBudgetTypeProposals}}
 		<tr>
 			<td><a href="#" data-allocationId={{allocationId}} class="detailAllocation">{{budgetType.name}}</a></td>
-			<td>{{formatNumber amountRequest}}</td>
 			<td>{{formatNumber amountAllocated}}</td>
+			<td>{{formatNumber amountRequest}}</td>
 		</tr>
 		{{/each}}
 	</tbody>
@@ -635,7 +635,7 @@ $(document).ready(function() {
 		},{
 			name: 'proposals', mapping: 'proposals'
 		},{
-			name: 'allocationRecords', mapping: 'allocationRecords'
+			name: 'allocationRecordsR1', mapping: 'allocationRecordsR1'
 		},{
 			name: 'sumProposals', 
             convert: function(v, rec) {
@@ -684,9 +684,8 @@ $(document).ready(function() {
         	name: 'sumAllocationR1',
         	convert: function(v, rec) {
         		var sum=0;
-        		_.forEach(rec.data.allocationRecords, function(record) {
-        			if(record.index == 0) {
-        				
+        		_.forEach(rec.data.allocationRecordsR1, function(record) {
+        			if(record.index == 0) {        				
         				sum += record.amountAllocated;
         			}	
         		});

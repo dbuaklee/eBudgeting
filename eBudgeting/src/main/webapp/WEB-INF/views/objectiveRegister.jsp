@@ -571,6 +571,9 @@ $(document).ready(function() {
 			}
 			
 
+			if(this.query != null) {
+				json.queryTxt = this.query;
+			}
 			
 			var html = this.mainCtrTemplate(json);
 
@@ -716,7 +719,7 @@ $(document).ready(function() {
 		
 		gotoPage: function(e) {
 			var pageNumber = $(e.target).attr('data-id');
-			this.renderTargetPage(pageNumber);
+			this.renderTargetPage(pageNumber, this.query);
 		},
 		
 		renderTargetPage: function(pageNumber, query) {

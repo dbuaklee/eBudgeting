@@ -10,16 +10,33 @@
     	<beans:constructor-arg name="loginFormUrl" value="/login"/>
 	</beans:bean>
 	
-	<http use-expressions="true"
+	
+	<beans:bean id="authenticationProcessingFilter" class="biz.thaicom.security.ThaicomAuthenticationProcessingFilter">
+	 	<beans:property name="authenticationManager" ref="authenticationManager"/>
+ 		<beans:property name="authenticationFailureHandler" ref="failureHandler"/>
+ 		<beans:property name="authenticationSuccessHandler" ref="successHandler"/>
+	</beans:bean>
+	
+	<beans:bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+	 	<beans:property name="defaultTargetUrl" value="/"/>
+	</beans:bean>
+	
+	<beans:bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+	 	<beans:property name="defaultFailureUrl" value="/login?failed=1"/>
+	</beans:bean>
+	
+	
+	<http use-expressions="true" 
+		auto-config="false"
 		entry-point-ref="authenticationEntryPoint">
+		
+		<custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter"/>
+		
 		<intercept-url pattern="/login" access="permitAll"/>
 		<intercept-url pattern="/resources/**" access="permitAll"/>
 		<intercept-url pattern="/admin/**" access="permitAll"/>
-		<intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+		<intercept-url pattern="/**" access="isAuthenticated()"/>
 		
-		<form-login login-page="/login" authentication-failure-url="/login?failed=1"
-			default-target-url="/" always-use-default-target="true"/>
-			
 		
 		<logout logout-url="/logout" logout-success-url="/login"/>
 	
@@ -27,10 +44,16 @@
 	
 	<beans:bean id="thaicomAuthenticationProvider" class="biz.thaicom.security.services.ThaicomAuthenticationProvider"></beans:bean>
 	<beans:bean id="thaicomUserDetailService" class="biz.thaicom.security.services.ThaicomUserDetailService"></beans:bean>
-	<authentication-manager>
-		<authentication-provider user-service-ref="thaicomUserDetailService" >
+	
+	
+	<authentication-manager alias="authenticationManager">
+		<authentication-provider user-service-ref="thaicomUserDetailService"> 
 		</authentication-provider>
+		
 	</authentication-manager>
+	
+
+	<beans:bean id="securityListener" class="biz.thaicom.security.ApplicationSecurityListener"/>
 	
 
 </beans:beans>

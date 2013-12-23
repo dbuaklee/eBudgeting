@@ -564,6 +564,9 @@ $(document).ready(function() {
 				json.hasUnit = true;
 			}
 			
+			if(this.query != null) {
+				json.queryTxt = this.query;
+			}
 
 			
 			var html = this.mainCtrTemplate(json);
@@ -700,7 +703,7 @@ $(document).ready(function() {
 		
 		gotoPage: function(e) {
 			var pageNumber = $(e.target).attr('data-id');
-			this.renderTargetPage(pageNumber);
+			this.renderTargetPage(pageNumber, this.currentQuery);
 		},
 		
 		renderTargetPage: function(pageNumber, query) {
@@ -708,6 +711,8 @@ $(document).ready(function() {
 			objectiveCollection.targetPage = pageNumber;
 			if(query == null) {
 				query = "%";
+			} else {
+				this.currentQuery = query;
 			}
 			
 			objectiveCollection.fetch({

@@ -713,6 +713,16 @@ var MainCtrView = Backbone.View.extend({
 	        	sortable: false,
 	        	align: 'center'
 	        }, {
+	        	text: 'ปรับลดครั้งที่ 1',
+	        	width: 120,
+	        	sortable : false,
+	        	dataIndex: 'sumAllocationR1',
+	        	align: 'right',
+	        	renderer: function(value) {
+	        		return addCommas(value);
+	        	}
+	        		
+	        }, {
 	        	text: 'ขอตั้งปี ' + fiscalYear,
 	        	width: 120,
 	        	sortable : false,
@@ -752,16 +762,6 @@ var MainCtrView = Backbone.View.extend({
 	        		return addCommas(value);
 	        	}
 	        	
-	        }, {
-	        	text: 'ปรับลดครั้งที่ 1',
-	        	width: 120,
-	        	sortable : false,
-	        	dataIndex: 'sumAllocationR1',
-	        	align: 'right',
-	        	renderer: function(value) {
-	        		return addCommas(value);
-	        	}
-	        		
 	        }]
 		});	
 	}

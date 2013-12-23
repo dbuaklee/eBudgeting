@@ -56,6 +56,10 @@ public class ObjectiveType implements Serializable {
 	@Basic
 	private Boolean isLeaf;
 	
+	
+	@Basic
+	private Integer codeLength;
+	
 	// Normat get-set
 	public Long getId() {
 		return id;
@@ -98,6 +102,12 @@ public class ObjectiveType implements Serializable {
 	}
 	public void setIsLeaf(Boolean isLeaf) {
 		this.isLeaf = isLeaf;
+	}
+	public Integer getCodeLength() {
+		return codeLength;
+	}
+	public void setCodeLength(Integer codeLength) {
+		this.codeLength = codeLength;
 	}
 	
 	

@@ -96,6 +96,13 @@ public class AllocationRecordStrategy implements Serializable {
 	public void setRequestColumns(List<RequestColumn> requestColumns) {
 		this.requestColumns = requestColumns;
 	}
+
+	public void adjustTotalCalculatedAmount(Long adjustedAmount) {
+		if(this.totalCalculatedAmount != null) {
+			this.totalCalculatedAmount = this.totalCalculatedAmount - adjustedAmount;
+		}
+		
+	}
 	
 	
 	

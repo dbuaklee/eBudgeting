@@ -92,6 +92,8 @@ private static final Logger logger = LoggerFactory.getLogger(ObjectiveTargetRest
 		PageRequest pageRequest =
 	            new PageRequest(targetPage - 1, PageUI.PAGE_SIZE , Sort.Direction.ASC, "name");
 		
+		logger.debug(query);
+		
 		return entityService.findAllTargetUnits(pageRequest, query);
 	}
 

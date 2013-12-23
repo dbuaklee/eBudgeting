@@ -7,13 +7,17 @@
 	<name>eBudgeting</name>
 	<packaging>war</packaging>
 	<version>0.0.1-BUILD-SNAPSHOT</version>
+	<scm>
+		<connection>scm:git:https://github.com/dbuaklee/eBudgeting.git</connection>
+    	<url>https://github.com/dbuaklee/eBudgeting</url>
+	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<m2eclipse.wtp.contextRoot>eBudgeting</m2eclipse.wtp.contextRoot>
 		<java-version>1.6</java-version>
-		<org.springframework-version>3.1.2.RELEASE</org.springframework-version>
-		<org.springframework.data-version>1.1.0.RELEASE</org.springframework.data-version>
+		<org.springframework-version>3.2.4.RELEASE</org.springframework-version>
+		<org.springframework.data-version>1.3.4.RELEASE</org.springframework.data-version>
     	<spring.security.version>3.1.3.RELEASE</spring.security.version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
@@ -28,7 +32,7 @@
     	<org.apache.tiles-version>2.2.2</org.apache.tiles-version>
     	<commons.dbcp.version>1.4</commons.dbcp.version>
     	<apache.poi-version>3.8</apache.poi-version>
-    	<jackson-version>2.2.1</jackson-version>
+    	<jackson-version>2.2.2</jackson-version>
 	</properties>
 	<dependencies>
 		<!-- Spring -->
@@ -308,6 +312,7 @@
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>spring.properties</include>
+					<include>messages.properties</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
@@ -333,6 +338,23 @@
 			   <version>2.2</version>
 			   <configuration>
 			      <warName>eBudgeting</warName>
+			      <webResources>
+                  		<resource>
+                            <filtering>true</filtering>
+                            <directory>src/main/webapp</directory>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+			      <archive>
+		            <manifest>
+		              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+		            </manifest>
+		            <manifestEntries>
+		              <Implementation-Build>${buildNumber}</Implementation-Build>
+		            </manifestEntries>
+		          </archive>
 			   </configuration>
 			</plugin>        
             <plugin>
@@ -369,6 +391,26 @@
                     <mainClass>org.test.int1.Main</mainClass>
                 </configuration>
             </plugin>
+            <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>false</doCheck>
+					<doUpdate>false</doUpdate>
+					<revisionOnScmFailure>true</revisionOnScmFailure>
+					<shortRevisionLength>7</shortRevisionLength>
+					<timestampFormat>{0,date,yyyyMMdd HH:mm:ss}</timestampFormat>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
     <profiles>

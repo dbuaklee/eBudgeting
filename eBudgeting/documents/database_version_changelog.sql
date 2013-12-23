@@ -1044,11 +1044,74 @@
         references BGT_ALLOCFMCOLVALUE;
 
         
--- version 10
+-- version 11
 -- Modifed Date: June 21, 2013
 	update app_info set db_version = 11;
 	
 	alter table BGT_FMSTRGY_ALLOCSTDPRICE add (IDX number(4));
 	
 	alter table BGT_FMCOLUMN_ALLOCVALUE add(IDX number(4));
+	
+	
+-- version 12
+-- Modifed Date: July 2, 2013
+	
+	update app_info set db_version = 12;
+	
+	alter table pln_objectivetype add (codelength number(2)); 
+	
+	
+-- version 13
+-- Modified Date: Aug 21, 2013
+	update app_info set db_version = 13;
+
+create table s_system (
+  id  number(10),
+  system_name varchar2(20),
+  description varchar2(255),
+  primary key (id)
+);
+
+create table s_group (
+  id  number(10),
+  group_code varchar2(20),
+  description varchar2(255),
+  primary key (id)
+);
+
+create table s_system_list(
+  id number(10),
+  s_group_id number(10),
+  s_system_id number(10),
+  primary key (id),
+  foreign key (s_group_id) references s_group(id),
+  foreign key (s_system_id) references s_system(id)
+);
+
+create table s_group_list( 
+  id number(10),
+  s_group_id number(10),
+  s_user_id number(10),
+  primary key (id),
+  foreign key (s_group_id) references s_group(id),
+  foreign key (s_user_id) references sec_user(id)
+);
+
+create sequence s_system_seq;
+create sequence s_system_list_seq;
+
+create sequence s_group_seq;
+create sequence s_group_list_seq;
+
+insert into s_system values (s_system_seq.nextval, 'EBUDGETING_SYSTEM', 'ระบบ eBudgeting');
+insert into s_group values (s_group_seq.nextval, 'BGT_USER', 'กลุ่มผู้ใช้งานทั่วไป');
+insert into s_group values (s_group_seq.nextval, 'BGT_ADMIN', 'กลุ่มผู้จัดการระบบ');
+insert into s_group values (s_group_seq.nextval, 'BGT_BGT_ADMIN', 'กลุ่มผู้จัดการงบประมาณ');
+
+insert into s_system_list values (s_system_list_seq.nextval, 1,1);
+insert into s_system_list values (s_system_list_seq.nextval, 2,1);
+insert into s_system_list values (s_system_list_seq.nextval, 3,1);
+
+
+	
     

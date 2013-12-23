@@ -33,6 +33,9 @@
 	
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-1.8.3.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/jqueryui-1.9.2/js/jquery-ui-1.9.2.custom.min.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery.ui.datepicker-th.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery.ui.datepicker.ext.be.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/jquery.fileDownload-1.4.2.js'/>"></script>
 	
 	<!-- 
 	<script src="<c:url value='/resources/jslibs/jquery-easyui-1.3.2/jquery.easyui.min.js'/>"></script>
@@ -41,11 +44,15 @@
 	 
 	<script src="<c:url value='/resources/jslibs/ext-4.2.1.883/ext-all.js'/>"></script>
 	
-	<script src="<c:url value='/resources/jslibs/underscore-dev-1.4.4.js'/>"></script>
+		<script src="<c:url value='/resources/jslibs/lodash-1.3.1.min.js'/>"></script>
+	<!-- 
+	<script src="<c:url value='/resources/jslibs/underscore-1.5.1.min.js'/>"></script>
+	 -->
+	 
 	<script src="<c:url value='/resources/jslibs/bootstrap-2.3.1/js/bootstrap.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/bootstrap-editable-1.1.4/js/bootstrap-editable.min.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/backbone-1.0.0.js'/>"></script>
-	<script src="<c:url value='/resources/jslibs/backbone-relational-0.8.5.js'/>"></script>
+	<script src="<c:url value='/resources/jslibs/backbone-relational-0.8.6.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/handlebars-1.0.0.beta.6.js'/>"></script>
 	<script src="<c:url value='/resources/jslibs/moment-1.7.2.min.js'/>"></script>	
 		

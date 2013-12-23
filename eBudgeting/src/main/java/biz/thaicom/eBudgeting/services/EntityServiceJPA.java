@@ -1,6 +1,7 @@
 package biz.thaicom.eBudgeting.services;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import javassist.expr.NewArray;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -543,6 +546,9 @@ public class EntityServiceJPA implements EntityService {
 			logger.debug("level " + level.getId());
 			Integer maxCode = budgetTypeRepository.findMaxCodeAtLevel(level);
 			logger.debug("maxCode" +maxCode);
+			if(maxCode == null) {
+				maxCode = 0;
+			}
 			budgetType.setCode(maxCode+1);
 			
 			
@@ -1985,7 +1991,7 @@ public class EntityServiceJPA implements EntityService {
 		if(objectiveJsonNode.get("id") == null) { 
 			objective = new Objective();
 			objective.setObjectiveName(new ObjectiveName());
-			objective.setCode(objectiveJsonNode.get("code").asText());
+			
 		} else {
 			objective = objectiveRepository.findOne(objectiveJsonNode.get("id").asLong());
 		}
@@ -2010,6 +2016,20 @@ public class EntityServiceJPA implements EntityService {
 			objective.getObjectiveName().setType(ot);
 			
 		}
+		
+		if(objective.getCode() == null || objective.getCode().length() == 0) {
+			
+			// now find the max code and put this one as the next
+			String maxCode = objectiveRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
+			
+			if(maxCode == null || maxCode.length() == 0) {
+				maxCode = "0";
+			}
+			Integer nextCode = Integer.parseInt(maxCode) + 1;
+			objective.setCode(String.format("%0" + objective.getType().getCodeLength() + "d", nextCode));
+		}
+		
+		
 		
 		//lastly the unit
 		if(objectiveJsonNode.get("units") != null ) {
@@ -2167,13 +2187,11 @@ public class EntityServiceJPA implements EntityService {
 		if(objective.getCode() == null || objective.getCode().length() == 0) {
 			String maxCode = objectiveNameRepository.findMaxCodeOfTypeAndFiscalYear(objective.getType(), objective.getFiscalYear());
 			
-			Integer nextCode = 0;
-			if(maxCode == null) {
-				nextCode=10;
-			} else {
-				nextCode = Integer.parseInt(maxCode) + 1;
+			if(maxCode == null || maxCode.length() == 0) {
+				maxCode = "0";
 			}
-		
+			Integer nextCode = Integer.parseInt(maxCode) + 1;
+			objective.setCode(String.format("%0" + objective.getType().getCodeLength() + "d", nextCode));
 		
 			objective.setCode(nextCode.toString());
 			objective.getObjectiveName().setCode(nextCode.toString());
@@ -2339,7 +2357,55 @@ public class EntityServiceJPA implements EntityService {
 		List<AllocationStandardPrice> list = fs.getAllocationStandardPriceMap();
 		AllocationStandardPrice asp = list.get(round-1);
 		asp.setStandardPrice(data.get("allocationStandardPriceMap").get(round-1).get("standardPrice").asInt());
-		formulaStrategyRepository.save(fs);		
+		formulaStrategyRepository.save(fs);	
+		
+		// now we we'll have to update the allocRecord
+		
+		List<AllocationRecordStrategy> allocStrgyList = allocationRecordStrategyRepository.findAllByStrategy(fs);
+		for(AllocationRecordStrategy ars : allocStrgyList) {
+			
+			Long newTotal = 1L;
+			for(RequestColumn rc : ars.getRequestColumns()) {
+				if(rc.getAmount() != null) {
+					newTotal = newTotal * rc.getAmount();
+				}
+			}
+			newTotal = newTotal * asp.getStandardPrice();
+			
+			// now we can update the totalCalculatedAmount
+			Long adjustedAmount = ars.getTotalCalculatedAmount() - newTotal;
+			ars.setTotalCalculatedAmount(newTotal);
+			
+			// then we'll have to update all the way to the parent!
+			ars.getAllocationRecord().adjustAmountAllocated(adjustedAmount);
+			allocationRecordRepository.save(ars.getAllocationRecord());
+			
+			// now update parent
+			Objective parent = ars.getAllocationRecord().getForObjective().getParent();
+			while(parent != null) {
+				
+				
+				AllocationRecord ar = allocationRecordRepository.findOneByBudgetTypeAndObjectiveAndIndex(
+						fs.getType(), parent, round-1);
+				
+				AllocationRecordStrategy parentArs = allocationRecordStrategyRepository
+						.findOneByAllocationRecordAndStrategy(ar, fs);
+				
+				if(parentArs != null) {
+					parentArs.adjustTotalCalculatedAmount(adjustedAmount);
+					allocationRecordStrategyRepository.save(parentArs);
+					
+					ar.adjustAmountAllocated(adjustedAmount);
+					allocationRecordRepository.save(ar);
+				
+				}
+				
+				parent = parent.getParent();
+				
+			}
+			
+		}
+		
 		return null;
 	}
 
@@ -2687,7 +2753,11 @@ public class EntityServiceJPA implements EntityService {
 	@Override
 	public Page<TargetUnit> findAllTargetUnits(PageRequest pageRequest,
 			String query) {
-		query = "%" + query + "%";
+		if(query.length() == 0 ) {
+			query = "%";
+		} else {
+			query = "%" + query + "%";
+		}
 		return (Page<TargetUnit>) targetUnitRepository.findAllByNameLike( query, pageRequest);
 	}
 
@@ -3714,15 +3784,21 @@ public class EntityServiceJPA implements EntityService {
 		}
 		
 		// now find the maximum number in this type
-		Integer maxIndex = objectiveNameRepository.findMaxIndexOfTypeAndFiscalYear(
+	
+		String maxCode = objectiveNameRepository.findMaxCodeOfTypeAndFiscalYear(
 				on.getType(), on.getFiscalYear());
 		
-		if(maxIndex == null) {
-			on.setIndex(11);
+		Integer max;
+		if(maxCode == null) {
+			max = 0;
 		} else {
-			on.setIndex(maxIndex+1);
+			max = Integer.parseInt(maxCode);
 		}
-		on.setCode(on.getIndex().toString());
+		
+		Integer nextCode = max + 1;
+		logger.debug("nextCode:" + nextCode);
+		on.setCode(String.format("%0" + on.getType().getCodeLength() + "d", nextCode));
+	
 		
 		objectiveNameRepository.save(on);
 		return on;

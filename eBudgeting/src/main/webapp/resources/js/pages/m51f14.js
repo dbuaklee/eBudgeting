@@ -283,7 +283,7 @@ var MainTblView = Backbone.View.extend({
 		json.searchTxt = this.searchTxt;
 		var html = this.mainCtrTemplate(json);
 		
-		this.$el.html(html);
+		this.$el.find('div.body').html(html);
 		
 		// then the inside row
 		json=this.collection.toJSON();
@@ -313,9 +313,7 @@ var MainTblView = Backbone.View.extend({
 		
 		this.collection.fetch({
 			type: 'POST',
-			data: {
-				query: this.searchTxt
-			},
+			data: {query: this.searchTxt},
 			success: _.bind(function() {
 				this.render();
 			},this)
@@ -336,7 +334,7 @@ var MainTblView = Backbone.View.extend({
 		"click .menuEdit"	: "editRow",
 		"click .lineSave" : "saveLine",
 		"click .lineUpdate" : "updateLine",
-		"click .cancelLineSave" : "cancelSaveLine",
+		"click .cancelSaveLine" : "cancelSaveLine",
 		"click .cancelLineUpdate" : "cancelUpdateLine",
 		"click button#search" : "searchBtnClick",
 		"click button#searchDisplayAll" : "searchDisplayAllBtnClick",
@@ -489,39 +487,47 @@ var MainTblView = Backbone.View.extend({
 	},
 	
 	newRow: function(e) {
-		if(! $(e.currentTarget).hasClass('disabled') ) {
-			var json = {};
-			json.index = this.collection.length;
-			
-			json.unitList = listTargetUnits.toJSON();
-			
-			json.commonTypeList = listBudgetCommonType.toJSON();
-			
-			
-			$('#newRowCtr').html(this.newRowTemplate(json));
-			var currentBudgetTypeId = $('select#budgetTypeSlt').val();
-			
-			//now populate the budgetTypeSlt
-		    var budgetTypeSlt = BudgetType.findOrCreate({id: currentBudgetTypeId});
-		    budgetTypeSlt.fetch({success: _.bind(function(){
+		
+		$('#budgetTypeModal .modal-header span').html('เพิ่มทะเบียนรายการใหม่');
+		var json = {};
+		json.index = this.collection.length;
+		
+		json.unitList = listTargetUnits.toJSON();
+		
+		json.commonTypeList = listBudgetCommonType.toJSON();
+		
+		
+		$('#budgetTypeModal .modal-body').html(this.newRowTemplate(json));
+		
+		var currentBudgetTypeId = $('select#budgetTypeSlt').val();
+		
+		//now populate the budgetTypeSlt
+	    var budgetTypeSlt = BudgetType.findOrCreate({id: currentBudgetTypeId});
+	    budgetTypeSlt.fetch({
+	    	url: appUrl('/BudgetType/'+ currentBudgetTypeId + '/'),
+	    	success: _.bind(function(){
 		    	if(budgetTypeSlt.get('children').length > 0) {
 		    		this.budgetTypeSelection = new BudgetTypeSelectionView({
-		    			model: budgetTypeSlt, el:'.budgetTypeSlt', mainTblView: this});
+		    			model: budgetTypeSlt, el:'.budgetTypeSlt', mainTblView: this
+		    		});
 		    		this.budgetTypeSelection.render();
 		    	}
-	    	},this)});
-			
-			
-			this.$el.find('a.btn').toggleClass('disabled');
-		}
+		    	},this)
+    	});
+		
+		
+		    $('#budgetTypeModal').modal({show: true, backdrop: 'static', keyboard: false});
+		
 	},
 	
 	editRow: function(e) {
 		var fsId = $('input[name=rowRdo]:checked').parents('tr').attr('data-id');
 		
-		if((! $(e.currentTarget).hasClass('disabled') ) && $('input[name=rowRdo]:checked').length == 1) {
-
+			
+		
 			var model = this.collection.get(fsId);
+		
+			$('#budgetTypeModal .modal-header span').html('แก้ไขทะเบียนรายการ' +model.get('name'));
 			
 			var json = model.toJSON();
 			
@@ -550,36 +556,8 @@ var MainTblView = Backbone.View.extend({
 			}
 
 			
-			$('#newRowCtr').html(this.newRowTemplate(json));	
-			
-			this.$el.find('a.btn').toggleClass('disabled');
-			
-			/* var model = this.collection.get(fsId);
-			
-			var json = model.toJSON();
-				
-			json.unitList = listTargetUnits.toJSON();
-			if(model.get('unit') != null) {
-				for(var i=0; i<json.unitList.length; i++) {
-					if(json.unitList[i].id == model.get('unit').get('id')) {}
-					json.unitList[i].selected = 'selected';
-				}
-			}
-			
-			
-			json.commonTypeList = listBudgetCommonType.toJSON();
-			if(model.get('commonType') != null) {
-				for(var i=0; i<json.commonTypeList.length; i++) {
-					if(json.commonTypeList[i].id == model.get('commonType').get('id')) {}
-					json.commonTypeList[i].selected = 'selected';
-				}
-			}
-
-			var html = this.editRowTemplate(json);
-			$('input[name=rowRdo]:checked').parents('tr').html(html); */
-		} else {
-			alert('กรุณาเลือกรายการที่ต้องการแก้ไข');
-		}
+			$('#budgetTypeModal .modal-body').html(this.newRowTemplate(json));	
+			  $('#budgetTypeModal').modal({show: true, backdrop: 'static', keyboard: false});
 	},
 	
 	
@@ -594,9 +572,8 @@ var MainTblView = Backbone.View.extend({
 	cancelSaveLine: function(e) {
 		//now put back the value
 		// well do nothing just reset the collection
+		$('#budgetTypeModal').modal('hide');
 		
-		this.$el.find('a.btn').toggleClass('disabled');
-		$('#newRowCtr').empty();
 		
 	},
 	
@@ -652,13 +629,14 @@ var MainTblView = Backbone.View.extend({
 		
 		
 		newBudgetType.save(null, {
-			success: function() {
-				
-			}
+			success: _.bind(function() {
+				this.$el.find('a.btn').toggleClass('disabled');
+				this.collection.add(newBudgetType);
+				this.collection.trigger("reset");
+			},this)
 		});
 		
-		this.$el.find('a.btn').toggleClass('disabled');
-		this.collection.trigger("reset");
+
 	
 	},
 	
@@ -674,9 +652,8 @@ var MainTblView = Backbone.View.extend({
 				
 					modelToDelete.destroy({
 						success: _.bind(function() {					
-							this.collection.remove(modelToDelete);
-						
 							this.collection.fetch();
+							this.collection.trigger("reset");
 						},this)
 					});
 			} 
@@ -782,9 +759,11 @@ var BudgetTypeSelectionView = Backbone.View.extend({
 	selectionChange: function(e) {
 		var selectedBudgetTypeId = $(e.target).val();
 		// now try to get this model
-		var budgetType = BudgetType.findOrCreate(selectedBudgetTypeId);
+		var budgetType = BudgetType.findOrCreate({_id : selectedBudgetTypeId});
 		e1 = budgetType;
-		budgetType.fetch({success: _.bind(function(model, response){
+		Backbone.sync('GET',budgetType, {
+			url: appUrl('/BudgetType/' + selectedBudgetTypeId),
+			success: _.bind(function(model, response){
 			var fetchedBudgetType = response;
 			if(fetchedBudgetType.parentLevel < 3) {
 				

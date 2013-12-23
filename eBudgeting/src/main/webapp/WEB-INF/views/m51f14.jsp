@@ -37,27 +37,25 @@
 				<a href="#"	class="btn" id="backBtn">กลับหน้าหลัก</a>
 			</div>
 		</div>
+		
+	
 
 		<div class="control-group" id="mainCtr">
-			
-			<c:choose>
-			<c:when test="${rootPage}">
-				<table class="table table-bordered" id="mainTbl">
-					<thead>
-						<tr>
-							<td>เลือกปีงบประมาณ</td>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach items="${fiscalYears}" var="fiscalYear">
-						<tr>
-								<td> <a href="./${fiscalYear.fiscalYear}/" class="nextChildrenLnk">${fiscalYear.fiscalYear}<i class="icon icon-chevron-right nextChildrenLnk"></i> </a></td>
-						</tr>
-						</c:forEach>
-					</tbody>
-				</table>			
-			</c:when>
-			</c:choose>	
+			<div id="budgetTypeModal" class="modal wideModal hide fade">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<span style="font-weight: bold;"></span>
+				</div>
+				<div class="modal-body">
+					
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary lineSave" id="saveBudgetTypeBtn"><i class="icon-save"></i> บันทึก</button>
+					<a href="#"	class="btn cancelSaveLine" id="backBtn">กลับหน้าหลัก</a>
+				</div>
+			</div>
+			<div class="body">
+			</div>
 		</div>
 
 
@@ -343,9 +341,6 @@
 				</div>
 			</div>
 		</form>
-
-		<button indexHolder='{{index}}' class='btn btn-mini btn-info lineSave' data-id="{{id}}">บันทึกข้อมูล</button>
-		<button indexHolder='{{index}}' class='btn btn-mini btn-danger cancelLineSave'>ยกเลิก</button>
 	</div>
 </script>
 
@@ -467,7 +462,9 @@ $(document).ready(function() {
 	if(fiscalYear!= null && fiscalYear.length > 0 ) {
 		headLineStr += 	' ปีงบประมาณ ' + fiscalYear;
 	
+		
 		rootBudgetType.fetch({
+			url: appUrl('/BudgetType/'+ 0 + '/'),
 			success: function() {
 				budgetTypeRootCollection = rootBudgetType.get('children');
 				budgetTypeSltView = new BudgetSltView({collection: budgetTypeRootCollection});
