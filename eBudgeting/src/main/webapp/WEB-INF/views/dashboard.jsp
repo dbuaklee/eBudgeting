@@ -192,17 +192,22 @@ var menuJson = [{
 		     {name: "m51r13: ทะเบียนกิจกรรมรายละเอียด", code: 'm51r01', link: "m51r13.xls/"+fiscalYear+"/file/m51r13.xls",  type: "download", group: "BGT_BGT_ADMIN"},
 		
 		     {name: "m51r15: ทะเบียนประเภทรายการกลาง", code: 'm51r01', link: "m51r15.xls/"+fiscalYear+"/file/m51r15.xls",  type: "download", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r16: ตรวจสอบสายการเชื่อมโยงข้อมูล", code: 'm51r01', link: "m51r16.xls/"+fiscalYear+"/file/m51r16.xls",  type: "download", disabled: "disabled", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r17: ตรวจสอบสายการเชื่อมโยงข้อมูล (สายยุทธศาสตร์กระทรวงฯ-กลยุทธ์หน่วยงาน)", code: 'm51r01', link: "m51r17.xls/"+fiscalYear+"/file/m51r17.xls",  type: "download",disabled: "disabled", group: "BGT_BGT_ADMIN"},
-		     {name: "m51r17: ทะเบียนหน่วยนับ", code: 'm51r01', link: "m51r18.xls/"+fiscalYear+"/file/m51r18.xls",  type: "download", group: "BGT_BGT_ADMIN"}
+		     {name: "m51r16: ตรวจสอบสายการเชื่อมโยงข้อมูล", code: 'm51r01', link: "m51r16.xls/"+fiscalYear+"/file/m51r16.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r17: ตรวจสอบสายการเชื่อมโยงข้อมูล (สายยุทธศาสตร์กระทรวงฯ-กลยุทธ์หน่วยงาน)", code: 'm51r01', link: "m51r17.xls/"+fiscalYear+"/file/m51r17.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r18: ทะเบียนหน่วยนับ", code: 'm51r01', link: "m51r18.xls/"+fiscalYear+"/file/m51r18.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r19: รายงานตรวจสอบทะเบียนยุทธศาสตร์กระทรวง", code: 'm51r01', link: "m51r19.xls/"+fiscalYear+"/file/m51r19.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r20: รายงานตรวจสอบทะเบียนกลยุทธ์หน่วยงาน", code: 'm51r01', link: "m51r20.xls/"+fiscalYear+"/file/m51r20.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r21: รายงานตรวจสอบทะเบียนกลยุทธ์/วิธีการกรมฯ", code: 'm51r01', link: "m51r21.xls/"+fiscalYear+"/file/m51r21.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r22: รายงานตรวจสอบทะเบียนแนวทางการจัดสรรงบประมาณ(กลยุทธ์หลัก)", code: 'm51r01', link: "m51r22.xls/"+fiscalYear+"/file/m51r22.xls",  type: "download", group: "BGT_BGT_ADMIN"},
+		     {name: "m51r23: รายงานตรวจสอบทะเบียนวิสัยทัศน์ - พันธกิจ", code: 'm51r01', link: "m51r23.xls/"+fiscalYear+"/file/m51r23.xls",  type: "download", group: "BGT_BGT_ADMIN"}
 		     ]},
-	  {name: "รายงานการตรวจสอบ (m52r)", menus: 
-				    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", code: 'm51r01', link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls",  type: "download", group: "BGT_USER"},
-				     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", code: 'm51r01', link: "m52r02_1.xls/"+fiscalYear+"/file/m52r02_1.xls",  type: "download", group: "BGT_USER"},		 
-				     {name: "m52r07: แบบสรุปงบประมาณรายจ่ายประจำปีงบประมาณ(วิสัยทัศน์ - พันธกิจ)", code: 'm51r01', link: "m52r07.xls/"+fiscalYear+"/file/m52r07.xls",  type: "download", group: "BGT_BGT_ADMIN"},		 
-				     {name: "m52r08: ความเชื่อมโยงกับแผนบริหารรราชการแผ่นดิน", code: 'm51r01', link: "m52r08.xls/"+fiscalYear+"/file/m52r08.xls",  type: "download", group: "BGT_BGT_ADMIN"},		 
-				     {name: "m52r11: ความเชื่อมโยงระหว่างยุทธศาสตร์กระทรวงกับกลยุทธ์หน่วยงานและแนวทางการจัดสรรงบประมาณ", code: 'm51r01', link: "m52r11.xls/"+fiscalYear+"/file/m52r11.xls",  type: "download", group: "BGT_BGT_ADMIN"}
-				     ]},		 
+	     {name: "รายงานการตรวจสอบ (m52r)", code: "m82", menus: 
+		    [{name: "m52r01: การบันทึกงบประมาณระดับกิจกรรม", code: 'm51r01', link: "m52r01_1.xls/"+fiscalYear+"/file/m52r01_1.xls",  type: "download", group: "BGT_USER"},
+		     {name: "m52r02: การบันทึกงบประมาณระดับรายการ", code: 'm51r01', link: "m52r02_1.xls/"+fiscalYear+"/file/m52r02_1.xls",  type: "download", group: "BGT_USER"},		 
+		     {name: "m52r07: แบบสรุปงบประมาณรายจ่ายประจำปีงบประมาณ(วิสัยทัศน์ - พันธกิจ)", code: 'm51r01', link: "m52r07.xls/"+fiscalYear+"/file/m52r07.xls",  type: "download", group: "BGT_BGT_ADMIN"},		 
+		     {name: "m52r08: ความเชื่อมโยงกับแผนบริหารราชการแผ่นดิน", code: 'm51r01', link: "m52r08.xls/"+fiscalYear+"/file/m52r08.xls",  type: "download", group: "BGT_BGT_ADMIN"},		 
+		     {name: "m52r11: ความเชื่อมโยงระหว่างยุทธศาสตร์กระทรวงกับกลยุทธ์หน่วยงานและแนวทางการจัดสรรงบประมาณ", code: 'm51r01', link: "m52r11.xls/"+fiscalYear+"/file/m52r11.xls",  type: "download", group: "BGT_BGT_ADMIN"}
+		     ]},		 
 	     {name: "รายงานตามแบบแผนปฏิบัติราชการ] (m83)", code: "m83",  menus: 
 			    [{name: "m82f01: ตรวจสอบสายการเชื่อมโยงข้อมูล", code: 'm51r01', link: "page/m2f14/", disabled: "disabled", group: "BGT_BGT_ADMIN"},
 			     {name: "m82f02: ตรวจสอบการบันทึกเงินระดับกิจกรรม", code: 'm51r01', link: "page/m2f14/", disabled: "disabled", group: "BGT_BGT_ADMIN"},
