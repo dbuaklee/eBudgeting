@@ -1,13 +1,18 @@
 package biz.thaicom.eBudgeting.view;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.AbstractView;
 
 
@@ -16,6 +21,17 @@ public abstract class AbstractPOIExcelView extends AbstractView {
     private static final String CONTENT_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final String CONTENT_TYPE_XLS = "application/vnd.ms-excel";
 
+    protected static final DecimalFormat decimalFormat = new DecimalFormat("#,##0.##");
+
+    @Autowired
+	protected DataSource dataSource;
+    
+	protected static final SimpleDateFormat printTimeFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", new Locale("th", "TH"));
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+    
     /**
      * Default Constructor. Sets the content type of the view for excel files.
      */
